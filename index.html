@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="GoreeCloud is a privacy-first, self-hosted personal and family cloud built around data ownership, recoverability, and long-term preservation.">
+  <meta name="theme-color" content="#07111f">
+  <title>GoreeCloud — Personal & Family Cloud</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a class="brand" href="#top" aria-label="GoreeCloud home">
+        <span class="brand-mark" aria-hidden="true">G</span>
+        <span class="brand-text">GoreeCloud</span>
+      </a>
+
+      <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav">
+        <span class="sr-only">Toggle navigation</span>
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav id="site-nav" class="site-nav" aria-label="Primary navigation">
+        <a href="#services">Services</a>
+        <a href="#about">About</a>
+        <a href="#story">Story</a>
+        <a href="#follow">Follow</a>
+        <a href="#contact" class="nav-cta">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section id="top" class="hero">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow">Privacy-first • Self-hosted • Family-owned</p>
+          <h1>A private cloud built for family, ownership, and the future.</h1>
+          <p class="hero-lede">
+            GoreeCloud is a self-hosted personal and family cloud designed to keep files,
+            memories, media, records, credentials, and knowledge under the control of the
+            people they belong to.
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="#services">Explore Family Services</a>
+            <a class="button secondary" href="#story">Read the GoreeCloud Story</a>
+          </div>
+          <ul class="hero-points" aria-label="GoreeCloud principles">
+            <li>Private by default</li>
+            <li>Built around ownership</li>
+            <li>Designed to be recoverable</li>
+          </ul>
+        </div>
+
+        <div class="hero-card" aria-label="GoreeCloud overview">
+          <div class="cloud-orb" aria-hidden="true">
+            <div class="orb-core">GC</div>
+            <span class="orbit orbit-one"></span>
+            <span class="orbit orbit-two"></span>
+            <span class="node n1"></span>
+            <span class="node n2"></span>
+            <span class="node n3"></span>
+          </div>
+          <div class="hero-card-copy">
+            <span class="status-dot"></span>
+            <span>Building a durable family digital foundation</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="band">
+      <div class="container band-grid">
+        <div>
+          <strong>Private.</strong>
+          <span>Personal information is protected by default.</span>
+        </div>
+        <div>
+          <strong>Owned.</strong>
+          <span>Family data stays under direct control.</span>
+        </div>
+        <div>
+          <strong>Recoverable.</strong>
+          <span>Backups and portability are core design goals.</span>
+        </div>
+        <div>
+          <strong>Long-term.</strong>
+          <span>The goal is preservation across technology changes.</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="services" class="section">
+      <div class="container">
+        <div class="section-heading">
+          <p class="eyebrow">Family services</p>
+          <h2>One cloud. Many parts of digital life.</h2>
+          <p>
+            GoreeCloud brings together private services for the things families use every day:
+            files, photos, media, documents, passwords, knowledge, and communication.
+          </p>
+        </div>
+
+        <div class="service-grid">
+          <article class="service-card">
+            <div class="service-icon">☁</div>
+            <p class="service-kicker">Files & Sync</p>
+            <h3>Nextcloud</h3>
+            <p>Private file storage, synchronization, sharing, calendars, contacts, and personal cloud access.</p>
+            <span class="badge planned">Planned</span>
+          </article>
+
+          <article class="service-card">
+            <div class="service-icon">◉</div>
+            <p class="service-kicker">Photos & Memories</p>
+            <h3>Immich</h3>
+            <p>Preserve, organize, search, and privately share family photos and videos while keeping originals under family control.</p>
+            <span class="badge planned">Planned</span>
+          </article>
+
+          <article class="service-card">
+            <div class="service-icon">▶</div>
+            <p class="service-kicker">Video & Media</p>
+            <h3>Jellyfin</h3>
+            <p>Stream privately owned movies, television, home videos, and other visual media across approved family devices.</p>
+            <span class="badge planned">Planned</span>
+          </article>
+
+          <article class="service-card">
+            <div class="service-icon">♫</div>
+            <p class="service-kicker">Music</p>
+            <h3>Navidrome</h3>
+            <p>Provide private access to a family music library without depending on a commercial streaming platform.</p>
+            <span class="badge planned">Planned</span>
+          </article>
+
+          <article class="service-card">
+            <div class="service-icon">A</div>
+            <p class="service-kicker">Audiobooks</p>
+            <h3>Audiobookshelf</h3>
+            <p>Organize and listen to privately managed audiobook and podcast libraries from supported family devices.</p>
+            <span class="badge planned">Planned</span>
+          </article>
+
+          <article class="service-card">
+            <div class="service-icon">▤</div>
+            <p class="service-kicker">Documents & Records</p>
+            <h3>Paperless-ngx</h3>
+            <p>Ingest, classify, search, and preserve important documents and records in a dedicated records-management system.</p>
+            <span class="badge planned">Planned</span>
+          </article>
+
+          <article class="service-card">
+            <div class="service-icon">⌘</div>
+            <p class="service-kicker">Passwords & Secrets</p>
+            <h3>Vaultwarden</h3>
+            <p>Securely manage passwords, credentials, recovery information, and other sensitive account data.</p>
+            <span class="badge active">Available</span>
+          </article>
+
+          <article class="service-card">
+            <div class="service-icon">✎</div>
+            <p class="service-kicker">Knowledge</p>
+            <h3>Notes & Knowledge</h3>
+            <p>Keep personal notes, references, research, and accumulated knowledge organized under direct control.</p>
+            <span class="badge growing">In Development</span>
+          </article>
+
+          <article class="service-card">
+            <div class="service-icon">✦</div>
+            <p class="service-kicker">Communication</p>
+            <h3>Private Messaging</h3>
+            <p>Support family communication through self-hosted, privacy-focused messaging technologies as GoreeCloud expands.</p>
+            <span class="badge planned">Planned</span>
+          </article>
+        </div>
+
+        <p class="status-note">
+          Service availability changes as GoreeCloud develops. This public website describes capabilities and plans;
+          private application addresses and administrative systems are not published here.
+        </p>
+      </div>
+    </section>
+
+    <section id="about" class="section section-alt">
+      <div class="container about-grid">
+        <div>
+          <p class="eyebrow">What is GoreeCloud?</p>
+          <h2>More than a homelab.</h2>
+        </div>
+        <div class="about-copy">
+          <p>
+            GoreeCloud is a privacy-first, self-hosted personal and family cloud platform built to
+            preserve a family's digital life over the long term.
+          </p>
+          <p>
+            The purpose is not to preserve any single server, application, vendor, or architecture forever.
+            The purpose is to preserve the information entrusted to those systems — including memories,
+            records, knowledge, credentials, and personal data — so it remains accessible, portable,
+            recoverable, and understandable as technology changes.
+          </p>
+          <div class="principle-grid">
+            <div><strong>Privacy</strong><span>Protection is a design requirement, not an optional setting.</span></div>
+            <div><strong>Ownership</strong><span>The rightful owner retains control over their information.</span></div>
+            <div><strong>Open Source</strong><span>Open-source, self-hosted software is preferred wherever practical.</span></div>
+            <div><strong>Recoverability</strong><span>Backups and restoration are part of the architecture.</span></div>
+            <div><strong>Independence</strong><span>Critical information should not depend on a single provider.</span></div>
+            <div><strong>Preservation</strong><span>Important information should survive technology changes.</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="story" class="section">
+      <div class="container">
+        <div class="section-heading">
+          <p class="eyebrow">The GoreeCloud story</p>
+          <h2>Built deliberately from the beginning.</h2>
+          <p>GoreeCloud started in 2026 as a plan for a private, self-hosted environment and quickly grew into a structured personal cloud platform.</p>
+        </div>
+
+        <div class="timeline">
+          <article>
+            <time datetime="2026-06-01">June 1, 2026</time>
+            <div>
+              <h3>Initial planning begins</h3>
+              <p>The first GoreeCloud planning work begins with a goal of replacing subscription-based services with greater privacy, control, and data ownership.</p>
+            </div>
+          </article>
+
+          <article>
+            <time datetime="2026-06-07">June 7, 2026</time>
+            <div>
+              <h3>The GoreeCloud name is established</h3>
+              <p>GoreeCloud becomes the name for the complete ecosystem: hardware, software, infrastructure, services, configurations, and data.</p>
+            </div>
+          </article>
+
+          <article>
+            <time datetime="2026-06-25">June 25, 2026</time>
+            <div>
+              <h3>GoreeCloud.com is purchased</h3>
+              <p>The domain becomes the permanent public identity for the project and supports the naming and service-publication needs of the environment.</p>
+            </div>
+          </article>
+
+          <article>
+            <time datetime="2026">2026 →</time>
+            <div>
+              <h3>From homelab to documented personal cloud</h3>
+              <p>The project expands into a governed platform with defined architecture, security policies, standards, procedures, recovery requirements, and long-term goals.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="follow" class="section section-alt">
+      <div class="container">
+        <div class="section-heading">
+          <p class="eyebrow">Follow the build</p>
+          <h2>GoreeCloud is being documented in public.</h2>
+          <p>Follow infrastructure progress, application showcases, lessons learned, privacy discussions, and self-hosting content across GoreeCloud's public accounts.</p>
+        </div>
+
+        <div class="social-grid">
+          <a class="social-card" href="https://instagram.com/goreecloud" target="_blank" rel="noopener noreferrer">
+            <strong>Instagram</strong><span>@goreecloud</span><small>Visual progress & demonstrations</small>
+          </a>
+          <a class="social-card" href="https://www.threads.net/@goreecloud" target="_blank" rel="noopener noreferrer">
+            <strong>Threads</strong><span>@goreecloud</span><small>Conversation & community</small>
+          </a>
+          <a class="social-card" href="https://www.tiktok.com/@goreecloud" target="_blank" rel="noopener noreferrer">
+            <strong>TikTok</strong><span>@goreecloud</span><small>Short-form demonstrations</small>
+          </a>
+          <a class="social-card" href="https://x.com/GoreeCloud" target="_blank" rel="noopener noreferrer">
+            <strong>X</strong><span>@GoreeCloud</span><small>Updates & milestones</small>
+          </a>
+          <a class="social-card" href="https://www.reddit.com/user/goreecloud/" target="_blank" rel="noopener noreferrer">
+            <strong>Reddit</strong><span>u/goreecloud</span><small>Technical discussion</small>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact" class="section contact-section">
+      <div class="container contact-card">
+        <div>
+          <p class="eyebrow">Contact GoreeCloud</p>
+          <h2>Questions, ideas, or want to talk self-hosting?</h2>
+          <p>Reach GoreeCloud directly at <strong>goreecloud@gmail.com</strong>.</p>
+        </div>
+        <a class="button primary" href="mailto:goreecloud@gmail.com">Send an Email</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <a class="brand footer-brand" href="#top">
+          <span class="brand-mark" aria-hidden="true">G</span>
+          <span class="brand-text">GoreeCloud</span>
+        </a>
+        <p>Privacy • Ownership • Self-Hosting • Long-Term Preservation</p>
+      </div>
+      <div class="footer-links">
+        <a href="#services">Services</a>
+        <a href="#about">About</a>
+        <a href="#story">Story</a>
+        <a href="#follow">Social</a>
+        <a href="mailto:goreecloud@gmail.com">Email</a>
+      </div>
+      <p class="copyright">© <span id="year"></span> GoreeCloud</p>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
