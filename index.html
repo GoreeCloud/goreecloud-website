@@ -5,9 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="GoreeCloud is a privacy-first, self-hosted personal and family cloud built around data ownership, recoverability, and long-term preservation.">
   <meta name="theme-color" content="#07111f">
+
   <title>GoreeCloud — Personal & Family Cloud</title>
+
+  <link rel="canonical" href="https://goreecloud.com/">
+  <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/style.css">
-  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="GoreeCloud">
+  <meta property="og:title" content="GoreeCloud — Personal & Family Cloud">
+  <meta property="og:description" content="A privacy-first, self-hosted personal and family cloud built for ownership, recoverability, and the future.">
+  <meta property="og:url" content="https://goreecloud.com/">
+  <meta property="og:image" content="https://goreecloud.com/assets/social-preview.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="GoreeCloud — A private cloud built for family, ownership, and the future.">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="GoreeCloud — Personal & Family Cloud">
+  <meta name="twitter:description" content="A privacy-first, self-hosted personal and family cloud built for ownership, recoverability, and the future.">
+  <meta name="twitter:image" content="https://goreecloud.com/assets/social-preview.png">
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -15,7 +33,7 @@
   <header class="site-header">
     <div class="container nav-wrap">
       <a class="brand" href="#top" aria-label="GoreeCloud home">
-        <span class="brand-mark" aria-hidden="true">G</span>
+        <img class="brand-logo" src="assets/logo.svg" alt="" width="36" height="36">
         <span class="brand-text">GoreeCloud</span>
       </a>
 
@@ -45,10 +63,12 @@
             memories, media, records, credentials, and knowledge under the control of the
             people they belong to.
           </p>
+
           <div class="hero-actions">
             <a class="button primary" href="#services">Explore Family Services</a>
             <a class="button secondary" href="#story">Read the GoreeCloud Story</a>
           </div>
+
           <ul class="hero-points" aria-label="GoreeCloud principles">
             <li>Private by default</li>
             <li>Built around ownership</li>
@@ -58,7 +78,9 @@
 
         <div class="hero-card" aria-label="GoreeCloud overview">
           <div class="cloud-orb" aria-hidden="true">
-            <div class="orb-core">GC</div>
+            <div class="orb-core">
+              <img src="assets/logo.svg" alt="" width="100" height="100">
+            </div>
             <span class="orbit orbit-one"></span>
             <span class="orbit orbit-two"></span>
             <span class="node n1"></span>
@@ -73,7 +95,7 @@
       </div>
     </section>
 
-    <section class="band">
+    <section class="band" aria-label="Core principles">
       <div class="container band-grid">
         <div>
           <strong>Private.</strong>
@@ -107,7 +129,7 @@
 
         <div class="service-grid">
           <article class="service-card">
-            <div class="service-icon">☁</div>
+            <div class="service-icon" aria-hidden="true">☁</div>
             <p class="service-kicker">Files & Sync</p>
             <h3>Nextcloud</h3>
             <p>Private file storage, synchronization, sharing, calendars, contacts, and personal cloud access.</p>
@@ -115,7 +137,7 @@
           </article>
 
           <article class="service-card">
-            <div class="service-icon">◉</div>
+            <div class="service-icon" aria-hidden="true">◉</div>
             <p class="service-kicker">Photos & Memories</p>
             <h3>Immich</h3>
             <p>Preserve, organize, search, and privately share family photos and videos while keeping originals under family control.</p>
@@ -123,7 +145,7 @@
           </article>
 
           <article class="service-card">
-            <div class="service-icon">▶</div>
+            <div class="service-icon" aria-hidden="true">▶</div>
             <p class="service-kicker">Video & Media</p>
             <h3>Jellyfin</h3>
             <p>Stream privately owned movies, television, home videos, and other visual media across approved family devices.</p>
@@ -131,7 +153,7 @@
           </article>
 
           <article class="service-card">
-            <div class="service-icon">♫</div>
+            <div class="service-icon" aria-hidden="true">♫</div>
             <p class="service-kicker">Music</p>
             <h3>Navidrome</h3>
             <p>Provide private access to a family music library without depending on a commercial streaming platform.</p>
@@ -139,7 +161,7 @@
           </article>
 
           <article class="service-card">
-            <div class="service-icon">A</div>
+            <div class="service-icon" aria-hidden="true">A</div>
             <p class="service-kicker">Audiobooks</p>
             <h3>Audiobookshelf</h3>
             <p>Organize and listen to privately managed audiobook and podcast libraries from supported family devices.</p>
@@ -147,7 +169,7 @@
           </article>
 
           <article class="service-card">
-            <div class="service-icon">▤</div>
+            <div class="service-icon" aria-hidden="true">▤</div>
             <p class="service-kicker">Documents & Records</p>
             <h3>Paperless-ngx</h3>
             <p>Ingest, classify, search, and preserve important documents and records in a dedicated records-management system.</p>
@@ -155,15 +177,15 @@
           </article>
 
           <article class="service-card">
-            <div class="service-icon">⌘</div>
+            <div class="service-icon" aria-hidden="true">⌘</div>
             <p class="service-kicker">Passwords & Secrets</p>
             <h3>Vaultwarden</h3>
             <p>Securely manage passwords, credentials, recovery information, and other sensitive account data.</p>
-            <span class="badge active">Available</span>
+            <span class="badge active">Available Now</span>
           </article>
 
           <article class="service-card">
-            <div class="service-icon">✎</div>
+            <div class="service-icon" aria-hidden="true">✎</div>
             <p class="service-kicker">Knowledge</p>
             <h3>Notes & Knowledge</h3>
             <p>Keep personal notes, references, research, and accumulated knowledge organized under direct control.</p>
@@ -171,7 +193,7 @@
           </article>
 
           <article class="service-card">
-            <div class="service-icon">✦</div>
+            <div class="service-icon" aria-hidden="true">✦</div>
             <p class="service-kicker">Communication</p>
             <h3>Private Messaging</h3>
             <p>Support family communication through self-hosted, privacy-focused messaging technologies as GoreeCloud expands.</p>
@@ -192,6 +214,7 @@
           <p class="eyebrow">What is GoreeCloud?</p>
           <h2>More than a homelab.</h2>
         </div>
+
         <div class="about-copy">
           <p>
             GoreeCloud is a privacy-first, self-hosted personal and family cloud platform built to
@@ -203,6 +226,7 @@
             records, knowledge, credentials, and personal data — so it remains accessible, portable,
             recoverable, and understandable as technology changes.
           </p>
+
           <div class="principle-grid">
             <div><strong>Privacy</strong><span>Protection is a design requirement, not an optional setting.</span></div>
             <div><strong>Ownership</strong><span>The rightful owner retains control over their information.</span></div>
@@ -268,19 +292,30 @@
         </div>
 
         <div class="social-grid">
-          <a class="social-card" href="https://instagram.com/goreecloud" target="_blank" rel="noopener noreferrer">
+          <a class="social-card" href="https://instagram.com/goreecloud" target="_blank" rel="noopener noreferrer" aria-label="GoreeCloud on Instagram">
+            <span class="social-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><rect x="3.2" y="3.2" width="17.6" height="17.6" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.8" r="1"/></svg>
+            </span>
             <strong>Instagram</strong><span>@goreecloud</span><small>Visual progress & demonstrations</small>
           </a>
-          <a class="social-card" href="https://www.threads.net/@goreecloud" target="_blank" rel="noopener noreferrer">
+
+          <a class="social-card" href="https://www.threads.net/@goreecloud" target="_blank" rel="noopener noreferrer" aria-label="GoreeCloud on Threads">
+            <span class="social-icon social-letter" aria-hidden="true">@</span>
             <strong>Threads</strong><span>@goreecloud</span><small>Conversation & community</small>
           </a>
-          <a class="social-card" href="https://www.tiktok.com/@goreecloud" target="_blank" rel="noopener noreferrer">
+
+          <a class="social-card" href="https://www.tiktok.com/@goreecloud" target="_blank" rel="noopener noreferrer" aria-label="GoreeCloud on TikTok">
+            <span class="social-icon social-letter" aria-hidden="true">♪</span>
             <strong>TikTok</strong><span>@goreecloud</span><small>Short-form demonstrations</small>
           </a>
-          <a class="social-card" href="https://x.com/GoreeCloud" target="_blank" rel="noopener noreferrer">
+
+          <a class="social-card" href="https://x.com/GoreeCloud" target="_blank" rel="noopener noreferrer" aria-label="GoreeCloud on X">
+            <span class="social-icon social-letter" aria-hidden="true">X</span>
             <strong>X</strong><span>@GoreeCloud</span><small>Updates & milestones</small>
           </a>
-          <a class="social-card" href="https://www.reddit.com/user/goreecloud/" target="_blank" rel="noopener noreferrer">
+
+          <a class="social-card" href="https://www.reddit.com/user/goreecloud/" target="_blank" rel="noopener noreferrer" aria-label="GoreeCloud on Reddit">
+            <span class="social-icon social-letter" aria-hidden="true">r/</span>
             <strong>Reddit</strong><span>u/goreecloud</span><small>Technical discussion</small>
           </a>
         </div>
@@ -289,12 +324,12 @@
 
     <section id="contact" class="section contact-section">
       <div class="container contact-card">
-        <div>
+        <div class="contact-copy">
           <p class="eyebrow">Contact GoreeCloud</p>
           <h2>Questions, ideas, or want to talk self-hosting?</h2>
           <p>Reach GoreeCloud directly at <strong>goreecloud@gmail.com</strong>.</p>
         </div>
-        <a class="button primary" href="mailto:goreecloud@gmail.com">Send an Email</a>
+        <a class="button primary contact-button" href="mailto:goreecloud@gmail.com">Send an Email</a>
       </div>
     </section>
   </main>
@@ -303,11 +338,12 @@
     <div class="container footer-grid">
       <div>
         <a class="brand footer-brand" href="#top">
-          <span class="brand-mark" aria-hidden="true">G</span>
+          <img class="brand-logo" src="assets/logo.svg" alt="" width="36" height="36">
           <span class="brand-text">GoreeCloud</span>
         </a>
         <p>Privacy • Ownership • Self-Hosting • Long-Term Preservation</p>
       </div>
+
       <div class="footer-links">
         <a href="#services">Services</a>
         <a href="#about">About</a>
@@ -315,6 +351,7 @@
         <a href="#follow">Social</a>
         <a href="mailto:goreecloud@gmail.com">Email</a>
       </div>
+
       <p class="copyright">© <span id="year"></span> GoreeCloud</p>
     </div>
   </footer>

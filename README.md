@@ -2,18 +2,23 @@
 
 Public static website for GoreeCloud.com.
 
+## Version
+
+Current website package: **v2**
+
 ## Structure
 
 - `index.html` — main public website
 - `css/style.css` — responsive site styling
 - `js/main.js` — mobile navigation and footer year
-- `assets/favicon.svg` — site favicon
+- `assets/logo.svg` — GoreeCloud brand mark
+- `assets/social-preview.png` — Open Graph/social sharing preview image
 - `robots.txt` — search crawler instructions
 - `sitemap.xml` — basic sitemap
 
 ## Deployment
 
-This repository is intended for Cloudflare Pages.
+This repository is deployed through Cloudflare Pages.
 
 Recommended Cloudflare Pages settings:
 
