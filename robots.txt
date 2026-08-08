@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://goreecloud.com/sitemap.xml
+Sitemap: https://www.goreecloud.com/sitemap.xml
