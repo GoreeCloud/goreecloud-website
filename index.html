@@ -270,8 +270,9 @@
           <h2>The technology underneath GoreeCloud.</h2>
           <p>
             GoreeCloud is operated through separate infrastructure layers rather than a single application.
-            Each layer has a defined role: virtualization, operating systems, containerized workloads, private
-            connectivity, and DNS filtering. The technologies can change over time without changing GoreeCloud's purpose.
+            Each layer has a defined role across virtualization, operating systems, containers, private networking,
+            DNS, HTTPS publication, monitoring, notifications, and private search. The technologies can change
+            over time without changing GoreeCloud's purpose.
           </p>
         </div>
 
@@ -340,10 +341,75 @@
             <p class="platform-description">AdGuard Home is GoreeCloud's client-facing DNS filtering and policy layer, applying approved filtering rules and private DNS rewrites for authorized devices while keeping DNS control under GoreeCloud administration.</p>
             <p class="platform-role"><strong>Role:</strong> DNS filtering, client policy enforcement, and private hostname resolution.</p>
           </article>
+
+          <article class="platform-card">
+            <div class="platform-card-head">
+              <a class="platform-logo-link" href="https://caddyserver.com/" target="_blank" rel="noopener noreferrer" aria-label="Caddy official website">
+                <img src="assets/platform/caddy.svg" alt="Caddy logo" width="38" height="38">
+              </a>
+              <span class="platform-state active">Active</span>
+            </div>
+            <p class="platform-kicker">HTTPS Gateway</p>
+            <h3>Caddy</h3>
+            <p class="platform-description">Caddy is GoreeCloud's controlled reverse proxy and HTTPS gateway, providing approved domain-based routing, TLS termination, certificate management, and controlled access to web services.</p>
+            <p class="platform-role"><strong>Role:</strong> Reverse proxying, HTTPS publication, TLS, and service routing.</p>
+          </article>
+
+          <article class="platform-card">
+            <div class="platform-card-head">
+              <a class="platform-logo-link" href="https://ntfy.sh/" target="_blank" rel="noopener noreferrer" aria-label="ntfy official website">
+                <img src="assets/platform/ntfy.svg" alt="ntfy logo" width="38" height="38">
+              </a>
+              <span class="platform-state active">Active</span>
+            </div>
+            <p class="platform-kicker">Notifications &amp; Alerts</p>
+            <h3>ntfy</h3>
+            <p class="platform-description">ntfy provides GoreeCloud with a centralized, self-hosted notification path for operational messages from approved infrastructure services to authorized web and mobile clients.</p>
+            <p class="platform-role"><strong>Role:</strong> Infrastructure notifications, alert delivery, and centralized operational messaging.</p>
+          </article>
+
+          <article class="platform-card">
+            <div class="platform-card-head">
+              <a class="platform-logo-link" href="https://github.com/henrygd/beszel" target="_blank" rel="noopener noreferrer" aria-label="Beszel official repository">
+                <img src="assets/platform/beszel.svg" alt="Beszel logo" width="38" height="38">
+              </a>
+              <span class="platform-state active">Active</span>
+            </div>
+            <p class="platform-kicker">System Monitoring</p>
+            <h3>Beszel</h3>
+            <p class="platform-description">Beszel provides operational visibility into the GoreeCloud server foundation, supporting ongoing review of system and container health and resource usage.</p>
+            <p class="platform-role"><strong>Role:</strong> Host monitoring, container visibility, and resource-health awareness.</p>
+          </article>
+
+          <article class="platform-card">
+            <div class="platform-card-head">
+              <a class="platform-logo-link" href="https://github.com/louislam/uptime-kuma" target="_blank" rel="noopener noreferrer" aria-label="Uptime Kuma official repository">
+                <img src="assets/platform/uptime-kuma.svg" alt="Uptime Kuma logo" width="38" height="38">
+              </a>
+              <span class="platform-state active">Active</span>
+            </div>
+            <p class="platform-kicker">Availability Monitoring</p>
+            <h3>Uptime Kuma</h3>
+            <p class="platform-description">Uptime Kuma verifies the availability and health of GoreeCloud applications and infrastructure through approved public and internal service endpoints.</p>
+            <p class="platform-role"><strong>Role:</strong> Service availability checks, endpoint monitoring, and operational status visibility.</p>
+          </article>
+
+          <article class="platform-card">
+            <div class="platform-card-head">
+              <a class="platform-logo-link" href="https://github.com/searxng/searxng" target="_blank" rel="noopener noreferrer" aria-label="SearXNG official repository">
+                <img src="assets/platform/searxng.svg" alt="SearXNG logo" width="38" height="38">
+              </a>
+              <span class="platform-state active">Active</span>
+            </div>
+            <p class="platform-kicker">Private Search</p>
+            <h3>SearXNG</h3>
+            <p class="platform-description">SearXNG gives GoreeCloud a privately administered metasearch service that provides a consistent search interface while reducing direct dependence on a single commercial search provider.</p>
+            <p class="platform-role"><strong>Role:</strong> Private metasearch, controlled internet research, and search-provider independence.</p>
+          </article>
         </div>
 
         <p class="platform-note">
-          <strong>Current → target:</strong> GoreeCloud is currently centered on a Debian 13 server with Docker, NetBird, and AdGuard Home already active. The long-term design moves primary workloads to locally owned Proxmox hosts while preserving portable services, private access, and controlled DNS filtering.
+          <strong>Current → target:</strong> GoreeCloud currently uses Debian 13, Docker, NetBird, AdGuard Home, Caddy, ntfy, Beszel, Uptime Kuma, and SearXNG as active parts of its current server foundation. The long-term design moves primary workloads to locally owned Proxmox hosts while preserving portable services, private access, monitoring, notifications, search, and controlled DNS and HTTPS publication.
         </p>
         <p class="platform-legal">Logos are used only to identify their respective technologies and remain the property of their respective owners. This is a representative foundation, not a complete public infrastructure inventory.</p>
       </div>
