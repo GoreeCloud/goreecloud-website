@@ -106,13 +106,59 @@
 .service-card.is-active .service-icon {
   color: #9cf0be;
   border-color: rgba(87, 223, 157, .24);
-  background: rgba(87, 223, 157, .055);
+  background-color: rgba(87, 223, 157, .055);
 }
 
 .service-card.is-growing .service-icon {
   color: #ffd0a8;
   border-color: rgba(255, 184, 106, .22);
-  background: rgba(255, 184, 106, .05);
+  background-color: rgba(255, 184, 106, .05);
+}
+
+/* Self-host the projects' own service marks where a suitable vector asset is
+   available. The generic Notes & Knowledge, Navidrome, and Private Messaging
+   cards keep their neutral symbols until a locally hosted official mark is
+   available or a specific application is selected. */
+.service-card:nth-child(1) .service-icon,
+.service-card:nth-child(3) .service-icon,
+.service-card:nth-child(4) .service-icon,
+.service-card:nth-child(5) .service-icon,
+.service-card:nth-child(7) .service-icon,
+.service-card:nth-child(8) .service-icon {
+  font-size: 0;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 28px 28px;
+}
+
+.service-card:nth-child(1) .service-icon {
+  background-image: url("../assets/services/vaultwarden.svg");
+  background-size: 27px 27px;
+}
+
+.service-card:nth-child(3) .service-icon {
+  background-image: url("../assets/services/nextcloud.svg");
+  background-size: 29px 29px;
+}
+
+.service-card:nth-child(4) .service-icon {
+  background-image: url("../assets/services/immich.svg");
+  background-size: 30px 30px;
+}
+
+.service-card:nth-child(5) .service-icon {
+  background-image: url("../assets/services/jellyfin.svg");
+  background-size: 28px 28px;
+}
+
+.service-card:nth-child(7) .service-icon {
+  background-image: url("../assets/services/audiobookshelf.svg");
+  background-size: 30px 30px;
+}
+
+.service-card:nth-child(8) .service-icon {
+  background-image: url("../assets/services/paperless-ngx.svg");
+  background-size: 24px 29px;
 }
 
 @media (max-width: 980px) {
