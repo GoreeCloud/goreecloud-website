@@ -13,6 +13,14 @@ if (toggle && nav) {
       toggle.setAttribute('aria-expanded', 'false');
     });
   });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      nav.classList.remove('open');
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.focus();
+    }
+  });
 }
 
 const year = document.getElementById('year');

@@ -4,12 +4,12 @@ Public static website for GoreeCloud.com.
 
 ## Version
 
-Current website package: **v3**
+Current website package: **v4**
 
 ## Structure
 
 - `index.html` — main public website
-- `css/style.css` — responsive site styling
+- `css/style.css` — responsive site styling and GoreeCloud brand identity
 - `js/main.js` — mobile navigation and footer year
 - `assets/logo.svg` — GoreeCloud brand mark
 - `assets/social-preview.png` — Open Graph/social sharing preview image
@@ -48,6 +48,15 @@ Do not commit:
 - internal infrastructure documentation
 - backup destinations or recovery credentials
 - personal or family private information
+
+## v4 changes
+
+- Applied the GoreeCloud deep-navy, cobalt-blue, and cyan brand palette throughout the public website.
+- Reworked the homepage visual hierarchy, hero presentation, cards, timeline, social section, contact section, and responsive behavior without introducing external browser dependencies.
+- Reworked the SVG brand mark around cloud infrastructure, server blocks, and circuit-style networking.
+- Preserved existing public service descriptions, availability labels, social links, canonical URLs, search metadata, and the Cloudflare Pages security model.
+- Added Escape-key handling to the mobile navigation so the menu can be closed from the keyboard and focus is returned to the menu button.
+- Kept all page styling and scripting self-contained so the restrictive Content Security Policy remains compatible.
 
 ## v3 changes
 
