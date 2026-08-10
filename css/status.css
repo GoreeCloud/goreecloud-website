@@ -115,14 +115,14 @@
   background-color: rgba(255, 184, 106, .05);
 }
 
-/* Self-host the projects' own service marks where a suitable vector asset is
-   available. The generic Notes & Knowledge, Navidrome, and Private Messaging
-   cards keep their neutral symbols until a locally hosted official mark is
-   available or a specific application is selected. */
+/* Self-host the projects' own service marks where a suitable official asset is
+   available. The generic Notes & Knowledge and Private Messaging cards keep
+   neutral symbols until a specific application is selected. */
 .service-card:nth-child(1) .service-icon,
 .service-card:nth-child(3) .service-icon,
 .service-card:nth-child(4) .service-icon,
 .service-card:nth-child(5) .service-icon,
+.service-card:nth-child(6) .service-icon,
 .service-card:nth-child(7) .service-icon,
 .service-card:nth-child(8) .service-icon {
   font-size: 0;
@@ -149,6 +149,11 @@
 .service-card:nth-child(5) .service-icon {
   background-image: url("../assets/services/jellyfin.svg");
   background-size: 28px 28px;
+}
+
+.service-card:nth-child(6) .service-icon {
+  background-image: url("../assets/services/navidrome.svg");
+  background-size: 29px 29px;
 }
 
 .service-card:nth-child(7) .service-icon {
