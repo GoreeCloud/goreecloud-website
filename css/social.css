@@ -1,8 +1,12 @@
 /* GoreeCloud public website — social follow grid */
 
-/* Six public accounts fit cleanly as two balanced rows on wide screens. */
+/* Seven public accounts use three columns, with GitHub centered on its own desktop row. */
 .social-grid {
   grid-template-columns: repeat(3, 1fr);
+}
+
+.social-card.github-card {
+  grid-column: 2;
 }
 
 @media (max-width: 980px) {
@@ -10,14 +14,17 @@
     grid-template-columns: repeat(2, 1fr);
   }
 
-  /* style.css spans the final card for the former five-card layout. */
-  .social-card:last-child {
-    grid-column: auto;
+  .social-card.github-card {
+    grid-column: 1 / -1;
   }
 }
 
 @media (max-width: 720px) {
   .social-grid {
     grid-template-columns: 1fr;
+  }
+
+  .social-card.github-card {
+    grid-column: auto;
   }
 }
