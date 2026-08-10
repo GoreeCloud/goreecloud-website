@@ -270,8 +270,8 @@
           <h2>The technology underneath GoreeCloud.</h2>
           <p>
             GoreeCloud is operated through separate infrastructure layers rather than a single application.
-            Each layer has a defined role: virtualization, operating systems, containerized workloads, and
-            private connectivity. The technologies can change over time without changing GoreeCloud's purpose.
+            Each layer has a defined role: virtualization, operating systems, containerized workloads, private
+            connectivity, and DNS filtering. The technologies can change over time without changing GoreeCloud's purpose.
           </p>
         </div>
 
@@ -327,10 +327,23 @@
             <p class="platform-description">NetBird is GoreeCloud's fully self-hosted encrypted private-networking and secure remote-access layer, connecting approved users, devices, servers, and future virtual machines through explicit access policies.</p>
             <p class="platform-role"><strong>Role:</strong> Private connectivity, device identity, and policy-controlled remote access.</p>
           </article>
+
+          <article class="platform-card">
+            <div class="platform-card-head">
+              <a class="platform-logo-link" href="https://adguard.com/adguard-home/overview.html" target="_blank" rel="noopener noreferrer" aria-label="AdGuard Home official website">
+                <img src="assets/platform/adguard-home.svg" alt="AdGuard Home logo" width="38" height="38">
+              </a>
+              <span class="platform-state active">Active</span>
+            </div>
+            <p class="platform-kicker">DNS Filtering</p>
+            <h3>AdGuard Home</h3>
+            <p class="platform-description">AdGuard Home is GoreeCloud's client-facing DNS filtering and policy layer, applying approved filtering rules and private DNS rewrites for authorized devices while keeping DNS control under GoreeCloud administration.</p>
+            <p class="platform-role"><strong>Role:</strong> DNS filtering, client policy enforcement, and private hostname resolution.</p>
+          </article>
         </div>
 
         <p class="platform-note">
-          <strong>Current → target:</strong> GoreeCloud is currently centered on a Debian 13 server with Docker and NetBird already active. The long-term design moves primary workloads to locally owned Proxmox hosts while preserving portable services and private access.
+          <strong>Current → target:</strong> GoreeCloud is currently centered on a Debian 13 server with Docker, NetBird, and AdGuard Home already active. The long-term design moves primary workloads to locally owned Proxmox hosts while preserving portable services, private access, and controlled DNS filtering.
         </p>
         <p class="platform-legal">Logos are used only to identify their respective technologies and remain the property of their respective owners. This is a representative foundation, not a complete public infrastructure inventory.</p>
       </div>
