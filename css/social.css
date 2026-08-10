@@ -1,0 +1,23 @@
+/* GoreeCloud public website — social follow grid */
+
+/* Six public accounts fit cleanly as two balanced rows on wide screens. */
+.social-grid {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+@media (max-width: 980px) {
+  .social-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* style.css spans the final card for the former five-card layout. */
+  .social-card:last-child {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 720px) {
+  .social-grid {
+    grid-template-columns: 1fr;
+  }
+}
