@@ -16,7 +16,7 @@ Current website package: **v4**
 - `js/main.js` — mobile navigation and footer year
 - `assets/goreecloud-icon.png` — official GoreeCloud artwork used in the header, hero, footer, and favicon
 - `assets/services/` — locally hosted Family Services project logos/icons
-- `assets/platform/` — locally hosted platform technology logos/icons for Proxmox, Debian, Docker, NetBird, and AdGuard Home
+- `assets/platform/` — locally hosted platform technology logos/icons for Proxmox, Debian, Docker, NetBird, AdGuard Home, Caddy, ntfy, Beszel, Uptime Kuma, and SearXNG
 - `assets/social-preview.png` — Open Graph/social sharing preview image
 - `robots.txt` — search crawler instructions
 - `sitemap.xml` — basic sitemap
@@ -63,8 +63,8 @@ Do not commit:
 - Standardized the preferred public identity and search metadata on the apex `https://goreecloud.com/` hostname.
 - Added locally hosted project logos/icons for the Family Services cards, including Nextcloud, Immich, Jellyfin, Navidrome, Audiobookshelf, Paperless-ngx, Vaultwarden, Trilium, and Element.
 - Added a public "How GoreeCloud Works" section that explains private access, self-hosted applications, storage and data, security and isolation, and backup and recovery at a high level without exposing private infrastructure details.
-- Added a public "Platform Foundation" section featuring Proxmox VE, Debian 13, Docker, NetBird, and AdGuard Home with locally hosted technology logos/icons, role descriptions, and clear Active versus Planned Local status labeling.
-- The Platform Foundation section distinguishes the current Debian 13/Docker/NetBird/AdGuard Home server foundation from the planned locally owned Proxmox virtualization platform and does not publish private hostnames, addresses, ports, or administrative configuration.
+- Added and expanded a public "Platform Foundation" section featuring Proxmox VE, Debian 13, Docker, NetBird, AdGuard Home, Caddy, ntfy, Beszel, Uptime Kuma, and SearXNG with locally hosted technology logos/icons, role descriptions, and clear Active versus Planned Local status labeling.
+- The Platform Foundation section distinguishes the current active Debian 13, Docker, NetBird, DNS, HTTPS, monitoring, notification, and private-search foundation from the planned locally owned Proxmox virtualization platform and does not publish private hostnames, addresses, ports, or administrative configuration.
 - Restored the official GoreeCloud artwork for the website brand treatment.
 - Preserved public service descriptions, availability labels, social links, and the Cloudflare Pages security model.
 - Added Escape-key handling to the mobile navigation so the menu can be closed from the keyboard and focus is returned to the menu button.
