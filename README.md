@@ -10,9 +10,11 @@ Current website package: **v4**
 
 - `index.html` — main public website
 - `css/style.css` — responsive site styling and GoreeCloud brand identity
-- `css/status.css` — current-service status hierarchy and availability emphasis
+- `css/status.css` — locally hosted Family Services project logos/icons
+- `css/how-it-works.css` — public How GoreeCloud Works section styling
 - `js/main.js` — mobile navigation and footer year
-- `assets/logo.svg` — GoreeCloud brand mark
+- `assets/goreecloud-icon.png` — official GoreeCloud artwork used in the header, hero, footer, and favicon
+- `assets/services/` — locally hosted Family Services project logos/icons
 - `assets/social-preview.png` — Open Graph/social sharing preview image
 - `robots.txt` — search crawler instructions
 - `sitemap.xml` — basic sitemap
@@ -56,10 +58,10 @@ Do not commit:
 
 - Applied the GoreeCloud deep-navy, cobalt-blue, and cyan brand palette throughout the public website.
 - Reworked the homepage visual hierarchy, hero presentation, cards, timeline, social section, contact section, and responsive behavior without introducing external browser dependencies.
-- Reworked the SVG brand mark around cloud infrastructure, server blocks, and circuit-style networking.
 - Standardized the preferred public identity and search metadata on the apex `https://goreecloud.com/` hostname.
-- Added a concise "GoreeCloud today" service-status summary and moved available/in-development services ahead of planned services.
-- Added visual emphasis for services that are available now or actively in development.
+- Added locally hosted project logos/icons for the Family Services cards, including Nextcloud, Immich, Jellyfin, Navidrome, Audiobookshelf, Paperless-ngx, Vaultwarden, Trilium, and Element.
+- Added a public "How GoreeCloud Works" section that explains private access, self-hosted applications, storage and data, security and isolation, and backup and recovery at a high level without exposing private infrastructure details.
+- Restored the official GoreeCloud artwork for the website brand treatment.
 - Preserved public service descriptions, availability labels, social links, and the Cloudflare Pages security model.
 - Added Escape-key handling to the mobile navigation so the menu can be closed from the keyboard and focus is returned to the menu button.
 - Kept all page styling and scripting self-contained so the restrictive Content Security Policy remains compatible.
