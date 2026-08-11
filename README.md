@@ -71,7 +71,7 @@ Do not commit:
 - Added the official GoreeCloud GitHub profile to the Follow section alongside Instagram, Pinterest, Threads, TikTok, X, and Reddit.
 - Restored the official GoreeCloud artwork for the website brand treatment.
 - Preserved public service descriptions, availability labels, social links, and the Cloudflare Pages security model.
-- Added Escape-key handling to the mobile navigation so the menu can be closed from the keyboard and focus is returned to the menu button.
+- Refined Escape-key handling for the mobile navigation so Escape closes the menu and returns focus to the menu button only when the menu is actually open.
 - Kept all page styling, scripting, service/platform assets, and technology-logo assets self-contained so the restrictive Content Security Policy remains compatible.
 
 ## v3 changes
