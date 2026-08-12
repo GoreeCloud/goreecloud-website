@@ -1,0 +1,482 @@
+/* GoreeCloud public website — Glaze UI v1 foundation
+ *
+ * This stylesheet intentionally loads after the site section styles. It supplies the
+ * shared Glaze UI tokens, light/dark appearance behavior, accessibility refinements,
+ * layered surfaces, and compatibility overrides without requiring third-party assets.
+ */
+
+:root {
+  color-scheme: dark;
+  --bg: #06101d;
+  --bg-soft: #0a1727;
+  --panel: rgba(15, 31, 52, .72);
+  --panel-strong: rgba(10, 24, 42, .92);
+  --surface: rgba(255, 255, 255, .045);
+  --surface-soft: rgba(255, 255, 255, .025);
+  --surface-strong: rgba(8, 21, 38, .82);
+  --surface-hover: rgba(255, 255, 255, .065);
+  --section-alt: rgba(255, 255, 255, .018);
+  --header-bg: rgba(5, 14, 27, .78);
+  --border: rgba(126, 164, 219, .18);
+  --border-strong: rgba(62, 201, 255, .34);
+  --grid-line: rgba(122, 168, 226, .045);
+  --text: #f6f9ff;
+  --text-soft: #d7e0ed;
+  --muted: #a5b4c9;
+  --muted-strong: #becadd;
+  --blue: #4b7cff;
+  --blue-strong: #2c62f2;
+  --cyan: #38cfff;
+  --green: #68e4a8;
+  --amber: #ffbd78;
+  --focus: #8ce9ff;
+  --shadow: 0 24px 72px rgba(0, 0, 0, .30);
+  --shadow-soft: 0 12px 34px rgba(0, 0, 0, .16);
+  --radius: 22px;
+  --radius-small: 14px;
+  --container: 1180px;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f4f7fb;
+  --bg-soft: #eaf0f7;
+  --panel: rgba(255, 255, 255, .76);
+  --panel-strong: rgba(255, 255, 255, .94);
+  --surface: rgba(255, 255, 255, .72);
+  --surface-soft: rgba(255, 255, 255, .54);
+  --surface-strong: rgba(255, 255, 255, .88);
+  --surface-hover: rgba(255, 255, 255, .92);
+  --section-alt: rgba(225, 234, 245, .52);
+  --header-bg: rgba(247, 250, 253, .78);
+  --border: rgba(50, 84, 132, .16);
+  --border-strong: rgba(14, 136, 190, .32);
+  --grid-line: rgba(50, 84, 132, .055);
+  --text: #102033;
+  --text-soft: #283d54;
+  --muted: #60738a;
+  --muted-strong: #485d75;
+  --blue: #315ed6;
+  --blue-strong: #2452ca;
+  --cyan: #007da6;
+  --green: #15885a;
+  --amber: #9a5a14;
+  --focus: #006f9a;
+  --shadow: 0 24px 72px rgba(30, 55, 88, .14);
+  --shadow-soft: 0 12px 34px rgba(30, 55, 88, .10);
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) {
+    color-scheme: light;
+    --bg: #f4f7fb;
+    --bg-soft: #eaf0f7;
+    --panel: rgba(255, 255, 255, .76);
+    --panel-strong: rgba(255, 255, 255, .94);
+    --surface: rgba(255, 255, 255, .72);
+    --surface-soft: rgba(255, 255, 255, .54);
+    --surface-strong: rgba(255, 255, 255, .88);
+    --surface-hover: rgba(255, 255, 255, .92);
+    --section-alt: rgba(225, 234, 245, .52);
+    --header-bg: rgba(247, 250, 253, .78);
+    --border: rgba(50, 84, 132, .16);
+    --border-strong: rgba(14, 136, 190, .32);
+    --grid-line: rgba(50, 84, 132, .055);
+    --text: #102033;
+    --text-soft: #283d54;
+    --muted: #60738a;
+    --muted-strong: #485d75;
+    --blue: #315ed6;
+    --blue-strong: #2452ca;
+    --cyan: #007da6;
+    --green: #15885a;
+    --amber: #9a5a14;
+    --focus: #006f9a;
+    --shadow: 0 24px 72px rgba(30, 55, 88, .14);
+    --shadow-soft: 0 12px 34px rgba(30, 55, 88, .10);
+  }
+}
+
+html {
+  accent-color: var(--blue);
+}
+
+body {
+  background:
+    radial-gradient(circle at 16% -8%, color-mix(in srgb, var(--blue) 15%, transparent), transparent 32rem),
+    radial-gradient(circle at 92% 18%, color-mix(in srgb, var(--cyan) 8%, transparent), transparent 28rem),
+    var(--bg);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--blue) 28%, transparent);
+  color: var(--text);
+}
+
+:where(a, button):focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+  border-radius: 10px;
+}
+
+.site-header {
+  background: var(--header-bg);
+  box-shadow: 0 1px 0 var(--border);
+  -webkit-backdrop-filter: blur(22px) saturate(135%);
+  backdrop-filter: blur(22px) saturate(135%);
+}
+
+.nav-wrap {
+  position: relative;
+}
+
+.nav-actions {
+  display: none;
+  align-items: center;
+  gap: .4rem;
+}
+
+.theme-toggle,
+.nav-toggle {
+  min-width: 44px;
+  min-height: 44px;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  cursor: pointer;
+}
+
+.theme-toggle {
+  display: inline-grid;
+  place-items: center;
+  padding: 0;
+}
+
+.theme-toggle-icon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.site-nav a {
+  color: var(--muted-strong);
+}
+
+.site-nav a:hover,
+.site-nav a:focus-visible,
+.footer-links a:hover,
+.footer-links a:focus-visible,
+.development-grid a:hover,
+.development-grid a:focus-visible {
+  color: var(--text);
+}
+
+.site-nav .nav-cta {
+  color: var(--cyan);
+  background: color-mix(in srgb, var(--cyan) 7%, transparent);
+}
+
+.hero {
+  position: relative;
+  isolation: isolate;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 74% 34%, color-mix(in srgb, var(--blue) 13%, transparent), transparent 28rem),
+    linear-gradient(180deg, transparent, color-mix(in srgb, var(--bg-soft) 34%, transparent));
+}
+
+.hero-labels {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .75rem;
+  margin-bottom: 1rem;
+}
+
+.hero-labels .eyebrow {
+  margin: 0;
+}
+
+.glaze-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: .35rem .68rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  color: var(--cyan);
+  background: color-mix(in srgb, var(--cyan) 7%, var(--surface));
+  font-size: .72rem;
+  font-weight: 850;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.hero h1 {
+  max-width: 12ch;
+}
+
+.hero-lede,
+.section-heading > p:last-child,
+.about-copy > p,
+.timeline p,
+.contact-card p:last-child,
+.service-card p:not(.service-kicker),
+.platform-description,
+.roadmap-card > p:not(.roadmap-kicker):not(.roadmap-current),
+.social-card span:not(.social-icon),
+.social-card small,
+.principle-grid span {
+  color: var(--muted);
+}
+
+.button {
+  min-height: 48px;
+  border-radius: 14px;
+}
+
+.button.primary {
+  background: linear-gradient(135deg, var(--blue-strong), #168cff 68%, #00bce8);
+  box-shadow: 0 14px 38px color-mix(in srgb, var(--blue) 25%, transparent);
+}
+
+.button.secondary {
+  color: var(--cyan);
+  border-color: var(--border-strong);
+  background: var(--surface-soft);
+}
+
+.hero-card,
+.service-card,
+.how-card,
+.platform-card,
+.roadmap-card,
+.principle-grid > div,
+.timeline article > div,
+.social-card,
+.contact-card,
+.glaze-callout {
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--surface) 88%, transparent), var(--surface-soft));
+  border-color: var(--border);
+  box-shadow: var(--shadow-soft);
+  -webkit-backdrop-filter: blur(16px) saturate(120%);
+  backdrop-filter: blur(16px) saturate(120%);
+}
+
+.hero-card {
+  background:
+    radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--blue) 16%, transparent), transparent 44%),
+    linear-gradient(180deg, var(--surface), var(--surface-soft));
+}
+
+.hero-card::before,
+.roadmap-section::before {
+  background-image:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+}
+
+.hero-card-copy,
+.how-principle,
+.platform-note,
+.roadmap-note {
+  color: var(--muted-strong);
+  background: var(--surface-strong);
+  border-color: var(--border);
+}
+
+.band {
+  background: var(--section-alt);
+}
+
+.section-alt {
+  background: linear-gradient(180deg, var(--section-alt), color-mix(in srgb, var(--section-alt) 35%, transparent));
+}
+
+.service-kicker,
+.platform-kicker {
+  color: color-mix(in srgb, var(--blue) 74%, var(--cyan));
+}
+
+.service-icon,
+.social-icon,
+.platform-logo-link,
+.roadmap-icon {
+  background-color: color-mix(in srgb, var(--blue) 8%, var(--surface));
+}
+
+.badge.active,
+.platform-state.active {
+  color: var(--green);
+  background: color-mix(in srgb, var(--green) 9%, transparent);
+  border-color: color-mix(in srgb, var(--green) 28%, transparent);
+}
+
+.badge.planned,
+.platform-state.planned {
+  color: var(--muted-strong);
+  background: color-mix(in srgb, var(--muted) 7%, transparent);
+  border-color: color-mix(in srgb, var(--muted) 20%, transparent);
+}
+
+.badge.growing {
+  color: var(--amber);
+  background: color-mix(in srgb, var(--amber) 8%, transparent);
+  border-color: color-mix(in srgb, var(--amber) 26%, transparent);
+}
+
+.roadmap-state {
+  color: var(--amber);
+  background: color-mix(in srgb, var(--amber) 8%, transparent);
+  border-color: color-mix(in srgb, var(--amber) 26%, transparent);
+}
+
+.roadmap-current {
+  color: var(--muted-strong);
+  background: color-mix(in srgb, var(--cyan) 6%, transparent);
+}
+
+.roadmap-details li,
+.platform-role {
+  color: var(--muted-strong);
+}
+
+.platform-legal {
+  color: color-mix(in srgb, var(--muted) 78%, transparent);
+}
+
+.glaze-callout {
+  display: grid;
+  grid-template-columns: minmax(190px, .45fr) minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: center;
+  margin-bottom: 1.2rem;
+  padding: 1.25rem 1.35rem;
+  border-radius: var(--radius);
+}
+
+.glaze-callout h3 {
+  margin: .7rem 0 0;
+  font-size: 1.65rem;
+}
+
+.glaze-callout p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.development-grid small {
+  display: block;
+  margin-top: auto;
+  padding-top: 1rem;
+  color: var(--cyan);
+  font-size: .78rem;
+  font-weight: 800;
+}
+
+.footer-glaze {
+  margin: .35rem 0 0;
+  font-size: .82rem;
+}
+
+.footer-glaze strong {
+  color: var(--text);
+}
+
+@media (hover: hover) {
+  .theme-toggle:hover,
+  .nav-toggle:hover,
+  .platform-logo-link:hover,
+  .service-card:hover,
+  .how-card:hover,
+  .platform-card:hover,
+  .roadmap-card:hover,
+  .principle-grid > div:hover,
+  .social-card:hover {
+    border-color: var(--border-strong);
+  }
+
+  .theme-toggle:hover,
+  .nav-toggle:hover {
+    background: var(--surface-hover);
+  }
+}
+
+@media (max-width: 720px) {
+  .nav-actions {
+    display: flex;
+  }
+
+  .site-nav {
+    background: var(--panel-strong);
+    -webkit-backdrop-filter: blur(22px) saturate(130%);
+    backdrop-filter: blur(22px) saturate(130%);
+  }
+
+  .glaze-callout {
+    grid-template-columns: 1fr;
+    gap: .8rem;
+  }
+
+  .theme-toggle {
+    display: inline-grid;
+  }
+}
+
+@media (min-width: 721px) {
+  .theme-toggle {
+    order: 2;
+    margin-left: .25rem;
+  }
+
+  .site-nav {
+    margin-left: auto;
+  }
+
+  .nav-actions {
+    display: flex;
+    order: 3;
+  }
+
+  .nav-toggle {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .site-header,
+  .hero-card,
+  .service-card,
+  .how-card,
+  .platform-card,
+  .roadmap-card,
+  .principle-grid > div,
+  .timeline article > div,
+  .social-card,
+  .contact-card,
+  .glaze-callout {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: var(--panel-strong);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button,
+  .service-card,
+  .platform-card,
+  .social-card,
+  .development-grid > div {
+    transform: none !important;
+  }
+}

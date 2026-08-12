@@ -1,35 +1,53 @@
 # goreecloud-website
 
-Public static website for GoreeCloud.com.
+Public static website for GoreeCloud.
 
 ## Version
 
-Current website package: **v4.3**
+Current website package: **v5.0 — Glaze UI foundation**
+
+## Role
+
+This repository contains the public-facing GoreeCloud website. It describes GoreeCloud's purpose, public software work, representative platform technologies, and long-term direction without publishing private infrastructure details.
+
+The site is intentionally dependency-light:
+
+- static HTML
+- locally hosted CSS
+- locally hosted JavaScript
+- locally hosted images and project artwork
+- no browser analytics
+- no advertising
+- no third-party fonts
+- no third-party JavaScript frameworks
 
 ## Structure
 
-- `index.html` — main public website
-- `css/style.css` — responsive site styling and GoreeCloud brand identity
-- `css/status.css` — locally hosted Family Services project logos/icons
-- `css/how-it-works.css` — public How GoreeCloud Works section styling
-- `css/platform.css` — public Platform Foundation section styling
-- `css/roadmap.css` — public roadmap styling for Home Assistant, Frigate, and Local AI
-- `css/development.css` — responsive Software & Development project-card layout
-- `css/social.css` — responsive layout overrides for the public Follow section
-- `js/main.js` — mobile navigation and footer year
-- `assets/goreecloud-icon.png` — official GoreeCloud artwork used in the header, hero, footer, and favicon
-- `assets/services/` — locally hosted Family Services project logos/icons
-- `assets/platform/` — locally hosted platform technology logos/icons for Proxmox, Debian, Docker, NetBird, AdGuard Home, Caddy, ntfy, Beszel, Uptime Kuma, and SearXNG
-- `assets/social-preview.png` — Open Graph/social sharing preview image
-- `robots.txt` — search crawler instructions
-- `sitemap.xml` — basic sitemap
+- `index.html` — public single-page website and search/social metadata
+- `css/style.css` — core responsive site styling
+- `css/glaze.css` — Glaze UI design tokens, light/dark themes, layered surfaces, accessibility refinements, and compatibility overrides
+- `css/status.css` — Family Services product artwork mapping
+- `css/how-it-works.css` — How GoreeCloud Works section
+- `css/platform.css` — Platform Foundation section
+- `css/roadmap.css` — roadmap section
+- `css/development.css` — software project section
+- `css/social.css` — social-follow layout
+- `js/main.js` — theme preference, mobile navigation, and footer year
+- `scripts/validate_site.py` — dependency-free repository validation
+- `.github/workflows/validate.yml` — pull-request and main-branch validation
+- `assets/goreecloud-icon.png` — GoreeCloud artwork
+- `assets/services/` — locally hosted Family Services project logos
+- `assets/platform/` — locally hosted platform technology logos
+- `assets/social-preview.png` — Open Graph/social preview
+- `robots.txt` — crawler instructions
+- `sitemap.xml` — sitemap
 - `_headers` — Cloudflare Pages security headers
 
 ## Deployment
 
-This repository is deployed through Cloudflare Pages.
+The repository is deployed through Cloudflare Pages.
 
-Recommended Cloudflare Pages settings:
+Recommended settings:
 
 - Production branch: `main`
 - Framework preset: `None`
@@ -37,13 +55,45 @@ Recommended Cloudflare Pages settings:
 - Build output directory: `/`
 - Root directory: blank
 
-Any commit pushed to `main` should trigger a new production deployment.
+The documented live routing uses `https://www.goreecloud.com/` as the final public website address. The apex `https://goreecloud.com/` redirects permanently to the `www` hostname. Canonical, Open Graph, robots, and sitemap metadata therefore use the final `www` address.
 
-The source canonical, Open Graph, robots, and sitemap identity uses `https://goreecloud.com/` as the preferred public address. The previously configured external routing still redirects the apex domain to `https://www.goreecloud.com/`; a Cloudflare-side `www`-to-apex redirect was intentionally not added during the v4 work. Treat this as a known source-versus-routing inconsistency until the external redirect design is explicitly changed.
+## Glaze UI
+
+v5.0 introduces the first website implementation of **Glaze UI**, GoreeCloud's shared design language.
+
+The website implementation includes:
+
+- shared design tokens
+- dark and light appearance
+- operating-system appearance detection
+- a user-controlled theme switch
+- local-only theme persistence through `localStorage`
+- layered and selectively translucent surfaces
+- restrained depth and rounded geometry
+- visible keyboard focus states
+- reduced-motion support
+- reduced-transparency fallback
+- responsive navigation and touch targets
+- no external browser dependencies
+
+Glaze UI is intended to remain distinctly GoreeCloud rather than copying another vendor's interface.
+
+## Privacy
+
+The website does not intentionally use:
+
+- analytics
+- behavioral tracking
+- advertising
+- third-party telemetry
+- fingerprinting
+- third-party browser scripts
+
+The theme preference is stored only in the visitor's browser using `localStorage` and is not transmitted by the site.
 
 ## Security
 
-This repository is for public website content only.
+This repository is public-website source only.
 
 Do not commit:
 
@@ -53,49 +103,46 @@ Do not commit:
 - `.env` files
 - SSH private keys
 - private IP addresses
-- internal hostnames that are not intentionally public
-- NetBird configuration
-- internal infrastructure documentation
+- private hostnames
+- internal NetBird details
 - backup destinations or recovery credentials
-- personal or family private information
+- private family information
+- internal infrastructure documentation
 
-## v4.3 changes
+Cloudflare Pages response headers enforce a restrictive Content Security Policy and disable browser capabilities that the static site does not need.
 
-- Added **Memos — Early Development** to the public Software & Development portfolio and linked the public `GoreeCloud/memos` repository.
-- Identified Memos as a newly established fork of the open-source Memos project for lightweight, Markdown-native, self-hosted quick-capture notes while keeping broader knowledge-management plans separate.
-- Added a dedicated `Projects` navigation and footer link so the Software & Development section is directly discoverable from the single-page site navigation.
-- Expanded the Software & Development layout from two project cards to a balanced responsive three-card presentation through `css/development.css`.
-- Added an August 2026 Story milestone marking GoreeCloud's transition into active software development through Research Library, GoreeCloud Manager, and Memos.
-- Preserved the accepted Family Services layout, platform foundation, roadmap, official GoreeCloud artwork, security headers, source-level canonical identity, and Cloudflare Pages deployment model.
+## Validation
 
-## v4 changes
+Run:
 
-- Applied the GoreeCloud deep-navy, cobalt-blue, and cyan brand palette throughout the public website.
-- Reworked the homepage visual hierarchy, hero presentation, cards, timeline, social section, contact section, and responsive behavior without introducing external browser dependencies.
-- Standardized the preferred source identity and search metadata on the apex `https://goreecloud.com/` hostname while preserving the separately managed external routing state.
-- Added locally hosted project logos/icons for the Family Services cards, including Nextcloud, Immich, Jellyfin, Navidrome, Audiobookshelf, Paperless-ngx, Vaultwarden, Trilium, and Element.
-- Added a public "How GoreeCloud Works" section that explains private access, self-hosted applications, storage and data, security and isolation, and backup and recovery at a high level without exposing private infrastructure details.
-- Added and expanded a public "Platform Foundation" section featuring Proxmox VE, Debian 13, Docker, NetBird, AdGuard Home, Caddy, ntfy, Beszel, Uptime Kuma, and SearXNG with locally hosted technology logos/icons, role descriptions, and clear Active versus Planned Local status labeling.
-- The Platform Foundation section distinguishes the current active Debian 13, Docker, NetBird, DNS, HTTPS, monitoring, notification, and private-search foundation from the planned locally owned Proxmox virtualization platform and does not publish private hostnames, addresses, ports, or administrative configuration.
-- Added a public "Home automation, private security, and local AI" roadmap section covering Home Assistant, Frigate, and the planned Local AI stack with explicit current-status language.
-- The roadmap identifies Home Assistant as planned for a dedicated Home Assistant OS VM and Frigate as planned for a dedicated Security VM; neither workload is presented as currently deployed.
-- The Local AI roadmap identifies Ollama, Open WebUI, and AnythingLLM as planned and not yet installed while noting that SearXNG is already active as the controlled research/search foundation for future AI workflows.
-- Added Roadmap links to the primary navigation and footer, plus responsive roadmap-specific styling in `css/roadmap.css`.
-- Expanded search and social metadata to reflect GoreeCloud's home-automation, physical-security, and local-AI direction without exposing private infrastructure details.
-- Added a public "Software & Development" section that explains GoreeCloud's three software approaches: use mature open-source applications, maintain forks when justified, and develop original GoreeCloud software when a purpose-built application provides meaningful value.
-- Identified GoreeCloud Research Library as the first maintained upstream fork and linked its public `GoreeCloud/linkding` repository while preserving Linkding attribution in the public description.
-- Updated the Software & Development section to identify **GoreeCloud Manager — In Development** as the first native GoreeCloud application and link its public `GoreeCloud/goreecloud-manager` repository.
-- The GoreeCloud Manager card describes current v0.1 least-privilege, read-only visibility for NetBird, Healthchecks, Uptime Kuma, Beszel, and Kopia protection state while preserving those specialized services as the authoritative operational systems.
-- Added the official GoreeCloud GitHub profile to the Follow section alongside Instagram, Pinterest, Threads, TikTok, X, and Reddit.
-- Restored the official GoreeCloud artwork for the website brand treatment.
-- Preserved public service descriptions, availability labels, social links, and the Cloudflare Pages security model.
-- Refined Escape-key handling for the mobile navigation so Escape closes the menu and returns focus to the menu button only when the menu is actually open.
-- Kept all page styling, scripting, service/platform assets, and technology-logo assets self-contained so the restrictive Content Security Policy remains compatible.
+```bash
+python scripts/validate_site.py
+node --check js/main.js
+```
 
-## v3 changes
+The validator checks, among other things:
 
-- The site previously standardized canonical and social-preview URLs on the `www` hostname; v4 source metadata now uses the apex hostname as the preferred public identity.
-- Added Cloudflare Pages `_headers` with a restrictive Content Security Policy and baseline browser security headers.
-- HSTS is enabled for the host serving the Pages site without `includeSubDomains` or preload.
+- canonical and Open Graph URL consistency
+- local asset references
+- in-page fragment targets
+- safe `target="_blank"` links
+- self-hosted browser code dependencies
+- common private-network address leakage
+- selected private infrastructure identifiers
+- robots/sitemap canonical consistency
 
-If Cloudflare Web Analytics, Turnstile, externally hosted fonts, or other third-party browser resources are added later, review and update the Content Security Policy before deployment.
+GitHub Actions runs the same checks on pull requests and on pushes to `main`.
+
+## v5.0 changes
+
+- Applied the first Glaze UI website foundation with system-aware light and dark themes.
+- Added a persistent, accessible appearance switch without introducing external dependencies.
+- Added Glaze UI layered surfaces, refined depth, updated focus behavior, improved mobile controls, and reduced-transparency handling.
+- Replaced fragile position-based Family Services logo selectors with explicit `data-service` selectors.
+- Replaced the obsolete Trilium Family Services card with GoreeCloud Notes and identified it as a release-candidate GoreeCloud-maintained Memos fork.
+- Expanded public software coverage to Research Library, GoreeCloud Manager, GoreeCloud Notes, GoreeCloud Tasks, GoreeCloud Contacts, and GoreeCloud Bookmarks.
+- Added a public Glaze UI design-system callout and an August 12, 2026 software/design milestone.
+- Corrected canonical, Open Graph, robots, and sitemap identity to `https://www.goreecloud.com/`, matching the documented production redirect.
+- Added dependency-free validation and GitHub Actions CI.
+- Strengthened Cloudflare Pages security headers while preserving the site's self-contained browser model.
+- Kept analytics, telemetry, third-party fonts, and third-party browser scripts absent by default.

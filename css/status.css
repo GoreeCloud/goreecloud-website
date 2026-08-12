@@ -1,4 +1,8 @@
-/* GoreeCloud Family Services — locally hosted project logos */
+/* GoreeCloud Family Services — locally hosted project logos.
+ *
+ * data-service selectors are used instead of card position so content can be reordered
+ * without silently assigning the wrong product artwork.
+ */
 
 .service-card .service-icon {
   font-size: 0;
@@ -7,47 +11,47 @@
   background-size: 28px 28px;
 }
 
-.service-card:nth-child(1) .service-icon {
+.service-card[data-service="nextcloud"] .service-icon {
   background-image: url("../assets/services/nextcloud.svg");
   background-size: 29px 29px;
 }
 
-.service-card:nth-child(2) .service-icon {
+.service-card[data-service="immich"] .service-icon {
   background-image: url("../assets/services/immich.svg");
   background-size: 30px 30px;
 }
 
-.service-card:nth-child(3) .service-icon {
+.service-card[data-service="jellyfin"] .service-icon {
   background-image: url("../assets/services/jellyfin.svg");
   background-size: 29px 29px;
 }
 
-.service-card:nth-child(4) .service-icon {
+.service-card[data-service="navidrome"] .service-icon {
   background-image: url("../assets/services/navidrome.svg");
   background-size: 29px 29px;
 }
 
-.service-card:nth-child(5) .service-icon {
+.service-card[data-service="audiobookshelf"] .service-icon {
   background-image: url("../assets/services/audiobookshelf.svg");
   background-size: 30px 30px;
 }
 
-.service-card:nth-child(6) .service-icon {
+.service-card[data-service="paperless"] .service-icon {
   background-image: url("../assets/services/paperless-ngx.svg");
   background-size: 24px 29px;
 }
 
-.service-card:nth-child(7) .service-icon {
+.service-card[data-service="vaultwarden"] .service-icon {
   background-image: url("../assets/services/vaultwarden.svg");
   background-size: 27px 27px;
 }
 
-.service-card:nth-child(8) .service-icon {
-  background-image: url("../assets/services/trilium.svg");
+.service-card[data-service="notes"] .service-icon {
+  background-image: url("../assets/goreecloud-icon.png");
   background-size: 30px 30px;
 }
 
-.service-card:nth-child(9) .service-icon {
+.service-card[data-service="element"] .service-icon {
   background-image: url("../assets/services/element.svg");
   background-size: 29px 29px;
 }
