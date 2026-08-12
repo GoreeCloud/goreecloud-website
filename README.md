@@ -13,6 +13,7 @@ Current website package: **v4**
 - `css/status.css` — locally hosted Family Services project logos/icons
 - `css/how-it-works.css` — public How GoreeCloud Works section styling
 - `css/platform.css` — public Platform Foundation section styling
+- `css/roadmap.css` — public roadmap styling for Home Assistant, Frigate, and Local AI
 - `css/social.css` — responsive layout overrides for the public Follow section
 - `js/main.js` — mobile navigation and footer year
 - `assets/goreecloud-icon.png` — official GoreeCloud artwork used in the header, hero, footer, and favicon
@@ -66,6 +67,11 @@ Do not commit:
 - Added a public "How GoreeCloud Works" section that explains private access, self-hosted applications, storage and data, security and isolation, and backup and recovery at a high level without exposing private infrastructure details.
 - Added and expanded a public "Platform Foundation" section featuring Proxmox VE, Debian 13, Docker, NetBird, AdGuard Home, Caddy, ntfy, Beszel, Uptime Kuma, and SearXNG with locally hosted technology logos/icons, role descriptions, and clear Active versus Planned Local status labeling.
 - The Platform Foundation section distinguishes the current active Debian 13, Docker, NetBird, DNS, HTTPS, monitoring, notification, and private-search foundation from the planned locally owned Proxmox virtualization platform and does not publish private hostnames, addresses, ports, or administrative configuration.
+- Added a public "Home automation, private security, and local AI" roadmap section covering Home Assistant, Frigate, and the planned Local AI stack with explicit current-status language.
+- The roadmap identifies Home Assistant as planned for a dedicated Home Assistant OS VM and Frigate as planned for a dedicated Security VM; neither workload is presented as currently deployed.
+- The Local AI roadmap identifies Ollama, Open WebUI, and AnythingLLM as planned and not yet installed while noting that SearXNG is already active as the controlled research/search foundation for future AI workflows.
+- Added Roadmap links to the primary navigation and footer, plus responsive roadmap-specific styling in `css/roadmap.css`.
+- Expanded search and social metadata to reflect GoreeCloud's home-automation, physical-security, and local-AI direction without exposing private infrastructure details.
 - Added a public "Software & Development" section that explains GoreeCloud's three software approaches: use mature open-source applications, maintain forks when justified, and develop original GoreeCloud software when a purpose-built application provides meaningful value.
 - Identified GoreeCloud Research Library as the first maintained upstream fork and linked its public `GoreeCloud/linkding` repository while preserving Linkding attribution in the public description.
 - Updated the Software & Development section to identify **GoreeCloud Manager — In Development** as the first native GoreeCloud application and link its public `GoreeCloud/goreecloud-manager` repository.
