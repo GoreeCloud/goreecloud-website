@@ -4,7 +4,7 @@ Public static website for GoreeCloud.com.
 
 ## Version
 
-Current website package: **v4**
+Current website package: **v4.3**
 
 ## Structure
 
@@ -14,6 +14,7 @@ Current website package: **v4**
 - `css/how-it-works.css` — public How GoreeCloud Works section styling
 - `css/platform.css` — public Platform Foundation section styling
 - `css/roadmap.css` — public roadmap styling for Home Assistant, Frigate, and Local AI
+- `css/development.css` — responsive Software & Development project-card layout
 - `css/social.css` — responsive layout overrides for the public Follow section
 - `js/main.js` — mobile navigation and footer year
 - `assets/goreecloud-icon.png` — official GoreeCloud artwork used in the header, hero, footer, and favicon
@@ -57,6 +58,15 @@ Do not commit:
 - internal infrastructure documentation
 - backup destinations or recovery credentials
 - personal or family private information
+
+## v4.3 changes
+
+- Added **Memos — Early Development** to the public Software & Development portfolio and linked the public `GoreeCloud/memos` repository.
+- Identified Memos as a newly established fork of the open-source Memos project for lightweight, Markdown-native, self-hosted quick-capture notes while keeping broader knowledge-management plans separate.
+- Added a dedicated `Projects` navigation and footer link so the Software & Development section is directly discoverable from the single-page site navigation.
+- Expanded the Software & Development layout from two project cards to a balanced responsive three-card presentation through `css/development.css`.
+- Added an August 2026 Story milestone marking GoreeCloud's transition into active software development through Research Library, GoreeCloud Manager, and Memos.
+- Preserved the accepted Family Services layout, platform foundation, roadmap, official GoreeCloud artwork, security headers, source-level canonical identity, and Cloudflare Pages deployment model.
 
 ## v4 changes
 
