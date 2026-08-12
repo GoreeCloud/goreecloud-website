@@ -3,12 +3,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="GoreeCloud is a privacy-first, self-hosted personal and family cloud built around data ownership, recoverability, home automation, physical security, and local AI.">
-  <meta name="theme-color" content="#07111f">
+  <meta name="description" content="GoreeCloud is a privacy-first, self-hosted personal and family cloud built for data ownership, recoverability, open-source independence, and long-term digital preservation.">
+  <meta name="robots" content="index,follow,max-image-preview:large">
+  <meta name="color-scheme" content="dark light">
+  <meta name="theme-color" content="#07111f" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#f4f7fb" media="(prefers-color-scheme: light)">
 
-  <title>GoreeCloud — Personal & Family Cloud</title>
+  <title>GoreeCloud — Privacy-First Personal &amp; Family Cloud</title>
 
-  <link rel="canonical" href="https://goreecloud.com/">
+  <link rel="canonical" href="https://www.goreecloud.com/">
   <link rel="icon" href="assets/goreecloud-icon.png" type="image/png">
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/status.css">
@@ -17,21 +20,22 @@
   <link rel="stylesheet" href="css/roadmap.css">
   <link rel="stylesheet" href="css/development.css">
   <link rel="stylesheet" href="css/social.css">
+  <link rel="stylesheet" href="css/glaze.css">
 
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="GoreeCloud">
-  <meta property="og:title" content="GoreeCloud — Personal & Family Cloud">
-  <meta property="og:description" content="A privacy-first, self-hosted personal and family cloud built for ownership, recoverability, home automation, security, local AI, and the future.">
-  <meta property="og:url" content="https://goreecloud.com/">
-  <meta property="og:image" content="https://goreecloud.com/assets/social-preview.png">
+  <meta property="og:title" content="GoreeCloud — Privacy-First Personal &amp; Family Cloud">
+  <meta property="og:description" content="A self-hosted personal and family cloud built for ownership, privacy, recoverability, open-source independence, and the future.">
+  <meta property="og:url" content="https://www.goreecloud.com/">
+  <meta property="og:image" content="https://www.goreecloud.com/assets/social-preview.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="GoreeCloud — A private cloud built for family, ownership, and the future.">
 
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="GoreeCloud — Personal & Family Cloud">
-  <meta name="twitter:description" content="A privacy-first, self-hosted personal and family cloud built for ownership, recoverability, home automation, security, local AI, and the future.">
-  <meta name="twitter:image" content="https://goreecloud.com/assets/social-preview.png">
+  <meta name="twitter:title" content="GoreeCloud — Privacy-First Personal &amp; Family Cloud">
+  <meta name="twitter:description" content="A self-hosted personal and family cloud built for ownership, privacy, recoverability, open-source independence, and the future.">
+  <meta name="twitter:image" content="https://www.goreecloud.com/assets/social-preview.png">
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -43,17 +47,24 @@
         <span class="brand-text">GoreeCloud</span>
       </a>
 
-      <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav">
-        <span class="sr-only">Toggle navigation</span>
-        <span></span><span></span><span></span>
-      </button>
+      <div class="nav-actions">
+        <button class="theme-toggle" type="button" aria-label="Switch to light theme" title="Switch theme">
+          <span class="theme-toggle-icon" aria-hidden="true">☀</span>
+          <span class="sr-only theme-toggle-label">Switch theme</span>
+        </button>
+
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+          <span class="sr-only">Toggle navigation</span>
+          <span></span><span></span><span></span>
+        </button>
+      </div>
 
       <nav id="site-nav" class="site-nav" aria-label="Primary navigation">
         <a href="#services">Services</a>
-        <a href="#roadmap">Roadmap</a>
+        <a href="#platform">Platform</a>
         <a href="#development">Projects</a>
+        <a href="#roadmap">Roadmap</a>
         <a href="#about">About</a>
-        <a href="#story">Story</a>
         <a href="#follow">Follow</a>
         <a href="#contact" class="nav-cta">Contact</a>
       </nav>
@@ -64,22 +75,26 @@
     <section id="top" class="hero">
       <div class="container hero-grid">
         <div class="hero-copy">
-          <p class="eyebrow">Privacy-first • Self-hosted • Family-owned</p>
-          <h1>A private cloud built for family, ownership, and the future.</h1>
+          <div class="hero-labels" aria-label="GoreeCloud characteristics">
+            <span class="glaze-chip">Glaze UI</span>
+            <span class="eyebrow">Privacy-first • Self-hosted • Family-owned</span>
+          </div>
+
+          <h1>Own your cloud. Preserve what matters.</h1>
           <p class="hero-lede">
-            GoreeCloud is a self-hosted personal and family cloud designed to keep files,
-            memories, media, records, credentials, and knowledge under the control of the
+            GoreeCloud is a self-hosted personal and family cloud designed to keep files, memories,
+            media, records, credentials, knowledge, and application data under the control of the
             people they belong to.
           </p>
 
           <div class="hero-actions">
-            <a class="button primary" href="#services">Explore Family Services</a>
-            <a class="button secondary" href="#story">Read the GoreeCloud Story</a>
+            <a class="button primary" href="#services">Explore GoreeCloud</a>
+            <a class="button secondary" href="#development">See What I'm Building</a>
           </div>
 
           <ul class="hero-points" aria-label="GoreeCloud principles">
             <li>Private by default</li>
-            <li>Built around ownership</li>
+            <li>Open source first</li>
             <li>Designed to be recoverable</li>
           </ul>
         </div>
@@ -105,113 +120,103 @@
 
     <section class="band" aria-label="Core principles">
       <div class="container band-grid">
-        <div>
-          <strong>Private.</strong>
-          <span>Personal information is protected by default.</span>
-        </div>
-        <div>
-          <strong>Owned.</strong>
-          <span>Family data stays under direct control.</span>
-        </div>
-        <div>
-          <strong>Recoverable.</strong>
-          <span>Backups and portability are core design goals.</span>
-        </div>
-        <div>
-          <strong>Long-term.</strong>
-          <span>The goal is preservation across technology changes.</span>
-        </div>
+        <div><strong>Private.</strong><span>Privacy is the default operating state.</span></div>
+        <div><strong>Owned.</strong><span>Data stays under the rightful owner's control.</span></div>
+        <div><strong>Recoverable.</strong><span>Backup, restore, and portability are architectural requirements.</span></div>
+        <div><strong>Independent.</strong><span>Critical information is not tied to one vendor or application.</span></div>
       </div>
     </section>
 
     <section id="services" class="section">
       <div class="container">
         <div class="section-heading">
-          <p class="eyebrow">Family services</p>
-          <h2>One cloud. Many parts of digital life.</h2>
+          <p class="eyebrow">Personal &amp; family services</p>
+          <h2>One cloud for the parts of digital life worth owning.</h2>
           <p>
-            GoreeCloud brings together private services for the things families use every day:
-            files, photos, media, documents, passwords, knowledge, and communication.
+            GoreeCloud combines established open-source services with GoreeCloud-maintained and
+            GoreeCloud-native applications. Public descriptions stay high level; private service addresses,
+            internal topology, and administrative interfaces are intentionally not published here.
           </p>
         </div>
 
         <div class="service-grid">
-          <article class="service-card">
-            <div class="service-icon" aria-hidden="true">☁</div>
+          <article class="service-card" data-service="nextcloud">
+            <div class="service-icon" aria-hidden="true">NC</div>
             <p class="service-kicker">Files &amp; Sync</p>
             <h3>Nextcloud</h3>
-            <p>Private file storage, synchronization, sharing, calendars, contacts, and personal cloud access.</p>
+            <p>Planned private file storage, synchronization, sharing, calendars, contacts, and browser-based productivity.</p>
             <span class="badge planned">Planned</span>
           </article>
 
-          <article class="service-card">
-            <div class="service-icon" aria-hidden="true">◉</div>
+          <article class="service-card" data-service="immich">
+            <div class="service-icon" aria-hidden="true">IM</div>
             <p class="service-kicker">Photos &amp; Memories</p>
             <h3>Immich</h3>
-            <p>Preserve, organize, search, and privately share family photos and videos while keeping originals under family control.</p>
+            <p>Planned long-term preservation, organization, search, and private sharing for family photos and videos.</p>
             <span class="badge planned">Planned</span>
           </article>
 
-          <article class="service-card">
-            <div class="service-icon" aria-hidden="true">▶</div>
+          <article class="service-card" data-service="jellyfin">
+            <div class="service-icon" aria-hidden="true">JF</div>
             <p class="service-kicker">Video &amp; Media</p>
             <h3>Jellyfin</h3>
-            <p>Stream privately owned movies, television, home videos, and other visual media across approved family devices.</p>
+            <p>Planned private streaming for personally owned movies, television, home videos, and family media.</p>
             <span class="badge planned">Planned</span>
           </article>
 
-          <article class="service-card">
-            <div class="service-icon" aria-hidden="true">♫</div>
+          <article class="service-card" data-service="navidrome">
+            <div class="service-icon" aria-hidden="true">NV</div>
             <p class="service-kicker">Music</p>
             <h3>Navidrome</h3>
-            <p>Provide private access to a family music library without depending on a commercial streaming platform.</p>
+            <p>Planned private access to an owned music library without depending on a commercial streaming catalog.</p>
             <span class="badge planned">Planned</span>
           </article>
 
-          <article class="service-card">
-            <div class="service-icon" aria-hidden="true">A</div>
+          <article class="service-card" data-service="audiobookshelf">
+            <div class="service-icon" aria-hidden="true">AB</div>
             <p class="service-kicker">Audiobooks</p>
             <h3>Audiobookshelf</h3>
-            <p>Organize and listen to privately managed audiobook and podcast libraries from supported family devices.</p>
+            <p>Planned audiobook and podcast library management across approved family devices.</p>
             <span class="badge planned">Planned</span>
           </article>
 
-          <article class="service-card">
-            <div class="service-icon" aria-hidden="true">▤</div>
+          <article class="service-card" data-service="paperless">
+            <div class="service-icon" aria-hidden="true">PL</div>
             <p class="service-kicker">Documents &amp; Records</p>
             <h3>Paperless-ngx</h3>
-            <p>Ingest, classify, search, and preserve important documents and records in a dedicated records-management system.</p>
+            <p>Planned document ingestion, classification, search, and preservation for important records.</p>
             <span class="badge planned">Planned</span>
           </article>
 
-          <article class="service-card">
-            <div class="service-icon" aria-hidden="true">⌘</div>
+          <article class="service-card" data-service="vaultwarden">
+            <div class="service-icon" aria-hidden="true">VW</div>
             <p class="service-kicker">Passwords &amp; Secrets</p>
             <h3>Vaultwarden</h3>
-            <p>Securely manage passwords, credentials, recovery information, and other sensitive account data.</p>
+            <p>Secure password, credential, recovery-information, and sensitive-account-data management.</p>
             <span class="badge active">Available Now</span>
           </article>
 
-          <article class="service-card">
-            <div class="service-icon" aria-hidden="true">✎</div>
-            <p class="service-kicker">Notes &amp; Knowledge</p>
-            <h3>Trilium</h3>
-            <p>Build and organize a private hierarchical knowledge base for notes, references, research, and long-term personal knowledge.</p>
-            <span class="badge growing">In Development</span>
+          <article class="service-card" data-service="notes">
+            <div class="service-icon" aria-hidden="true">GC</div>
+            <p class="service-kicker">Quick Notes</p>
+            <h3>GoreeCloud Notes</h3>
+            <p>A GoreeCloud-maintained Memos fork for fast private note capture with a GoreeCloud-native interface and long-term customization path.</p>
+            <span class="badge growing">Release Candidate</span>
           </article>
 
-          <article class="service-card">
-            <div class="service-icon" aria-hidden="true">✦</div>
+          <article class="service-card" data-service="element">
+            <div class="service-icon" aria-hidden="true">EL</div>
             <p class="service-kicker">Messaging</p>
-            <h3>Element</h3>
-            <p>Support private family messaging through self-hosted Matrix infrastructure using Element as the client.</p>
+            <h3>Element + Matrix</h3>
+            <p>Planned private family messaging through self-hosted Matrix infrastructure with individual identities and controlled access.</p>
             <span class="badge planned">Planned</span>
           </article>
         </div>
 
         <p class="status-note">
-          Service availability changes as GoreeCloud develops. This public website describes capabilities and plans;
-          private application addresses and administrative systems are not published here.
+          Availability labels describe current GoreeCloud status, not upstream project maturity.
+          Planned services are not presented as production workloads until their infrastructure,
+          access controls, monitoring, backup, and recovery paths are implemented and validated.
         </p>
       </div>
     </section>
@@ -222,10 +227,9 @@
           <p class="eyebrow">How GoreeCloud works</p>
           <h2>One platform. Multiple layers of control.</h2>
           <p>
-            GoreeCloud is organized as a layered personal-cloud platform. Approved family devices reach
-            self-hosted services through controlled access paths, while data protection and recovery remain
-            separate responsibilities. Individual technologies can change without giving up ownership of the
-            information they protect.
+            GoreeCloud separates access, applications, storage, security, and recovery so no single
+            product becomes the platform itself. Technologies can be replaced while ownership,
+            portability, and preservation remain constant.
           </p>
         </div>
 
@@ -233,31 +237,27 @@
           <article class="how-card">
             <span class="how-step">01</span>
             <h3>Private Access</h3>
-            <p>Approved users and devices reach only the GoreeCloud services they are authorized to use through controlled private connectivity.</p>
+            <p>Approved users and devices receive only the connectivity required for their role.</p>
           </article>
-
           <article class="how-card">
             <span class="how-step">02</span>
-            <h3>Self-Hosted Applications</h3>
-            <p>Family-facing services provide files, photos, media, credentials, knowledge, documents, and messaging without making any single application the platform itself.</p>
+            <h3>Applications</h3>
+            <p>Self-hosted and GoreeCloud-built applications serve family, knowledge, and operational needs.</p>
           </article>
-
           <article class="how-card">
             <span class="how-step">03</span>
             <h3>Storage &amp; Data</h3>
-            <p>Important information stays under direct GoreeCloud control so it can remain organized, portable, and transferable between applications and future systems.</p>
+            <p>Important information remains organized, portable, and under direct GoreeCloud control.</p>
           </article>
-
           <article class="how-card">
             <span class="how-step">04</span>
             <h3>Security &amp; Isolation</h3>
-            <p>Access boundaries, workload separation, least privilege, and privacy-by-default controls limit unnecessary exposure between users, services, and administrative systems.</p>
+            <p>Least privilege and workload separation reduce unnecessary access and blast radius.</p>
           </article>
-
           <article class="how-card">
             <span class="how-step">05</span>
             <h3>Backup &amp; Recovery</h3>
-            <p>Independent backup and recovery layers protect the information behind the services so failures, migrations, and technology changes do not become permanent data loss.</p>
+            <p>Independent recovery layers protect information from failures, mistakes, and migrations.</p>
           </article>
         </div>
 
@@ -271,12 +271,11 @@
       <div class="container">
         <div class="section-heading">
           <p class="eyebrow">Platform foundation</p>
-          <h2>The technology underneath GoreeCloud.</h2>
+          <h2>A layered, open-source infrastructure foundation.</h2>
           <p>
-            GoreeCloud is operated through separate infrastructure layers rather than a single application.
-            Each layer has a defined role across virtualization, operating systems, containers, private networking,
-            DNS, HTTPS publication, monitoring, notifications, and private search. The technologies can change
-            over time without changing GoreeCloud's purpose.
+            The current VPS foundation and planned local Proxmox environment use separate technologies
+            for virtualization, Linux, containers, private networking, DNS, HTTPS, monitoring, notifications,
+            backup, and private search.
           </p>
         </div>
 
@@ -288,10 +287,10 @@
               </a>
               <span class="platform-state planned">Planned Local</span>
             </div>
-            <p class="platform-kicker">Virtualization Foundation</p>
+            <p class="platform-kicker">Virtualization</p>
             <h3>Proxmox VE</h3>
-            <p class="platform-description">The planned bare-metal virtualization foundation for GoreeCloud's locally owned servers, providing clear virtual-machine boundaries for storage, family services, infrastructure, security, automation, and AI workloads.</p>
-            <p class="platform-role"><strong>Role:</strong> Virtualization, workload separation, and host-level resource control.</p>
+            <p class="platform-description">Planned bare-metal virtualization for locally owned GoreeCloud servers and clearly separated workload roles.</p>
+            <p class="platform-role"><strong>Role:</strong> Virtual machines, workload separation, and host resource control.</p>
           </article>
 
           <article class="platform-card">
@@ -301,10 +300,10 @@
               </a>
               <span class="platform-state active">Active + Standard</span>
             </div>
-            <p class="platform-kicker">Linux Foundation</p>
+            <p class="platform-kicker">Linux</p>
             <h3>Debian 13</h3>
-            <p class="platform-description">Debian 13 runs the current GoreeCloud server foundation and is the standard Linux operating system selected for future GoreeCloud virtual machines unless a documented requirement calls for another platform.</p>
-            <p class="platform-role"><strong>Role:</strong> Stable, lightweight, and maintainable Linux operating-system layer.</p>
+            <p class="platform-description">The current server operating system and preferred Linux base for future GoreeCloud virtual machines.</p>
+            <p class="platform-role"><strong>Role:</strong> Stable, lightweight, maintainable Linux foundation.</p>
           </article>
 
           <article class="platform-card">
@@ -314,10 +313,10 @@
               </a>
               <span class="platform-state active">Active</span>
             </div>
-            <p class="platform-kicker">Container Platform</p>
+            <p class="platform-kicker">Containers</p>
             <h3>Docker</h3>
-            <p class="platform-description">Docker runs many GoreeCloud application and infrastructure services in portable, reproducible containers. In the planned local architecture, Docker remains inside the virtual machine responsible for each workload category.</p>
-            <p class="platform-role"><strong>Role:</strong> Container execution, dependency isolation, and portable service deployment.</p>
+            <p class="platform-description">Portable, reproducible application and infrastructure deployments with clear data and network boundaries.</p>
+            <p class="platform-role"><strong>Role:</strong> Container runtime and service deployment.</p>
           </article>
 
           <article class="platform-card">
@@ -329,8 +328,8 @@
             </div>
             <p class="platform-kicker">Private Networking</p>
             <h3>NetBird</h3>
-            <p class="platform-description">NetBird is GoreeCloud's fully self-hosted encrypted private-networking and secure remote-access layer, connecting approved users, devices, servers, and future virtual machines through explicit access policies.</p>
-            <p class="platform-role"><strong>Role:</strong> Private connectivity, device identity, and policy-controlled remote access.</p>
+            <p class="platform-description">Fully self-hosted encrypted private networking for approved users, devices, servers, and future virtual machines.</p>
+            <p class="platform-role"><strong>Role:</strong> Private connectivity, device identity, and access policy.</p>
           </article>
 
           <article class="platform-card">
@@ -340,10 +339,10 @@
               </a>
               <span class="platform-state active">Active</span>
             </div>
-            <p class="platform-kicker">DNS Filtering</p>
+            <p class="platform-kicker">DNS</p>
             <h3>AdGuard Home</h3>
-            <p class="platform-description">AdGuard Home is GoreeCloud's client-facing DNS filtering and policy layer, applying approved filtering rules and private DNS rewrites for authorized devices while keeping DNS control under GoreeCloud administration.</p>
-            <p class="platform-role"><strong>Role:</strong> DNS filtering, client policy enforcement, and private hostname resolution.</p>
+            <p class="platform-description">Client-facing DNS filtering, policy enforcement, and private GoreeCloud hostname resolution.</p>
+            <p class="platform-role"><strong>Role:</strong> DNS filtering and private DNS policy.</p>
           </article>
 
           <article class="platform-card">
@@ -355,8 +354,8 @@
             </div>
             <p class="platform-kicker">HTTPS Gateway</p>
             <h3>Caddy</h3>
-            <p class="platform-description">Caddy is GoreeCloud's controlled reverse proxy and HTTPS gateway, providing approved domain-based routing, TLS termination, certificate management, and controlled access to web services.</p>
-            <p class="platform-role"><strong>Role:</strong> Reverse proxying, HTTPS publication, TLS, and service routing.</p>
+            <p class="platform-description">Controlled HTTPS publication, TLS termination, certificate management, and reverse-proxy routing.</p>
+            <p class="platform-role"><strong>Role:</strong> HTTPS, TLS, and approved web routing.</p>
           </article>
 
           <article class="platform-card">
@@ -366,10 +365,10 @@
               </a>
               <span class="platform-state active">Active</span>
             </div>
-            <p class="platform-kicker">Notifications &amp; Alerts</p>
+            <p class="platform-kicker">Notifications</p>
             <h3>ntfy</h3>
-            <p class="platform-description">ntfy provides GoreeCloud with a centralized, self-hosted notification path for operational messages from approved infrastructure services to authorized web and mobile clients.</p>
-            <p class="platform-role"><strong>Role:</strong> Infrastructure notifications, alert delivery, and centralized operational messaging.</p>
+            <p class="platform-description">Self-hosted operational alert delivery to approved web and mobile clients.</p>
+            <p class="platform-role"><strong>Role:</strong> Centralized infrastructure notifications.</p>
           </article>
 
           <article class="platform-card">
@@ -379,10 +378,10 @@
               </a>
               <span class="platform-state active">Active</span>
             </div>
-            <p class="platform-kicker">System Monitoring</p>
+            <p class="platform-kicker">Monitoring</p>
             <h3>Beszel</h3>
-            <p class="platform-description">Beszel provides operational visibility into the GoreeCloud server foundation, supporting ongoing review of system and container health and resource usage.</p>
-            <p class="platform-role"><strong>Role:</strong> Host monitoring, container visibility, and resource-health awareness.</p>
+            <p class="platform-description">System and container visibility for the current GoreeCloud server foundation.</p>
+            <p class="platform-role"><strong>Role:</strong> Resource and host-health visibility.</p>
           </article>
 
           <article class="platform-card">
@@ -392,10 +391,10 @@
               </a>
               <span class="platform-state active">Active</span>
             </div>
-            <p class="platform-kicker">Availability Monitoring</p>
+            <p class="platform-kicker">Availability</p>
             <h3>Uptime Kuma</h3>
-            <p class="platform-description">Uptime Kuma verifies the availability and health of GoreeCloud applications and infrastructure through approved public and internal service endpoints.</p>
-            <p class="platform-role"><strong>Role:</strong> Service availability checks, endpoint monitoring, and operational status visibility.</p>
+            <p class="platform-description">Availability checks for approved GoreeCloud applications and infrastructure endpoints.</p>
+            <p class="platform-role"><strong>Role:</strong> Service uptime and endpoint monitoring.</p>
           </article>
 
           <article class="platform-card">
@@ -407,15 +406,83 @@
             </div>
             <p class="platform-kicker">Private Search</p>
             <h3>SearXNG</h3>
-            <p class="platform-description">SearXNG gives GoreeCloud a privately administered metasearch service that provides a consistent search interface while reducing direct dependence on a single commercial search provider.</p>
-            <p class="platform-role"><strong>Role:</strong> Private metasearch, controlled internet research, and search-provider independence.</p>
+            <p class="platform-description">Privately administered metasearch for reduced dependence on a single commercial search provider.</p>
+            <p class="platform-role"><strong>Role:</strong> Private metasearch and future local-AI research foundation.</p>
           </article>
         </div>
 
         <p class="platform-note">
-          <strong>Current → target:</strong> GoreeCloud currently uses Debian 13, Docker, NetBird, AdGuard Home, Caddy, ntfy, Beszel, Uptime Kuma, and SearXNG as active parts of its current server foundation. The long-term design moves primary workloads to locally owned Proxmox hosts while preserving portable services, private access, monitoring, notifications, search, and controlled DNS and HTTPS publication.
+          <strong>Current → target:</strong> GoreeCloud currently operates a VPS-centered foundation.
+          The long-term direction moves primary workloads to locally owned Proxmox hosts while preserving
+          portability, private access, monitoring, controlled DNS and HTTPS, and independent recovery.
         </p>
-        <p class="platform-legal">Logos are used only to identify their respective technologies and remain the property of their respective owners. This is a representative foundation, not a complete public infrastructure inventory.</p>
+        <p class="platform-legal">Third-party logos identify their respective technologies and remain the property of their respective owners. This is a representative public foundation, not a complete infrastructure inventory.</p>
+      </div>
+    </section>
+
+    <section id="development" class="section section-alt">
+      <div class="container">
+        <div class="section-heading">
+          <p class="eyebrow">Software &amp; development</p>
+          <h2>GoreeCloud is building its own software layer.</h2>
+          <p>
+            I use mature open-source software where it already solves the problem well, maintain
+            GoreeCloud-specific forks when customization is justified, and build original applications
+            when GoreeCloud needs a purpose-built product.
+          </p>
+        </div>
+
+        <div class="glaze-callout">
+          <div>
+            <span class="glaze-chip">Design system</span>
+            <h3>Glaze UI</h3>
+          </div>
+          <p>
+            Glaze UI is GoreeCloud's shared visual and interaction language: Material-style structure,
+            fluid layered depth, one-hand-friendly ergonomics, strong accessibility, light and dark themes,
+            and a distinctly GoreeCloud identity.
+          </p>
+        </div>
+
+        <div class="principle-grid development-grid" aria-label="GoreeCloud software projects">
+          <div>
+            <strong>Research Library</strong>
+            <span>Maintained Linkding fork evolving into a private research-source, verification, preservation, and retrieval platform.</span>
+            <a href="https://github.com/GoreeCloud/linkding" target="_blank" rel="noopener noreferrer">View public repository →</a>
+          </div>
+
+          <div>
+            <strong>GoreeCloud Manager</strong>
+            <span>Native operational console providing least-privilege visibility across GoreeCloud infrastructure and protection systems.</span>
+            <a href="https://github.com/GoreeCloud/goreecloud-manager" target="_blank" rel="noopener noreferrer">View public repository →</a>
+          </div>
+
+          <div>
+            <strong>GoreeCloud Notes</strong>
+            <span>Maintained Memos fork for fast private note capture, recoverable data, and a GoreeCloud-native Glaze UI experience.</span>
+            <a href="https://github.com/GoreeCloud/memos" target="_blank" rel="noopener noreferrer">View public repository →</a>
+          </div>
+
+          <div>
+            <strong>GoreeCloud Tasks</strong>
+            <span>Native multi-user task and project application with private-by-default data boundaries, portability, and Todoist-inspired workflows.</span>
+            <small>Active private development</small>
+          </div>
+
+          <div>
+            <strong>GoreeCloud Contacts</strong>
+            <span>Native contacts application built around CardDAV interoperability, controlled writes, and Radicale as the authoritative contact store.</span>
+            <small>Active private development</small>
+          </div>
+
+          <div>
+            <strong>GoreeCloud Bookmarks</strong>
+            <span>Planned maintained fork based on Linkwarden for private multi-user bookmarks, collections, read-later workflows, and browser integration.</span>
+            <small>Specification &amp; fork planning</small>
+          </div>
+        </div>
+
+        <p class="status-note">Open source first. Fork when justified. Build original software when GoreeCloud itself requires a distinct product.</p>
       </div>
     </section>
 
@@ -423,16 +490,15 @@
       <div class="container">
         <div class="section-heading">
           <p class="eyebrow">Expanding the platform</p>
-          <h2>Home automation, private security, and local AI.</h2>
+          <h2>Local infrastructure, home automation, security, and AI.</h2>
           <p>
-            GoreeCloud's target local architecture adds dedicated workload boundaries for smart-home automation,
-            surveillance, and artificial intelligence. These capabilities are intentionally separated from family
-            applications and core infrastructure so each can be secured, maintained, scaled, backed up, and recovered
-            according to its own requirements.
+            The target home architecture adds dedicated workload boundaries for family services,
+            infrastructure, storage, home automation, physical security, artificial intelligence,
+            and backup so each role can be secured, scaled, maintained, and recovered independently.
           </p>
         </div>
 
-        <div class="roadmap-grid" aria-label="Planned GoreeCloud automation, security, and AI capabilities">
+        <div class="roadmap-grid" aria-label="Planned GoreeCloud capabilities">
           <article class="roadmap-card">
             <div class="roadmap-card-head">
               <span class="roadmap-icon" aria-hidden="true">HA</span>
@@ -440,12 +506,12 @@
             </div>
             <p class="roadmap-kicker">Home Automation</p>
             <h3>Home Assistant</h3>
-            <p>Home Assistant will provide the household automation and orchestration layer for approved smart devices, sensors, scenes, dashboards, notifications, and future voice or AI integrations.</p>
-            <p class="roadmap-current"><strong>Current status:</strong> Architecture defined, not yet deployed. The target design uses a dedicated Home Assistant OS virtual machine in the future local Proxmox environment.</p>
+            <p>Dedicated household automation and orchestration for approved smart devices, scenes, dashboards, alerts, and future voice or AI integrations.</p>
+            <p class="roadmap-current"><strong>Target:</strong> A dedicated Home Assistant OS virtual machine in the local Proxmox environment.</p>
             <ul class="roadmap-details">
-              <li>Dedicated Home Assistant OS VM</li>
-              <li>Smart-device orchestration and household dashboards</li>
-              <li>Independent backup, recovery, and network boundaries</li>
+              <li>Purpose-built VM boundary</li>
+              <li>Local-first automation</li>
+              <li>Independent backup and recovery</li>
             </ul>
           </article>
 
@@ -454,14 +520,14 @@
               <span class="roadmap-icon" aria-hidden="true">FR</span>
               <span class="roadmap-state">Planned</span>
             </div>
-            <p class="roadmap-kicker">Video Security</p>
+            <p class="roadmap-kicker">Physical Security</p>
             <h3>Frigate</h3>
-            <p>Frigate will serve as the local video-surveillance and object-detection platform, handling approved camera streams, event detection, recordings, retention, and security alerts.</p>
-            <p class="roadmap-current"><strong>Current status:</strong> Planned, not yet deployed. Frigate is assigned to a dedicated Security VM so surveillance workloads remain isolated from family applications, infrastructure administration, and AI services.</p>
+            <p>Local video-surveillance and object-detection platform with deliberately restricted access to camera feeds, recordings, and administration.</p>
+            <p class="roadmap-current"><strong>Target:</strong> A dedicated Security VM separated from family, infrastructure, and AI workloads.</p>
             <ul class="roadmap-details">
-              <li>Local camera stream processing and object detection</li>
-              <li>Dedicated surveillance storage and retention controls</li>
-              <li>Restricted administrative and recording access</li>
+              <li>Local camera processing</li>
+              <li>Dedicated retention controls</li>
+              <li>Restricted administrative access</li>
             </ul>
           </article>
 
@@ -472,53 +538,17 @@
             </div>
             <p class="roadmap-kicker">Local Intelligence</p>
             <h3>Local AI</h3>
-            <p>GoreeCloud is being designed to run private AI locally through complementary services: Ollama for model execution, Open WebUI for general conversations, and AnythingLLM for persistent document knowledge and retrieval.</p>
-            <p class="roadmap-current"><strong>Current status:</strong> The core local-AI stack is planned and not yet installed. SearXNG is already active today and is intended to provide controlled current-internet research to future local AI workflows.</p>
+            <p>Private model execution and knowledge workflows built around Ollama, Open WebUI, AnythingLLM, and controlled internet research through SearXNG.</p>
+            <p class="roadmap-current"><strong>Target:</strong> A dedicated AI Services VM with local inference and GoreeCloud-owned knowledge workflows.</p>
             <ul class="roadmap-details">
-              <li>Ollama local model execution</li>
-              <li>Open WebUI private conversational interface</li>
-              <li>AnythingLLM knowledge workspaces and RAG</li>
+              <li>Ollama model runtime</li>
+              <li>Private conversational interface</li>
+              <li>Local document retrieval and research</li>
             </ul>
           </article>
         </div>
 
-        <p class="roadmap-note">
-          <strong>Status note:</strong> “Planned” means the role and target architecture are documented, but the production workload is not currently deployed. GoreeCloud will only promote these services to active status after the required local infrastructure, access controls, monitoring, backup, and recovery paths are implemented and validated.
-        </p>
-      </div>
-    </section>
-
-    <section id="development" class="section section-alt">
-      <div class="container">
-        <div class="section-heading">
-          <p class="eyebrow">Software &amp; development</p>
-          <h2>GoreeCloud is becoming software, too.</h2>
-          <p>
-            GoreeCloud uses mature open-source applications wherever they already solve the problem well,
-            maintains forks when a strong upstream foundation needs GoreeCloud-specific capabilities, and
-            develops original software when a purpose-built application provides meaningful long-term value.
-          </p>
-        </div>
-
-        <div class="principle-grid development-grid" aria-label="GoreeCloud software development projects">
-          <div>
-            <strong>Research Library — In Development</strong>
-            <span>GoreeCloud Research Library is the first GoreeCloud-maintained upstream fork. Built from Linkding, it is being extended from bookmark management into a private research-source, verification, preservation, and retrieval platform with the product message “Curate. Verify. Preserve.”</span>
-            <a href="https://github.com/GoreeCloud/linkding" target="_blank" rel="noopener noreferrer">View the public Research Library repository →</a>
-          </div>
-          <div>
-            <strong>GoreeCloud Manager — In Development</strong>
-            <span>GoreeCloud Manager is the first native GoreeCloud application: an original management and operational console being developed specifically for the platform. Its current v0.1 development work provides least-privilege, read-only visibility for NetBird, Healthchecks, Uptime Kuma, Beszel, and Kopia protection state while specialized services remain authoritative for their own operations.</span>
-            <a href="https://github.com/GoreeCloud/goreecloud-manager" target="_blank" rel="noopener noreferrer">View the public GoreeCloud Manager repository →</a>
-          </div>
-          <div>
-            <strong>Memos — Early Development</strong>
-            <span>GoreeCloud Memos is a newly established fork of the open-source Memos project for fast, Markdown-native, self-hosted note capture. It adds a lightweight quick-capture notes project alongside GoreeCloud's broader knowledge-management plans while keeping the source and future customization path under GoreeCloud control.</span>
-            <a href="https://github.com/GoreeCloud/memos" target="_blank" rel="noopener noreferrer">View the public Memos repository →</a>
-          </div>
-        </div>
-
-        <p class="status-note">Open source first. Fork when justified. Build original software when GoreeCloud itself requires a distinct product.</p>
+        <p class="roadmap-note"><strong>Status note:</strong> Planned capabilities are not represented as active until deployment, security, monitoring, backup, and recovery validation are complete.</p>
       </div>
     </section>
 
@@ -535,19 +565,18 @@
             preserve a family's digital life over the long term.
           </p>
           <p>
-            The purpose is not to preserve any single server, application, vendor, or architecture forever.
-            The purpose is to preserve the information entrusted to those systems — including memories,
-            records, knowledge, credentials, and personal data — so it remains accessible, portable,
-            recoverable, and understandable as technology changes.
+            Success is not measured by keeping one server or application forever. It is measured by
+            whether the information entrusted to GoreeCloud remains accessible, understandable,
+            recoverable, portable, and under the control of its rightful owner as technology changes.
           </p>
 
           <div class="principle-grid">
             <div><strong>Privacy</strong><span>Protection is a design requirement, not an optional setting.</span></div>
-            <div><strong>Ownership</strong><span>The rightful owner retains control over their information.</span></div>
-            <div><strong>Open Source</strong><span>Open-source, self-hosted software is preferred wherever practical.</span></div>
-            <div><strong>Recoverability</strong><span>Backups and restoration are part of the architecture.</span></div>
-            <div><strong>Independence</strong><span>Critical information should not depend on a single provider.</span></div>
-            <div><strong>Preservation</strong><span>Important information should survive technology changes.</span></div>
+            <div><strong>Ownership</strong><span>The rightful owner retains authority over their information.</span></div>
+            <div><strong>Open Source</strong><span>Open-source, self-hosted software is the default direction.</span></div>
+            <div><strong>Recoverability</strong><span>Restore paths are part of the architecture, not an afterthought.</span></div>
+            <div><strong>Independence</strong><span>Components can change without surrendering control of the data.</span></div>
+            <div><strong>Preservation</strong><span>Important information should outlive the technology storing it.</span></div>
           </div>
         </div>
       </div>
@@ -558,7 +587,7 @@
         <div class="section-heading">
           <p class="eyebrow">The GoreeCloud story</p>
           <h2>Built deliberately from the beginning.</h2>
-          <p>GoreeCloud started in 2026 as a plan for a private, self-hosted environment and quickly grew into a structured personal cloud platform.</p>
+          <p>GoreeCloud started in 2026 as a self-hosting plan and quickly grew into a governed personal cloud, software portfolio, and long-term digital preservation platform.</p>
         </div>
 
         <div class="timeline">
@@ -566,10 +595,9 @@
             <time datetime="2026-06-01">June 1, 2026</time>
             <div>
               <h3>Initial planning begins</h3>
-              <p>The first GoreeCloud planning work begins with a goal of replacing subscription-based services with greater privacy, control, and data ownership.</p>
+              <p>The first planning work starts with a goal of replacing subscription dependence with greater privacy, control, and data ownership.</p>
             </div>
           </article>
-
           <article>
             <time datetime="2026-06-07">June 7, 2026</time>
             <div>
@@ -577,28 +605,25 @@
               <p>GoreeCloud becomes the name for the complete ecosystem: hardware, software, infrastructure, services, configurations, and data.</p>
             </div>
           </article>
-
           <article>
             <time datetime="2026-06-25">June 25, 2026</time>
             <div>
               <h3>GoreeCloud.com is purchased</h3>
-              <p>The domain becomes the permanent public identity for the project and supports the naming and service-publication needs of the environment.</p>
+              <p>The domain becomes the public identity for the platform and its future applications.</p>
             </div>
           </article>
-
           <article>
-            <time datetime="2026-08">August 2026</time>
+            <time datetime="2026-08-12">August 12, 2026</time>
             <div>
-              <h3>GoreeCloud begins building software</h3>
-              <p>Research Library establishes the maintained-fork model, GoreeCloud Manager becomes the first native GoreeCloud application, and the Memos fork expands the public software portfolio into quick-capture notes.</p>
+              <h3>Glaze UI and the GoreeCloud software portfolio expand</h3>
+              <p>Glaze UI becomes the shared design language while Research Library, Manager, Notes, Tasks, Contacts, and Bookmarks define a growing GoreeCloud software layer.</p>
             </div>
           </article>
-
           <article>
             <time datetime="2026">2026 →</time>
             <div>
               <h3>From homelab to documented personal cloud</h3>
-              <p>The project expands into a governed platform with defined architecture, security policies, standards, procedures, recovery requirements, and long-term goals.</p>
+              <p>The project continues toward locally owned infrastructure with defined governance, recovery requirements, software standards, and long-term family continuity.</p>
             </div>
           </article>
         </div>
@@ -610,7 +635,7 @@
         <div class="section-heading">
           <p class="eyebrow">Follow the build</p>
           <h2>GoreeCloud is being documented in public.</h2>
-          <p>Follow infrastructure progress, application showcases, lessons learned, privacy discussions, and self-hosting content across GoreeCloud's public accounts.</p>
+          <p>Follow progress, demonstrations, lessons learned, privacy discussions, open-source development, and self-hosting content across GoreeCloud's public accounts.</p>
         </div>
 
         <div class="social-grid">
@@ -673,15 +698,16 @@
           <img class="brand-logo" src="assets/goreecloud-icon.png" alt="" width="36" height="36">
           <span class="brand-text">GoreeCloud</span>
         </a>
-        <p>Privacy • Ownership • Self-Hosting • Long-Term Preservation</p>
+        <p>Privacy • Ownership • Open Source • Recoverability • Long-Term Preservation</p>
+        <p class="footer-glaze">Designed with <strong>Glaze UI</strong>.</p>
       </div>
 
       <div class="footer-links">
         <a href="#services">Services</a>
-        <a href="#roadmap">Roadmap</a>
+        <a href="#platform">Platform</a>
         <a href="#development">Projects</a>
+        <a href="#roadmap">Roadmap</a>
         <a href="#about">About</a>
-        <a href="#story">Story</a>
         <a href="#follow">Social</a>
         <a href="mailto:goreecloud@gmail.com">Email</a>
       </div>
