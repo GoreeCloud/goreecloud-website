@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="GoreeCloud is a privacy-first, self-hosted personal and family cloud built around data ownership, recoverability, and long-term preservation.">
+  <meta name="description" content="GoreeCloud is a privacy-first, self-hosted personal and family cloud built around data ownership, recoverability, home automation, physical security, and local AI.">
   <meta name="theme-color" content="#07111f">
 
   <title>GoreeCloud — Personal & Family Cloud</title>
@@ -14,12 +14,13 @@
   <link rel="stylesheet" href="css/status.css">
   <link rel="stylesheet" href="css/how-it-works.css">
   <link rel="stylesheet" href="css/platform.css">
+  <link rel="stylesheet" href="css/roadmap.css">
   <link rel="stylesheet" href="css/social.css">
 
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="GoreeCloud">
   <meta property="og:title" content="GoreeCloud — Personal & Family Cloud">
-  <meta property="og:description" content="A privacy-first, self-hosted personal and family cloud built for ownership, recoverability, and the future.">
+  <meta property="og:description" content="A privacy-first, self-hosted personal and family cloud built for ownership, recoverability, home automation, security, local AI, and the future.">
   <meta property="og:url" content="https://goreecloud.com/">
   <meta property="og:image" content="https://goreecloud.com/assets/social-preview.png">
   <meta property="og:image:width" content="1200">
@@ -28,7 +29,7 @@
 
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="GoreeCloud — Personal & Family Cloud">
-  <meta name="twitter:description" content="A privacy-first, self-hosted personal and family cloud built for ownership, recoverability, and the future.">
+  <meta name="twitter:description" content="A privacy-first, self-hosted personal and family cloud built for ownership, recoverability, home automation, security, local AI, and the future.">
   <meta name="twitter:image" content="https://goreecloud.com/assets/social-preview.png">
 </head>
 <body>
@@ -48,6 +49,7 @@
 
       <nav id="site-nav" class="site-nav" aria-label="Primary navigation">
         <a href="#services">Services</a>
+        <a href="#roadmap">Roadmap</a>
         <a href="#about">About</a>
         <a href="#story">Story</a>
         <a href="#follow">Follow</a>
@@ -415,6 +417,75 @@
       </div>
     </section>
 
+    <section id="roadmap" class="section roadmap-section">
+      <div class="container">
+        <div class="section-heading">
+          <p class="eyebrow">Expanding the platform</p>
+          <h2>Home automation, private security, and local AI.</h2>
+          <p>
+            GoreeCloud's target local architecture adds dedicated workload boundaries for smart-home automation,
+            surveillance, and artificial intelligence. These capabilities are intentionally separated from family
+            applications and core infrastructure so each can be secured, maintained, scaled, backed up, and recovered
+            according to its own requirements.
+          </p>
+        </div>
+
+        <div class="roadmap-grid" aria-label="Planned GoreeCloud automation, security, and AI capabilities">
+          <article class="roadmap-card">
+            <div class="roadmap-card-head">
+              <span class="roadmap-icon" aria-hidden="true">HA</span>
+              <span class="roadmap-state">Planned</span>
+            </div>
+            <p class="roadmap-kicker">Home Automation</p>
+            <h3>Home Assistant</h3>
+            <p>Home Assistant will provide the household automation and orchestration layer for approved smart devices, sensors, scenes, dashboards, notifications, and future voice or AI integrations.</p>
+            <p class="roadmap-current"><strong>Current status:</strong> Architecture defined, not yet deployed. The target design uses a dedicated Home Assistant OS virtual machine in the future local Proxmox environment.</p>
+            <ul class="roadmap-details">
+              <li>Dedicated Home Assistant OS VM</li>
+              <li>Smart-device orchestration and household dashboards</li>
+              <li>Independent backup, recovery, and network boundaries</li>
+            </ul>
+          </article>
+
+          <article class="roadmap-card">
+            <div class="roadmap-card-head">
+              <span class="roadmap-icon" aria-hidden="true">FR</span>
+              <span class="roadmap-state">Planned</span>
+            </div>
+            <p class="roadmap-kicker">Video Security</p>
+            <h3>Frigate</h3>
+            <p>Frigate will serve as the local video-surveillance and object-detection platform, handling approved camera streams, event detection, recordings, retention, and security alerts.</p>
+            <p class="roadmap-current"><strong>Current status:</strong> Planned, not yet deployed. Frigate is assigned to a dedicated Security VM so surveillance workloads remain isolated from family applications, infrastructure administration, and AI services.</p>
+            <ul class="roadmap-details">
+              <li>Local camera stream processing and object detection</li>
+              <li>Dedicated surveillance storage and retention controls</li>
+              <li>Restricted administrative and recording access</li>
+            </ul>
+          </article>
+
+          <article class="roadmap-card">
+            <div class="roadmap-card-head">
+              <span class="roadmap-icon" aria-hidden="true">AI</span>
+              <span class="roadmap-state">Planned</span>
+            </div>
+            <p class="roadmap-kicker">Local Intelligence</p>
+            <h3>Local AI</h3>
+            <p>GoreeCloud is being designed to run private AI locally through complementary services: Ollama for model execution, Open WebUI for general conversations, and AnythingLLM for persistent document knowledge and retrieval.</p>
+            <p class="roadmap-current"><strong>Current status:</strong> The core local-AI stack is planned and not yet installed. SearXNG is already active today and is intended to provide controlled current-internet research to future local AI workflows.</p>
+            <ul class="roadmap-details">
+              <li>Ollama local model execution</li>
+              <li>Open WebUI private conversational interface</li>
+              <li>AnythingLLM knowledge workspaces and RAG</li>
+            </ul>
+          </article>
+        </div>
+
+        <p class="roadmap-note">
+          <strong>Status note:</strong> “Planned” means the role and target architecture are documented, but the production workload is not currently deployed. GoreeCloud will only promote these services to active status after the required local infrastructure, access controls, monitoring, backup, and recovery paths are implemented and validated.
+        </p>
+      </div>
+    </section>
+
     <section id="development" class="section section-alt">
       <div class="container">
         <div class="section-heading">
@@ -592,6 +663,7 @@
 
       <div class="footer-links">
         <a href="#services">Services</a>
+        <a href="#roadmap">Roadmap</a>
         <a href="#about">About</a>
         <a href="#story">Story</a>
         <a href="#follow">Social</a>
