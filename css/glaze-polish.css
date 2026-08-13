@@ -1,0 +1,75 @@
+/* GoreeCloud public website — Glaze UI interaction polish. */
+
+.theme-toggle {
+  transition: background-color .18s ease, border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+}
+
+.theme-toggle[data-theme-mode="system"] {
+  border-color: color-mix(in srgb, var(--cyan) 38%, var(--border));
+  background: color-mix(in srgb, var(--cyan) 6%, var(--surface));
+}
+
+.site-nav a {
+  position: relative;
+  transition: color .18s ease, background-color .18s ease, border-color .18s ease;
+}
+
+.site-nav a:not(.nav-cta)::after {
+  content: "";
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  bottom: -.52rem;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--blue), var(--cyan));
+  opacity: 0;
+  transform: scaleX(.45);
+  transition: opacity .18s ease, transform .18s ease;
+}
+
+.site-nav a[aria-current="location"] {
+  color: var(--text);
+}
+
+.site-nav a[aria-current="location"]:not(.nav-cta)::after {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+.site-nav .nav-cta[aria-current="location"] {
+  color: var(--text);
+  border-color: var(--border-strong);
+  background: color-mix(in srgb, var(--cyan) 12%, var(--surface));
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--cyan) 10%, transparent);
+}
+
+@media (hover: hover) {
+  .theme-toggle:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 22px color-mix(in srgb, var(--blue) 12%, transparent);
+  }
+}
+
+@media (max-width: 720px) {
+  .site-nav a:not(.nav-cta)::after {
+    display: none;
+  }
+
+  .site-nav a[aria-current="location"]:not(.nav-cta) {
+    color: var(--text);
+    background: color-mix(in srgb, var(--cyan) 7%, var(--surface));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .theme-toggle,
+  .site-nav a,
+  .site-nav a::after {
+    transition: none !important;
+  }
+}

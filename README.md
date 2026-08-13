@@ -4,7 +4,7 @@ Public static website for GoreeCloud.
 
 ## Version
 
-Current website package: **v5.0 — Glaze UI foundation**
+Current website package: **v5.1 — Glaze UI interaction polish**
 
 ## Role
 
@@ -26,13 +26,14 @@ The site is intentionally dependency-light:
 - `index.html` — public single-page website and search/social metadata
 - `css/style.css` — core responsive site styling
 - `css/glaze.css` — Glaze UI design tokens, light/dark themes, layered surfaces, accessibility refinements, and compatibility overrides
+- `css/glaze-polish.css` — progressive Glaze UI interaction polish for section-aware navigation and appearance controls
 - `css/status.css` — Family Services product artwork mapping
 - `css/how-it-works.css` — How GoreeCloud Works section
 - `css/platform.css` — Platform Foundation section
 - `css/roadmap.css` — roadmap section
 - `css/development.css` — software project section
 - `css/social.css` — social-follow layout
-- `js/main.js` — theme preference, mobile navigation, and footer year
+- `js/main.js` — appearance modes, active-section navigation, mobile navigation, and footer year
 - `scripts/validate_site.py` — dependency-free repository validation
 - `.github/workflows/validate.yml` — pull-request and main-branch validation
 - `assets/goreecloud-icon.png` — GoreeCloud artwork
@@ -59,22 +60,25 @@ The documented live routing uses `https://www.goreecloud.com/` as the final publ
 
 ## Glaze UI
 
-v5.0 introduces the first website implementation of **Glaze UI**, GoreeCloud's shared design language.
+The website is the public implementation of **Glaze UI**, GoreeCloud's shared visual and interaction language.
 
 The website implementation includes:
 
 - shared design tokens
-- dark and light appearance
+- System, Light, and Dark appearance modes
 - operating-system appearance detection
-- a user-controlled theme switch
-- local-only theme persistence through `localStorage`
+- local-only explicit-theme persistence through `localStorage`
+- a System mode that returns control to the operating-system preference
 - layered and selectively translucent surfaces
 - restrained depth and rounded geometry
+- section-aware primary navigation with `aria-current` state
 - visible keyboard focus states
 - reduced-motion support
 - reduced-transparency fallback
 - responsive navigation and touch targets
 - no external browser dependencies
+
+The v5.1 interaction layer is loaded progressively from `css/glaze-polish.css` by the already self-hosted `js/main.js`. The baseline site remains usable when JavaScript is unavailable.
 
 Glaze UI is intended to remain distinctly GoreeCloud rather than copying another vendor's interface.
 
@@ -89,7 +93,7 @@ The website does not intentionally use:
 - fingerprinting
 - third-party browser scripts
 
-The theme preference is stored only in the visitor's browser using `localStorage` and is not transmitted by the site.
+When a visitor explicitly chooses Light or Dark mode, that preference is stored only in the visitor's browser using `localStorage` and is not transmitted by the site. Returning to System mode removes the stored override.
 
 ## Security
 
@@ -120,18 +124,37 @@ python scripts/validate_site.py
 node --check js/main.js
 ```
 
-The validator checks, among other things:
+The dependency-free validator checks, among other things:
 
 - canonical and Open Graph URL consistency
+- document language, title, description, and single-`h1` structure
+- duplicate element IDs
 - local asset references
 - in-page fragment targets
+- image `alt` attributes
 - safe `target="_blank"` links
+- absence of inline scripts, inline style blocks, and inline event handlers that conflict with the self-only CSP
 - self-hosted browser code dependencies
+- Glaze UI polish and three-mode appearance-control wiring
+- simple CSS brace integrity
 - common private-network address leakage
 - selected private infrastructure identifiers
 - robots/sitemap canonical consistency
 
 GitHub Actions runs the same checks on pull requests and on pushes to `main`.
+
+## v5.1 changes
+
+- Expanded the appearance control from a two-state Light/Dark switch into a three-mode System → Light → Dark cycle.
+- Returning to System mode removes the browser-stored theme override and resumes the operating-system preference.
+- Added clearer accessible labels and a distinct System-mode control state.
+- Added section-aware primary navigation that applies `aria-current="location"` as visitors move through the page.
+- Added restrained Glaze UI active-navigation treatment for desktop and mobile layouts.
+- Hardened mobile navigation so crossing into the desktop breakpoint closes any open mobile menu state.
+- Throttled scroll-driven active-navigation updates with `requestAnimationFrame` and passive scroll handling.
+- Expanded reduced-motion behavior so smooth scrolling and the new interaction transitions are removed when requested by the visitor.
+- Strengthened the dependency-free validator with document-structure, duplicate-ID, image-alternative-text, CSP-compatible markup, Glaze interaction-wiring, and CSS-integrity checks.
+- Kept all new browser resources self-hosted and retained the no-analytics/no-third-party-runtime posture.
 
 ## v5.0 changes
 

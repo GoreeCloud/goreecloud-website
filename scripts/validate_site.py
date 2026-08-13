@@ -7,6 +7,7 @@ validate the repository without downloading third-party packages.
 
 from __future__ import annotations
 
+from collections import Counter
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import urlparse
@@ -28,29 +29,66 @@ SENSITIVE_TERMS = ("goreecloud-vps-01", ".netbird.selfhosted")
 class SiteParser(HTMLParser):
     def __init__(self) -> None:
         super().__init__(convert_charrefs=True)
-        self.ids: set[str] = set()
+        self.id_counts: Counter[str] = Counter()
         self.local_refs: set[str] = set()
         self.fragment_refs: set[str] = set()
         self.external_blank_errors: list[str] = []
+        self.missing_alt_images: list[str] = []
+        self.inline_script_count = 0
+        self.inline_style_count = 0
+        self.inline_event_handlers: list[str] = []
         self.canonical: str | None = None
         self.og_url: str | None = None
+        self.description: str | None = None
         self.script_sources: list[str] = []
         self.stylesheet_sources: list[str] = []
+        self.html_lang: str | None = None
+        self.h1_count = 0
+        self._in_title = False
+        self.title_parts: list[str] = []
+
+    @property
+    def ids(self) -> set[str]:
+        return set(self.id_counts)
+
+    @property
+    def title(self) -> str:
+        return "".join(self.title_parts).strip()
 
     def handle_starttag(self, tag: str, attrs_list: list[tuple[str, str | None]]) -> None:
         attrs = {key: value or "" for key, value in attrs_list}
+
+        if tag == "html":
+            self.html_lang = attrs.get("lang")
+        if tag == "title":
+            self._in_title = True
+        if tag == "h1":
+            self.h1_count += 1
         if attrs.get("id"):
-            self.ids.add(attrs["id"])
+            self.id_counts[attrs["id"]] += 1
 
         if tag == "link" and attrs.get("rel") == "canonical":
             self.canonical = attrs.get("href")
         if tag == "meta" and attrs.get("property") == "og:url":
             self.og_url = attrs.get("content")
+        if tag == "meta" and attrs.get("name") == "description":
+            self.description = attrs.get("content")
 
-        if tag == "script" and attrs.get("src"):
-            self.script_sources.append(attrs["src"])
+        if tag == "script":
+            if attrs.get("src"):
+                self.script_sources.append(attrs["src"])
+            else:
+                self.inline_script_count += 1
+        if tag == "style":
+            self.inline_style_count += 1
         if tag == "link" and "stylesheet" in attrs.get("rel", "").split() and attrs.get("href"):
             self.stylesheet_sources.append(attrs["href"])
+        if tag == "img" and "alt" not in attrs:
+            self.missing_alt_images.append(attrs.get("src", "(missing src)"))
+
+        for attr_name in attrs:
+            if attr_name.lower().startswith("on"):
+                self.inline_event_handlers.append(f"<{tag} {attr_name}=...>")
 
         for attr in ("href", "src"):
             value = attrs.get(attr, "")
@@ -69,9 +107,24 @@ class SiteParser(HTMLParser):
             if not {"noopener", "noreferrer"}.issubset(rel):
                 self.external_blank_errors.append(attrs.get("href", "(missing href)"))
 
+    def handle_endtag(self, tag: str) -> None:
+        if tag == "title":
+            self._in_title = False
+
+    def handle_data(self, data: str) -> None:
+        if self._in_title:
+            self.title_parts.append(data)
+
 
 def fail(errors: list[str], message: str) -> None:
     errors.append(message)
+
+
+def validate_css(errors: list[str]) -> None:
+    for path in sorted((ROOT / "css").glob("*.css")):
+        text = path.read_text(encoding="utf-8", errors="replace")
+        if text.count("{") != text.count("}"):
+            fail(errors, f"Unbalanced CSS braces in {path.relative_to(ROOT)}.")
 
 
 def validate() -> list[str]:
@@ -79,6 +132,19 @@ def validate() -> list[str]:
     html = INDEX.read_text(encoding="utf-8")
     parser = SiteParser()
     parser.feed(html)
+
+    if parser.html_lang != "en":
+        fail(errors, f"Root html language must be 'en', found {parser.html_lang!r}.")
+    if not parser.title:
+        fail(errors, "Document title must not be empty.")
+    if not parser.description:
+        fail(errors, "Meta description must not be empty.")
+    if parser.h1_count != 1:
+        fail(errors, f"Homepage must contain exactly one h1, found {parser.h1_count}.")
+
+    duplicate_ids = sorted(identifier for identifier, count in parser.id_counts.items() if count > 1)
+    for identifier in duplicate_ids:
+        fail(errors, f"Duplicate id found in index.html: {identifier}")
 
     if parser.canonical != CANONICAL:
         fail(errors, f"Canonical URL must be {CANONICAL!r}, found {parser.canonical!r}.")
@@ -101,6 +167,14 @@ def validate() -> list[str]:
 
     for href in parser.external_blank_errors:
         fail(errors, f'target="_blank" link must include rel="noopener noreferrer": {href}')
+    for image in parser.missing_alt_images:
+        fail(errors, f"Image must include an alt attribute, even when decorative: {image}")
+    if parser.inline_script_count:
+        fail(errors, "Inline script blocks are not allowed by the self-only Content Security Policy.")
+    if parser.inline_style_count:
+        fail(errors, "Inline style blocks are not allowed by the self-only Content Security Policy.")
+    for handler in parser.inline_event_handlers:
+        fail(errors, f"Inline event handlers are not allowed by the self-only Content Security Policy: {handler}")
 
     for src in parser.script_sources + parser.stylesheet_sources:
         if urlparse(src).scheme or src.startswith("//"):
@@ -128,6 +202,15 @@ def validate() -> list[str]:
         for term in SENSITIVE_TERMS:
             if term.lower() in lower_text:
                 fail(errors, f"Private infrastructure identifier found in {path.relative_to(ROOT)}: {term}")
+
+    main_js = (ROOT / "js" / "main.js").read_text(encoding="utf-8")
+    polish_css = ROOT / "css" / "glaze-polish.css"
+    if "css/glaze-polish.css" not in main_js or not polish_css.exists():
+        fail(errors, "Glaze UI interaction polish must remain self-hosted and loaded by js/main.js.")
+    if "'system', 'light', 'dark'" not in main_js:
+        fail(errors, "Appearance control must preserve System, Light, and Dark modes.")
+
+    validate_css(errors)
 
     robots = (ROOT / "robots.txt").read_text(encoding="utf-8")
     if f"Sitemap: {CANONICAL}sitemap.xml" not in robots:
