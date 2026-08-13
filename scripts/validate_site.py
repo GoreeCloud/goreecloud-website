@@ -24,6 +24,15 @@ PRIVATE_PATTERNS = (
     re.compile(r"\b100\.(?:6[4-9]|[7-9]\d|1[01]\d|12[0-7])(?:\.\d{1,3}){2}\b"),
 )
 SENSITIVE_TERMS = ("goreecloud-vps-01", ".netbird.selfhosted")
+REQUIRED_STYLESHEETS = {
+    "css/style.css",
+    "css/glaze.css",
+    "css/glaze-polish.css",
+}
+REQUIRED_SCRIPTS = {
+    "js/theme-init.js",
+    "js/main.js",
+}
 
 
 class SiteParser(HTMLParser):
@@ -180,6 +189,28 @@ def validate() -> list[str]:
         if urlparse(src).scheme or src.startswith("//"):
             fail(errors, f"Browser code dependency must be self-hosted, found external resource: {src}")
 
+    missing_stylesheets = sorted(REQUIRED_STYLESHEETS.difference(parser.stylesheet_sources))
+    for stylesheet in missing_stylesheets:
+        fail(errors, f"Required stylesheet is not linked directly from index.html: {stylesheet}")
+
+    missing_scripts = sorted(REQUIRED_SCRIPTS.difference(parser.script_sources))
+    for script in missing_scripts:
+        fail(errors, f"Required script is not loaded from index.html: {script}")
+
+    theme_init_markup = '<script src="js/theme-init.js"></script>'
+    first_stylesheet_markup = '<link rel="stylesheet"'
+    if theme_init_markup not in html:
+        fail(errors, "Early appearance initialization script is missing from index.html.")
+    elif first_stylesheet_markup in html and html.index(theme_init_markup) > html.index(first_stylesheet_markup):
+        fail(errors, "js/theme-init.js must load before stylesheets so stored appearance is applied before first paint.")
+
+    if 'class="theme-toggle"' not in html or 'class="theme-toggle" type="button"' not in html:
+        fail(errors, "Appearance control markup is missing or malformed.")
+    if 'title="Switch theme" hidden' not in html:
+        fail(errors, "Appearance control must remain hidden until the interaction script is active.")
+    if '<span id="year">2026</span>' not in html:
+        fail(errors, "Footer must include a no-JavaScript copyright-year fallback.")
+
     public_text_files = [
         INDEX,
         ROOT / "README.md",
@@ -204,11 +235,19 @@ def validate() -> list[str]:
                 fail(errors, f"Private infrastructure identifier found in {path.relative_to(ROOT)}: {term}")
 
     main_js = (ROOT / "js" / "main.js").read_text(encoding="utf-8")
-    polish_css = ROOT / "css" / "glaze-polish.css"
-    if "css/glaze-polish.css" not in main_js or not polish_css.exists():
-        fail(errors, "Glaze UI interaction polish must remain self-hosted and loaded by js/main.js.")
+    theme_init_js = (ROOT / "js" / "theme-init.js").read_text(encoding="utf-8")
+    polish_css = (ROOT / "css" / "glaze-polish.css").read_text(encoding="utf-8")
+
     if "'system', 'light', 'dark'" not in main_js:
         fail(errors, "Appearance control must preserve System, Light, and Dark modes.")
+    if "root.dataset.js = 'true'" not in main_js:
+        fail(errors, "Interaction script must identify the enhanced JavaScript state for progressive navigation behavior.")
+    if "themeToggle.hidden = false" not in main_js:
+        fail(errors, "Interaction script must reveal the appearance control only after JavaScript is active.")
+    if "localStorage.getItem(THEME_STORAGE_KEY)" not in theme_init_js:
+        fail(errors, "Early appearance initialization must restore an explicit local browser preference when present.")
+    if 'html:not([data-js="true"]) .site-nav' not in polish_css:
+        fail(errors, "Mobile navigation must retain a visible no-JavaScript fallback.")
 
     validate_css(errors)
 
@@ -219,6 +258,8 @@ def validate() -> list[str]:
     sitemap = (ROOT / "sitemap.xml").read_text(encoding="utf-8")
     if f"<loc>{CANONICAL}</loc>" not in sitemap:
         fail(errors, "sitemap.xml does not contain the canonical www homepage URL.")
+    if not re.search(r"<lastmod>\d{4}-\d{2}-\d{2}</lastmod>", sitemap):
+        fail(errors, "sitemap.xml must include a YYYY-MM-DD lastmod value for the homepage.")
 
     return errors
 

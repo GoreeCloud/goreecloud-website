@@ -5,9 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="GoreeCloud is a privacy-first, self-hosted personal and family cloud built for data ownership, recoverability, open-source independence, and long-term digital preservation.">
   <meta name="robots" content="index,follow,max-image-preview:large">
+  <meta name="application-name" content="GoreeCloud">
   <meta name="color-scheme" content="dark light">
-  <meta name="theme-color" content="#07111f" media="(prefers-color-scheme: dark)">
-  <meta name="theme-color" content="#f4f7fb" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" data-theme-color="dark" content="#07111f" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" data-theme-color="light" content="#f4f7fb" media="(prefers-color-scheme: light)">
+
+  <script src="js/theme-init.js"></script>
 
   <title>GoreeCloud — Privacy-First Personal &amp; Family Cloud</title>
 
@@ -21,8 +24,10 @@
   <link rel="stylesheet" href="css/development.css">
   <link rel="stylesheet" href="css/social.css">
   <link rel="stylesheet" href="css/glaze.css">
+  <link rel="stylesheet" href="css/glaze-polish.css">
 
   <meta property="og:type" content="website">
+  <meta property="og:locale" content="en_US">
   <meta property="og:site_name" content="GoreeCloud">
   <meta property="og:title" content="GoreeCloud — Privacy-First Personal &amp; Family Cloud">
   <meta property="og:description" content="A self-hosted personal and family cloud built for ownership, privacy, recoverability, open-source independence, and the future.">
@@ -36,6 +41,7 @@
   <meta name="twitter:title" content="GoreeCloud — Privacy-First Personal &amp; Family Cloud">
   <meta name="twitter:description" content="A self-hosted personal and family cloud built for ownership, privacy, recoverability, open-source independence, and the future.">
   <meta name="twitter:image" content="https://www.goreecloud.com/assets/social-preview.png">
+  <meta name="twitter:image:alt" content="GoreeCloud — A private cloud built for family, ownership, and the future.">
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -48,7 +54,7 @@
       </a>
 
       <div class="nav-actions">
-        <button class="theme-toggle" type="button" aria-label="Switch to light theme" title="Switch theme">
+        <button class="theme-toggle" type="button" aria-label="Switch to light theme" title="Switch theme" hidden>
           <span class="theme-toggle-icon" aria-hidden="true">☀</span>
           <span class="sr-only theme-toggle-label">Switch theme</span>
         </button>
@@ -712,7 +718,7 @@
         <a href="mailto:goreecloud@gmail.com">Email</a>
       </div>
 
-      <p class="copyright">© <span id="year"></span> GoreeCloud</p>
+      <p class="copyright">© <span id="year">2026</span> GoreeCloud</p>
     </div>
   </footer>
 

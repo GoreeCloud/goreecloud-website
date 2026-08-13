@@ -1,21 +1,32 @@
 /* GoreeCloud public website — appearance, navigation, and small progressive enhancements. */
 
-const polishStylesheet = document.createElement('link');
-polishStylesheet.rel = 'stylesheet';
-polishStylesheet.href = 'css/glaze-polish.css';
-document.head.append(polishStylesheet);
-
 const THEME_STORAGE_KEY = 'goreecloud-theme';
 const THEME_MODES = ['system', 'light', 'dark'];
+const THEME_COLORS = {
+  dark: '#07111f',
+  light: '#f4f7fb',
+};
 const root = document.documentElement;
 const themeToggle = document.querySelector('.theme-toggle');
 const themeIcon = document.querySelector('.theme-toggle-icon');
 const themeLabel = document.querySelector('.theme-toggle-label');
 const colorScheme = window.matchMedia('(prefers-color-scheme: light)');
 
+root.dataset.js = 'true';
+if (themeToggle) themeToggle.hidden = false;
+
 function getThemeMode() {
   const explicitTheme = root.dataset.theme;
   return explicitTheme === 'light' || explicitTheme === 'dark' ? explicitTheme : 'system';
+}
+
+function updateThemeColors(mode) {
+  document.querySelectorAll('meta[name="theme-color"][data-theme-color]').forEach((meta) => {
+    const scheme = meta.dataset.themeColor;
+    meta.content = mode === 'light' || mode === 'dark'
+      ? THEME_COLORS[mode]
+      : THEME_COLORS[scheme] ?? meta.content;
+  });
 }
 
 function updateThemeControl() {
@@ -44,6 +55,8 @@ function setThemeMode(mode, { persist = true } = {}) {
     root.dataset.theme = mode;
   }
 
+  updateThemeColors(mode);
+
   if (persist) {
     try {
       if (mode === 'system') {
@@ -63,6 +76,7 @@ try {
   const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
   if (savedTheme === 'light' || savedTheme === 'dark') {
     root.dataset.theme = savedTheme;
+    updateThemeColors(savedTheme);
   } else if (savedTheme) {
     localStorage.removeItem(THEME_STORAGE_KEY);
   }
@@ -79,7 +93,10 @@ themeToggle?.addEventListener('click', () => {
 });
 
 colorScheme.addEventListener?.('change', () => {
-  if (getThemeMode() === 'system') updateThemeControl();
+  if (getThemeMode() === 'system') {
+    updateThemeColors('system');
+    updateThemeControl();
+  }
 });
 
 const navToggle = document.querySelector('.nav-toggle');

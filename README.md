@@ -4,7 +4,7 @@ Public static website for GoreeCloud.
 
 ## Version
 
-Current website package: **v5.1 — Glaze UI interaction polish**
+Current website package: **v5.2 — Progressive resilience and first-paint polish**
 
 ## Role
 
@@ -26,14 +26,15 @@ The site is intentionally dependency-light:
 - `index.html` — public single-page website and search/social metadata
 - `css/style.css` — core responsive site styling
 - `css/glaze.css` — Glaze UI design tokens, light/dark themes, layered surfaces, accessibility refinements, and compatibility overrides
-- `css/glaze-polish.css` — progressive Glaze UI interaction polish for section-aware navigation and appearance controls
+- `css/glaze-polish.css` — Glaze UI interaction states and progressive-enhancement fallbacks
 - `css/status.css` — Family Services product artwork mapping
 - `css/how-it-works.css` — How GoreeCloud Works section
 - `css/platform.css` — Platform Foundation section
 - `css/roadmap.css` — roadmap section
 - `css/development.css` — software project section
 - `css/social.css` — social-follow layout
-- `js/main.js` — appearance modes, active-section navigation, mobile navigation, and footer year
+- `js/theme-init.js` — early appearance initialization before stylesheet paint
+- `js/main.js` — appearance modes, active-section navigation, mobile navigation, and footer-year enhancement
 - `scripts/validate_site.py` — dependency-free repository validation
 - `.github/workflows/validate.yml` — pull-request and main-branch validation
 - `assets/goreecloud-icon.png` — GoreeCloud artwork
@@ -68,7 +69,9 @@ The website implementation includes:
 - System, Light, and Dark appearance modes
 - operating-system appearance detection
 - local-only explicit-theme persistence through `localStorage`
+- an early self-hosted appearance initializer that applies explicit Light/Dark preferences before stylesheets paint
 - a System mode that returns control to the operating-system preference
+- browser theme-color synchronization with explicit appearance choices
 - layered and selectively translucent surfaces
 - restrained depth and rounded geometry
 - section-aware primary navigation with `aria-current` state
@@ -76,9 +79,10 @@ The website implementation includes:
 - reduced-motion support
 - reduced-transparency fallback
 - responsive navigation and touch targets
+- a mobile navigation fallback that remains usable when JavaScript is unavailable
 - no external browser dependencies
 
-The v5.1 interaction layer is loaded progressively from `css/glaze-polish.css` by the already self-hosted `js/main.js`. The baseline site remains usable when JavaScript is unavailable.
+The Glaze UI polish layer is linked directly from `index.html` so visual behavior is not dependent on JavaScript loading. The appearance control remains hidden until the interaction script is active, while mobile primary navigation remains directly accessible when JavaScript is unavailable.
 
 Glaze UI is intended to remain distinctly GoreeCloud rather than copying another vendor's interface.
 
@@ -121,6 +125,7 @@ Run:
 
 ```bash
 python scripts/validate_site.py
+node --check js/theme-init.js
 node --check js/main.js
 ```
 
@@ -135,13 +140,30 @@ The dependency-free validator checks, among other things:
 - safe `target="_blank"` links
 - absence of inline scripts, inline style blocks, and inline event handlers that conflict with the self-only CSP
 - self-hosted browser code dependencies
-- Glaze UI polish and three-mode appearance-control wiring
+- direct loading of the Glaze UI polish stylesheet
+- early appearance initialization before stylesheet loading
+- System/Light/Dark appearance-control wiring
+- hidden-until-active appearance control behavior
+- no-JavaScript mobile-navigation fallback wiring
+- no-JavaScript footer-year fallback
 - simple CSS brace integrity
 - common private-network address leakage
 - selected private infrastructure identifiers
-- robots/sitemap canonical consistency
+- robots/sitemap canonical consistency and sitemap modification metadata
 
-GitHub Actions runs the same checks on pull requests and on pushes to `main`.
+GitHub Actions runs the repository validation and JavaScript syntax checks on pull requests and on pushes to `main`.
+
+## v5.2 changes
+
+- Moved the Glaze UI polish stylesheet from JavaScript injection to a direct `index.html` stylesheet link so visual polish does not depend on the interaction script.
+- Added `js/theme-init.js`, a small self-hosted early initializer that restores explicit Light/Dark preference before CSS is painted, reducing appearance flash without adding inline script exceptions to the Content Security Policy.
+- Synchronized browser theme-color metadata with explicit Light/Dark appearance choices while preserving operating-system-aware colors in System mode.
+- Added a progressive mobile-navigation fallback: when JavaScript is unavailable, primary navigation remains visible rather than being trapped behind an inert menu button.
+- Hid the appearance button until JavaScript is active so visitors never receive a nonfunctional theme control.
+- Added a static `2026` footer-year fallback while preserving automatic year updates when JavaScript is available.
+- Added `application-name`, Open Graph locale, and Twitter image-alt metadata.
+- Added homepage `lastmod` metadata to the sitemap.
+- Expanded repository validation to enforce the early-theme, direct-stylesheet, no-JavaScript navigation, footer fallback, and sitemap requirements.
 
 ## v5.1 changes
 
