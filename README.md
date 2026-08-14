@@ -4,7 +4,7 @@ Public static website for GoreeCloud.
 
 ## Version
 
-Current website package: **v5.4 — Accessibility and public security hardening**
+Current website package: **v5.5 — Navigation accessibility and print resilience**
 
 ## Role
 
@@ -26,7 +26,7 @@ The site is intentionally dependency-light:
 - `index.html` — public single-page website and search/social metadata
 - `css/style.css` — core responsive site styling
 - `css/glaze.css` — Glaze UI design tokens, light/dark themes, layered surfaces, accessibility refinements, and compatibility overrides
-- `css/glaze-polish.css` — Glaze UI interaction states, progressive-enhancement fallbacks, and increased-contrast/forced-colors support
+- `css/glaze-polish.css` — Glaze UI interaction states, progressive-enhancement fallbacks, increased-contrast/forced-colors support, and print presentation
 - `css/status.css` — Family Services product artwork mapping
 - `css/how-it-works.css` — How GoreeCloud Works section
 - `css/platform.css` — Platform Foundation section
@@ -34,7 +34,7 @@ The site is intentionally dependency-light:
 - `css/development.css` — software project section
 - `css/social.css` — social-follow layout
 - `js/theme-init.js` — early appearance initialization before stylesheet paint
-- `js/main.js` — appearance modes, active-section navigation, mobile navigation, and footer-year enhancement
+- `js/main.js` — appearance modes, active-section navigation, accessible mobile-navigation state, and footer-year enhancement
 - `scripts/validate_site.py` — dependency-free repository validation
 - `.github/workflows/validate.yml` — pull-request and main-branch validation
 - `.well-known/security.txt` — standardized public security-reporting contact and expiration metadata
@@ -76,11 +76,13 @@ The website implementation includes:
 - layered and selectively translucent surfaces
 - restrained depth and rounded geometry
 - section-aware primary navigation with `aria-current` state
+- mobile navigation whose accessible control label reflects whether the menu is open or closed
 - visible keyboard focus states
 - reduced-motion support
 - reduced-transparency fallback
 - increased-contrast support through `prefers-contrast: more`
 - forced-colors support for operating-system high-contrast modes
+- print/readable-paper presentation that removes interactive chrome and translucent effects
 - responsive navigation and touch targets
 - a mobile navigation fallback that remains usable when JavaScript is unavailable
 - no external browser dependencies
@@ -145,15 +147,17 @@ The dependency-free validator checks, among other things:
 - in-page fragment targets
 - image `alt` attributes
 - safe `target="_blank"` links
+- explicit HTTPS for external web references
 - absence of inline scripts, inline style blocks, and inline event handlers that conflict with the self-only CSP
 - self-hosted browser code dependencies
 - direct loading of the Glaze UI polish stylesheet
 - early appearance initialization before stylesheet loading
 - System/Light/Dark appearance-control wiring
 - hidden-until-active appearance control behavior
+- accessible open/closed mobile-navigation labeling
 - no-JavaScript mobile-navigation fallback wiring
 - no-JavaScript footer-year fallback
-- increased-contrast and forced-colors Glaze UI fallbacks
+- increased-contrast, forced-colors, and print Glaze UI fallbacks
 - current public Notes repository and Notify project markers
 - rejection of the obsolete Memos-as-primary-Notes description
 - public ownership-independence purpose marker
@@ -165,6 +169,14 @@ The dependency-free validator checks, among other things:
 - robots/sitemap canonical consistency and sitemap modification metadata
 
 GitHub Actions runs the repository validation and JavaScript syntax checks on pull requests and on pushes to `main`.
+
+## v5.5 changes
+
+- Improved the mobile navigation control so its accessible text changes between `Open navigation` and `Close navigation` as the menu state changes, while preserving `aria-expanded` and Escape-key focus restoration.
+- Added a print/readable-paper Glaze UI mode that removes interactive chrome, decorative hero artwork, translucency, and shadows while preserving the site's core content and hierarchy.
+- Added validator coverage for the dynamic mobile-navigation accessible label and print stylesheet.
+- Added validation that rejects accidental `http://` and protocol-relative external web references so public outbound links remain explicitly HTTPS.
+- Kept the site dependency-free, tracker-free, and compatible with the existing no-JavaScript navigation fallback.
 
 ## v5.4 changes
 

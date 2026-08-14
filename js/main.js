@@ -100,20 +100,29 @@ colorScheme.addEventListener?.('change', () => {
 });
 
 const navToggle = document.querySelector('.nav-toggle');
+const navToggleLabel = navToggle?.querySelector('.sr-only');
 const nav = document.querySelector('.site-nav');
 const desktopNavigation = window.matchMedia('(min-width: 721px)');
+
+function updateNavigationControl(open) {
+  if (!navToggle) return;
+  navToggle.setAttribute('aria-expanded', String(open));
+  if (navToggleLabel) navToggleLabel.textContent = open ? 'Close navigation' : 'Open navigation';
+}
 
 function closeNavigation({ restoreFocus = false } = {}) {
   if (!navToggle || !nav) return;
   nav.classList.remove('open');
-  navToggle.setAttribute('aria-expanded', 'false');
+  updateNavigationControl(false);
   if (restoreFocus) navToggle.focus();
 }
 
 if (navToggle && nav) {
+  updateNavigationControl(nav.classList.contains('open'));
+
   navToggle.addEventListener('click', () => {
     const open = nav.classList.toggle('open');
-    navToggle.setAttribute('aria-expanded', String(open));
+    updateNavigationControl(open);
   });
 
   nav.querySelectorAll('a').forEach((link) => {

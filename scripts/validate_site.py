@@ -62,6 +62,7 @@ class SiteParser(HTMLParser):
         self.local_refs: set[str] = set()
         self.fragment_refs: set[str] = set()
         self.external_blank_errors: list[str] = []
+        self.insecure_external_refs: list[str] = []
         self.missing_alt_images: list[str] = []
         self.inline_script_count = 0
         self.inline_style_count = 0
@@ -127,7 +128,12 @@ class SiteParser(HTMLParser):
                 self.fragment_refs.add(value[1:])
                 continue
             parsed = urlparse(value)
-            if parsed.scheme or value.startswith("//"):
+            if parsed.scheme:
+                if parsed.scheme.lower() == "http":
+                    self.insecure_external_refs.append(value)
+                continue
+            if value.startswith("//"):
+                self.insecure_external_refs.append(value)
                 continue
             self.local_refs.add(parsed.path)
 
@@ -233,6 +239,8 @@ def validate() -> list[str]:
 
     for href in parser.external_blank_errors:
         fail(errors, f'target="_blank" link must include rel="noopener noreferrer": {href}')
+    for reference in parser.insecure_external_refs:
+        fail(errors, f"External web references must use explicit HTTPS: {reference}")
     for image in parser.missing_alt_images:
         fail(errors, f"Image must include an alt attribute, even when decorative: {image}")
     if parser.inline_script_count:
@@ -309,6 +317,8 @@ def validate() -> list[str]:
         fail(errors, "Interaction script must identify the enhanced JavaScript state for progressive navigation behavior.")
     if "themeToggle.hidden = false" not in main_js:
         fail(errors, "Interaction script must reveal the appearance control only after JavaScript is active.")
+    if "updateNavigationControl(open)" not in main_js or "'Close navigation'" not in main_js or "'Open navigation'" not in main_js:
+        fail(errors, "Mobile navigation must update its accessible control label for open and closed states.")
     if "localStorage.getItem(THEME_STORAGE_KEY)" not in theme_init_js:
         fail(errors, "Early appearance initialization must restore an explicit local browser preference when present.")
     if 'html:not([data-js="true"]) .site-nav' not in polish_css:
@@ -317,6 +327,8 @@ def validate() -> list[str]:
         fail(errors, "Glaze UI must include an increased-contrast fallback.")
     if "@media (forced-colors: active)" not in polish_css:
         fail(errors, "Glaze UI must include a forced-colors fallback.")
+    if "@media print" not in polish_css:
+        fail(errors, "Glaze UI must include a print/readable-paper fallback.")
 
     validate_css(errors)
     validate_security_contact(errors)

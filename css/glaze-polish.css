@@ -167,6 +167,131 @@
   }
 }
 
+@media print {
+  :root {
+    color-scheme: light;
+    --text: #000;
+    --text-soft: #111;
+    --muted: #333;
+    --muted-strong: #222;
+    --border: #999;
+    --border-strong: #666;
+    --shadow: none;
+    --shadow-soft: none;
+  }
+
+  html {
+    scroll-behavior: auto;
+    scroll-padding-top: 0;
+  }
+
+  body {
+    background: #fff !important;
+    color: #000;
+    font-size: 11pt;
+  }
+
+  .site-header,
+  .hero-card,
+  .hero-actions,
+  .theme-toggle,
+  .nav-toggle,
+  .contact-button,
+  .footer-links,
+  .footer-glaze {
+    display: none !important;
+  }
+
+  .container {
+    width: 100%;
+    max-width: none;
+  }
+
+  .hero,
+  .section,
+  .section-alt,
+  .roadmap-section,
+  .band,
+  .site-footer {
+    background: #fff !important;
+    color: #000;
+    border-color: #bbb;
+    box-shadow: none;
+  }
+
+  .hero,
+  .section {
+    padding-block: 1.25rem;
+  }
+
+  .hero-grid,
+  .about-grid,
+  .glaze-callout {
+    display: block;
+  }
+
+  .service-card,
+  .how-card,
+  .platform-card,
+  .roadmap-card,
+  .principle-grid > div,
+  .timeline article > div,
+  .social-card,
+  .contact-card,
+  .glaze-callout {
+    break-inside: avoid;
+    background: #fff !important;
+    color: #000;
+    border: 1px solid #aaa;
+    box-shadow: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .hero-lede,
+  .section-heading > p:last-child,
+  .about-copy > p,
+  .timeline p,
+  .contact-card p:last-child,
+  .service-card p:not(.service-kicker),
+  .platform-description,
+  .roadmap-card > p:not(.roadmap-kicker):not(.roadmap-current),
+  .social-card span:not(.social-icon),
+  .social-card small,
+  .principle-grid span,
+  .platform-role,
+  .platform-legal,
+  .roadmap-current,
+  .roadmap-details li {
+    color: #222 !important;
+  }
+
+  .service-grid,
+  .platform-grid,
+  .roadmap-grid,
+  .principle-grid {
+    gap: .65rem;
+  }
+
+  a {
+    color: #000;
+    text-decoration: underline;
+  }
+
+  .badge,
+  .platform-state,
+  .roadmap-state,
+  .glaze-chip {
+    color: #000 !important;
+    background: #fff !important;
+    border-color: #777 !important;
+  }
+
+  .site-footer {
+    padding-block: 1rem;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
