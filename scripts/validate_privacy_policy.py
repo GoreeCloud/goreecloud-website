@@ -183,10 +183,13 @@ def main() -> int:
     for marker in (
         "Referrer-Policy: no-referrer",
         "script-src 'self'",
-        "connect-src 'self'",
     ):
         if marker not in headers:
             errors.append(f"Privacy statement depends on missing public-site header control: {marker}")
+    if "connect-src 'none'" not in headers and "connect-src 'self'" not in headers:
+        errors.append(
+            "Privacy statement depends on a restrictive connect-src policy; expected 'none' or 'self'."
+        )
 
     main_js = MAIN_JS.read_text(encoding="utf-8")
     theme_init = THEME_INIT_JS.read_text(encoding="utf-8")
