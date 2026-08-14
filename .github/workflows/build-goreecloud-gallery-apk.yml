@@ -6,6 +6,7 @@ on:
       - build/goreecloud-gallery-apk
     paths:
       - .github/scripts/build_goreecloud_gallery.py
+      - .github/scripts/build_goreecloud_gallery_gc2.py
       - .github/workflows/build-goreecloud-gallery-apk.yml
   workflow_dispatch:
 
@@ -19,7 +20,7 @@ concurrency:
 jobs:
   build-apk:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 35
 
     steps:
       - name: Check out isolated build carrier
@@ -37,11 +38,23 @@ jobs:
           git -C upstream-gallery checkout --detach b28299dc33821eee8d108a9880ce87876cf31443
           test "$(git -C upstream-gallery rev-parse HEAD)" = "b28299dc33821eee8d108a9880ce87876cf31443"
 
-      - name: Apply GoreeCloud gc.1 and Glaze UI patchset
+      - name: Clone exact Fossify Commons baseline
+        run: |
+          git clone --filter=blob:none --no-checkout https://github.com/FossifyOrg/commons.git upstream-commons
+          git -C upstream-commons checkout --detach acfd352df1a1852d17a5f77def8b7ad6e522a5b6
+          test "$(git -C upstream-commons rev-parse HEAD)" = "acfd352df1a1852d17a5f77def8b7ad6e522a5b6"
+
+      - name: Apply GoreeCloud gc.1 foundation
         run: |
           python3 .github/scripts/build_goreecloud_gallery.py upstream-gallery
+
+      - name: Apply GoreeCloud gc.2 acceptance corrections
+        run: |
+          python3 .github/scripts/build_goreecloud_gallery_gc2.py upstream-gallery upstream-commons
           git -C upstream-gallery diff --check
+          git -C upstream-commons diff --check
           git -C upstream-gallery status --short
+          git -C upstream-commons status --short
 
       - name: Build installable FOSS APK
         working-directory: upstream-gallery
@@ -56,11 +69,11 @@ jobs:
           mkdir -p dist
           mapfile -t apks < <(find upstream-gallery/app/build/outputs/apk/foss/debug -type f -name '*.apk' | sort)
           test "${#apks[@]}" -eq 1
-          cp "${apks[0]}" dist/GoreeCloud-Gallery-1.0.0-gc.1.apk
+          cp "${apks[0]}" dist/GoreeCloud-Gallery-1.0.0-gc.2.apk
 
-          APK="dist/GoreeCloud-Gallery-1.0.0-gc.1.apk"
+          APK="dist/GoreeCloud-Gallery-1.0.0-gc.2.apk"
           test -s "$APK"
-          unzip -p "$APK" assets/goreecloud_notice.txt | grep -F "GoreeCloud Gallery 1.0.0-gc.1"
+          unzip -p "$APK" assets/goreecloud_notice.txt | grep -F "GoreeCloud Gallery 1.0.0-gc.2"
 
           APKANALYZER=""
           if command -v apkanalyzer >/dev/null 2>&1; then
@@ -76,7 +89,7 @@ jobs:
             echo "apkanalyzer unavailable; package/permission validation will rely on source assertions and successful Android packaging"
           fi
 
-          sha256sum "$APK" | tee dist/GoreeCloud-Gallery-1.0.0-gc.1.sha256
+          sha256sum "$APK" | tee dist/GoreeCloud-Gallery-1.0.0-gc.2.sha256
           cp upstream-gallery/GOREECLOUD-NOTICE.md dist/GOREECLOUD-NOTICE.md
           cp upstream-gallery/LICENSE dist/LICENSE-GPL-3.0.txt
 
