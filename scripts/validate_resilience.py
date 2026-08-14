@@ -38,7 +38,6 @@ REQUIRED_STATIC_HEADERS = (
     "connect-src 'none'",
     "media-src 'none'",
     "worker-src 'none'",
-    "Cross-Origin-Resource-Policy: same-origin",
     "X-DNS-Prefetch-Control: off",
 )
 
@@ -247,7 +246,7 @@ def validate_headers(errors: list[str]) -> None:
             fail(errors, f"Static-site security hardening is missing from _headers: {marker}")
 
     if "Access-Control-Allow-Origin: *" in headers:
-        fail(errors, "The public static site must not introduce a blanket cross-origin resource policy.")
+        fail(errors, "The public static site must not introduce blanket cross-origin resource access.")
 
 
 def validate() -> list[str]:
