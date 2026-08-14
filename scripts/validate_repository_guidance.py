@@ -13,6 +13,7 @@ BUG_FORM = ROOT / ".github" / "ISSUE_TEMPLATE" / "bug-report.yml"
 FEATURE_FORM = ROOT / ".github" / "ISSUE_TEMPLATE" / "feature-request.yml"
 PR_TEMPLATE = ROOT / ".github" / "pull_request_template.md"
 WORKFLOW = ROOT / ".github" / "workflows" / "validate.yml"
+README = ROOT / "README.md"
 SECURITY_URL = "https://www.goreecloud.com/security.html"
 PRIVATE_PATTERNS = (
     re.compile(r"\b10(?:\.\d{1,3}){3}\b"),
@@ -92,12 +93,24 @@ def main() -> int:
         ),
         errors,
     )
+    readme = require_markers(
+        README,
+        (
+            "python scripts/build_public_site.py",
+            "Build output directory: `dist`",
+            "issue #5",
+            "issue #6",
+            "Passing CI does not itself authorize",
+        ),
+        errors,
+    )
 
     for path, text in (
         (ISSUE_CONFIG, config),
         (BUG_FORM, bug),
         (FEATURE_FORM, feature),
         (PR_TEMPLATE, pr_template),
+        (README, readme),
     ):
         if not text:
             continue
