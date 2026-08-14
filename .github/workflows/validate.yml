@@ -44,6 +44,12 @@ jobs:
       - name: Validate public semantics
         run: python scripts/validate_public_semantics.py
 
+      - name: Validate full public surface
+        run: python scripts/validate_public_surface.py
+
+      - name: Validate Cloudflare deployment contract
+        run: python scripts/validate_deployment_contract.py
+
       - name: Validate repository guidance
         run: python scripts/validate_repository_guidance.py
 
