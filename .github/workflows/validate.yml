@@ -32,6 +32,9 @@ jobs:
       - name: Validate workflow supply chain
         run: python scripts/validate_workflow_security.py
 
+      - name: Validate security reporting
+        run: python scripts/validate_security_policy.py
+
       - name: Set up Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
