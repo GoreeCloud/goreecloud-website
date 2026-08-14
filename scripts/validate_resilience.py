@@ -19,12 +19,12 @@ ERROR_PAGE = ROOT / "404.html"
 ERROR_STYLES = ROOT / "css" / "error.css"
 HEADERS = ROOT / "_headers"
 REQUIRED_STYLESHEETS = {
-    "css/style.css",
-    "css/glaze.css",
-    "css/glaze-polish.css",
-    "css/error.css",
+    "/css/style.css",
+    "/css/glaze.css",
+    "/css/glaze-polish.css",
+    "/css/error.css",
 }
-REQUIRED_SCRIPTS = {"js/theme-init.js"}
+REQUIRED_SCRIPTS = {"/js/theme-init.js"}
 EARLY_HINT = "Link: </css/style.css>; rel=preload; as=style, </css/glaze.css>; rel=preload; as=style"
 PRIVATE_PATTERNS = (
     re.compile(r"\b10(?:\.\d{1,3}){3}\b"),
@@ -33,6 +33,14 @@ PRIVATE_PATTERNS = (
     re.compile(r"\b100\.(?:6[4-9]|[7-9]\d|1[01]\d|12[0-7])(?:\.\d{1,3}){2}\b"),
 )
 SENSITIVE_TERMS = ("goreecloud-vps-01", ".netbird.selfhosted")
+REQUIRED_STATIC_HEADERS = (
+    "form-action 'none'",
+    "connect-src 'none'",
+    "media-src 'none'",
+    "worker-src 'none'",
+    "Cross-Origin-Resource-Policy: same-origin",
+    "X-DNS-Prefetch-Control: off",
+)
 
 
 class ErrorPageParser(HTMLParser):
@@ -171,6 +179,12 @@ def validate_error_page(errors: list[str]) -> None:
     for reference in sorted(parser.local_refs):
         if reference in {"", "/"}:
             continue
+        if not reference.startswith("/"):
+            fail(
+                errors,
+                "404.html local references must be origin-rooted so nested missing URLs render correctly: "
+                f"{reference}",
+            )
         relative = reference.lstrip("/")
         target = (ROOT / relative).resolve()
         try:
@@ -200,7 +214,7 @@ def validate_error_page(errors: list[str]) -> None:
     missing_scripts = sorted(REQUIRED_SCRIPTS.difference(parser.script_sources))
     for script in missing_scripts:
         fail(errors, f"404.html must load the early appearance initializer: {script}")
-    if "js/main.js" in parser.script_sources:
+    if "/js/main.js" in parser.script_sources:
         fail(errors, "404.html should remain independently usable without the main interaction script.")
 
     combined_public_text = html + "\n" + ERROR_STYLES.read_text(encoding="utf-8", errors="replace")
@@ -218,7 +232,7 @@ def validate_error_page(errors: list[str]) -> None:
         fail(errors, "Unbalanced CSS braces in css/error.css.")
 
 
-def validate_early_hints(errors: list[str]) -> None:
+def validate_headers(errors: list[str]) -> None:
     if not HEADERS.exists():
         fail(errors, "Cloudflare Pages _headers file is missing.")
         return
@@ -228,11 +242,18 @@ def validate_early_hints(errors: list[str]) -> None:
     if root_rule not in headers:
         fail(errors, "Homepage must declare critical local styles through a root Link preload rule for Cloudflare Pages Early Hints.")
 
+    for marker in REQUIRED_STATIC_HEADERS:
+        if marker not in headers:
+            fail(errors, f"Static-site security hardening is missing from _headers: {marker}")
+
+    if "Access-Control-Allow-Origin: *" in headers:
+        fail(errors, "The public static site must not introduce a blanket cross-origin resource policy.")
+
 
 def validate() -> list[str]:
     errors: list[str] = []
     validate_error_page(errors)
-    validate_early_hints(errors)
+    validate_headers(errors)
     return errors
 
 
