@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate GitHub Actions supply-chain controls without third-party packages."""
+"""Validate GitHub Actions supply-chain and least-privilege controls."""
 
 from __future__ import annotations
 
@@ -9,9 +9,16 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 WORKFLOWS = ROOT / ".github" / "workflows"
+VALIDATE_WORKFLOW = WORKFLOWS / "validate.yml"
 DEPENDABOT = ROOT / ".github" / "dependabot.yml"
 USES_RE = re.compile(r"^\s*uses:\s*([^\s#]+)", re.MULTILINE)
 SHA_RE = re.compile(r"^[0-9a-fA-F]{40}$")
+WRITE_PERMISSION_RE = re.compile(r"(?mi)^\s*[A-Za-z0-9_-]+\s*:\s*write\s*(?:#.*)?$")
+
+
+def require(errors: list[str], text: str, marker: str, message: str) -> None:
+    if marker not in text:
+        errors.append(message)
 
 
 def main() -> int:
@@ -21,6 +28,8 @@ def main() -> int:
     if not workflow_paths:
         errors.append("No GitHub Actions workflow files were found.")
 
+    # Every external action in every workflow must be immutable. Local actions and
+    # docker:// references are not Git refs and are intentionally exempt here.
     for path in workflow_paths:
         text = path.read_text(encoding="utf-8")
         for action_ref in USES_RE.findall(text):
@@ -36,6 +45,30 @@ def main() -> int:
                     f"{path.relative_to(ROOT)}: {action_ref}"
                 )
 
+    # The public validation workflow never needs elevated repository access or
+    # repository secrets. Keep these requirements specific to validate.yml so a
+    # future deployment workflow can carry separately justified permissions.
+    if not VALIDATE_WORKFLOW.exists():
+        errors.append(".github/workflows/validate.yml is required.")
+    else:
+        validation = VALIDATE_WORKFLOW.read_text(encoding="utf-8")
+
+        if re.search(r"(?m)^\s*pull_request_target\s*:", validation):
+            errors.append("Validation workflow must not use pull_request_target.")
+        if re.search(r"(?mi)^\s*permissions\s*:\s*write-all\s*(?:#.*)?$", validation):
+            errors.append("Validation workflow must not request write-all permissions.")
+        if WRITE_PERMISSION_RE.search(validation):
+            errors.append("Validation workflow must not request any write permission.")
+        if "${{ secrets." in validation:
+            errors.append("Validation workflow must not consume repository or environment secrets.")
+
+        require(errors, validation, "permissions:\n  contents: read", "Validation workflow must declare read-only contents permission.")
+        require(errors, validation, "concurrency:\n", "Validation workflow must define concurrency control.")
+        require(errors, validation, "cancel-in-progress: true", "Validation workflow must cancel superseded runs.")
+        require(errors, validation, "timeout-minutes: 10", "Validation job must retain its 10-minute timeout.")
+        require(errors, validation, "persist-credentials: false", "Checkout must keep persisted Git credentials disabled.")
+        require(errors, validation, "python scripts/validate_workflow_security.py", "Validation workflow must run the workflow-security validator.")
+
     if not DEPENDABOT.exists():
         errors.append(".github/dependabot.yml is required to keep pinned GitHub Actions reviewably updated.")
     else:
@@ -44,6 +77,8 @@ def main() -> int:
             'package-ecosystem: "github-actions"',
             'directory: "/"',
             'interval: "weekly"',
+            'day: "monday"',
+            "open-pull-requests-limit: 5",
         )
         for marker in required_markers:
             if marker not in dependabot:
