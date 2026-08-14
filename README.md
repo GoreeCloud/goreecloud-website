@@ -75,7 +75,7 @@ The intended production settings are:
 
 `dist/` is the production boundary. The build script copies only the explicitly allowlisted public pages, metadata, headers, JavaScript, CSS, and artwork into that directory. CI then compares every generated file byte-for-byte with its reviewed source and rejects missing files, unexpected files, symlinks, or repository-only content.
 
-For an existing Cloudflare Pages project, the dashboard build command and output-directory settings must be changed deliberately before relying on this boundary in production. This repository does not introduce a Wrangler configuration file because Cloudflare recommends verifying or downloading the existing Pages configuration before making a Wrangler file the source of truth for an established project.
+For the existing Cloudflare Pages project, the dashboard build command and output-directory settings must be changed deliberately before relying on this boundary in production. That external cutover and its preview verification are tracked in **issue #6**. This repository does not introduce a Wrangler configuration file because Cloudflare recommends verifying or downloading the existing Pages configuration before making a Wrangler file the source of truth for an established project.
 
 The documented live routing uses `https://www.goreecloud.com/` as the final public website address. The apex `https://goreecloud.com/` redirects permanently to the `www` hostname. Canonical, Open Graph, robots, and sitemap metadata therefore use the final `www` address.
 
@@ -196,4 +196,4 @@ The checks cover, among other things:
 
 ## Release boundary
 
-PR validation and Cloudflare preview deployment are pre-release evidence, not authorization to publish. Before a production merge, GoreeCloud should confirm the final PR head, green CI, successful preview, intended Cloudflare Pages build settings, source-license/publication decision, and any DNS or visibility changes separately.
+PR validation and Cloudflare preview deployment are pre-release evidence, not authorization to publish. Before a production merge, GoreeCloud should confirm the final PR head, green CI, successful preview, the Cloudflare Pages `dist/` cutover tracked in issue #6, the source-license/publication decision in issue #5, and any DNS or visibility changes separately.
