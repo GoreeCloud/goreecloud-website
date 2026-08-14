@@ -13,6 +13,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 SECURITY_TXT = ROOT / ".well-known" / "security.txt"
 SECURITY_PAGE = ROOT / "security.html"
+SITEMAP = ROOT / "sitemap.xml"
 POLICY_URL = "https://www.goreecloud.com/security.html"
 PRIVATE_PATTERNS = (
     re.compile(r"\b10(?:\.\d{1,3}){3}\b"),
@@ -103,12 +104,25 @@ def main() -> int:
         errors.append(".well-known/security.txt is missing.")
     if not SECURITY_PAGE.exists():
         errors.append("security.html is missing.")
+    if not SITEMAP.exists():
+        errors.append("sitemap.xml is missing.")
     if errors:
         return report(errors)
 
     fields = parse_security_txt()
     if fields.get("Policy") != POLICY_URL:
         errors.append(f"security.txt Policy must be {POLICY_URL!r}, found {fields.get('Policy')!r}.")
+
+    sitemap = SITEMAP.read_text(encoding="utf-8")
+    if f"<loc>{POLICY_URL}</loc>" not in sitemap:
+        errors.append("sitemap.xml must publish the canonical security policy URL.")
+    policy_entry = re.search(
+        rf"<url>\s*<loc>{re.escape(POLICY_URL)}</loc>\s*<lastmod>(\d{{4}}-\d{{2}}-\d{{2}})</lastmod>\s*</url>",
+        sitemap,
+        re.DOTALL,
+    )
+    if not policy_entry:
+        errors.append("The security policy sitemap entry must include a YYYY-MM-DD lastmod value.")
 
     html = SECURITY_PAGE.read_text(encoding="utf-8")
     parser = PolicyParser()
