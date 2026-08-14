@@ -51,6 +51,7 @@ jobs:
       - name: Apply GoreeCloud gc.2 acceptance corrections
         run: |
           python3 .github/scripts/build_goreecloud_gallery_gc2.py upstream-gallery upstream-commons
+          python3 -c 'from pathlib import Path; p=Path("upstream-gallery/settings.gradle.kts"); p.write_text(p.read_text().rstrip() + "\n")'
           git -C upstream-gallery diff --check
           git -C upstream-commons diff --check
           git -C upstream-gallery status --short
