@@ -46,14 +46,6 @@ def replace_once(path: Path, old: str, new: str) -> None:
     write(path, text.replace(old, new, 1))
 
 
-def replace_regex_once(path: Path, pattern: str, replacement: str) -> None:
-    text = read(path)
-    updated, count = re.subn(pattern, replacement, text, count=1, flags=re.MULTILINE)
-    if count != 1:
-        fail(f"expected regex once in {path}: {pattern!r}; found {count}")
-    write(path, updated)
-
-
 def verify_upstream(root: Path) -> None:
     commit = subprocess.check_output(
         ["git", "-C", str(root), "rev-parse", "HEAD"], text=True
@@ -120,11 +112,20 @@ def patch_branding(root: Path) -> None:
 
     manifest = root / "app/src/main/AndroidManifest.xml"
     text = read(manifest)
-    text = text.replace('<package android:name="org.fossify.gallery.debug" />', f'<package android:name="{APP_ID}" />')
-    text = text.replace('<package android:name="org.fossify.gallery" />', f'<package android:name="{APP_ID}" />')
+    original_queries = '''        <package android:name="org.fossify.gallery.debug" />
+        <package android:name="org.fossify.gallery" />'''
+    goreecloud_query = f'''        <package android:name="{APP_ID}" />'''
+    if original_queries not in text:
+        fail("could not find expected upstream package query block")
+    text = text.replace(original_queries, goreecloud_query, 1)
     text = text.replace('android:allowBackup="true"', 'android:allowBackup="false"')
     text = text.replace('android:icon="@mipmap/ic_launcher"', 'android:icon="@drawable/ic_goreecloud_gallery"')
     text = text.replace('android:roundIcon="@mipmap/ic_launcher"', 'android:roundIcon="@drawable/ic_goreecloud_gallery"')
+    text = text.replace(
+        'tools:replace="android:label">',
+        'tools:replace="android:label,android:allowBackup">',
+        1,
+    )
     write(manifest, text)
 
 
@@ -290,12 +291,15 @@ def validate_patch(root: Path) -> None:
         (APP_NAME, donottranslate),
         (f'<string name="package_name">{APP_ID}</string>', donottranslate),
         ('android:allowBackup="false"', manifest),
+        ('tools:replace="android:label,android:allowBackup"', manifest),
         ('@drawable/ic_goreecloud_gallery', manifest),
     ]
     for needle, haystack in required:
         if needle not in haystack:
             fail(f"post-patch validation missing {needle!r}")
 
+    if manifest.count(f'<package android:name="{APP_ID}" />') != 1:
+        fail("GoreeCloud package query must appear exactly once")
     if "android.permission.INTERNET" in manifest:
         fail("Internet permission unexpectedly present in main manifest")
     if "Fossify Gallery" in strings or "Fossify Gallery" in donottranslate:
