@@ -1,0 +1,73 @@
+name: Bug report
+description: Report a reproducible problem with the public GoreeCloud website or its repository validation.
+title: "[Bug]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve GoreeCloud.
+
+        **Do not include security vulnerability details, credentials, private infrastructure information, private IP addresses, tokens, or other sensitive data in this issue.** Security vulnerabilities belong at https://www.goreecloud.com/security.html.
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Affected area
+      description: Choose the closest public website or repository area.
+      options:
+        - Public homepage
+        - Privacy or security pages
+        - 404 or resilience behavior
+        - Accessibility or interaction behavior
+        - Browser identity or metadata
+        - Repository validation or GitHub Actions
+        - Public documentation
+        - Other public repository content
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      description: Describe the observable problem without including sensitive or private information.
+      placeholder: Explain what you saw and where it occurred.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+      placeholder: Describe the expected behavior.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction steps
+      description: Provide the smallest safe sequence that reproduces the problem.
+      placeholder: |
+        1. Open ...
+        2. Select ...
+        3. Observe ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Browser or environment
+      description: Include only non-sensitive details that help reproduce the public-site issue.
+      placeholder: Browser/version, operating system, viewport, or relevant public commit/preview.
+
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety check
+      options:
+        - label: I removed credentials, tokens, private hostnames, private IP addresses, private family information, and other sensitive data from this report.
+          required: true
+        - label: This is not a security vulnerability report; security vulnerabilities will be reported through the GoreeCloud security policy instead.
+          required: true

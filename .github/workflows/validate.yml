@@ -44,6 +44,9 @@ jobs:
       - name: Validate public semantics
         run: python scripts/validate_public_semantics.py
 
+      - name: Validate repository guidance
+        run: python scripts/validate_repository_guidance.py
+
       - name: Set up Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:

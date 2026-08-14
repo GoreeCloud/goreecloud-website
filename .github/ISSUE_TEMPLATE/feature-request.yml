@@ -1,0 +1,59 @@
+name: Feature request
+description: Propose a focused improvement to the public GoreeCloud website or its repository quality controls.
+title: "[Feature]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Feature requests should stay within the public GoreeCloud website boundary.
+
+        **Do not include credentials, private infrastructure details, private IP addresses, private family information, or vulnerability details.** Security reports belong at https://www.goreecloud.com/security.html.
+
+  - type: textarea
+    id: need
+    attributes:
+      label: What need would this address?
+      description: Describe the public user, accessibility, maintainability, resilience, privacy, or documentation need.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+      description: Explain the smallest useful implementation or outcome.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Include simpler approaches or reasons the change belongs in this repository.
+
+  - type: dropdown
+    id: impact
+    attributes:
+      label: Primary impact
+      options:
+        - Accessibility
+        - Public content accuracy
+        - Privacy or security
+        - Resilience or performance
+        - Browser identity or metadata
+        - Developer experience or validation
+        - Visual or interaction design
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: boundaries
+    attributes:
+      label: Public-boundary check
+      options:
+        - label: This proposal does not require publishing private infrastructure, credentials, internal addresses, or non-public family information.
+          required: true
+        - label: I understand that passing CI does not by itself authorize a production or repository-visibility change.
+          required: true
