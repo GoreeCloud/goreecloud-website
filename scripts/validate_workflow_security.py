@@ -14,6 +14,11 @@ DEPENDABOT = ROOT / ".github" / "dependabot.yml"
 USES_RE = re.compile(r"^\s*uses:\s*([^\s#]+)", re.MULTILINE)
 SHA_RE = re.compile(r"^[0-9a-fA-F]{40}$")
 WRITE_PERMISSION_RE = re.compile(r"(?mi)^\s*[A-Za-z0-9_-]+\s*:\s*write\s*(?:#.*)?$")
+REQUIRED_ACTIONS = (
+    "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",  # v7.0.1
+    "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",  # v7.0.0
+    "actions/setup-node@820762786026740c76f36085b0efc47a31fe5020",  # v7.0.0
+)
 
 
 def require(errors: list[str], text: str, marker: str, message: str) -> None:
@@ -67,6 +72,14 @@ def main() -> int:
         require(errors, validation, "cancel-in-progress: true", "Validation workflow must cancel superseded runs.")
         require(errors, validation, "timeout-minutes: 10", "Validation job must retain its 10-minute timeout.")
         require(errors, validation, "persist-credentials: false", "Checkout must keep persisted Git credentials disabled.")
+
+        for action_ref in REQUIRED_ACTIONS:
+            require(
+                errors,
+                validation,
+                action_ref,
+                f"Validation workflow must retain the reviewed Node 24-capable immutable action pin: {action_ref}",
+            )
 
         required_validation_commands = (
             ("python scripts/validate_workflow_security.py", "workflow-security validator"),
