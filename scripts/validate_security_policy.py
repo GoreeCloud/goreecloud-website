@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate GoreeCloud public security-reporting metadata and policy page."""
+"""Validate GoreeCloud public security-reporting metadata and policy surfaces."""
 
 from __future__ import annotations
 
@@ -13,6 +13,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 SECURITY_TXT = ROOT / ".well-known" / "security.txt"
 SECURITY_PAGE = ROOT / "security.html"
+SECURITY_MD = ROOT / "SECURITY.md"
 SITEMAP = ROOT / "sitemap.xml"
 POLICY_URL = "https://www.goreecloud.com/security.html"
 PRIVATE_PATTERNS = (
@@ -28,6 +29,14 @@ REQUIRED_COPY = (
     "/.well-known/security.txt",
     "does not currently offer a bug bounty",
     "does not authorize testing of private family infrastructure",
+)
+REQUIRED_REPOSITORY_POLICY_COPY = (
+    "Do **not** open a public GitHub issue",
+    "goreecloud@gmail.com",
+    POLICY_URL,
+    "https://www.goreecloud.com/.well-known/security.txt",
+    "does not authorize testing of private family infrastructure",
+    "does not currently offer a bug bounty",
 )
 
 
@@ -104,6 +113,8 @@ def main() -> int:
         errors.append(".well-known/security.txt is missing.")
     if not SECURITY_PAGE.exists():
         errors.append("security.html is missing.")
+    if not SECURITY_MD.exists():
+        errors.append("SECURITY.md is missing.")
     if not SITEMAP.exists():
         errors.append("sitemap.xml is missing.")
     if errors:
@@ -168,7 +179,12 @@ def main() -> int:
         if marker.lower() not in html.lower():
             errors.append(f"security.html required reporting guidance is missing: {marker}")
 
-    for path in (SECURITY_TXT, SECURITY_PAGE):
+    repository_policy = SECURITY_MD.read_text(encoding="utf-8")
+    for marker in REQUIRED_REPOSITORY_POLICY_COPY:
+        if marker.lower() not in repository_policy.lower():
+            errors.append(f"SECURITY.md required reporting guidance is missing: {marker}")
+
+    for path in (SECURITY_TXT, SECURITY_PAGE, SECURITY_MD):
         text = path.read_text(encoding="utf-8", errors="replace")
         for pattern in PRIVATE_PATTERNS:
             match = pattern.search(text)
