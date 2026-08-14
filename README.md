@@ -24,9 +24,11 @@ The site is intentionally dependency-light:
 ## Structure
 
 - `index.html` — public single-page website and search/social metadata
+- `404.html` — custom noindex Cloudflare Pages not-found experience
 - `css/style.css` — core responsive site styling
 - `css/glaze.css` — Glaze UI design tokens, light/dark themes, layered surfaces, accessibility refinements, and compatibility overrides
 - `css/glaze-polish.css` — Glaze UI interaction states, progressive-enhancement fallbacks, increased-contrast/forced-colors support, and print presentation
+- `css/error.css` — custom not-found page layout and responsive behavior
 - `css/status.css` — Family Services product artwork mapping
 - `css/how-it-works.css` — How GoreeCloud Works section
 - `css/platform.css` — Platform Foundation section
@@ -36,6 +38,7 @@ The site is intentionally dependency-light:
 - `js/theme-init.js` — early appearance initialization before stylesheet paint
 - `js/main.js` — appearance modes, active-section navigation, accessible mobile-navigation state, and footer-year enhancement
 - `scripts/validate_site.py` — dependency-free repository validation
+- `scripts/validate_resilience.py` — dependency-free 404, privacy-boundary, and Early Hints validation
 - `.github/workflows/validate.yml` — pull-request and main-branch validation
 - `.well-known/security.txt` — standardized public security-reporting contact and expiration metadata
 - `assets/goreecloud-icon.png` — GoreeCloud artwork
@@ -44,7 +47,7 @@ The site is intentionally dependency-light:
 - `assets/social-preview.png` — Open Graph/social preview
 - `robots.txt` — crawler instructions
 - `sitemap.xml` — sitemap
-- `_headers` — Cloudflare Pages security and privacy headers
+- `_headers` — Cloudflare Pages security, privacy, and critical-resource hint headers
 
 ## Deployment
 
@@ -59,6 +62,10 @@ Recommended settings:
 - Root directory: blank
 
 The documented live routing uses `https://www.goreecloud.com/` as the final public website address. The apex `https://goreecloud.com/` redirects permanently to the `www` hostname. Canonical, Open Graph, robots, and sitemap metadata therefore use the final `www` address.
+
+A top-level `404.html` supplies the public not-found experience. It is deliberately `noindex`, remains useful without `js/main.js`, reuses Glaze UI and the early appearance initializer, and does not reveal private service or administrative locations.
+
+Cloudflare Pages already provides deployment-aware CDN caching, ETags, compression, and optimized static-asset behavior. The repository therefore does not add broad custom browser-cache lifetimes for ordinary non-fingerprinted CSS or JavaScript. The homepage instead supplies preload `Link` headers for the two critical local styles so Cloudflare Pages can use its built-in Early Hints support without creating stale-asset risk.
 
 ## Glaze UI
 
@@ -128,17 +135,20 @@ Cloudflare Pages response headers enforce a restrictive Content Security Policy,
 
 The standardized public security-reporting contact is published at `https://www.goreecloud.com/.well-known/security.txt`. That file contains only public contact and metadata, is intentionally short-cached, and is validated so an expired or malformed security-contact record cannot be merged unnoticed.
 
+The custom `404.html` follows the same privacy boundary as the homepage. Repository validation checks the error-page markup and stylesheet for private-range addresses and selected internal identifiers before merge.
+
 ## Validation
 
 Run:
 
 ```bash
 python scripts/validate_site.py
+python scripts/validate_resilience.py
 node --check js/theme-init.js
 node --check js/main.js
 ```
 
-The dependency-free validator checks, among other things:
+The dependency-free validators check, among other things:
 
 - canonical and Open Graph URL consistency
 - document language, title, description, and single-`h1` structure
@@ -163,12 +173,26 @@ The dependency-free validator checks, among other things:
 - public ownership-independence purpose marker
 - standardized security-contact fields and expiration
 - privacy/security header requirements, including no-referrer and origin-agent clustering
+- custom 404 noindex semantics, local-resource integrity, skip-link target, and heading structure
+- 404 independence from the main interaction script
+- 404 privacy-boundary checks for private-range addresses and selected internal identifiers
+- critical-style preload headers used by Cloudflare Pages Early Hints
 - simple CSS brace integrity
 - common private-network address leakage
 - selected private infrastructure identifiers
 - robots/sitemap canonical consistency and sitemap modification metadata
 
-GitHub Actions runs the repository validation and JavaScript syntax checks on pull requests and on pushes to `main`.
+GitHub Actions runs both repository validators and JavaScript syntax checks on pull requests and on pushes to `main`.
+
+## v5.5 resilience follow-on
+
+- Added a top-level `404.html` so Cloudflare Pages renders a deliberate GoreeCloud not-found experience rather than relying on its default missing-page behavior.
+- Kept the error page `noindex,follow`, dependency-light, keyboard accessible, and independent of the main interaction script.
+- Added `css/error.css` for responsive Glaze UI error-page presentation without changing the homepage layout.
+- Added `scripts/validate_resilience.py` to enforce 404 semantics, resource integrity, private-information boundaries, and CSS integrity.
+- Added the resilience validator to GitHub Actions alongside the existing site validator and JavaScript syntax checks.
+- Added homepage preload `Link` headers for `css/style.css` and `css/glaze.css`, allowing Cloudflare Pages to use its built-in Early Hints support for critical local styles.
+- Deliberately retained Cloudflare Pages default caching for ordinary non-fingerprinted site assets instead of introducing broad custom browser cache lifetimes that could serve stale CSS or JavaScript after deployment.
 
 ## v5.5 changes
 
