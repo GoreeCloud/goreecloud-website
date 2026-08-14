@@ -4,7 +4,7 @@ Public static website for GoreeCloud.
 
 ## Version
 
-Current website package: **v5.2 — Progressive resilience and first-paint polish**
+Current website package: **v5.3 — Portfolio accuracy and ownership-independence refresh**
 
 ## Role
 
@@ -146,12 +146,26 @@ The dependency-free validator checks, among other things:
 - hidden-until-active appearance control behavior
 - no-JavaScript mobile-navigation fallback wiring
 - no-JavaScript footer-year fallback
+- current public Notes repository and Notify project markers
+- rejection of the obsolete Memos-as-primary-Notes description
+- public ownership-independence purpose marker
 - simple CSS brace integrity
 - common private-network address leakage
 - selected private infrastructure identifiers
 - robots/sitemap canonical consistency and sitemap modification metadata
 
 GitHub Actions runs the repository validation and JavaScript syntax checks on pull requests and on pushes to `main`.
+
+## v5.3 changes
+
+- Reconciled the public GoreeCloud Notes description with the native application direction and linked the authoritative public `GoreeCloud/goreecloud-notes` repository.
+- Preserved the Memos release candidate in public wording as a transitional migration source rather than presenting the maintained fork as the long-term Notes product.
+- Added GoreeCloud Notify to the public software portfolio while clearly preserving ntfy as the current notification service until controlled migration gates are complete.
+- Expanded the software-development explanation to reflect GoreeCloud Ownership Independence: core applications move toward native GoreeCloud software or maintained forks when that adds durable control, without needlessly forking sustainable foundational dependencies.
+- Added an explicit public-purpose statement explaining that GoreeCloud is not a commercial cloud product and is documented to demonstrate what individuals and families can own and operate for themselves.
+- Added an August 14, 2026 timeline milestone for the expansion of native GoreeCloud software ownership.
+- Strengthened validation so future edits cannot silently restore the obsolete Memos-primary Notes wording or omit the current Notes/Notify/public-purpose markers.
+- Updated the sitemap modification date for this public-content refresh.
 
 ## v5.2 changes
 

@@ -33,6 +33,14 @@ REQUIRED_SCRIPTS = {
     "js/theme-init.js",
     "js/main.js",
 }
+REQUIRED_PUBLIC_MARKERS = {
+    "native GoreeCloud Notes repository": "https://github.com/GoreeCloud/goreecloud-notes",
+    "GoreeCloud Notify project": "<strong>GoreeCloud Notify</strong>",
+    "public ownership purpose": "Ownership should be understandable and repeatable.",
+}
+STALE_PUBLIC_COPY = (
+    "A GoreeCloud-maintained Memos fork for fast private note capture",
+)
 
 
 class SiteParser(HTMLParser):
@@ -210,6 +218,13 @@ def validate() -> list[str]:
         fail(errors, "Appearance control must remain hidden until the interaction script is active.")
     if '<span id="year">2026</span>' not in html:
         fail(errors, "Footer must include a no-JavaScript copyright-year fallback.")
+
+    for label, marker in REQUIRED_PUBLIC_MARKERS.items():
+        if marker not in html:
+            fail(errors, f"Required current-state public marker is missing: {label}.")
+    for stale_copy in STALE_PUBLIC_COPY:
+        if stale_copy in html:
+            fail(errors, f"Obsolete public project wording must not return: {stale_copy}")
 
     public_text_files = [
         INDEX,
