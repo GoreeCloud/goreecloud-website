@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Privacy statement for the public GoreeCloud website, including browser storage, tracking, hosting, referrer behavior, external links, and contact boundaries.">
+  <meta name="robots" content="index,follow">
+  <meta name="color-scheme" content="dark light">
+  <meta name="theme-color" data-theme-color="dark" content="#07111f" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" data-theme-color="light" content="#f4f7fb" media="(prefers-color-scheme: light)">
+
+  <script src="js/theme-init.js"></script>
+
+  <title>Privacy — GoreeCloud</title>
+  <link rel="canonical" href="https://www.goreecloud.com/privacy.html">
+  <link rel="icon" href="assets/goreecloud-icon.png" type="image/png">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/status.css">
+  <link rel="stylesheet" href="css/how-it-works.css">
+  <link rel="stylesheet" href="css/platform.css">
+  <link rel="stylesheet" href="css/roadmap.css">
+  <link rel="stylesheet" href="css/development.css">
+  <link rel="stylesheet" href="css/social.css">
+  <link rel="stylesheet" href="css/glaze.css">
+  <link rel="stylesheet" href="css/glaze-polish.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to privacy statement</a>
+
+  <main id="main" tabindex="-1">
+    <section class="section section-alt">
+      <div class="container">
+        <a class="brand" href="index.html" aria-label="Return to GoreeCloud home">
+          <img class="brand-logo" src="assets/goreecloud-icon.png" alt="" width="36" height="36">
+          <span class="brand-text">GoreeCloud</span>
+        </a>
+
+        <div class="section-heading">
+          <p class="eyebrow">Privacy</p>
+          <h1>Privacy at GoreeCloud</h1>
+          <p>
+            GoreeCloud is built around privacy by default. This statement describes the behavior of the
+            public GoreeCloud website and the browser-side code published in this repository.
+          </p>
+          <p><strong>Last updated:</strong> August 14, 2026</p>
+        </div>
+
+        <div class="glaze-callout">
+          <div>
+            <span class="glaze-chip">Public website</span>
+            <h2>No behavioral tracking.</h2>
+          </div>
+          <p>
+            This public website does not intentionally use analytics, advertising, behavioral tracking,
+            third-party telemetry, fingerprinting, third-party fonts, or third-party browser scripts.
+          </p>
+        </div>
+
+        <div class="section-heading">
+          <h2>Information collected by the website</h2>
+          <p>
+            The public site does not provide an account sign-in, web form, advertising profile, or marketing
+            pixel. GoreeCloud's browser code does not create a behavioral profile of visitors or send browsing
+            activity to an analytics service.
+          </p>
+        </div>
+
+        <div class="section-heading">
+          <h2>Appearance preferences</h2>
+          <p>
+            If you explicitly choose Light or Dark appearance mode, the site stores that choice in your browser
+            under the <code>goreecloud-theme</code> key using <code>localStorage</code>. Returning to System mode
+            removes the stored override. System mode requires no stored preference.
+          </p>
+          <p>
+            The appearance preference is used only by local GoreeCloud website code to select the visual theme;
+            the site does not transmit that preference to an analytics or advertising service.
+          </p>
+        </div>
+
+        <div class="section-heading">
+          <h2>Hosting and network delivery</h2>
+          <p>
+            The public website is deployed through Cloudflare Pages. Delivering a web request necessarily uses
+            hosting and network infrastructure, but this repository does not add analytics or advertising code
+            that uses those requests to build a visitor profile.
+          </p>
+          <p>
+            This statement describes GoreeCloud's public website code and configuration. Services outside this
+            repository, including destinations reached through external links, operate under their own policies.
+          </p>
+        </div>
+
+        <div class="section-heading">
+          <h2>Referrer privacy</h2>
+          <p>
+            GoreeCloud configures <code>Referrer-Policy: no-referrer</code> for the public site. This prevents the
+            browser from intentionally sending the GoreeCloud page URL in the HTTP <code>Referer</code> header when
+            you follow a link to another site.
+          </p>
+        </div>
+
+        <div class="section-heading">
+          <h2>External links and email</h2>
+          <p>
+            GoreeCloud links to public repositories and social profiles. When you leave GoreeCloud, the destination
+            site's privacy practices apply. Email links on this site use <code>mailto:</code>; sending a message is
+            handled by your email client and the email services involved, not by a GoreeCloud web form.
+          </p>
+        </div>
+
+        <div class="section-heading">
+          <h2>Security reports</h2>
+          <p>
+            Security vulnerability reports have a separate public reporting path. See the
+            <a href="security.html">GoreeCloud security-reporting policy</a> and
+            <a href=".well-known/security.txt">/.well-known/security.txt</a> before testing or reporting an issue.
+          </p>
+        </div>
+
+        <div class="section-heading">
+          <h2>Questions and changes</h2>
+          <p>
+            If the public website's privacy behavior changes materially, this statement should be updated with it.
+            Questions about this statement can be sent to <a href="mailto:goreecloud@gmail.com">goreecloud@gmail.com</a>.
+          </p>
+        </div>
+
+        <div class="hero-actions">
+          <a class="button primary" href="index.html">Return to GoreeCloud</a>
+          <a class="button secondary" href="security.html">Security Reporting</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <span class="brand-text">GoreeCloud</span>
+        <p>Privacy • Ownership • Open Source • Recoverability • Long-Term Preservation</p>
+      </div>
+      <div class="footer-links">
+        <a href="index.html">Home</a>
+        <a href="security.html">Security</a>
+        <a href="mailto:goreecloud@gmail.com">Email</a>
+      </div>
+      <p class="copyright">© 2026 GoreeCloud</p>
+    </div>
+  </footer>
+</body>
+</html>
