@@ -141,20 +141,23 @@ def main() -> int:
         parser = IdentityParser()
         parser.feed(page.read_text(encoding="utf-8"))
         relative = page.relative_to(ROOT)
+        is_error_page = page.name == "404.html"
+        theme_init_src = "/js/theme-init.js" if is_error_page else "js/theme-init.js"
+        apple_icon_href = "/assets/goreecloud-icon.png" if is_error_page else "assets/goreecloud-icon.png"
 
         if parser.meta_names.get("application-name") != "GoreeCloud":
             errors.append(f"{relative} must publish application-name=GoreeCloud.")
         if parser.meta_names.get("author") != "GoreeCloud":
             errors.append(f"{relative} must publish author=GoreeCloud.")
-        if "js/theme-init.js" not in parser.scripts:
-            errors.append(f"{relative} must load js/theme-init.js for early theme and manifest discovery.")
+        if theme_init_src not in parser.scripts:
+            errors.append(f"{relative} must load {theme_init_src} for early theme and manifest discovery.")
 
         apple_icons = [
             link for link in parser.links
             if "apple-touch-icon" in link.get("rel", "").split()
         ]
-        if not apple_icons or apple_icons[0].get("href") != "assets/goreecloud-icon.png":
-            errors.append(f"{relative} must publish the local GoreeCloud apple-touch-icon.")
+        if not apple_icons or apple_icons[0].get("href") != apple_icon_href:
+            errors.append(f"{relative} must publish the local GoreeCloud apple-touch-icon at {apple_icon_href}.")
 
         if parser.main_attrs is None:
             errors.append(f"{relative} must contain <main id='main'>.")
