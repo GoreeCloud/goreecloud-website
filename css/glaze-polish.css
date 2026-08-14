@@ -87,6 +87,86 @@
   }
 }
 
+@media (prefers-contrast: more) {
+  :root {
+    --border: color-mix(in srgb, var(--text) 42%, transparent);
+    --border-strong: color-mix(in srgb, var(--text) 64%, var(--cyan));
+    --muted: var(--muted-strong);
+    --shadow: none;
+    --shadow-soft: none;
+  }
+
+  .site-header,
+  .hero-card,
+  .service-card,
+  .how-card,
+  .platform-card,
+  .roadmap-card,
+  .principle-grid > div,
+  .timeline article > div,
+  .social-card,
+  .contact-card,
+  .glaze-callout {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .theme-toggle,
+  .nav-toggle,
+  .button.secondary,
+  .site-nav .nav-cta,
+  .glaze-chip,
+  .badge,
+  .platform-state,
+  .roadmap-state {
+    border-width: 2px;
+  }
+
+  :where(a, button):focus-visible {
+    outline-width: 4px;
+  }
+}
+
+@media (forced-colors: active) {
+  .site-header,
+  .hero-card,
+  .service-card,
+  .how-card,
+  .platform-card,
+  .roadmap-card,
+  .principle-grid > div,
+  .timeline article > div,
+  .social-card,
+  .contact-card,
+  .glaze-callout {
+    background: Canvas;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .button,
+  .theme-toggle,
+  .nav-toggle,
+  .glaze-chip,
+  .badge,
+  .platform-state,
+  .roadmap-state {
+    border: 1px solid currentColor;
+    box-shadow: none;
+  }
+
+  .site-nav a[aria-current="location"] {
+    outline: 2px solid LinkText;
+    outline-offset: 2px;
+  }
+
+  .site-nav a:not(.nav-cta)::after {
+    display: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

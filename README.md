@@ -4,7 +4,7 @@ Public static website for GoreeCloud.
 
 ## Version
 
-Current website package: **v5.3 — Portfolio accuracy and ownership-independence refresh**
+Current website package: **v5.4 — Accessibility and public security hardening**
 
 ## Role
 
@@ -26,7 +26,7 @@ The site is intentionally dependency-light:
 - `index.html` — public single-page website and search/social metadata
 - `css/style.css` — core responsive site styling
 - `css/glaze.css` — Glaze UI design tokens, light/dark themes, layered surfaces, accessibility refinements, and compatibility overrides
-- `css/glaze-polish.css` — Glaze UI interaction states and progressive-enhancement fallbacks
+- `css/glaze-polish.css` — Glaze UI interaction states, progressive-enhancement fallbacks, and increased-contrast/forced-colors support
 - `css/status.css` — Family Services product artwork mapping
 - `css/how-it-works.css` — How GoreeCloud Works section
 - `css/platform.css` — Platform Foundation section
@@ -37,13 +37,14 @@ The site is intentionally dependency-light:
 - `js/main.js` — appearance modes, active-section navigation, mobile navigation, and footer-year enhancement
 - `scripts/validate_site.py` — dependency-free repository validation
 - `.github/workflows/validate.yml` — pull-request and main-branch validation
+- `.well-known/security.txt` — standardized public security-reporting contact and expiration metadata
 - `assets/goreecloud-icon.png` — GoreeCloud artwork
 - `assets/services/` — locally hosted Family Services project logos
 - `assets/platform/` — locally hosted platform technology logos
 - `assets/social-preview.png` — Open Graph/social preview
 - `robots.txt` — crawler instructions
 - `sitemap.xml` — sitemap
-- `_headers` — Cloudflare Pages security headers
+- `_headers` — Cloudflare Pages security and privacy headers
 
 ## Deployment
 
@@ -78,6 +79,8 @@ The website implementation includes:
 - visible keyboard focus states
 - reduced-motion support
 - reduced-transparency fallback
+- increased-contrast support through `prefers-contrast: more`
+- forced-colors support for operating-system high-contrast modes
 - responsive navigation and touch targets
 - a mobile navigation fallback that remains usable when JavaScript is unavailable
 - no external browser dependencies
@@ -99,6 +102,8 @@ The website does not intentionally use:
 
 When a visitor explicitly chooses Light or Dark mode, that preference is stored only in the visitor's browser using `localStorage` and is not transmitted by the site. Returning to System mode removes the stored override.
 
+Cloudflare Pages sends `Referrer-Policy: no-referrer`, so GoreeCloud does not intentionally disclose the current GoreeCloud page URL through the browser's HTTP `Referer` header when a visitor follows an outbound link.
+
 ## Security
 
 This repository is public-website source only.
@@ -117,7 +122,9 @@ Do not commit:
 - private family information
 - internal infrastructure documentation
 
-Cloudflare Pages response headers enforce a restrictive Content Security Policy and disable browser capabilities that the static site does not need.
+Cloudflare Pages response headers enforce a restrictive Content Security Policy, isolate the site into its own origin agent cluster where supported, and disable browser capabilities that the static site does not need.
+
+The standardized public security-reporting contact is published at `https://www.goreecloud.com/.well-known/security.txt`. That file contains only public contact and metadata, is intentionally short-cached, and is validated so an expired or malformed security-contact record cannot be merged unnoticed.
 
 ## Validation
 
@@ -146,15 +153,28 @@ The dependency-free validator checks, among other things:
 - hidden-until-active appearance control behavior
 - no-JavaScript mobile-navigation fallback wiring
 - no-JavaScript footer-year fallback
+- increased-contrast and forced-colors Glaze UI fallbacks
 - current public Notes repository and Notify project markers
 - rejection of the obsolete Memos-as-primary-Notes description
 - public ownership-independence purpose marker
+- standardized security-contact fields and expiration
+- privacy/security header requirements, including no-referrer and origin-agent clustering
 - simple CSS brace integrity
 - common private-network address leakage
 - selected private infrastructure identifiers
 - robots/sitemap canonical consistency and sitemap modification metadata
 
 GitHub Actions runs the repository validation and JavaScript syntax checks on pull requests and on pushes to `main`.
+
+## v5.4 changes
+
+- Added explicit `prefers-contrast: more` Glaze UI behavior that strengthens borders, focus indication, muted-text contrast, and surface separation while removing translucency-dependent effects.
+- Added a `forced-colors: active` fallback so cards, controls, state badges, and active navigation remain legible in operating-system high-contrast modes.
+- Added `/.well-known/security.txt` with the public GoreeCloud security-reporting contact, canonical URL, preferred language, and an explicit expiration date.
+- Added a short cache policy for the security-contact file so corrections can propagate promptly.
+- Changed the site-wide referrer policy from `strict-origin-when-cross-origin` to `no-referrer` to better match GoreeCloud's privacy-first posture.
+- Added `Origin-Agent-Cluster: ?1` as an additional browser isolation signal where supported.
+- Expanded repository validation to enforce the accessibility media queries, security-contact metadata and expiration, privacy headers, origin-agent clustering, and security.txt cache policy.
 
 ## v5.3 changes
 

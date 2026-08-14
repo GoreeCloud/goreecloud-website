@@ -8,6 +8,7 @@ validate the repository without downloading third-party packages.
 from __future__ import annotations
 
 from collections import Counter
+from datetime import datetime, timezone
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import urlparse
@@ -16,7 +17,9 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 INDEX = ROOT / "index.html"
+SECURITY = ROOT / ".well-known" / "security.txt"
 CANONICAL = "https://www.goreecloud.com/"
+SECURITY_CANONICAL = f"{CANONICAL}.well-known/security.txt"
 PRIVATE_PATTERNS = (
     re.compile(r"\b10(?:\.\d{1,3}){3}\b"),
     re.compile(r"\b192\.168(?:\.\d{1,3}){2}\b"),
@@ -40,6 +43,15 @@ REQUIRED_PUBLIC_MARKERS = {
 }
 STALE_PUBLIC_COPY = (
     "A GoreeCloud-maintained Memos fork for fast private note capture",
+)
+REQUIRED_SECURITY_FIELDS = {
+    "Contact": "mailto:goreecloud@gmail.com",
+    "Preferred-Languages": "en",
+    "Canonical": SECURITY_CANONICAL,
+}
+REQUIRED_HEADERS = (
+    "Referrer-Policy: no-referrer",
+    "Origin-Agent-Cluster: ?1",
 )
 
 
@@ -144,6 +156,43 @@ def validate_css(errors: list[str]) -> None:
             fail(errors, f"Unbalanced CSS braces in {path.relative_to(ROOT)}.")
 
 
+def validate_security_contact(errors: list[str]) -> None:
+    if not SECURITY.exists():
+        fail(errors, "Standardized public security contact is missing: .well-known/security.txt")
+        return
+
+    text = SECURITY.read_text(encoding="utf-8")
+    fields: dict[str, str] = {}
+    for raw_line in text.splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#") or ":" not in line:
+            continue
+        key, value = line.split(":", 1)
+        fields[key.strip()] = value.strip()
+
+    for field, expected in REQUIRED_SECURITY_FIELDS.items():
+        if fields.get(field) != expected:
+            fail(errors, f"security.txt field {field!r} must be {expected!r}, found {fields.get(field)!r}.")
+
+    expires_raw = fields.get("Expires")
+    if not expires_raw:
+        fail(errors, "security.txt must include an Expires field.")
+        return
+
+    try:
+        expires = datetime.fromisoformat(expires_raw.replace("Z", "+00:00"))
+    except ValueError:
+        fail(errors, f"security.txt Expires value is not valid ISO 8601: {expires_raw!r}.")
+        return
+
+    if expires.tzinfo is None:
+        fail(errors, "security.txt Expires value must include a timezone.")
+        return
+
+    if expires <= datetime.now(timezone.utc):
+        fail(errors, f"security.txt has expired: {expires_raw}.")
+
+
 def validate() -> list[str]:
     errors: list[str] = []
     html = INDEX.read_text(encoding="utf-8")
@@ -232,6 +281,7 @@ def validate() -> list[str]:
         ROOT / "robots.txt",
         ROOT / "sitemap.xml",
         ROOT / "_headers",
+        SECURITY,
     ]
     public_text_files.extend((ROOT / "css").glob("*.css"))
     public_text_files.extend((ROOT / "js").glob("*.js"))
@@ -263,8 +313,20 @@ def validate() -> list[str]:
         fail(errors, "Early appearance initialization must restore an explicit local browser preference when present.")
     if 'html:not([data-js="true"]) .site-nav' not in polish_css:
         fail(errors, "Mobile navigation must retain a visible no-JavaScript fallback.")
+    if "@media (prefers-contrast: more)" not in polish_css:
+        fail(errors, "Glaze UI must include an increased-contrast fallback.")
+    if "@media (forced-colors: active)" not in polish_css:
+        fail(errors, "Glaze UI must include a forced-colors fallback.")
 
     validate_css(errors)
+    validate_security_contact(errors)
+
+    headers = (ROOT / "_headers").read_text(encoding="utf-8")
+    for required_header in REQUIRED_HEADERS:
+        if required_header not in headers:
+            fail(errors, f"Required security/privacy header is missing: {required_header}")
+    if "/.well-known/security.txt" not in headers or "Cache-Control: public, max-age=3600" not in headers:
+        fail(errors, "security.txt must have an explicit one-hour cache policy in _headers.")
 
     robots = (ROOT / "robots.txt").read_text(encoding="utf-8")
     if f"Sitemap: {CANONICAL}sitemap.xml" not in robots:
