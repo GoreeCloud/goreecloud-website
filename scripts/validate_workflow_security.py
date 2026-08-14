@@ -67,7 +67,20 @@ def main() -> int:
         require(errors, validation, "cancel-in-progress: true", "Validation workflow must cancel superseded runs.")
         require(errors, validation, "timeout-minutes: 10", "Validation job must retain its 10-minute timeout.")
         require(errors, validation, "persist-credentials: false", "Checkout must keep persisted Git credentials disabled.")
-        require(errors, validation, "python scripts/validate_workflow_security.py", "Validation workflow must run the workflow-security validator.")
+
+        required_validation_commands = (
+            ("python scripts/validate_workflow_security.py", "workflow-security validator"),
+            ("python scripts/validate_performance_budget.py", "performance-budget validator"),
+            ("python scripts/build_public_site.py", "isolated public-site build"),
+            ("python scripts/validate_build_artifact.py", "isolated build-artifact validator"),
+        )
+        for command, label in required_validation_commands:
+            require(errors, validation, command, f"Validation workflow must run the {label}.")
+
+        build_position = validation.find("python scripts/build_public_site.py")
+        artifact_position = validation.find("python scripts/validate_build_artifact.py")
+        if build_position >= 0 and artifact_position >= 0 and build_position > artifact_position:
+            errors.append("Validation workflow must build the isolated public artifact before validating it.")
 
     if not DEPENDABOT.exists():
         errors.append(".github/dependabot.yml is required to keep pinned GitHub Actions reviewably updated.")
