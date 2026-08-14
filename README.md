@@ -4,13 +4,13 @@ Public static website for GoreeCloud.
 
 ## Version
 
-Current website package: **v5.5 — Navigation accessibility and print resilience**
+Current website package: **v5.5 — production-readiness hardening in progress**
 
 ## Role
 
 This repository contains the public-facing GoreeCloud website. It describes GoreeCloud's purpose, public software work, representative platform technologies, and long-term direction without publishing private infrastructure details.
 
-The site is intentionally dependency-light:
+The browser surface is intentionally dependency-light:
 
 - static HTML
 - locally hosted CSS
@@ -20,244 +20,180 @@ The site is intentionally dependency-light:
 - no advertising
 - no third-party fonts
 - no third-party JavaScript frameworks
+- no service worker
+- no Cloudflare Pages Functions or Worker runtime
 
-## Structure
+Repository-only material such as CI validators, GitHub metadata, and contributor documentation is kept separate from the generated public deployment artifact.
 
-- `index.html` — public single-page website and search/social metadata
+## Public site structure
+
+- `index.html` — homepage and primary search/social metadata
+- `privacy.html` — public website privacy statement
+- `security.html` — public security-reporting policy
 - `404.html` — custom noindex Cloudflare Pages not-found experience
-- `css/style.css` — core responsive site styling
-- `css/glaze.css` — Glaze UI design tokens, light/dark themes, layered surfaces, accessibility refinements, and compatibility overrides
-- `css/glaze-polish.css` — Glaze UI interaction states, progressive-enhancement fallbacks, increased-contrast/forced-colors support, and print presentation
-- `css/error.css` — custom not-found page layout and responsive behavior
-- `css/status.css` — Family Services product artwork mapping
-- `css/how-it-works.css` — How GoreeCloud Works section
-- `css/platform.css` — Platform Foundation section
-- `css/roadmap.css` — roadmap section
-- `css/development.css` — software project section
-- `css/social.css` — social-follow layout
-- `js/theme-init.js` — early appearance initialization before stylesheet paint
-- `js/main.js` — appearance modes, active-section navigation, accessible mobile-navigation state, and footer-year enhancement
-- `scripts/validate_site.py` — dependency-free repository validation
-- `scripts/validate_resilience.py` — dependency-free 404, privacy-boundary, and Early Hints validation
-- `.github/workflows/validate.yml` — pull-request and main-branch validation
-- `.well-known/security.txt` — standardized public security-reporting contact and expiration metadata
-- `assets/goreecloud-icon.png` — GoreeCloud artwork
-- `assets/services/` — locally hosted Family Services project logos
-- `assets/platform/` — locally hosted platform technology logos
-- `assets/social-preview.png` — Open Graph/social preview
+- `.well-known/security.txt` — standardized public security-reporting contact
+- `site.webmanifest` — browser application identity
 - `robots.txt` — crawler instructions
-- `sitemap.xml` — sitemap
-- `_headers` — Cloudflare Pages security, privacy, and critical-resource hint headers
+- `sitemap.xml` — canonical public sitemap
+- `_headers` — Cloudflare Pages security, privacy, and resource-hint headers
+- `assets/` — self-hosted GoreeCloud, service, platform, and social-preview artwork
+- `css/` — core, Glaze UI, responsive, section, accessibility, and error-page styles
+- `js/theme-init.js` — early appearance initialization
+- `js/main.js` — appearance, navigation, and progressive interaction behavior
 
-## Deployment
+## Repository tooling
 
-The repository is deployed through Cloudflare Pages.
+Production-readiness tooling is intentionally dependency-free and uses the Python standard library where practical.
 
-Recommended settings:
+- `scripts/build_public_site.py` — creates an allowlisted `dist/` deployment artifact
+- `scripts/validate_build_artifact.py` — proves `dist/` contains exactly the reviewed public files and no repository-only content
+- `scripts/validate_performance_budget.py` — enforces static payload, request-count, and image-dimension budgets
+- `scripts/validate_public_surface.py` — validates cross-page links, fragments, canonical state, and sitemap completeness
+- `scripts/validate_deployment_contract.py` — enforces the static Cloudflare Pages architecture and header contract
+- `scripts/validate_site.py` — validates the homepage and core public-site invariants
+- `scripts/validate_resilience.py` — validates 404 behavior, failure paths, privacy boundaries, and response-header requirements
+- `scripts/validate_app_identity.py` — validates browser/site identity metadata
+- `scripts/validate_public_semantics.py` — validates public metadata and semantic guarantees
+- `scripts/validate_privacy_policy.py` — keeps the privacy statement synchronized with implementation
+- `scripts/validate_security_policy.py` — validates public security-reporting behavior
+- `scripts/validate_repository_guidance.py` — validates issue/PR safety guidance
+- `scripts/validate_workflow_security.py` — enforces immutable GitHub Actions references and least privilege
+
+Generated `dist/` output and local Python bytecode are ignored by Git.
+
+## Cloudflare Pages deployment
+
+The website is deployed through Cloudflare Pages using Git integration.
+
+The intended production settings are:
 
 - Production branch: `main`
 - Framework preset: `None`
-- Build command: `exit 0`
-- Build output directory: `/`
+- Build command: `python scripts/build_public_site.py`
+- Build output directory: `dist`
 - Root directory: blank
+
+`dist/` is the production boundary. The build script copies only the explicitly allowlisted public pages, metadata, headers, JavaScript, CSS, and artwork into that directory. CI then compares every generated file byte-for-byte with its reviewed source and rejects missing files, unexpected files, symlinks, or repository-only content.
+
+For an existing Cloudflare Pages project, the dashboard build command and output-directory settings must be changed deliberately before relying on this boundary in production. This repository does not introduce a Wrangler configuration file because Cloudflare recommends verifying or downloading the existing Pages configuration before making a Wrangler file the source of truth for an established project.
 
 The documented live routing uses `https://www.goreecloud.com/` as the final public website address. The apex `https://goreecloud.com/` redirects permanently to the `www` hostname. Canonical, Open Graph, robots, and sitemap metadata therefore use the final `www` address.
 
-A top-level `404.html` supplies the public not-found experience. It is deliberately `noindex`, remains useful without `js/main.js`, reuses Glaze UI and the early appearance initializer, and does not reveal private service or administrative locations.
+Cloudflare Pages provides deployment-aware caching, ETags, compression, and static-asset delivery. The repository deliberately avoids broad long-lived browser cache rules for ordinary versionless HTML, CSS, and JavaScript so a release cannot leave clients stuck on stale code. `/.well-known/security.txt` retains a short explicit cache policy so corrections can propagate quickly.
 
-Cloudflare Pages already provides deployment-aware CDN caching, ETags, compression, and optimized static-asset behavior. The repository therefore does not add broad custom browser-cache lifetimes for ordinary non-fingerprinted CSS or JavaScript. The homepage instead supplies preload `Link` headers for the two critical local styles so Cloudflare Pages can use its built-in Early Hints support without creating stale-asset risk.
+## Production artifact
 
-## Glaze UI
+Build locally with:
+
+```bash
+python scripts/build_public_site.py
+python scripts/validate_build_artifact.py
+```
+
+The generated artifact must contain only the intentional public surface. Files such as `README.md`, `SECURITY.md`, `.github/`, `scripts/`, and `.gitignore` are repository concerns and must never be copied into `dist/`.
+
+The site currently uses no server-side application runtime, database, form handler, service worker, or Cloudflare Pages Function. Adding any of those changes the security and deployment model and requires an intentional revision of the deployment contract and validators.
+
+## Performance budget
+
+The static site has explicit CI budgets to prevent accidental growth from turning a small public site into a heavy application. The current gates limit individual and aggregate HTML, CSS, JavaScript, SVG, raster-image, and total public-artifact size.
+
+Public HTML images must declare intrinsic `width` and `height` so browsers can reserve layout space before image data arrives. Homepage stylesheet and script request counts are also bounded. These checks are regression ceilings rather than targets; smaller remains preferable where readability and maintainability are preserved.
+
+## Glaze UI and accessibility
 
 The website is the public implementation of **Glaze UI**, GoreeCloud's shared visual and interaction language.
 
-The website implementation includes:
+The current implementation includes:
 
-- shared design tokens
 - System, Light, and Dark appearance modes
 - operating-system appearance detection
 - local-only explicit-theme persistence through `localStorage`
-- an early self-hosted appearance initializer that applies explicit Light/Dark preferences before stylesheets paint
-- a System mode that returns control to the operating-system preference
-- browser theme-color synchronization with explicit appearance choices
+- early self-hosted theme initialization to reduce appearance flash
 - layered and selectively translucent surfaces
-- restrained depth and rounded geometry
-- section-aware primary navigation with `aria-current` state
-- mobile navigation whose accessible control label reflects whether the menu is open or closed
 - visible keyboard focus states
-- reduced-motion support
+- accessible mobile navigation with current open/closed labeling
+- Escape-key focus restoration
+- no-JavaScript primary-navigation fallback
+- reduced-motion behavior
 - reduced-transparency fallback
-- increased-contrast support through `prefers-contrast: more`
-- forced-colors support for operating-system high-contrast modes
-- print/readable-paper presentation that removes interactive chrome and translucent effects
-- responsive navigation and touch targets
-- a mobile navigation fallback that remains usable when JavaScript is unavailable
-- no external browser dependencies
-
-The Glaze UI polish layer is linked directly from `index.html` so visual behavior is not dependent on JavaScript loading. The appearance control remains hidden until the interaction script is active, while mobile primary navigation remains directly accessible when JavaScript is unavailable.
+- `prefers-contrast: more` support
+- forced-colors/high-contrast support
+- print/readable-paper presentation
+- responsive layouts and touch targets
+- semantic footer navigation
+- explicit image dimensions for layout stability
 
 Glaze UI is intended to remain distinctly GoreeCloud rather than copying another vendor's interface.
 
 ## Privacy
 
-The website does not intentionally use:
+The public site does not intentionally use analytics, behavioral tracking, advertising, fingerprinting, third-party telemetry, third-party fonts, or third-party browser scripts.
 
-- analytics
-- behavioral tracking
-- advertising
-- third-party telemetry
-- fingerprinting
-- third-party browser scripts
+When a visitor explicitly chooses Light or Dark mode, the preference is stored only in the visitor's browser using the `goreecloud-theme` `localStorage` key. Returning to System mode removes the stored override.
 
-When a visitor explicitly chooses Light or Dark mode, that preference is stored only in the visitor's browser using `localStorage` and is not transmitted by the site. Returning to System mode removes the stored override.
+The response policy uses `Referrer-Policy: no-referrer`. The Content Security Policy denies browser capabilities the static site does not need, including form submission, arbitrary browser connections, media loading, workers, framing, and plugin/object content.
 
-Cloudflare Pages sends `Referrer-Policy: no-referrer`, so GoreeCloud does not intentionally disclose the current GoreeCloud page URL through the browser's HTTP `Referer` header when a visitor follows an outbound link.
+See `privacy.html` for the public statement that is validated against the implementation.
 
 ## Security
 
-This repository is public-website source only.
+Do not commit passwords, API keys, tokens, `.env` files, SSH private keys, private network addresses, private hostnames, internal access details, backup destinations, recovery credentials, or private family information.
 
-Do not commit:
+The public security-reporting path is:
 
-- passwords
-- API keys
-- tokens
-- `.env` files
-- SSH private keys
-- private IP addresses
-- private hostnames
-- internal NetBird details
-- backup destinations or recovery credentials
-- private family information
-- internal infrastructure documentation
+- `https://www.goreecloud.com/security.html`
+- `https://www.goreecloud.com/.well-known/security.txt`
 
-Cloudflare Pages response headers enforce a restrictive Content Security Policy, isolate the site into its own origin agent cluster where supported, and disable browser capabilities that the static site does not need.
+`SECURITY.md` provides repository-side reporting guidance. Public security documents deliberately exclude private family infrastructure, credentials, internal networks, administrative interfaces, and non-public data from authorized testing.
 
-The standardized public security-reporting contact is published at `https://www.goreecloud.com/.well-known/security.txt`. That file contains only public contact and metadata, is intentionally short-cached, and is validated so an expired or malformed security-contact record cannot be merged unnoticed.
-
-The custom `404.html` follows the same privacy boundary as the homepage. Repository validation checks the error-page markup and stylesheet for private-range addresses and selected internal identifiers before merge.
+The repository remains private while the source-license/publication decision tracked in issue #5 is unresolved. Passing CI does not itself authorize a visibility, DNS, or production release change.
 
 ## Validation
 
-Run:
+Run the production checks from the repository root:
 
 ```bash
+python scripts/validate_workflow_security.py
+python scripts/validate_security_policy.py
+python scripts/validate_privacy_policy.py
+python scripts/validate_app_identity.py
+python scripts/validate_public_semantics.py
+python scripts/validate_public_surface.py
+python scripts/validate_deployment_contract.py
+python scripts/validate_performance_budget.py
+python scripts/build_public_site.py
+python scripts/validate_build_artifact.py
+python scripts/validate_repository_guidance.py
 python scripts/validate_site.py
 python scripts/validate_resilience.py
 node --check js/theme-init.js
 node --check js/main.js
 ```
 
-The dependency-free validators check, among other things:
+GitHub Actions runs the same production gates on pull requests and on pushes to `main`. External Actions are pinned to immutable full commit SHAs, workflow permissions remain read-only, persisted checkout credentials are disabled, superseded runs are cancelled, and the validation workflow does not consume repository or environment secrets.
 
-- canonical and Open Graph URL consistency
-- document language, title, description, and single-`h1` structure
-- duplicate element IDs
-- local asset references
-- in-page fragment targets
-- image `alt` attributes
-- safe `target="_blank"` links
-- explicit HTTPS for external web references
-- absence of inline scripts, inline style blocks, and inline event handlers that conflict with the self-only CSP
-- self-hosted browser code dependencies
-- direct loading of the Glaze UI polish stylesheet
-- early appearance initialization before stylesheet loading
-- System/Light/Dark appearance-control wiring
-- hidden-until-active appearance control behavior
-- accessible open/closed mobile-navigation labeling
-- no-JavaScript mobile-navigation fallback wiring
-- no-JavaScript footer-year fallback
-- increased-contrast, forced-colors, and print Glaze UI fallbacks
-- current public Notes repository and Notify project markers
-- rejection of the obsolete Memos-as-primary-Notes description
-- public ownership-independence purpose marker
-- standardized security-contact fields and expiration
-- privacy/security header requirements, including no-referrer and origin-agent clustering
-- custom 404 noindex semantics, local-resource integrity, skip-link target, and heading structure
-- 404 independence from the main interaction script
-- 404 privacy-boundary checks for private-range addresses and selected internal identifiers
-- critical-style preload headers used by Cloudflare Pages Early Hints
-- simple CSS brace integrity
-- common private-network address leakage
-- selected private infrastructure identifiers
-- robots/sitemap canonical consistency and sitemap modification metadata
+The checks cover, among other things:
 
-GitHub Actions runs both repository validators and JavaScript syntax checks on pull requests and on pushes to `main`.
+- canonical, Open Graph, manifest, and application identity
+- sitemap completeness and canonical consistency
+- local links, assets, same-page fragments, and cross-page fragments
+- document language, headings, duplicate IDs, and image alternatives
+- intrinsic image dimensions and static performance budgets
+- HTTPS-only external web references
+- safe new-tab link relationships
+- CSP-compatible markup with no inline script/style/event-handler exceptions
+- no-JavaScript navigation and footer fallbacks
+- accessibility contrast, forced-colors, reduced-motion, and print behavior
+- custom nested-path 404 resilience
+- public privacy/security statement consistency
+- standardized and non-expired security-contact metadata
+- private-network and selected internal-identifier leakage checks
+- static Cloudflare Pages architecture and `_headers` limits
+- isolated, allowlisted production-artifact generation
+- GitHub contribution safety boundaries
+- immutable Action dependencies and least-privilege workflow configuration
 
-## v5.5 resilience follow-on
+## Release boundary
 
-- Added a top-level `404.html` so Cloudflare Pages renders a deliberate GoreeCloud not-found experience rather than relying on its default missing-page behavior.
-- Kept the error page `noindex,follow`, dependency-light, keyboard accessible, and independent of the main interaction script.
-- Added `css/error.css` for responsive Glaze UI error-page presentation without changing the homepage layout.
-- Added `scripts/validate_resilience.py` to enforce 404 semantics, resource integrity, private-information boundaries, and CSS integrity.
-- Added the resilience validator to GitHub Actions alongside the existing site validator and JavaScript syntax checks.
-- Added homepage preload `Link` headers for `css/style.css` and `css/glaze.css`, allowing Cloudflare Pages to use its built-in Early Hints support for critical local styles.
-- Deliberately retained Cloudflare Pages default caching for ordinary non-fingerprinted site assets instead of introducing broad custom browser cache lifetimes that could serve stale CSS or JavaScript after deployment.
-
-## v5.5 changes
-
-- Improved the mobile navigation control so its accessible text changes between `Open navigation` and `Close navigation` as the menu state changes, while preserving `aria-expanded` and Escape-key focus restoration.
-- Added a print/readable-paper Glaze UI mode that removes interactive chrome, decorative hero artwork, translucency, and shadows while preserving the site's core content and hierarchy.
-- Added validator coverage for the dynamic mobile-navigation accessible label and print stylesheet.
-- Added validation that rejects accidental `http://` and protocol-relative external web references so public outbound links remain explicitly HTTPS.
-- Kept the site dependency-free, tracker-free, and compatible with the existing no-JavaScript navigation fallback.
-
-## v5.4 changes
-
-- Added explicit `prefers-contrast: more` Glaze UI behavior that strengthens borders, focus indication, muted-text contrast, and surface separation while removing translucency-dependent effects.
-- Added a `forced-colors: active` fallback so cards, controls, state badges, and active navigation remain legible in operating-system high-contrast modes.
-- Added `/.well-known/security.txt` with the public GoreeCloud security-reporting contact, canonical URL, preferred language, and an explicit expiration date.
-- Added a short cache policy for the security-contact file so corrections can propagate promptly.
-- Changed the site-wide referrer policy from `strict-origin-when-cross-origin` to `no-referrer` to better match GoreeCloud's privacy-first posture.
-- Added `Origin-Agent-Cluster: ?1` as an additional browser isolation signal where supported.
-- Expanded repository validation to enforce the accessibility media queries, security-contact metadata and expiration, privacy headers, origin-agent clustering, and security.txt cache policy.
-
-## v5.3 changes
-
-- Reconciled the public GoreeCloud Notes description with the native application direction and linked the authoritative public `GoreeCloud/goreecloud-notes` repository.
-- Preserved the Memos release candidate in public wording as a transitional migration source rather than presenting the maintained fork as the long-term Notes product.
-- Added GoreeCloud Notify to the public software portfolio while clearly preserving ntfy as the current notification service until controlled migration gates are complete.
-- Expanded the software-development explanation to reflect GoreeCloud Ownership Independence: core applications move toward native GoreeCloud software or maintained forks when that adds durable control, without needlessly forking sustainable foundational dependencies.
-- Added an explicit public-purpose statement explaining that GoreeCloud is not a commercial cloud product and is documented to demonstrate what individuals and families can own and operate for themselves.
-- Added an August 14, 2026 timeline milestone for the expansion of native GoreeCloud software ownership.
-- Strengthened validation so future edits cannot silently restore the obsolete Memos-primary Notes wording or omit the current Notes/Notify/public-purpose markers.
-- Updated the sitemap modification date for this public-content refresh.
-
-## v5.2 changes
-
-- Moved the Glaze UI polish stylesheet from JavaScript injection to a direct `index.html` stylesheet link so visual polish does not depend on the interaction script.
-- Added `js/theme-init.js`, a small self-hosted early initializer that restores explicit Light/Dark preference before CSS is painted, reducing appearance flash without adding inline script exceptions to the Content Security Policy.
-- Synchronized browser theme-color metadata with explicit Light/Dark appearance choices while preserving operating-system-aware colors in System mode.
-- Added a progressive mobile-navigation fallback: when JavaScript is unavailable, primary navigation remains visible rather than being trapped behind an inert menu button.
-- Hid the appearance button until JavaScript is active so visitors never receive a nonfunctional theme control.
-- Added a static `2026` footer-year fallback while preserving automatic year updates when JavaScript is available.
-- Added `application-name`, Open Graph locale, and Twitter image-alt metadata.
-- Added homepage `lastmod` metadata to the sitemap.
-- Expanded repository validation to enforce the early-theme, direct-stylesheet, no-JavaScript navigation, footer fallback, and sitemap requirements.
-
-## v5.1 changes
-
-- Expanded the appearance control from a two-state Light/Dark switch into a three-mode System → Light → Dark cycle.
-- Returning to System mode removes the browser-stored theme override and resumes the operating-system preference.
-- Added clearer accessible labels and a distinct System-mode control state.
-- Added section-aware primary navigation that applies `aria-current="location"` as visitors move through the page.
-- Added restrained Glaze UI active-navigation treatment for desktop and mobile layouts.
-- Hardened mobile navigation so crossing into the desktop breakpoint closes any open mobile menu state.
-- Throttled scroll-driven active-navigation updates with `requestAnimationFrame` and passive scroll handling.
-- Expanded reduced-motion behavior so smooth scrolling and the new interaction transitions are removed when requested by the visitor.
-- Strengthened the dependency-free validator with document-structure, duplicate-ID, image-alternative-text, CSP-compatible markup, Glaze interaction-wiring, and CSS-integrity checks.
-- Kept all new browser resources self-hosted and retained the no-analytics/no-third-party-runtime posture.
-
-## v5.0 changes
-
-- Applied the first Glaze UI website foundation with system-aware light and dark themes.
-- Added a persistent, accessible appearance switch without introducing external dependencies.
-- Added Glaze UI layered surfaces, refined depth, updated focus behavior, improved mobile controls, and reduced-transparency handling.
-- Replaced fragile position-based Family Services logo selectors with explicit `data-service` selectors.
-- Replaced the obsolete Trilium Family Services card with GoreeCloud Notes and identified it as a release-candidate GoreeCloud-maintained Memos fork.
-- Expanded public software coverage to Research Library, GoreeCloud Manager, GoreeCloud Notes, GoreeCloud Tasks, GoreeCloud Contacts, and GoreeCloud Bookmarks.
-- Added a public Glaze UI design-system callout and an August 12, 2026 software/design milestone.
-- Corrected canonical, Open Graph, robots, and sitemap identity to `https://www.goreecloud.com/`, matching the documented production redirect.
-- Added dependency-free validation and GitHub Actions CI.
-- Strengthened Cloudflare Pages security headers while preserving the site's self-contained browser model.
-- Kept analytics, telemetry, third-party fonts, and third-party browser scripts absent by default.
+PR validation and Cloudflare preview deployment are pre-release evidence, not authorization to publish. Before a production merge, GoreeCloud should confirm the final PR head, green CI, successful preview, intended Cloudflare Pages build settings, source-license/publication decision, and any DNS or visibility changes separately.
