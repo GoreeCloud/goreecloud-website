@@ -50,6 +50,15 @@ jobs:
       - name: Validate Cloudflare deployment contract
         run: python scripts/validate_deployment_contract.py
 
+      - name: Validate performance budget
+        run: python scripts/validate_performance_budget.py
+
+      - name: Build isolated public artifact
+        run: python scripts/build_public_site.py
+
+      - name: Validate isolated public artifact
+        run: python scripts/validate_build_artifact.py
+
       - name: Validate repository guidance
         run: python scripts/validate_repository_guidance.py
 
