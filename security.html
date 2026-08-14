@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Responsible security-reporting guidance for public-facing GoreeCloud web properties and publicly available GoreeCloud software.">
+  <meta name="robots" content="index,follow">
+  <meta name="color-scheme" content="dark light">
+  <meta name="theme-color" data-theme-color="dark" content="#07111f" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" data-theme-color="light" content="#f4f7fb" media="(prefers-color-scheme: light)">
+
+  <script src="js/theme-init.js"></script>
+
+  <title>Security Reporting — GoreeCloud</title>
+  <link rel="canonical" href="https://www.goreecloud.com/security.html">
+  <link rel="icon" href="assets/goreecloud-icon.png" type="image/png">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/status.css">
+  <link rel="stylesheet" href="css/how-it-works.css">
+  <link rel="stylesheet" href="css/platform.css">
+  <link rel="stylesheet" href="css/roadmap.css">
+  <link rel="stylesheet" href="css/development.css">
+  <link rel="stylesheet" href="css/social.css">
+  <link rel="stylesheet" href="css/glaze.css">
+  <link rel="stylesheet" href="css/glaze-polish.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to security policy</a>
+
+  <main id="main" tabindex="-1">
+    <section class="section section-alt">
+      <div class="container">
+        <a class="brand" href="index.html" aria-label="Return to GoreeCloud home">
+          <img class="brand-logo" src="assets/goreecloud-icon.png" alt="" width="36" height="36">
+          <span class="brand-text">GoreeCloud</span>
+        </a>
+
+        <div class="section-heading">
+          <p class="eyebrow">Security</p>
+          <h1>Responsible security reporting</h1>
+          <p>
+            I welcome good-faith reports about security vulnerabilities affecting public-facing
+            GoreeCloud web properties and publicly available GoreeCloud software. The goal is to make
+            it easy to report a real security issue without exposing private systems or data.
+          </p>
+        </div>
+
+        <div class="glaze-callout">
+          <div>
+            <span class="glaze-chip">Report securely</span>
+            <h2>Email the public security contact.</h2>
+          </div>
+          <p>
+            Send a concise report to <a href="mailto:goreecloud@gmail.com">goreecloud@gmail.com</a>.
+            The machine-readable security contact is also published at
+            <a href=".well-known/security.txt">/.well-known/security.txt</a>.
+          </p>
+        </div>
+
+        <div class="section-heading">
+          <h2>What to include</h2>
+          <p>A useful report should contain enough detail to understand and reproduce the issue safely.</p>
+          <ul>
+            <li>The affected public GoreeCloud URL, repository, application, or version.</li>
+            <li>A clear description of the vulnerability and its potential security impact.</li>
+            <li>Minimal, reproducible steps that demonstrate the issue without causing unnecessary harm.</li>
+            <li>Relevant request, response, log, screenshot, or proof-of-concept details with sensitive data removed.</li>
+            <li>Any practical remediation idea or mitigating condition you have already identified.</li>
+          </ul>
+        </div>
+
+        <div class="section-heading">
+          <h2>Testing boundaries</h2>
+          <p>
+            This policy does not authorize testing of private family infrastructure, private services,
+            accounts, devices, internal networks, administrative interfaces, credentials, or data that
+            is not explicitly public. A public security policy is not permission to cross an access-control boundary.
+          </p>
+          <ul>
+            <li>Do not access, retain, modify, or disclose data that does not belong to you.</li>
+            <li>Do not perform destructive testing, denial-of-service activity, social engineering, credential attacks, or service disruption.</li>
+            <li>Do not use high-volume automated testing that could materially degrade a GoreeCloud service.</li>
+            <li>Do not publicly disclose exploit details before there has been a reasonable opportunity to understand and remediate the report.</li>
+          </ul>
+        </div>
+
+        <div class="section-heading">
+          <h2>How reports are handled</h2>
+          <p>
+            I will review credible reports and prioritize remediation according to likely impact, exploitability,
+            exposure, and the safety of affected users or data. I may request additional technical detail when it
+            is needed to reproduce or understand the issue.
+          </p>
+          <p>
+            GoreeCloud does not currently offer a bug bounty or guaranteed response timeline. This page provides
+            responsible-reporting guidance and does not create authorization to access systems, accounts, or data.
+          </p>
+        </div>
+
+        <div class="hero-actions">
+          <a class="button primary" href="mailto:goreecloud@gmail.com">Report a Security Issue</a>
+          <a class="button secondary" href="index.html">Return to GoreeCloud</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <span class="brand-text">GoreeCloud</span>
+        <p>Privacy • Ownership • Open Source • Recoverability • Long-Term Preservation</p>
+      </div>
+      <div class="footer-links">
+        <a href="index.html">Home</a>
+        <a href=".well-known/security.txt">security.txt</a>
+        <a href="mailto:goreecloud@gmail.com">Email</a>
+      </div>
+      <p class="copyright">© 2026 GoreeCloud</p>
+    </div>
+  </footer>
+</body>
+</html>
