@@ -9,13 +9,20 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: website-validate-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   validate:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -31,4 +38,6 @@ jobs:
         run: python scripts/validate_site.py
 
       - name: Check JavaScript syntax
-        run: node --check js/main.js
+        run: |
+          node --check js/theme-init.js
+          node --check js/main.js
