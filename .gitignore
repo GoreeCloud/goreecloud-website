@@ -1,0 +1,6 @@
+# Generated public deployment artifact
+/dist/
+
+# Local Python bytecode from validators/build tooling
+__pycache__/
+*.py[cod]
