@@ -37,6 +37,9 @@ jobs:
       - name: Validate public website
         run: python scripts/validate_site.py
 
+      - name: Validate failure resilience
+        run: python scripts/validate_resilience.py
+
       - name: Check JavaScript syntax
         run: |
           node --check js/theme-init.js
