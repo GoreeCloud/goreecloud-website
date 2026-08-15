@@ -178,7 +178,7 @@ def main() -> int:
         (
             "GoreeCloud Website Release Readiness Checklist",
             "America/Chicago",
-            "exact candidate commit",
+            "exact intended release-candidate commit SHA",
             "python scripts/create_release_evidence.py --commit",
             "create a new candidate record or explicitly mark the older record Superseded",
             "python scripts/validate_repository_history.py",
