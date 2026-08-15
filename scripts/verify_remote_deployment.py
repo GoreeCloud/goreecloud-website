@@ -220,6 +220,22 @@ def verify_headers(base_url: str, errors: list[str]) -> None:
                 errors.append(f"Root response header {header} is missing required value: {marker}")
 
 
+def verify_indexing_header(target: str, base_url: str, errors: list[str]) -> None:
+    try:
+        response = fetch(build_url(base_url, "/"))
+    except RuntimeError as error:
+        errors.append(str(error))
+        return
+
+    x_robots = response.headers.get("x-robots-tag", "").lower()
+    has_noindex = "noindex" in {token.strip() for token in x_robots.replace(";", ",").split(",") if token.strip()}
+
+    if target == "branch-preview" and not has_noindex:
+        errors.append("Branch preview is missing the expected X-Robots-Tag: noindex protection.")
+    if target == "production" and has_noindex:
+        errors.append("Production root unexpectedly publishes X-Robots-Tag: noindex and would be excluded from search indexing.")
+
+
 def verify_not_found_behavior(base_url: str, errors: list[str]) -> None:
     try:
         response = fetch(build_url(base_url, MISSING_PATH))
@@ -341,6 +357,7 @@ def verify(target: str) -> int:
 
     verify_public_surface(base_url, errors)
     verify_headers(base_url, errors)
+    verify_indexing_header(target, base_url, errors)
     verify_not_found_behavior(base_url, errors)
     verify_repository_isolation(base_url, errors)
     verify_security_txt(base_url, errors)
