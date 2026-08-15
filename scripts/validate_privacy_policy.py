@@ -167,8 +167,10 @@ def main() -> int:
         if not target.exists():
             errors.append(f"privacy.html references missing local resource: {reference}")
 
+    normalized_html = re.sub(r"\s+", " ", html).lower()
     for marker in REQUIRED_COPY:
-        if marker.lower() not in html.lower():
+        normalized_marker = re.sub(r"\s+", " ", marker).lower()
+        if normalized_marker not in normalized_html:
             errors.append(f"privacy.html required statement is missing: {marker}")
 
     sitemap = SITEMAP.read_text(encoding="utf-8")
