@@ -152,6 +152,12 @@ The `security.txt` validator requires the reporting contact, canonical URL, poli
 
 The repository remains private while the source-license/publication decision tracked in issue #5 is unresolved. Passing CI does not itself authorize a visibility, DNS, or production release change.
 
+## Search and crawler metadata
+
+The homepage canonical URL, Open Graph metadata, X/Twitter card metadata, social-preview URL, title, and preview alt text are validated as one contract so social/search identity cannot drift across fields.
+
+`robots.txt` must continue to allow the public site and publish exactly the canonical `https://www.goreecloud.com/sitemap.xml` location. The sitemap must contain exactly the intentional indexable public URLs, and every entry must carry one valid, non-future `lastmod` date. A `lastmod` value should be changed only when that page receives a significant content, structured-data, or link update rather than merely because a deployment occurred.
+
 ## Validation
 
 Run the production checks from the repository root:
