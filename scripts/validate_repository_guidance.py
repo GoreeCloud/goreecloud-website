@@ -14,6 +14,7 @@ FEATURE_FORM = ROOT / ".github" / "ISSUE_TEMPLATE" / "feature-request.yml"
 PR_TEMPLATE = ROOT / ".github" / "pull_request_template.md"
 WORKFLOW = ROOT / ".github" / "workflows" / "validate.yml"
 README = ROOT / "README.md"
+DOCS_INDEX = ROOT / "docs" / "README.md"
 ASSET_INVENTORY = ROOT / "docs" / "public-asset-inventory.md"
 RELEASE_CHECKLIST = ROOT / "docs" / "release-readiness-checklist.md"
 RELEASE_EVIDENCE_TEMPLATE = ROOT / "docs" / "release-evidence-template.md"
@@ -136,6 +137,24 @@ def main() -> int:
         ),
         errors,
     )
+    docs_index = require_markers(
+        DOCS_INDEX,
+        (
+            "GoreeCloud Website Repository Documentation",
+            "public-asset-inventory.md",
+            "release-readiness-checklist.md",
+            "release-evidence-template.md",
+            "inventory = publication/rights",
+            "canonical reusable release-readiness procedure",
+            "one-candidate historical validation evidence",
+            "must remain outside the generated `dist/` artifact",
+            "Explicit human authorization remains required",
+            "Do not record",
+            "credentials, tokens, or private keys",
+            "private IP addresses or private hostnames",
+        ),
+        errors,
+    )
     asset_inventory = require_markers(
         ASSET_INVENTORY,
         (
@@ -198,6 +217,7 @@ def main() -> int:
         (FEATURE_FORM, feature),
         (PR_TEMPLATE, pr_template),
         (README, readme),
+        (DOCS_INDEX, docs_index),
         (ASSET_INVENTORY, asset_inventory),
         (RELEASE_CHECKLIST, release_checklist),
         (RELEASE_EVIDENCE_TEMPLATE, release_evidence_template),
