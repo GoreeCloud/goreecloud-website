@@ -69,6 +69,11 @@ def git_blob_id(path: Path) -> str:
     return blob_id
 
 
+def normalize_markdown_text(text: str) -> str:
+    """Normalize lightweight Markdown emphasis before semantic wording checks."""
+    return re.sub(r"[*_]", "", text).lower()
+
+
 class PublicAssetInventoryTests(unittest.TestCase):
     """Prevent deployable artwork from bypassing the pre-publication rights review."""
 
@@ -117,17 +122,17 @@ class PublicAssetInventoryTests(unittest.TestCase):
             )
 
     def test_inventory_preserves_publication_boundary_language(self) -> None:
-        text = INVENTORY.read_text(encoding="utf-8")
+        text = normalize_markdown_text(INVENTORY.read_text(encoding="utf-8"))
         required = (
             "not a license grant",
             "provenance and rights verification still required",
             "source-code license must not be assumed to relicense third-party marks",
             "integrity fingerprint only",
             "does not establish copyright ownership",
-            "Issue #5 remains open",
+            "issue #5 remains open",
         )
         for marker in required:
-            self.assertIn(marker.lower(), text.lower())
+            self.assertIn(marker, text)
 
 
 if __name__ == "__main__":
