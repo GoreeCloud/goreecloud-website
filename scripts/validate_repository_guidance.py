@@ -15,6 +15,7 @@ PR_TEMPLATE = ROOT / ".github" / "pull_request_template.md"
 WORKFLOW = ROOT / ".github" / "workflows" / "validate.yml"
 README = ROOT / "README.md"
 ASSET_INVENTORY = ROOT / "docs" / "public-asset-inventory.md"
+RELEASE_CHECKLIST = ROOT / "docs" / "release-readiness-checklist.md"
 SECURITY_URL = "https://www.goreecloud.com/security.html"
 PRIVATE_PATTERNS = (
     re.compile(r"\b10(?:\.\d{1,3}){3}\b"),
@@ -133,8 +134,31 @@ def main() -> int:
         (
             "not a license grant",
             "provenance and rights verification still required",
+            "Reviewed Git blob ID",
+            "integrity fingerprint only",
+            "does not establish copyright ownership",
             "source-code license must not be assumed to relicense third-party marks",
+            "Simple Icons disclaimer",
+            "intermediary icon library",
             "issue #5 remains open",
+        ),
+        errors,
+    )
+    release_checklist = require_markers(
+        RELEASE_CHECKLIST,
+        (
+            "GoreeCloud Website Release Readiness Checklist",
+            "America/Chicago",
+            "exact candidate commit",
+            "python scripts/validate_repository_history.py",
+            'python -m unittest discover -s tests -p "test_*.py"',
+            "Glaze UI visual and interaction acceptance",
+            "Accessibility acceptance",
+            "Source publication and creative-rights gate — issue #5",
+            "Cloudflare isolated-artifact gate — issue #6",
+            "passing CI does not itself authorize",
+            "production does **not** publish `X-Robots-Tag: noindex`",
+            "must never be copied into the public `dist/` artifact",
         ),
         errors,
     )
@@ -146,6 +170,7 @@ def main() -> int:
         (PR_TEMPLATE, pr_template),
         (README, readme),
         (ASSET_INVENTORY, asset_inventory),
+        (RELEASE_CHECKLIST, release_checklist),
     ):
         if not text:
             continue
