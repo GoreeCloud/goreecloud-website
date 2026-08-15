@@ -10,20 +10,34 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 WORKFLOWS = ROOT / ".github" / "workflows"
 VALIDATE_WORKFLOW = WORKFLOWS / "validate.yml"
+REMOTE_VERIFY_WORKFLOW = WORKFLOWS / "verify-deployment.yml"
 DEPENDABOT = ROOT / ".github" / "dependabot.yml"
 USES_RE = re.compile(r"^\s*uses:\s*([^\s#]+)", re.MULTILINE)
 SHA_RE = re.compile(r"^[0-9a-fA-F]{40}$")
 WRITE_PERMISSION_RE = re.compile(r"(?mi)^\s*[A-Za-z0-9_-]+\s*:\s*write\s*(?:#.*)?$")
-REQUIRED_ACTIONS = (
-    "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",  # v7.0.1
-    "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",  # v7.0.0
-    "actions/setup-node@820762786026740c76f36085b0efc47a31fe5020",  # v7.0.0
-)
+DIRECT_INPUT_IN_RUN_RE = re.compile(r"(?m)^\s*run:.*\$\{\{\s*inputs\.target\s*\}\}")
+CHECKOUT_ACTION = "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"  # v7.0.1
+SETUP_PYTHON_ACTION = "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97"  # v7.0.0
+SETUP_NODE_ACTION = "actions/setup-node@820762786026740c76f36085b0efc47a31fe5020"  # v7.0.0
+REQUIRED_ACTIONS = (CHECKOUT_ACTION, SETUP_PYTHON_ACTION, SETUP_NODE_ACTION)
 
 
 def require(errors: list[str], text: str, marker: str, message: str) -> None:
     if marker not in text:
         errors.append(message)
+
+
+def validate_read_only_workflow(path: Path, text: str, errors: list[str], label: str) -> None:
+    if re.search(r"(?m)^\s*pull_request_target\s*:", text):
+        errors.append(f"{label} must not use pull_request_target.")
+    if re.search(r"(?mi)^\s*permissions\s*:\s*write-all\s*(?:#.*)?$", text):
+        errors.append(f"{label} must not request write-all permissions.")
+    if WRITE_PERMISSION_RE.search(text):
+        errors.append(f"{label} must not request any write permission.")
+    if "${{ secrets." in text:
+        errors.append(f"{label} must not consume repository or environment secrets.")
+    require(errors, text, "permissions:\n  contents: read", f"{label} must declare read-only contents permission.")
+    require(errors, text, "persist-credentials: false", f"{label} checkout must keep persisted Git credentials disabled.")
 
 
 def main() -> int:
@@ -50,28 +64,16 @@ def main() -> int:
                     f"{path.relative_to(ROOT)}: {action_ref}"
                 )
 
-    # The public validation workflow never needs elevated repository access or
-    # repository secrets. Keep these requirements specific to validate.yml so a
-    # future deployment workflow can carry separately justified permissions.
+    # The public validation workflow never needs elevated repository access or secrets.
     if not VALIDATE_WORKFLOW.exists():
         errors.append(".github/workflows/validate.yml is required.")
     else:
         validation = VALIDATE_WORKFLOW.read_text(encoding="utf-8")
+        validate_read_only_workflow(VALIDATE_WORKFLOW, validation, errors, "Validation workflow")
 
-        if re.search(r"(?m)^\s*pull_request_target\s*:", validation):
-            errors.append("Validation workflow must not use pull_request_target.")
-        if re.search(r"(?mi)^\s*permissions\s*:\s*write-all\s*(?:#.*)?$", validation):
-            errors.append("Validation workflow must not request write-all permissions.")
-        if WRITE_PERMISSION_RE.search(validation):
-            errors.append("Validation workflow must not request any write permission.")
-        if "${{ secrets." in validation:
-            errors.append("Validation workflow must not consume repository or environment secrets.")
-
-        require(errors, validation, "permissions:\n  contents: read", "Validation workflow must declare read-only contents permission.")
         require(errors, validation, "concurrency:\n", "Validation workflow must define concurrency control.")
         require(errors, validation, "cancel-in-progress: true", "Validation workflow must cancel superseded runs.")
         require(errors, validation, "timeout-minutes: 10", "Validation job must retain its 10-minute timeout.")
-        require(errors, validation, "persist-credentials: false", "Checkout must keep persisted Git credentials disabled.")
 
         for action_ref in REQUIRED_ACTIONS:
             require(
@@ -86,6 +88,7 @@ def main() -> int:
             ("python scripts/validate_performance_budget.py", "performance-budget validator"),
             ("python scripts/build_public_site.py", "isolated public-site build"),
             ("python scripts/validate_build_artifact.py", "isolated build-artifact validator"),
+            ("python scripts/verify_remote_deployment.py --check-config", "remote-verifier configuration check"),
         )
         for command, label in required_validation_commands:
             require(errors, validation, command, f"Validation workflow must run the {label}.")
@@ -94,6 +97,40 @@ def main() -> int:
         artifact_position = validation.find("python scripts/validate_build_artifact.py")
         if build_position >= 0 and artifact_position >= 0 and build_position > artifact_position:
             errors.append("Validation workflow must build the isolated public artifact before validating it.")
+
+    # Remote verification is intentionally manual and read-only. workflow_dispatch
+    # inputs are constrained to a choice and passed through an environment variable;
+    # the Python verifier independently enforces a fixed host allowlist.
+    if not REMOTE_VERIFY_WORKFLOW.exists():
+        errors.append(".github/workflows/verify-deployment.yml is required.")
+    else:
+        remote = REMOTE_VERIFY_WORKFLOW.read_text(encoding="utf-8")
+        validate_read_only_workflow(REMOTE_VERIFY_WORKFLOW, remote, errors, "Remote verification workflow")
+
+        required_remote_markers = (
+            ("workflow_dispatch:", "manual workflow_dispatch trigger"),
+            ("type: choice", "choice-constrained deployment target"),
+            ("- branch-preview", "branch-preview target option"),
+            ("- production", "production target option"),
+            ("timeout-minutes: 5", "five-minute verification timeout"),
+            ("concurrency:\n", "concurrency control"),
+            ("cancel-in-progress: true", "superseded-run cancellation"),
+            (CHECKOUT_ACTION, "reviewed checkout action pin"),
+            (SETUP_PYTHON_ACTION, "reviewed setup-python action pin"),
+            ("python scripts/verify_remote_deployment.py --check-config", "verifier configuration check"),
+            ("TARGET: ${{ inputs.target }}", "environment-mediated target input"),
+            ('python scripts/verify_remote_deployment.py --target "$TARGET"', "remote deployment verification command"),
+        )
+        for marker, label in required_remote_markers:
+            require(errors, remote, marker, f"Remote verification workflow must retain its {label}.")
+
+        if DIRECT_INPUT_IN_RUN_RE.search(remote):
+            errors.append(
+                "Remote verification workflow must not interpolate inputs.target directly into a run command; "
+                "pass it through the TARGET environment variable and let the verifier enforce choices."
+            )
+        if remote.count("- branch-preview") != 1 or remote.count("- production") != 1:
+            errors.append("Remote verification workflow must expose exactly the branch-preview and production target choices.")
 
     if not DEPENDABOT.exists():
         errors.append(".github/dependabot.yml is required to keep pinned GitHub Actions reviewably updated.")
