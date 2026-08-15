@@ -94,6 +94,7 @@ def main() -> int:
             ("python scripts/validate_build_artifact.py", "isolated build-artifact validator"),
             ("python scripts/verify_remote_deployment.py --check-config", "remote-verifier configuration check"),
             ('python -m unittest discover -s tests -p "test_*.py"', "offline regression test suite"),
+            ("python scripts/validate_release_evidence.py", "candidate release-evidence validator"),
         )
         for command, label in required_validation_commands:
             require(errors, validation, command, f"Validation workflow must run the {label}.")
