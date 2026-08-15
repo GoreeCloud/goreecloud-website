@@ -1,5 +1,5 @@
 name: Verify deployed website
-run-name: Verify ${{ inputs.target }} deployment
+run-name: Verify GoreeCloud deployed website
 
 on:
   workflow_dispatch:
@@ -12,12 +12,15 @@ on:
         options:
           - branch-preview
           - production
+  schedule:
+    - cron: "17 8 * * *"
+      timezone: "America/Chicago"
 
 permissions:
   contents: read
 
 concurrency:
-  group: website-remote-verify-${{ inputs.target }}
+  group: website-remote-verify-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -39,7 +42,12 @@ jobs:
       - name: Validate verifier configuration
         run: python scripts/verify_remote_deployment.py --check-config
 
-      - name: Verify deployed website
+      - name: Verify manually selected deployment
+        if: github.event_name == 'workflow_dispatch'
         env:
           TARGET: ${{ inputs.target }}
         run: python scripts/verify_remote_deployment.py --target "$TARGET"
+
+      - name: Verify scheduled production deployment
+        if: github.event_name == 'schedule'
+        run: python scripts/verify_remote_deployment.py --target production
