@@ -208,6 +208,48 @@ def patch_rounded_thumbnail_defaults(gallery: Path) -> None:
     )
 
 
+def patch_api_qualified_navigation_bar_theme(gallery: Path) -> None:
+    """Keep API-27 navigation-bar appearance attributes out of minSdk-26 resources."""
+    day_styles = gallery / "app/src/main/res/values/styles.xml"
+    night_styles = gallery / "app/src/main/res/values-night/glaze_styles.xml"
+
+    replace_once(
+        day_styles,
+        '        <item name="android:windowLightNavigationBar">true</item>\n',
+        '',
+    )
+    replace_once(
+        night_styles,
+        '        <item name="android:windowLightNavigationBar">false</item>\n',
+        '',
+    )
+
+    day_v27 = '''<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AppTheme" parent="AppTheme.Base">
+        <item name="android:windowBackground">@drawable/glaze_window_background</item>
+        <item name="android:statusBarColor">@color/glaze_status_bar</item>
+        <item name="android:navigationBarColor">@color/glaze_navigation_bar</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+    </style>
+</resources>
+'''
+    night_v27 = '''<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AppTheme" parent="AppTheme.Base">
+        <item name="android:windowBackground">@drawable/glaze_window_background</item>
+        <item name="android:statusBarColor">@color/glaze_status_bar</item>
+        <item name="android:navigationBarColor">@color/glaze_navigation_bar</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+    </style>
+</resources>
+'''
+    write(gallery / "app/src/main/res/values-v27/glaze_styles.xml", day_v27)
+    write(gallery / "app/src/main/res/values-night-v27/glaze_styles.xml", night_v27)
+
+
 def patch_notice(gallery: Path) -> None:
     notice = f"""GoreeCloud Gallery {VERSION_NAME}
 
@@ -222,7 +264,9 @@ from the Commons source included in this APK. Popup menus now select light or da
 styling from the actual GoreeCloud surface contrast rather than Fossify's pure-white theme test,
 with explicit readable menu text colors. Folder thumbnails and media thumbnails now default
 to rounded corners while preserving a user's explicit later choice. The accepted gc.4 rounded
-Settings-card treatment and dialog geometry remain in place.
+Settings-card treatment and dialog geometry remain in place. Glaze navigation-bar appearance
+resources are now API-qualified so the app remains compatible with its Android API 26 minimum
+while using the richer navigation-bar appearance control on API 27 and newer.
 
 The build pipeline validates the exact pinned upstream revisions, source transformations,
 Android compilation, unit tests, Android lint, package identity, offline permission boundary,
@@ -255,6 +299,10 @@ def validate(gallery: Path, commons: Path) -> None:
     activity = read(commons / "commons/src/main/kotlin/org/fossify/commons/extensions/Activity.kt")
     styling = read(commons / "commons/src/main/kotlin/org/fossify/commons/extensions/Context-styling.kt")
     styles = read(commons / "commons/src/main/res/values/styles.xml")
+    day_styles = read(gallery / "app/src/main/res/values/styles.xml")
+    night_styles = read(gallery / "app/src/main/res/values-night/glaze_styles.xml")
+    day_v27 = read(gallery / "app/src/main/res/values-v27/glaze_styles.xml")
+    night_v27 = read(gallery / "app/src/main/res/values-night-v27/glaze_styles.xml")
 
     checks = [
         (f"VERSION_NAME={VERSION_NAME}", props),
@@ -269,10 +317,17 @@ def validate(gallery: Path, commons: Path) -> None:
         (f'<item name="android:textColorPrimary">{DARK_TEXT}</item>', styles),
         ('prefs.getInt(FOLDER_THUMBNAIL_STYLE, FOLDER_STYLE_ROUNDED_CORNERS)', config),
         ('prefs.getBoolean(FILE_ROUNDED_CORNERS, true)', config),
+        ('<item name="android:windowLightNavigationBar">true</item>', day_v27),
+        ('<item name="android:windowLightNavigationBar">false</item>', night_v27),
     ]
     for needle, haystack in checks:
         if needle not in haystack:
             fail(f"validation missing {needle!r}")
+
+    if "android:windowLightNavigationBar" in day_styles:
+        fail("API-27 navigation-bar appearance leaked into unqualified day resources")
+    if "android:windowLightNavigationBar" in night_styles:
+        fail("API-27 navigation-bar appearance leaked into unqualified night resources")
 
     validate_no_counterfeit_runtime(commons)
 
@@ -281,6 +336,10 @@ def validate(gallery: Path, commons: Path) -> None:
         commons / "commons/src/main/res/drawable/top_popup_menu_bg_light.xml",
         commons / "commons/src/main/res/drawable/top_popup_menu_bg_dark.xml",
         gallery / "app/src/main/res/layout/activity_settings.xml",
+        gallery / "app/src/main/res/values/styles.xml",
+        gallery / "app/src/main/res/values-night/glaze_styles.xml",
+        gallery / "app/src/main/res/values-v27/glaze_styles.xml",
+        gallery / "app/src/main/res/values-night-v27/glaze_styles.xml",
     ):
         try:
             ET.parse(xml_file)
@@ -299,6 +358,7 @@ def main() -> None:
     patch_noncompose_counterfeit_boundary(commons)
     patch_popup_theme_selection(commons)
     patch_rounded_thumbnail_defaults(gallery)
+    patch_api_qualified_navigation_bar_theme(gallery)
     patch_notice(gallery)
     validate(gallery, commons)
     print(f"Applied GoreeCloud Gallery {VERSION_NAME} acceptance and readiness hardening")
