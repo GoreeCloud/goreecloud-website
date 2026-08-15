@@ -1,0 +1,111 @@
+name: Build GoreeCloud Gallery gc.3 APK
+
+on:
+  push:
+    branches:
+      - build/goreecloud-gallery-apk
+    paths:
+      - .github/scripts/build_goreecloud_gallery.py
+      - .github/scripts/build_goreecloud_gallery_gc2.py
+      - .github/scripts/build_goreecloud_gallery_gc3.py
+      - .github/workflows/build-goreecloud-gallery-gc3-apk.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: goreecloud-gallery-gc3-apk
+  cancel-in-progress: true
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+
+    steps:
+      - name: Check out isolated build carrier
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Clone exact Fossify Gallery baseline
+        run: |
+          git clone --filter=blob:none --no-checkout https://github.com/FossifyOrg/Gallery.git upstream-gallery
+          git -C upstream-gallery checkout --detach b28299dc33821eee8d108a9880ce87876cf31443
+          test "$(git -C upstream-gallery rev-parse HEAD)" = "b28299dc33821eee8d108a9880ce87876cf31443"
+
+      - name: Clone exact Fossify Commons baseline
+        run: |
+          git clone --filter=blob:none --no-checkout https://github.com/FossifyOrg/commons.git upstream-commons
+          git -C upstream-commons checkout --detach acfd352df1a1852d17a5f77def8b7ad6e522a5b6
+          test "$(git -C upstream-commons rev-parse HEAD)" = "acfd352df1a1852d17a5f77def8b7ad6e522a5b6"
+
+      - name: Apply GoreeCloud gc.1 foundation
+        run: python3 .github/scripts/build_goreecloud_gallery.py upstream-gallery
+
+      - name: Apply GoreeCloud gc.2 corrections
+        run: python3 .github/scripts/build_goreecloud_gallery_gc2.py upstream-gallery upstream-commons
+
+      - name: Apply GoreeCloud gc.3 corrections
+        run: |
+          python3 .github/scripts/build_goreecloud_gallery_gc3.py upstream-gallery upstream-commons
+          python3 -c 'from pathlib import Path; p=Path("upstream-gallery/settings.gradle.kts"); p.write_text(p.read_text().rstrip() + "\n")'
+          git -C upstream-gallery diff --check
+          git -C upstream-commons diff --check
+          git -C upstream-gallery status --short
+          git -C upstream-commons status --short
+
+      - name: Build installable FOSS APK
+        working-directory: upstream-gallery
+        run: |
+          chmod +x gradlew
+          ./gradlew --no-daemon --stacktrace clean assembleFossDebug
+
+      - name: Collect and validate APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          mapfile -t apks < <(find upstream-gallery/app/build/outputs/apk/foss/debug -type f -name '*.apk' | sort)
+          test "${#apks[@]}" -eq 1
+          cp "${apks[0]}" dist/GoreeCloud-Gallery-1.0.0-gc.3.apk
+
+          APK="dist/GoreeCloud-Gallery-1.0.0-gc.3.apk"
+          test -s "$APK"
+          unzip -p "$APK" assets/goreecloud_notice.txt | grep -F "GoreeCloud Gallery 1.0.0-gc.3"
+
+          APKANALYZER=""
+          if command -v apkanalyzer >/dev/null 2>&1; then
+            APKANALYZER="$(command -v apkanalyzer)"
+          elif [ -x "$ANDROID_HOME/cmdline-tools/latest/bin/apkanalyzer" ]; then
+            APKANALYZER="$ANDROID_HOME/cmdline-tools/latest/bin/apkanalyzer"
+          fi
+
+          if [ -n "$APKANALYZER" ]; then
+            test "$($APKANALYZER manifest application-id "$APK")" = "com.goreecloud.gallery"
+            ! $APKANALYZER manifest permissions "$APK" | grep -Fq "android.permission.INTERNET"
+          else
+            echo "apkanalyzer unavailable; package/permission validation will rely on source assertions and successful Android packaging"
+          fi
+
+          if unzip -p "$APK" classes.dex | strings | grep -Fq "You are using a fake version of the app"; then
+            echo "Fossify counterfeit warning string is still present in classes.dex" >&2
+            exit 1
+          fi
+
+          sha256sum "$APK" | tee dist/GoreeCloud-Gallery-1.0.0-gc.3.sha256
+          cp upstream-gallery/GOREECLOUD-NOTICE.md dist/GOREECLOUD-NOTICE.md
+          cp upstream-gallery/LICENSE dist/LICENSE-GPL-3.0.txt
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: GoreeCloud-Gallery-gc3-APK
+          path: dist/
+          if-no-files-found: error
+          retention-days: 30
