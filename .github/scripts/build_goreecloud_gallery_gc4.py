@@ -52,15 +52,15 @@ def patch_version(gallery: Path) -> None:
     write(props, text)
 
 
-def add_glaze_settings_card(gallery: Path) -> None:
-    drawable = """<?xml version="1.0" encoding="utf-8"?>
+def card_drawable(surface: str, stroke: str, ripple: str) -> str:
+    return f"""<?xml version="1.0" encoding="utf-8"?>
 <ripple xmlns:android="http://schemas.android.com/apk/res/android"
-    android:color="#185865F2">
+    android:color="{ripple}">
     <item>
         <shape android:shape="rectangle">
-            <solid android:color="@color/glaze_surface" />
+            <solid android:color="{surface}" />
             <corners android:radius="16dp" />
-            <stroke android:width="1dp" android:color="#185865F2" />
+            <stroke android:width="1dp" android:color="{stroke}" />
         </shape>
     </item>
     <item android:id="@android:id/mask">
@@ -71,7 +71,24 @@ def add_glaze_settings_card(gallery: Path) -> None:
     </item>
 </ripple>
 """
-    write(gallery / "app/src/main/res/drawable/glaze_settings_row_background.xml", drawable)
+
+
+def add_glaze_settings_cards(gallery: Path, commons: Path) -> None:
+    # Resource references remain module-local: Gallery and the included Commons build each
+    # receive their own drawable so Commons never depends on an app-only resource.
+    write(
+        gallery / "app/src/main/res/drawable/glaze_settings_row_background.xml",
+        card_drawable("@color/glaze_surface", "#185865F2", "#185865F2"),
+    )
+
+    write(
+        commons / "commons/src/main/res/drawable/glaze_settings_row_background.xml",
+        card_drawable("#F7F8FC", "#185865F2", "#185865F2"),
+    )
+    write(
+        commons / "commons/src/main/res/drawable-night/glaze_settings_row_background.xml",
+        card_drawable("#171C29", "#338995FF", "#288995FF"),
+    )
 
 
 def patch_settings_rows(gallery: Path) -> None:
@@ -214,6 +231,8 @@ def validate(gallery: Path, commons: Path) -> None:
     for xml_file in (
         gallery / "app/src/main/res/drawable/glaze_settings_row_background.xml",
         gallery / "app/src/main/res/layout/activity_settings.xml",
+        commons / "commons/src/main/res/drawable/glaze_settings_row_background.xml",
+        commons / "commons/src/main/res/drawable-night/glaze_settings_row_background.xml",
         commons / "commons/src/main/res/layout/activity_customization.xml",
         commons / "commons/src/main/res/drawable/top_popup_menu_bg_light.xml",
         commons / "commons/src/main/res/drawable/top_popup_menu_bg_dark.xml",
@@ -232,7 +251,7 @@ def main() -> None:
     verify_checkout(gallery, GALLERY_COMMIT, "Gallery")
     verify_checkout(commons, COMMONS_COMMIT, "Commons")
     patch_version(gallery)
-    add_glaze_settings_card(gallery)
+    add_glaze_settings_cards(gallery, commons)
     patch_settings_rows(gallery)
     patch_customization_rows(commons)
     patch_popup_surfaces(commons)
