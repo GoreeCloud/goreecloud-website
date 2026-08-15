@@ -168,12 +168,16 @@ def validate_styles(errors: list[str]) -> None:
 
 
 def validate_interaction(errors: list[str]) -> None:
+    # The early initializer has one responsibility: restore an explicit stored
+    # Light/Dark override before first paint. System mode deliberately stores no
+    # value; CSS and main.js own operating-system preference detection/updates.
     require_markers(
         THEME_INIT,
         (
             "goreecloud-theme",
             "localStorage.getItem",
-            "prefers-color-scheme",
+            "localStorage.removeItem",
+            "root.dataset.theme",
         ),
         errors,
     )
@@ -181,6 +185,7 @@ def validate_interaction(errors: list[str]) -> None:
         MAIN_JS,
         (
             "THEME_MODES = ['system', 'light', 'dark']",
+            "prefers-color-scheme: light",
             "themeToggle.hidden = false",
             "localStorage.setItem",
             "localStorage.removeItem",
