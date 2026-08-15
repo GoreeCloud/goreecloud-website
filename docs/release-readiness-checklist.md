@@ -4,7 +4,7 @@
 
 This repository-only checklist defines the minimum evidence required before the GoreeCloud public website is treated as ready for an authorized production release.
 
-It complements automated CI. It does **not** replace the project-specific licensing/publication decision in issue #5, the external Cloudflare `dist/` cutover in issue #6, or human Glaze UI/accessibility acceptance.
+It complements automated CI. It does **not** replace the remaining creative-rights/source-publication decision in issue #5, the external Cloudflare `dist/` cutover in issue #6, or human Glaze UI/accessibility acceptance.
 
 Passing every automated check is necessary production evidence, but **passing CI does not itself authorize a merge, repository visibility change, DNS change, Cloudflare configuration change, or production release**.
 
@@ -39,7 +39,7 @@ Before final acceptance:
 - [ ] Confirm PR #3 (or its successor release PR) targets `main` and is not merged accidentally.
 - [ ] Confirm there are no unintended unreviewed commits after the selected candidate.
 - [ ] Confirm the public artifact still comes only from `PUBLIC_FILES` in `scripts/build_public_site.py`.
-- [ ] Confirm repository-only `docs/`, `tests/`, `scripts/`, `.github/`, `README.md`, `SECURITY.md`, and local/development material remain outside `dist/`.
+- [ ] Confirm repository-only `docs/`, `tests/`, `scripts/`, `.github/`, `README.md`, `SECURITY.md`, `LICENSE`, `NOTICE`, and local/development material remain outside `dist/`.
 
 If the candidate SHA changes after manual acceptance begins, rerun the checks affected by the change and record them against the new exact SHA.
 
@@ -51,6 +51,7 @@ Run from the repository root on the exact candidate:
 python scripts/validate_workflow_security.py
 python scripts/validate_repository_hygiene.py
 python scripts/validate_repository_history.py
+python scripts/validate_license.py
 python scripts/validate_security_policy.py
 python scripts/validate_privacy_policy.py
 python scripts/validate_browser_origin_integrity.py
@@ -78,6 +79,7 @@ Required evidence:
 - [ ] GitHub Actions is green on the exact candidate SHA.
 - [ ] Current-tree repository hygiene passes.
 - [ ] Full reachable-history automated preflight passes from a non-shallow checkout.
+- [ ] Apache-2.0 source-license, NOTICE boundary, and README licensing guidance remain synchronized and pass `scripts/validate_license.py`.
 - [ ] Every deployable public asset path is present in the rights/provenance inventory.
 - [ ] Every deployable public asset byte sequence matches its reviewed Git blob ID in the inventory.
 - [ ] The isolated `dist/` artifact contains exactly the expected allowlisted files.
@@ -85,7 +87,7 @@ Required evidence:
 - [ ] Remote-verifier configuration and dependency-free regression tests pass.
 - [ ] Release-evidence records, if present, pass structural/privacy validation without implying substantive acceptance.
 
-Automated history and rights checks are prevention/evidence controls, not substitutes for the human publication review required by issue #5.
+Automated history, license-integrity, and rights-inventory checks are prevention/evidence controls, not substitutes for the human publication review required by issue #5.
 
 ## 3. Glaze UI visual and interaction acceptance
 
@@ -174,18 +176,19 @@ Automated structural checks are not a formal WCAG conformance claim. Perform hum
 
 ## 7. Source publication and creative-rights gate — issue #5
 
-Do not make the repository public or represent the source as open source until issue #5 is explicitly resolved.
+The source-code license is established as Apache-2.0 and protected by `scripts/validate_license.py`. That source-license decision does **not** itself authorize repository publication or grant unrestricted rights to GoreeCloud branding or third-party marks.
+
+Do not make the repository public until the remaining issue #5 publication and creative-rights requirements are explicitly resolved.
 
 Required before any repository visibility change:
 
-- [ ] Exact source-code license selected deliberately for this repository.
-- [ ] Approved top-level `LICENSE` uses authoritative license text.
-- [ ] GoreeCloud written-content and branding/artwork reuse boundary is documented.
-- [ ] Copyright holder/notice treatment is documented.
-- [ ] Third-party artwork provenance, applicable logo/trademark terms, and required attribution/notices are reviewed.
-- [ ] `docs/public-asset-inventory.md` reflects the exact deployable artwork paths and reviewed bytes.
-- [ ] Final human repository-history and contextual disclosure review is complete.
-- [ ] Repository visibility decision is explicitly recorded.
+- [ ] Confirm the reviewed top-level `LICENSE` remains Apache-2.0 and the license-integrity gate passes on the exact candidate.
+- [ ] Confirm `NOTICE` still documents the GoreeCloud branding, editorial-content, and third-party-mark boundary.
+- [ ] Confirm the copyright holder and notice treatment remain accurate.
+- [ ] Complete third-party artwork provenance, applicable logo/trademark terms, and required attribution/notices review.
+- [ ] Confirm `docs/public-asset-inventory.md` reflects the exact deployable artwork paths and reviewed bytes.
+- [ ] Complete the final human repository-history and contextual disclosure review.
+- [ ] Explicitly record the repository visibility/publication decision.
 
 An upstream software license, an intermediary icon-library license, or a successful automated scan must not be treated as a blanket rights grant for third-party logos.
 
@@ -267,6 +270,6 @@ Record any production-only discrepancy as a release defect rather than normalizi
 
 ## Release boundary
 
-This checklist is intentionally fail-closed. An unchecked licensing/publication requirement, an unverified Cloudflare `dist/` boundary, a red automated production gate, a deployed-byte mismatch, or a material manual Glaze UI/accessibility defect means the release candidate is not yet fully accepted.
+This checklist is intentionally fail-closed. An unchecked creative-rights/publication requirement, an unverified Cloudflare `dist/` boundary, a red automated production gate, a deployed-byte mismatch, or a material manual Glaze UI/accessibility defect means the release candidate is not yet fully accepted.
 
 The checklist itself is repository-only documentation and must never be copied into the public `dist/` artifact.
