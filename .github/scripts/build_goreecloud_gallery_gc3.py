@@ -13,6 +13,7 @@ GALLERY_COMMIT = "b28299dc33821eee8d108a9880ce87876cf31443"
 COMMONS_COMMIT = "acfd352df1a1852d17a5f77def8b7ad6e522a5b6"
 VERSION_NAME = "1.0.0-gc.3"
 VERSION_CODE = "10003"
+COMMONS_AGP = "9.0.1"
 LIGHT_SURFACE = "#EEF1FB"
 DARK_SURFACE = "#171C29"
 
@@ -44,6 +45,16 @@ def verify_checkout(root: Path, expected: str, label: str) -> None:
     ).strip()
     if actual != expected:
         fail(f"{label} checkout is {actual}, expected {expected}")
+
+
+def patch_commons_build_tool(commons: Path) -> None:
+    """Align the included Commons build with Gallery's AGP without changing source revision."""
+    catalog = commons / "gradle/libs.versions.toml"
+    replace_once(
+        catalog,
+        'gradlePlugins-agp = "9.0.0"',
+        f'gradlePlugins-agp = "{COMMONS_AGP}"',
+    )
 
 
 def patch_version(gallery: Path) -> None:
@@ -135,13 +146,14 @@ def patch_gallery_strings(gallery: Path) -> None:
 
 
 def patch_notice(gallery: Path) -> None:
-    notice = f"""GoreeCloud Gallery {VERSION_NAME}\n\nGoreeCloud Gallery is a GoreeCloud-maintained Android gallery fork based on Fossify Gallery\n1.13.1 and Fossify Commons 6.1.5. It remains offline-first and adds no analytics,\nadvertising, cloud account, remote API, or Internet permission.\n\ngc.3 closes the remaining real-device branding boundary found after gc.2: the inherited\nFossify counterfeit-build dialog is suppressed at both the AppTheme and FakeVersionCheck\nentry points for com.goreecloud packages, Fossify's green-icon recovery wording is replaced,\nand the inherited launcher-color control is hidden because GoreeCloud uses a canonical\nlauncher identity. Settings and customization app bars now use layered Glaze surfaces instead\nof a flat primary-color toolbar.\n\nUpstream copyright, source history, GNU GPL licensing, and third-party notices remain\napplicable. GoreeCloud rebranding does not remove those obligations.\n"""
+    notice = f"""GoreeCloud Gallery {VERSION_NAME}\n\nGoreeCloud Gallery is a GoreeCloud-maintained Android gallery fork based on Fossify Gallery\n1.13.1 and Fossify Commons 6.1.5. It remains offline-first and adds no analytics,\nadvertising, cloud account, remote API, or Internet permission.\n\ngc.3 closes the remaining real-device branding boundary found after gc.2: the inherited\nFossify counterfeit-build dialog is suppressed at both the AppTheme and FakeVersionCheck\nentry points for com.goreecloud packages, Fossify's green-icon recovery wording is replaced,\nand the inherited launcher-color control is hidden because GoreeCloud uses a canonical\nlauncher identity. Settings and customization app bars now use layered Glaze surfaces instead\nof a flat primary-color toolbar. The included Commons build remains pinned to its exact source\nrevision while its Android Gradle Plugin declaration is aligned with Gallery for build compatibility.\n\nUpstream copyright, source history, GNU GPL licensing, and third-party notices remain\napplicable. GoreeCloud rebranding does not remove those obligations.\n"""
     write(gallery / "GOREECLOUD-NOTICE.md", notice)
     write(gallery / "app/src/main/assets/goreecloud_notice.txt", notice)
 
 
 def validate(gallery: Path, commons: Path) -> None:
     props = read(gallery / "gradle.properties")
+    catalog = read(commons / "gradle/libs.versions.toml")
     app_theme = read(commons / "commons/src/main/kotlin/org/fossify/commons/compose/theme/AppTheme.kt")
     compose_extensions = read(commons / "commons/src/main/kotlin/org/fossify/commons/compose/extensions/ComposeActivityExtensions.kt")
     activity_extensions = read(commons / "commons/src/main/kotlin/org/fossify/commons/compose/extensions/ActivityExtensions.kt")
@@ -152,6 +164,7 @@ def validate(gallery: Path, commons: Path) -> None:
     checks = [
         (f"VERSION_NAME={VERSION_NAME}", props),
         (f"VERSION_CODE={VERSION_CODE}", props),
+        (f'gradlePlugins-agp = "{COMMONS_AGP}"', catalog),
         ('context.packageName.startsWith("com.goreecloud."', app_theme),
         ('context.packageName.startsWith("com.goreecloud."', compose_extensions),
         ('!packageName.startsWith("com.goreecloud.", true)', activity_extensions),
@@ -177,6 +190,7 @@ def main() -> None:
     commons = Path(sys.argv[2]).resolve()
     verify_checkout(gallery, GALLERY_COMMIT, "Gallery")
     verify_checkout(commons, COMMONS_COMMIT, "Commons")
+    patch_commons_build_tool(commons)
     patch_version(gallery)
     patch_fake_version_boundary(commons)
     patch_customization_identity(commons)
