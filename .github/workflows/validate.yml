@@ -41,6 +41,9 @@ jobs:
       - name: Validate browser origin integrity
         run: python scripts/validate_browser_origin_integrity.py
 
+      - name: Validate structural accessibility
+        run: python scripts/validate_accessibility.py
+
       - name: Validate application identity
         run: python scripts/validate_app_identity.py
 
