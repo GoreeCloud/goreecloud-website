@@ -109,3 +109,19 @@ jobs:
         run: |
           node --check js/theme-init.js
           node --check js/main.js
+
+      - name: Verify pull request branch preview deployment
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        run: |
+          attempts=6
+          for attempt in 1 2 3 4 5 6; do
+            if python scripts/verify_remote_deployment.py --target branch-preview; then
+              exit 0
+            fi
+            if [ "$attempt" -lt "$attempts" ]; then
+              echo "Branch preview not ready or not yet candidate-identical (attempt $attempt/$attempts); retrying in 10 seconds."
+              sleep 10
+            fi
+          done
+          echo "Branch preview verification failed after $attempts attempts."
+          exit 1
