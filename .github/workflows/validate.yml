@@ -38,6 +38,9 @@ jobs:
       - name: Validate privacy statement
         run: python scripts/validate_privacy_policy.py
 
+      - name: Validate browser origin integrity
+        run: python scripts/validate_browser_origin_integrity.py
+
       - name: Validate application identity
         run: python scripts/validate_app_identity.py
 
