@@ -24,6 +24,15 @@ GLAZE = ROOT / "css" / "glaze.css"
 POLISH = ROOT / "css" / "glaze-polish.css"
 THEME_INIT = ROOT / "js" / "theme-init.js"
 MAIN_JS = ROOT / "js" / "main.js"
+GLAZE_COMPONENT_CLASSES = {
+    "button",
+    "glaze-chip",
+    "glaze-callout",
+    "hero-card",
+    "service-card",
+    "platform-card",
+    "roadmap-card",
+}
 
 
 class PageParser(HTMLParser):
@@ -68,7 +77,7 @@ class PageParser(HTMLParser):
         if tag == "main" and attrs.get("id") == "main":
             self.has_main = True
             self.main_tabindex = attrs.get("tabindex")
-        if classes.intersection({"glaze-chip", "glaze-callout", "hero-card", "service-card", "platform-card", "roadmap-card"}):
+        if classes.intersection(GLAZE_COMPONENT_CLASSES):
             self.has_glaze_component = True
 
 
@@ -107,7 +116,7 @@ def validate_pages(errors: list[str]) -> None:
         if not parser.has_main or parser.main_tabindex != "-1":
             fail(errors, f"{page.name} main landmark must remain programmatically focusable with tabindex=-1.")
         if not parser.has_glaze_component:
-            fail(errors, f"{page.name} must retain at least one Glaze UI surface/component marker.")
+            fail(errors, f"{page.name} must retain at least one Glaze UI surface or control marker.")
 
         theme_pos = text.find("js/theme-init.js")
         first_style_pos = text.find('rel="stylesheet"')
