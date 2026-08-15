@@ -2,8 +2,9 @@
 """Offline regression tests for the fixed-target GoreeCloud deployment verifier.
 
 These tests deliberately replace network access with synthetic responses. They protect the
-security, indexing, error-page, repository-isolation, and RFC 9116 decisions that the live
-verifier enforces after a Cloudflare Pages deployment without making CI depend on the network.
+security, indexing, candidate-integrity, error-page, repository-isolation, and RFC 9116 decisions
+that the live verifier enforces after a Cloudflare Pages deployment without making CI depend on
+the network.
 """
 
 from __future__ import annotations
@@ -223,6 +224,73 @@ class RemoteVerifierTests(unittest.TestCase):
         ):
             verifier.verify_production_redirect(errors)
         self.assertTrue(any("did not resolve to the canonical www host" in error for error in errors))
+
+    def test_integrity_set_matches_public_allowlist_except_cloudflare_headers(self) -> None:
+        expected = tuple(
+            relative
+            for relative in verifier.PUBLIC_FILES
+            if relative not in verifier.NON_FETCHABLE_PUBLIC_FILES
+        )
+        self.assertEqual(verifier.NON_FETCHABLE_PUBLIC_FILES, frozenset({"_headers"}))
+        self.assertEqual(verifier.REMOTE_INTEGRITY_FILES, expected)
+        self.assertNotIn("_headers", verifier.REMOTE_INTEGRITY_FILES)
+
+    def test_remote_integrity_path_mapping_is_origin_rooted_and_safe(self) -> None:
+        self.assertEqual(verifier.remote_path_for_public_file("index.html"), "/")
+        self.assertEqual(verifier.remote_path_for_public_file("robots.txt"), "/robots.txt")
+        self.assertEqual(
+            verifier.remote_path_for_public_file("assets/goreecloud-icon.png"),
+            "/assets/goreecloud-icon.png",
+        )
+        for invalid in ("/absolute.html", "../escape.txt", "assets/../escape.txt", ""):
+            with self.subTest(invalid=invalid), self.assertRaises(ValueError):
+                verifier.remote_path_for_public_file(invalid)
+
+    def test_candidate_content_integrity_accepts_exact_bytes(self) -> None:
+        relative = "robots.txt"
+        expected = (verifier.ROOT / relative).read_bytes()
+        response = self.response(
+            final_url="https://www.goreecloud.com/robots.txt",
+            body=expected,
+        )
+        errors: list[str] = []
+        with (
+            patch.object(verifier, "REMOTE_INTEGRITY_FILES", (relative,)),
+            patch.object(verifier, "fetch", return_value=response),
+        ):
+            verifier.verify_candidate_content_integrity(verifier.TARGETS["production"], errors)
+        self.assertEqual(errors, [])
+
+    def test_candidate_content_integrity_rejects_byte_mismatch(self) -> None:
+        relative = "robots.txt"
+        response = self.response(
+            final_url="https://www.goreecloud.com/robots.txt",
+            body=b"not-the-reviewed-candidate",
+        )
+        errors: list[str] = []
+        with (
+            patch.object(verifier, "REMOTE_INTEGRITY_FILES", (relative,)),
+            patch.object(verifier, "fetch", return_value=response),
+        ):
+            verifier.verify_candidate_content_integrity(verifier.TARGETS["production"], errors)
+        self.assertTrue(any("Candidate content mismatch for /robots.txt" in error for error in errors))
+        self.assertTrue(any("expected SHA-256" in error for error in errors))
+        self.assertTrue(any("deployed SHA-256" in error for error in errors))
+
+    def test_candidate_content_integrity_rejects_non_200_resource(self) -> None:
+        relative = "robots.txt"
+        response = self.response(
+            status=404,
+            final_url="https://www.goreecloud.com/robots.txt",
+            body=b"missing",
+        )
+        errors: list[str] = []
+        with (
+            patch.object(verifier, "REMOTE_INTEGRITY_FILES", (relative,)),
+            patch.object(verifier, "fetch", return_value=response),
+        ):
+            verifier.verify_candidate_content_integrity(verifier.TARGETS["production"], errors)
+        self.assertTrue(any("returned HTTP 404; expected 200" in error for error in errors))
 
     def test_static_configuration_contract_passes_without_network(self) -> None:
         self.assertEqual(verifier.check_configuration(), 0)
