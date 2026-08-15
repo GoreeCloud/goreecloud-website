@@ -24,7 +24,8 @@ GoreeCloud changes are maintained as deterministic, fail-closed source transform
 3. `build_goreecloud_gallery_gc3.py` — real-device identity corrections, Compose counterfeit-warning boundary, canonical launcher behavior, and Glaze app-bar surfaces.
 4. `build_goreecloud_gallery_gc4.py` — rounded Glaze Settings cards and refined popup/dialog geometry.
 5. `build_goreecloud_gallery_gc5.py` — legacy non-Compose counterfeit-warning removal, popup contrast correction, rounded folder/media thumbnail defaults, API-qualified navigation-bar appearance resources, and stronger release-readiness validation.
-6. `build_goreecloud_gallery_gc6.py` — removes square thumbnail controls and square rendering preferences from the GoreeCloud product surface, hard-enforces rounded folder/media thumbnails, and fixes the MaterialToolbar action-overflow theme path with explicit Glaze light/dark foreground and surface colors.
+6. `build_goreecloud_gallery_gc6.py` — removes square thumbnail controls and square rendering preferences from the GoreeCloud product surface, hard-enforces rounded folder/media thumbnails, and attempts the first MaterialToolbar action-overflow correction through application theme resources.
+7. `build_goreecloud_gallery_gc7.py` — corrects the remaining real-device toolbar overflow defect at the actual owner path: Fossify Commons `MySearchMenu`. It assigns an explicit GoreeCloud light/dark popup theme to the embedded `MaterialToolbar` during construction and whenever search-bar colors refresh, with GoreeCloud-owned popup surfaces and text appearances.
 
 Each patch script verifies the exact expected upstream source shape and terminates instead of silently applying an incomplete transformation when the baseline changes.
 
@@ -42,7 +43,9 @@ GoreeCloud Gallery uses Glaze UI as its shared visual and interaction language. 
 - system-aware light/dark behavior without depending on Material You color extraction;
 - accessibility and legibility over decorative effects.
 
-Square thumbnail controls are intentionally not exposed in GoreeCloud Gallery. Media grid thumbnails, folder thumbnails, and imported/legacy thumbnail-style preferences must resolve to the rounded GoreeCloud presentation. Thumbnail spacing, folder-count presentation, folder-title limits, media duration/file-type badges, and favorite markers remain configurable where supported.
+Square thumbnail controls are intentionally not exposed in GoreeCloud Gallery. Media grid thumbnails, folder thumbnails, and imported or legacy thumbnail-style preferences must resolve to the rounded GoreeCloud presentation. Thumbnail spacing, folder-count presentation, folder-title limits, media duration/file-type badges, and favorite markers remain configurable where supported.
+
+Toolbar overflow menus are also a Glaze-controlled surface. A light GoreeCloud screen must not display a dark inherited popup, and popup foreground/background colors must always remain mutually readable. The `MySearchMenu` toolbar therefore owns an explicit popup-theme contract rather than relying on the upstream Commons default.
 
 ## Privacy and Network Boundary
 
@@ -54,15 +57,17 @@ Android's storage-management permissions are separate from network access and ar
 
 ## Build and Validation
 
-The gc.6 workflow performs the following gates before publishing an artifact:
+The gc.7 workflow performs the following gates before publishing an artifact:
 
 - exact upstream revision verification;
-- deterministic gc.1 through gc.6 patch validation;
+- deterministic gc.1 through gc.7 patch validation;
 - `git diff --check` for Gallery and Commons changes;
 - source-level counterfeit-warning scan;
 - forced rounded-thumbnail configuration assertions;
 - assertions that the crop-to-square Settings row, file rounded/square toggle, and folder square/rounded selector are absent;
-- explicit MaterialToolbar light/night popup-theme assertions;
+- assertion that `MySearchMenu` selects GoreeCloud popup themes directly from the effective background luminance;
+- assertion that the embedded `MaterialToolbar` has a construction-time GoreeCloud popup theme before menu inflation;
+- explicit light/dark popup-widget, popup-text, list-view, foreground, and background resource assertions;
 - Android unit-test task execution;
 - Android lint;
 - FOSS debug APK compilation;
@@ -76,7 +81,11 @@ The gc.6 workflow performs the following gates before publishing an artifact:
 
 The earlier gc.5 validation run identified and forced correction of an API-compatibility defect inherited from the first Glaze theme patch: `android:windowLightNavigationBar` is isolated to API-27-qualified resources while the application continues to support its API 26 minimum.
 
-The gc.6 overflow correction targets a different Android theme path from the gc.5 standalone popup correction. Fossify's base Material theme hardcoded the toolbar action-overflow menu to a dark popup style. gc.6 overrides the application `AppTheme`, toolbar `popupTheme`, and action-overflow style directly so light Glaze screens use a light rounded menu with dark text and night Glaze screens use a dark rounded menu with light text.
+Real-device gc.6 acceptance then established two different outcomes. The no-square-thumbnail work behaved as intended on the visible Settings surface and rounded thumbnails rendered correctly. Standard dialogs such as column count, media filtering, and sorting were also readable. However, the three-dot overflow menu on both the main folder screen and an opened media folder remained a dark navy surface with very dark text.
+
+Inspection of the pinned source identified the remaining boundary: the affected top bar is not a generic activity dialog or standalone popup. `activity_main.xml` hosts Fossify Commons `MySearchMenu`; `MySearchMenu` inflates `menu_search.xml`; and that layout creates its own `MaterialToolbar`. The upstream Commons base theme defaults its action-overflow menu to a dark style. Application-level gc.6 overrides were therefore insufficient to guarantee the popup context used by this embedded toolbar on the tested device.
+
+gc.7 moves the correction to that actual owner path. The toolbar now receives a GoreeCloud `ThemeOverlay.AppCompat.Light` or `ThemeOverlay.AppCompat.Dark` popup context directly. The light theme owns a `#F7F8FC` rounded surface with `#14213D` primary text; the dark theme owns a `#171C29` rounded surface with `#F5F7FC` primary text. The selected popup theme is set while `MySearchMenu` is constructed and is refreshed whenever the top-bar colors update.
 
 A successful build artifact is an acceptance candidate, not automatically a production release. Real-device acceptance remains required for visual behavior, storage permissions, installation/upgrade behavior, media operations, light/dark appearance, accessibility, and destructive file-operation safety.
 
@@ -89,7 +98,7 @@ The following items remain deliberate pre-stable-release work rather than being 
 - The upstream Android build currently emits deprecation warnings for Jetifier and Gradle behavior that will require attention before future Android Gradle Plugin/Gradle major-version upgrades.
 - GitHub Actions runner deprecation notices for pinned workflow actions should be addressed during CI maintenance without weakening reproducibility.
 - Current acceptance APKs rely on the Android debug-signing path. Stable GoreeCloud distribution requires a controlled, long-lived signing identity stored through approved secret handling rather than committed to source control.
-- Real-device acceptance is required for the gc.6 MaterialToolbar overflow contrast fix, complete removal of square thumbnail choices, forced rounded behavior with existing preferences, storage permission flow, and core file operations.
+- Real-device acceptance remains required for the gc.7 direct `MySearchMenu` overflow correction, the deeper file/folder thumbnail-option dialogs, forced rounded behavior with existing preferences, storage permission flow, and core file operations.
 
 These limitations do not invalidate an acceptance APK, but they prevent treating a successful CI build alone as evidence of stable production readiness.
 
@@ -102,7 +111,7 @@ Before stable promotion, verify at minimum:
 - no upstream counterfeit or promotional branding appears in normal use;
 - GoreeCloud identity is consistent across launcher, installer, About, Settings, dialogs, and secondary surfaces;
 - square thumbnail controls are absent and folder/media thumbnails remain rounded even when legacy or imported preferences previously selected square behavior;
-- toolbar overflow menus are readable in light and dark Glaze presentation, with foreground/background contrast matching the active presentation;
+- toolbar overflow menus are readable on the main folders screen and inside media folders in both light and dark Glaze presentation;
 - file browsing, viewing, editing, copy/move/delete, recycle bin, hidden/excluded items, favorites, video playback, and import/export settings behave correctly;
 - Android storage permission flows are understandable and do not request network access;
 - upgrade/rollback behavior is documented;
