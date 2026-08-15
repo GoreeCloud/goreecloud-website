@@ -4,7 +4,7 @@ Public static website for GoreeCloud.
 
 ## Version
 
-Current website package: **v5.5 — production-readiness hardening in progress**
+Current website package: **v5.6 — production-readiness hardening in progress**
 
 ## Role
 
@@ -51,6 +51,7 @@ Production-readiness tooling is intentionally dependency-free and uses the Pytho
 - `scripts/validate_build_artifact.py` — proves `dist/` contains exactly the reviewed public files and no repository-only content
 - `scripts/validate_performance_budget.py` — enforces static payload, request-count, and image-dimension budgets
 - `scripts/validate_browser_origin_integrity.py` — keeps browser-loaded HTML/CSS/manifest resources origin-local and rejects runtime network, cookie, worker, and service-worker clients in site JavaScript
+- `scripts/validate_accessibility.py` — enforces structural accessibility invariants across the homepage, Privacy, Security, and custom 404 pages
 - `scripts/validate_public_surface.py` — validates cross-page links, fragments, canonical state, crawler policy, sitemap completeness, and sitemap dates
 - `scripts/validate_deployment_contract.py` — enforces the static Cloudflare Pages architecture and header contract
 - `scripts/validate_site.py` — validates the homepage and core public-site invariants
@@ -128,6 +129,10 @@ The current implementation includes:
 - semantic footer navigation
 - explicit image dimensions for layout stability
 
+The structural accessibility validator checks all four human-facing HTML pages for document language, a single main landmark and h1, skip-link targeting, heading-level progression, labeled navigation landmarks, accessible names for links and buttons, valid ARIA references, image alternatives, safe focus ordering, absence of autofocus, explicit button types, and safe new-tab relationships. It also requires keyboard focus styling and a visible skip-link focus state.
+
+These automated checks are regression controls, not a claim of complete WCAG conformance. They do not replace manual keyboard review, screen-reader testing, browser zoom/reflow inspection, color-contrast measurement, or other real assistive-technology acceptance testing before a formal accessibility-conformance claim is made.
+
 Glaze UI is intended to remain distinctly GoreeCloud rather than copying another vendor's interface.
 
 ## Privacy
@@ -174,6 +179,7 @@ python scripts/validate_workflow_security.py
 python scripts/validate_security_policy.py
 python scripts/validate_privacy_policy.py
 python scripts/validate_browser_origin_integrity.py
+python scripts/validate_accessibility.py
 python scripts/validate_app_identity.py
 python scripts/validate_public_semantics.py
 python scripts/validate_public_surface.py
@@ -198,7 +204,7 @@ The checks cover, among other things:
 - local links, assets, same-page fragments, and cross-page fragments
 - origin-local rendered resources across HTML, CSS, and the web manifest
 - no runtime browser network, cookie, worker, or service-worker clients in public JavaScript
-- document language, headings, duplicate IDs, and image alternatives
+- whole-site structural accessibility including skip links, landmark labeling, accessible interactive names, ARIA target integrity, heading progression, focus order, and image alternatives
 - intrinsic image dimensions and static performance budgets
 - HTTPS-only external navigation references
 - safe new-tab link relationships
