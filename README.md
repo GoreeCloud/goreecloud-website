@@ -59,7 +59,7 @@ Production-readiness tooling is intentionally dependency-free and uses the Pytho
 - `scripts/validate_public_semantics.py` — validates public, canonical, Open Graph, X/Twitter, and semantic metadata guarantees
 - `scripts/validate_privacy_policy.py` — keeps the privacy statement synchronized with implementation
 - `scripts/validate_security_policy.py` — validates public security-reporting behavior and security.txt freshness
-- `scripts/verify_remote_deployment.py` — verifies fixed GoreeCloud preview/production HTTP surfaces, repository isolation, and live security.txt freshness
+- `scripts/verify_remote_deployment.py` — verifies fixed GoreeCloud preview/production HTTP surfaces, repository isolation, live security.txt freshness, and preview/production indexing headers
 - `scripts/validate_repository_guidance.py` — validates issue/PR safety guidance
 - `scripts/validate_workflow_security.py` — enforces immutable GitHub Actions references and least privilege
 
@@ -212,6 +212,7 @@ The checks cover, among other things:
 - static Cloudflare Pages architecture and `_headers` limits
 - isolated, allowlisted production-artifact generation
 - fixed-target remote deployment verification
+- branch previews must be excluded from indexing while production must remain indexable
 - GitHub contribution safety boundaries
 - immutable Action dependencies and least-privilege workflow configuration
 
@@ -223,6 +224,8 @@ Before treating the Cloudflare `dist/` cutover as verified, run:
 python scripts/verify_remote_deployment.py --check-config
 python scripts/verify_remote_deployment.py --target branch-preview
 ```
+
+Branch-preview verification requires the deployment root to publish `X-Robots-Tag: noindex`. Production verification checks the opposite boundary: the canonical production root must not publish `noindex`, because a production-only indexing header can override otherwise-correct HTML and crawler metadata.
 
 After an authorized production release, the default-branch deployment workflow can verify production manually and also performs a scheduled production smoke check each day at 8:17 AM America/Chicago.
 
