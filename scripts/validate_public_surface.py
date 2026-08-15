@@ -3,12 +3,13 @@
 
 This complements page-specific validators by crawling every intentional public HTML
 page, resolving local links/assets exactly as a browser would, validating cross-page
-fragments, and keeping the sitemap aligned with indexable pages.
+fragments, and keeping the sitemap and crawler policy aligned with indexable pages.
 """
 
 from __future__ import annotations
 
 from collections import Counter
+from datetime import date
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import unquote, urlparse
@@ -28,6 +29,9 @@ INDEXABLE_PAGES = {
     ROOT / "security.html": "https://www.goreecloud.com/security.html",
 }
 SITEMAP = ROOT / "sitemap.xml"
+ROBOTS = ROOT / "robots.txt"
+CANONICAL_SITEMAP_URL = "https://www.goreecloud.com/sitemap.xml"
+SITEMAP_NAMESPACE = "{http://www.sitemaps.org/schemas/sitemap/0.9}"
 
 
 class PublicPageParser(HTMLParser):
@@ -177,11 +181,40 @@ def validate_sitemap(errors: list[str]) -> None:
         errors.append(f"sitemap.xml is not valid XML: {exc}")
         return
 
-    namespace = "{http://www.sitemaps.org/schemas/sitemap/0.9}"
-    locations = [
-        (node.text or "").strip()
-        for node in root.findall(f"{namespace}url/{namespace}loc")
-    ]
+    if root.tag != f"{SITEMAP_NAMESPACE}urlset":
+        errors.append("sitemap.xml must use the standard sitemaps.org urlset namespace.")
+        return
+
+    locations: list[str] = []
+    today = date.today()
+    for url_node in root.findall(f"{SITEMAP_NAMESPACE}url"):
+        loc_nodes = url_node.findall(f"{SITEMAP_NAMESPACE}loc")
+        lastmod_nodes = url_node.findall(f"{SITEMAP_NAMESPACE}lastmod")
+
+        if len(loc_nodes) != 1:
+            errors.append(f"Each sitemap URL entry must contain exactly one <loc>; found {len(loc_nodes)}.")
+            continue
+        location = (loc_nodes[0].text or "").strip()
+        if not location:
+            errors.append("sitemap.xml contains an empty <loc> value.")
+            continue
+        locations.append(location)
+
+        if len(lastmod_nodes) != 1:
+            errors.append(
+                f"Sitemap entry {location} must contain exactly one <lastmod>; found {len(lastmod_nodes)}."
+            )
+            continue
+
+        lastmod_text = (lastmod_nodes[0].text or "").strip()
+        try:
+            lastmod = date.fromisoformat(lastmod_text)
+        except ValueError:
+            errors.append(f"Sitemap entry {location} has invalid YYYY-MM-DD lastmod: {lastmod_text!r}.")
+            continue
+        if lastmod > today:
+            errors.append(f"Sitemap entry {location} has a future lastmod date: {lastmod_text}.")
+
     expected = list(INDEXABLE_PAGES.values())
 
     duplicates = sorted(url for url, count in Counter(locations).items() if count > 1)
@@ -196,12 +229,40 @@ def validate_sitemap(errors: list[str]) -> None:
         errors.append(f"sitemap.xml contains an unexpected public URL: {url}")
 
 
+def validate_robots(errors: list[str]) -> None:
+    if not ROBOTS.exists():
+        errors.append("robots.txt is missing.")
+        return
+
+    directives = [
+        line.strip()
+        for line in ROBOTS.read_text(encoding="utf-8").splitlines()
+        if line.strip() and not line.lstrip().startswith("#")
+    ]
+    lowered = [line.lower() for line in directives]
+
+    if lowered.count("user-agent: *") != 1:
+        errors.append("robots.txt must contain exactly one global 'User-agent: *' directive.")
+    if lowered.count("allow: /") != 1:
+        errors.append("robots.txt must explicitly allow the public site root exactly once.")
+    if any(line.startswith("disallow:") for line in lowered):
+        errors.append("robots.txt must not accidentally block the intentionally public website with Disallow directives.")
+
+    sitemap_directives = [line for line in directives if line.lower().startswith("sitemap:")]
+    expected = f"Sitemap: {CANONICAL_SITEMAP_URL}"
+    if sitemap_directives != [expected]:
+        errors.append(
+            f"robots.txt must publish exactly the canonical sitemap directive {expected!r}; found {sitemap_directives!r}."
+        )
+
+
 def main() -> int:
     errors: list[str] = []
     parsed_pages = parse_pages(errors)
     validate_references(errors, parsed_pages)
     validate_indexing(errors, parsed_pages)
     validate_sitemap(errors)
+    validate_robots(errors)
     return report(errors)
 
 
