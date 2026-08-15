@@ -67,6 +67,14 @@ REQUIRED_ACCEPTED_CHECKBOXES = (
 )
 
 
+def display_path(path: Path) -> str:
+    """Return a stable repository-relative path when possible, otherwise a safe test path."""
+    try:
+        return str(path.relative_to(ROOT))
+    except ValueError:
+        return str(path)
+
+
 def field_value(text: str, label: str) -> str | None:
     pattern = re.compile(rf"(?m)^- {re.escape(label)}:\s*(.*)$")
     match = pattern.search(text)
@@ -74,8 +82,8 @@ def field_value(text: str, label: str) -> str | None:
 
 
 def checkbox_checked(text: str, label: str) -> bool:
-    pattern = re.compile(rf"(?mi)^- \[x\] {re.escape(label)}\s*$")
-    return bool(pattern.search(text))
+    target = f"- [x] {label}".casefold()
+    return any(line.strip().casefold() == target for line in text.splitlines())
 
 
 def disposition_states(text: str) -> list[str]:
@@ -97,7 +105,7 @@ def nonblank(value: str | None) -> bool:
 
 def validate_record(path: Path) -> list[str]:
     errors: list[str] = []
-    relative = path.relative_to(ROOT) if path.is_absolute() and path.is_relative_to(ROOT) else path
+    relative = display_path(path)
 
     if path.is_symlink():
         return [f"Release evidence record must not be a symlink: {relative}"]
@@ -223,7 +231,7 @@ def validate_records(evidence_dir: Path = EVIDENCE_DIR) -> tuple[list[str], int]
     records = [entry for entry in entries if entry.is_file() or entry.is_symlink()]
     unexpected_dirs = [entry for entry in entries if entry.is_dir() and not entry.is_symlink()]
     for directory in unexpected_dirs:
-        errors.append(f"Nested directories are not allowed under docs/release-evidence: {directory.relative_to(ROOT)}")
+        errors.append(f"Nested directories are not allowed under docs/release-evidence: {display_path(directory)}")
     for record in records:
         errors.extend(validate_record(record))
     return errors, len(records)
