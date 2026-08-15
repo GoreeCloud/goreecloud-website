@@ -12,7 +12,9 @@ Status: **Production-deployment inventory narrowed; repository-publication prove
 
 The public website no longer deploys third-party family-service logo artwork. Those cards use GoreeCloud Glaze UI text monograms instead. The current deployable third-party artwork is limited to the platform-foundation marks listed below.
 
-This narrowing reduces the public creative-rights surface without claiming ownership of third-party names or marks. The source-code license must not be assumed to relicense third-party marks, and an intermediary icon-library license must not be treated as a blanket rights grant for an underlying brand.
+This narrowing reduces the public creative-rights surface without claiming ownership of third-party names or marks. The source-code license must not be assumed to relicense third-party marks, and an intermediary icon library must not be treated as a blanket rights grant for an underlying brand.
+
+**Simple Icons disclaimer:** the presence, availability, license, or metadata of artwork in Simple Icons or any similar icon collection is not treated as proof that GoreeCloud has trademark, copyright, redistribution, endorsement, or brand-use permission for the underlying third-party mark. Any intermediary icon library is only a possible provenance clue; the applicable rightsholder terms and the exact deployed asset still require review.
 
 ## Integrity snapshot
 
