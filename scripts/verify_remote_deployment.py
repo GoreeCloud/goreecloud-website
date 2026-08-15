@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone
 import ssl
 import sys
 from typing import Mapping
@@ -51,6 +52,10 @@ REPOSITORY_ONLY_PATHS = (
 MISSING_PATH = "/__goreecloud-deployment-smoke__/missing/nested/path"
 MAX_BODY_BYTES = 1_048_576
 TIMEOUT_SECONDS = 15
+SECURITY_TXT_RENEWAL_BUFFER = timedelta(days=30)
+EXPECTED_SECURITY_CONTACT = "mailto:goreecloud@gmail.com"
+EXPECTED_SECURITY_CANONICAL = "https://www.goreecloud.com/.well-known/security.txt"
+EXPECTED_SECURITY_POLICY = "https://www.goreecloud.com/security.html"
 
 REQUIRED_HEADERS = {
     "content-security-policy": (
@@ -144,6 +149,28 @@ def content_type_matches(actual: str, expected: str) -> bool:
     return media_type == expected
 
 
+def parse_security_txt(text: str) -> dict[str, list[str]]:
+    fields: dict[str, list[str]] = {}
+    for raw_line in text.splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#") or ":" not in line:
+            continue
+        key, value = line.split(":", 1)
+        fields.setdefault(key.strip().lower(), []).append(value.strip())
+    return fields
+
+
+def parse_rfc3339(value: str) -> datetime | None:
+    normalized = value[:-1] + "+00:00" if value.endswith(("Z", "z")) else value
+    try:
+        parsed = datetime.fromisoformat(normalized)
+    except ValueError:
+        return None
+    if parsed.tzinfo is None:
+        return None
+    return parsed.astimezone(timezone.utc)
+
+
 def verify_public_surface(base_url: str, errors: list[str]) -> None:
     for path, (expected_status, marker, expected_type) in PUBLIC_CHECKS.items():
         url = build_url(base_url, path)
@@ -223,15 +250,43 @@ def verify_repository_isolation(base_url: str, errors: list[str]) -> None:
             )
 
 
-def verify_security_txt_cache(base_url: str, errors: list[str]) -> None:
+def verify_security_txt(base_url: str, errors: list[str]) -> None:
     try:
         response = fetch(build_url(base_url, "/.well-known/security.txt"))
     except RuntimeError as error:
         errors.append(str(error))
         return
+
+    if response.status != 200:
+        errors.append(f"/.well-known/security.txt returned HTTP {response.status}; expected 200.")
+        return
+
     cache_control = response.headers.get("cache-control", "").lower()
     if "max-age=3600" not in cache_control:
         errors.append("/.well-known/security.txt is missing the intended one-hour Cache-Control policy.")
+
+    text = response.body.decode("utf-8", errors="replace")
+    fields = parse_security_txt(text)
+
+    contacts = fields.get("contact", [])
+    if not contacts or contacts[0] != EXPECTED_SECURITY_CONTACT:
+        errors.append("Deployed security.txt does not publish the expected primary security contact.")
+
+    if EXPECTED_SECURITY_CANONICAL not in fields.get("canonical", []):
+        errors.append("Deployed security.txt does not publish the expected canonical URL.")
+
+    if EXPECTED_SECURITY_POLICY not in fields.get("policy", []):
+        errors.append("Deployed security.txt does not publish the expected security policy URL.")
+
+    expires_values = fields.get("expires", [])
+    if len(expires_values) != 1:
+        errors.append(f"Deployed security.txt must contain exactly one Expires field, found {len(expires_values)}.")
+    else:
+        expires = parse_rfc3339(expires_values[0])
+        if expires is None:
+            errors.append("Deployed security.txt Expires is not a valid timezone-aware RFC3339 timestamp.")
+        elif expires - datetime.now(timezone.utc) <= SECURITY_TXT_RENEWAL_BUFFER:
+            errors.append("Deployed security.txt expires within 30 days and must be renewed before it becomes stale.")
 
 
 def verify_production_redirect(errors: list[str]) -> None:
@@ -267,6 +322,9 @@ def check_configuration() -> int:
         if not path.startswith("/") or ".." in path:
             errors.append(f"Unsafe verifier path configured: {path}")
 
+    if SECURITY_TXT_RENEWAL_BUFFER != timedelta(days=30):
+        errors.append("Remote verifier must preserve the 30-day security.txt renewal warning window.")
+
     if errors:
         print("Remote deployment verifier configuration failed:")
         for error in errors:
@@ -285,7 +343,7 @@ def verify(target: str) -> int:
     verify_headers(base_url, errors)
     verify_not_found_behavior(base_url, errors)
     verify_repository_isolation(base_url, errors)
-    verify_security_txt_cache(base_url, errors)
+    verify_security_txt(base_url, errors)
     if target == "production":
         verify_production_redirect(errors)
 
