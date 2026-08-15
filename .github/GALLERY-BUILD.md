@@ -23,7 +23,7 @@ GoreeCloud changes are maintained as deterministic, fail-closed source transform
 2. `build_goreecloud_gallery_gc2.py` — local Commons composite build, palette/system-theme correction, launcher aliases, and first fork-boundary fixes.
 3. `build_goreecloud_gallery_gc3.py` — real-device identity corrections, Compose counterfeit-warning boundary, canonical launcher behavior, and Glaze app-bar surfaces.
 4. `build_goreecloud_gallery_gc4.py` — rounded Glaze Settings cards and refined popup/dialog geometry.
-5. `build_goreecloud_gallery_gc5.py` — legacy non-Compose counterfeit-warning removal, popup contrast correction, rounded folder/media thumbnail defaults, and stronger release-readiness validation.
+5. `build_goreecloud_gallery_gc5.py` — legacy non-Compose counterfeit-warning removal, popup contrast correction, rounded folder/media thumbnail defaults, API-qualified navigation-bar appearance resources, and stronger release-readiness validation.
 
 Each patch script verifies the exact expected upstream source shape and terminates instead of silently applying an incomplete transformation when the baseline changes.
 
@@ -46,7 +46,7 @@ GoreeCloud Gallery is intended to operate entirely against local Android media/s
 
 The build workflow validates that the packaged application does not request the Internet permission.
 
-Android's storage-management permissions are separate from network access and are retained only where required for local gallery file-management functionality.
+Android's storage-management permissions are separate from network access and are retained only where required for local gallery file-management functionality. Because full local file-management capability is security-sensitive, real-device acceptance must verify that the permission request is understandable, expected for the documented feature set, and not broader than the accepted product requirement.
 
 ## Build and Validation
 
@@ -58,7 +58,7 @@ The gc.5 workflow performs the following gates before publishing an artifact:
 - source-level counterfeit-warning scan;
 - rounded-thumbnail default assertions;
 - popup contrast-selection assertion;
-- Android unit tests;
+- Android unit-test task execution;
 - Android lint;
 - FOSS debug APK compilation;
 - application-ID verification when `apkanalyzer` is available;
@@ -69,11 +69,26 @@ The gc.5 workflow performs the following gates before publishing an artifact:
 - SHA-256 generation;
 - GitHub Actions artifact upload.
 
+The gc.5 validation run completed successfully after lint identified and forced correction of an API-compatibility defect inherited from the earlier Glaze theme patch: `android:windowLightNavigationBar` is now isolated to API-27-qualified resources while the application continues to support its API 26 minimum.
+
 A successful build artifact is an acceptance candidate, not automatically a production release. Real-device acceptance remains required for visual behavior, storage permissions, installation/upgrade behavior, media operations, light/dark appearance, accessibility, and destructive file-operation safety.
+
+## Known Readiness Debt
+
+The following items remain deliberate pre-stable-release work rather than being hidden by a successful APK build:
+
+- The upstream `testFossDebugUnitTest` task currently reports `NO-SOURCE`; the workflow executes the unit-test gate, but there are not yet GoreeCloud-specific automated application tests. Stable development should add targeted tests for fork-owned behavior where practical.
+- Android lint passes with the upstream lint baseline and still reports non-blocking warnings, including deprecated Android/Gradle APIs and other inherited technical debt. GoreeCloud-specific new lint errors are not accepted, but upstream debt should be reviewed during future baseline synchronization rather than silently expanded.
+- The upstream Android build currently emits deprecation warnings for Jetifier and Gradle behavior that will require attention before future Android Gradle Plugin/Gradle major-version upgrades.
+- The GitHub Actions runner reports Node-runtime deprecation notices for some pinned third-party workflow actions. The workflow-action versions should be refreshed as part of CI maintenance without weakening reproducibility.
+- Current acceptance APKs rely on the Android debug-signing path. Stable GoreeCloud distribution requires a controlled, long-lived signing identity stored through approved secret handling rather than committed to source control.
+- Real-device acceptance is still required for the gc.5 popup contrast fix, rounded-thumbnail defaults, counterfeit-warning removal, storage permission flow, and core file operations.
+
+These limitations do not invalidate the gc.5 acceptance APK, but they prevent treating a successful CI build alone as evidence of stable production readiness.
 
 ## Release Model
 
-Current APKs are development-signed acceptance builds intended for direct sideloading. A stable GoreeCloud Gallery release should use a controlled long-lived signing identity so upgrades can be installed predictably without uninstalling prior releases.
+Current APKs are acceptance builds intended for direct sideloading. A stable GoreeCloud Gallery release should use a controlled long-lived signing identity so upgrades can be installed predictably without uninstalling prior releases.
 
 Before stable promotion, verify at minimum:
 
