@@ -23,15 +23,23 @@ Before this repository is made public or its creative assets are represented as 
 
 A source-code license must not be assumed to relicense third-party marks or branding.
 
+## Integrity snapshot
+
+Each deployable asset row records the Git blob ID of the exact file content reviewed in this inventory. CI recomputes the blob ID from the checked-out bytes and requires it to match the recorded value.
+
+This content binding closes an important review gap: replacing an artwork file in place while retaining the same path now requires an intentional inventory update. The blob ID is an integrity fingerprint only. It does **not** establish copyright ownership, provenance, trademark permission, or redistribution rights, and it must not be presented as rights evidence.
+
+When an approved asset changes legitimately, update the asset and its recorded blob ID in the same reviewed change, then re-evaluate any provenance, attribution, trademark, or licensing implications of the new bytes.
+
 ## GoreeCloud identity artwork
 
 These files are GoreeCloud-branded identity/presentation assets in the repository. Their final copyright holder and reuse terms must be confirmed as part of issue #5 before repository publication.
 
-| Deployable path | Role | Publication/licensing status |
-| --- | --- | --- |
-| `assets/favicon.svg` | GoreeCloud browser/site mark | GoreeCloud identity asset; final ownership/reuse notice pending issue #5 |
-| `assets/goreecloud-icon.png` | GoreeCloud application/site icon | GoreeCloud identity asset; final ownership/reuse notice pending issue #5 |
-| `assets/social-preview.png` | GoreeCloud Open Graph/X social preview | GoreeCloud presentation asset; final ownership/reuse notice pending issue #5 |
+| Deployable path | Role | Publication/licensing status | Reviewed Git blob ID |
+| --- | --- | --- | --- |
+| `assets/favicon.svg` | GoreeCloud browser/site mark | GoreeCloud identity asset; final ownership/reuse notice pending issue #5 | `1e578573f8f753f0d51e616284546b42f67012da` |
+| `assets/goreecloud-icon.png` | GoreeCloud application/site icon | GoreeCloud identity asset; final ownership/reuse notice pending issue #5 | `5ae9000d1404239ef362f42f109e3d7de3557d38` |
+| `assets/social-preview.png` | GoreeCloud Open Graph/X social preview | GoreeCloud presentation asset; final ownership/reuse notice pending issue #5 | `64aaf437835b31a8473292487cf57366bb58c4fa` |
 
 ## Third-party platform/project marks
 
@@ -39,26 +47,26 @@ The following files identify software or platforms referenced by the public Gore
 
 The repository filename and displayed project identity are sufficient to establish the intended subject, but they do **not** establish provenance or redistribution rights. Do not infer an asset license from the software project's code license.
 
-| Deployable path | Identified project/platform | Verification status |
-| --- | --- | --- |
-| `assets/platform/adguard-home.svg` | AdGuard Home | Upstream artwork source/terms to verify |
-| `assets/platform/beszel.svg` | Beszel | Upstream artwork source/terms to verify |
-| `assets/platform/caddy.svg` | Caddy | Upstream artwork source/terms to verify |
-| `assets/platform/debian.svg` | Debian | Upstream artwork source/terms to verify |
-| `assets/platform/docker.svg` | Docker | Upstream artwork source/terms to verify |
-| `assets/platform/netbird.svg` | NetBird | Upstream artwork source/terms to verify |
-| `assets/platform/ntfy.svg` | ntfy | Upstream artwork source/terms to verify |
-| `assets/platform/proxmox.svg` | Proxmox | Upstream artwork source/terms to verify |
-| `assets/platform/searxng.svg` | SearXNG | Upstream artwork source/terms to verify |
-| `assets/platform/uptime-kuma.svg` | Uptime Kuma | Upstream artwork source/terms to verify |
-| `assets/services/audiobookshelf.svg` | Audiobookshelf | Upstream artwork source/terms to verify |
-| `assets/services/element.svg` | Element | Upstream artwork source/terms to verify |
-| `assets/services/immich.svg` | Immich | Upstream artwork source/terms to verify |
-| `assets/services/jellyfin.svg` | Jellyfin | Upstream artwork source/terms to verify |
-| `assets/services/navidrome.svg` | Navidrome | Upstream artwork source/terms to verify |
-| `assets/services/nextcloud.svg` | Nextcloud | Upstream artwork source/terms to verify |
-| `assets/services/paperless-ngx.svg` | Paperless-ngx | Upstream artwork source/terms to verify |
-| `assets/services/vaultwarden.svg` | Vaultwarden | Upstream artwork source/terms to verify |
+| Deployable path | Identified project/platform | Verification status | Reviewed Git blob ID |
+| --- | --- | --- | --- |
+| `assets/platform/adguard-home.svg` | AdGuard Home | Upstream artwork source/terms to verify | `713ec820617ccda98427c3fa38f97a72165ca6e1` |
+| `assets/platform/beszel.svg` | Beszel | Upstream artwork source/terms to verify | `a0459d16b3c5b9582eea6a637e1027fe76426be4` |
+| `assets/platform/caddy.svg` | Caddy | Upstream artwork source/terms to verify | `e7c49498548a1d79228284c9de8066f31c983d8a` |
+| `assets/platform/debian.svg` | Debian | Upstream artwork source/terms to verify | `e6bd21288ffb991cab15625b0a69900a0ded5e41` |
+| `assets/platform/docker.svg` | Docker | Upstream artwork source/terms to verify | `de7b005b813f9c3c902591a3084f138777c29b30` |
+| `assets/platform/netbird.svg` | NetBird | Upstream artwork source/terms to verify | `89bb8ba27d31b24c4f1dd308e43bd09bfae76901` |
+| `assets/platform/ntfy.svg` | ntfy | Upstream artwork source/terms to verify | `429dfed5bd19effcf1d420b17f8995353caad97f` |
+| `assets/platform/proxmox.svg` | Proxmox | Upstream artwork source/terms to verify | `10f91a01bb4fd15c7345bbbefba00a06e84bd7ac` |
+| `assets/platform/searxng.svg` | SearXNG | Upstream artwork source/terms to verify | `908330f2b0b0aa881e50e8e1013c18126b728c02` |
+| `assets/platform/uptime-kuma.svg` | Uptime Kuma | Upstream artwork source/terms to verify | `8ef1dbe73ecdacf7dadd430cfe9c87af684732d0` |
+| `assets/services/audiobookshelf.svg` | Audiobookshelf | Upstream artwork source/terms to verify | `917e42e00103f1f285d208302a6b5a50bff7cd37` |
+| `assets/services/element.svg` | Element | Upstream artwork source/terms to verify | `54a91b72f803034ee1e7c71fb68e2d2a2c84349e` |
+| `assets/services/immich.svg` | Immich | Upstream artwork source/terms to verify | `08e60a45bb98462eeaa22800a8fd7bbe174fe0b2` |
+| `assets/services/jellyfin.svg` | Jellyfin | Upstream artwork source/terms to verify | `d4d7f01724b132f3f36a22d4727dc88953677e6a` |
+| `assets/services/navidrome.svg` | Navidrome | Upstream artwork source/terms to verify | `1ec9541621a037829c6e6336b3d92a5541fd70b2` |
+| `assets/services/nextcloud.svg` | Nextcloud | Upstream artwork source/terms to verify | `853346e1d6013387eb2768bbd5774b86c7fc32d0` |
+| `assets/services/paperless-ngx.svg` | Paperless-ngx | Upstream artwork source/terms to verify | `8db3273947738f0b80644ccb706b54459a5745a5` |
+| `assets/services/vaultwarden.svg` | Vaultwarden | Upstream artwork source/terms to verify | `bb241d516206c45bfaffe5f023caaeb7d6dcc2a4` |
 
 ## Deliberate boundaries
 
@@ -68,6 +76,7 @@ The repository filename and displayed project identity are sufficient to establi
 - Third-party marks must not be described as GoreeCloud-owned artwork.
 - A third-party software project's open-source license must not be treated as automatic permission to redistribute its logo under that same license.
 - Replacing or adding a public asset requires updating both `PUBLIC_ASSET_FILES` and this inventory in the same reviewed change.
+- Changing the bytes of an existing public asset requires updating its reviewed Git blob ID here and reconsidering its provenance/rights status even when the filename is unchanged.
 - Repository-only design experiments, source material, or unused artwork remain outside the deployment artifact unless explicitly allowlisted.
 
 ## Publication gate
