@@ -56,7 +56,7 @@ Production-readiness tooling is intentionally dependency-free and uses the Pytho
 - `scripts/validate_public_semantics.py` — validates public, canonical, Open Graph, X/Twitter, and semantic metadata guarantees
 - `scripts/validate_privacy_policy.py` — keeps the privacy statement synchronized with implementation
 - `scripts/validate_security_policy.py` — validates public security-reporting behavior and security.txt freshness
-- `scripts/verify_remote_deployment.py` — verifies fixed GoreeCloud preview/production HTTP surfaces and repository isolation
+- `scripts/verify_remote_deployment.py` — verifies fixed GoreeCloud preview/production HTTP surfaces, repository isolation, and live security.txt freshness
 - `scripts/validate_repository_guidance.py` — validates issue/PR safety guidance
 - `scripts/validate_workflow_security.py` — enforces immutable GitHub Actions references and least privilege
 
@@ -148,7 +148,7 @@ The public security-reporting path is:
 
 `SECURITY.md` provides repository-side reporting guidance. Public security documents deliberately exclude private family infrastructure, credentials, internal networks, administrative interfaces, and non-public data from authorized testing.
 
-The `security.txt` validator requires the reporting contact, canonical URL, policy URL, language metadata, and a single timezone-aware RFC3339 `Expires` value. CI intentionally begins failing once fewer than 30 days remain before expiration, providing a renewal window before the deployed metadata becomes stale. The remote production verifier enforces the same 30-day freshness boundary against the live file.
+The `security.txt` validator requires the reporting contact, canonical URL, policy URL, language metadata, and a single timezone-aware RFC3339 `Expires` value. CI intentionally begins failing once fewer than 30 days remain before expiration, providing a renewal window before the deployed metadata becomes stale. The remote production verifier enforces the same 30-day freshness boundary against the live file, so the scheduled production smoke check becomes an advance renewal alert as well as a reachability check.
 
 The repository remains private while the source-license/publication decision tracked in issue #5 is unresolved. Passing CI does not itself authorize a visibility, DNS, or production release change.
 
