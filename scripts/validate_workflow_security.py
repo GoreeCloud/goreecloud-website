@@ -110,8 +110,10 @@ def main() -> int:
 
         require(errors, remote, "workflow_dispatch:", "Remote deployment verification must remain manually dispatchable.")
         require(errors, remote, "schedule:", "Remote deployment verification must retain its production schedule.")
-        require(errors, remote, 'cron: "17 8 * * *"', "Production smoke schedule must remain 8:17 AM America/Chicago.")
-        require(errors, remote, 'timezone: "America/Chicago"', "Production smoke schedule must retain the America/Chicago timezone.")
+        if not re.search(r"(?m)^\s*-\s*cron:\s*(['\"]?)17 8 \* \* \*\1\s*$", remote):
+            errors.append("Production smoke schedule must remain 8:17 AM America/Chicago.")
+        if not re.search(r"(?m)^\s*timezone:\s*(['\"]?)America/Chicago\1\s*$", remote):
+            errors.append("Production smoke schedule must retain the America/Chicago timezone.")
         require(errors, remote, "permissions:\n  contents: read", "Remote deployment workflow must remain read-only.")
         require(errors, remote, "persist-credentials: false", "Remote verification checkout must disable persisted credentials.")
         require(errors, remote, "timeout-minutes: 5", "Remote deployment verification must retain its five-minute timeout.")
