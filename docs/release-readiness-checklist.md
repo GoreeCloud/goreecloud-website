@@ -52,6 +52,7 @@ python scripts/validate_workflow_security.py
 python scripts/validate_repository_hygiene.py
 python scripts/validate_repository_history.py
 python scripts/validate_license.py
+python scripts/validate_governance_readiness.py
 python scripts/validate_security_policy.py
 python scripts/validate_privacy_policy.py
 python scripts/validate_browser_origin_integrity.py
@@ -80,6 +81,7 @@ Required evidence:
 - [ ] Current-tree repository hygiene passes.
 - [ ] Full reachable-history automated preflight passes from a non-shallow checkout.
 - [ ] Apache-2.0 source-license, NOTICE boundary, and README licensing guidance remain synchronized and pass `scripts/validate_license.py`.
+- [ ] GoreeCloud governance applicability remains valid and passes `scripts/validate_governance_readiness.py`: multi-user is Not Applicable only to the current anonymous static site, while security and Glaze UI remain fully applicable.
 - [ ] Every deployable public asset path is present in the rights/provenance inventory.
 - [ ] Every deployable public asset byte sequence matches its reviewed Git blob ID in the inventory.
 - [ ] The isolated `dist/` artifact contains exactly the expected allowlisted files.
@@ -87,7 +89,7 @@ Required evidence:
 - [ ] Remote-verifier configuration and dependency-free regression tests pass.
 - [ ] Release-evidence records, if present, pass structural/privacy validation without implying substantive acceptance.
 
-Automated history, license-integrity, and rights-inventory checks are prevention/evidence controls, not substitutes for the human publication review required by issue #5.
+Automated history, license-integrity, governance, and rights-inventory checks are prevention/evidence controls, not substitutes for the human publication review required by issue #5.
 
 ## 3. Glaze UI visual and interaction acceptance
 
@@ -185,7 +187,8 @@ Required before any repository visibility change:
 - [ ] Confirm the reviewed top-level `LICENSE` remains Apache-2.0 and the license-integrity gate passes on the exact candidate.
 - [ ] Confirm `NOTICE` still documents the GoreeCloud branding, editorial-content, and third-party-mark boundary.
 - [ ] Confirm the copyright holder and notice treatment remain accurate.
-- [ ] Complete third-party artwork provenance, applicable logo/trademark terms, and required attribution/notices review.
+- [ ] Complete third-party artwork provenance, applicable logo/trademark terms, and required attribution/notices review for every remaining deployable third-party mark.
+- [ ] Confirm family-service cards remain Glaze UI monograms and no third-party family-service logo artwork has silently re-entered `PUBLIC_ASSET_FILES` without review.
 - [ ] Confirm `docs/public-asset-inventory.md` reflects the exact deployable artwork paths and reviewed bytes.
 - [ ] Complete the final human repository-history and contextual disclosure review.
 - [ ] Explicitly record the repository visibility/publication decision.

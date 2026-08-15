@@ -10,6 +10,19 @@ The public website itself remains defined by the exact `PUBLIC_FILES` allowlist 
 
 ## Documentation map
 
+### `governance-readiness.md`
+
+**Role:** GoreeCloud mandatory software/service baseline applicability record.
+
+Use this record to map the website's current anonymous static architecture to the GoreeCloud multi-user, security, and Glaze UI production-readiness requirements. It documents why the multi-user gate is Not Applicable to the current no-account/no-private-workspace website while keeping security and Glaze UI fully applicable.
+
+Authority boundary:
+
+- applies only to the current static anonymous website architecture;
+- the multi-user Not Applicable determination expires if authentication, accounts, profiles, private state, or other user identity/data boundaries are introduced;
+- does not waive security, privacy, Glaze UI, accessibility, deployment, or release requirements;
+- is machine-checked by `scripts/validate_governance_readiness.py` and must change when the architecture changes.
+
 ### `public-asset-inventory.md`
 
 **Role:** Pre-publication artwork rights/provenance working inventory.
@@ -80,19 +93,21 @@ Before issue #5 is resolved, review whether a completed record is appropriate fo
 
 ## Authority relationships
 
-In shorthand: **inventory = publication/rights working record; checklist = reusable procedure; evidence template = historical candidate record**.
+In shorthand: **governance = mandatory-baseline applicability; inventory = publication/rights working record; checklist = reusable procedure; evidence template = historical candidate record**.
 
 The repository uses these records together without treating them as interchangeable:
 
 1. `scripts/build_public_site.py` controls the exact technical public deployment file set.
-2. `docs/public-asset-inventory.md` controls the working deployable-artwork rights/provenance review record.
-3. `docs/release-readiness-checklist.md` controls the reusable manual release procedure.
-4. `docs/release-evidence-template.md` defines the structure of candidate-specific historical evidence.
-5. `scripts/create_release_evidence.py` safely instantiates a working candidate record but has no authority to validate or accept it.
-6. `scripts/validate_release_evidence.py` validates record structure, candidate binding, disposition consistency, and selected privacy/safety invariants but does not determine substantive release acceptance.
-7. GitHub Actions and repository validators provide machine-generated validation evidence for the exact candidate they run against.
-8. Issues #5 and #6 remain the tracked decision/external-operation gates for source publication/creative rights and Cloudflare `dist/` publication respectively.
-9. Explicit human authorization remains required for merge, repository visibility, DNS/routing, Cloudflare configuration, and production release actions.
+2. `docs/governance-readiness.md` controls the website-specific applicability mapping for the mandatory multi-user/security/Glaze UI baseline.
+3. `scripts/validate_governance_readiness.py` verifies that the documented applicability still matches the static architecture and required CI gates.
+4. `docs/public-asset-inventory.md` controls the working deployable-artwork rights/provenance review record.
+5. `docs/release-readiness-checklist.md` controls the reusable manual release procedure.
+6. `docs/release-evidence-template.md` defines the structure of candidate-specific historical evidence.
+7. `scripts/create_release_evidence.py` safely instantiates a working candidate record but has no authority to validate or accept it.
+8. `scripts/validate_release_evidence.py` validates record structure, candidate binding, disposition consistency, and selected privacy/safety invariants but does not determine substantive release acceptance.
+9. GitHub Actions and repository validators provide machine-generated validation evidence for the exact candidate they run against.
+10. Issues #5 and #6 remain the tracked decision/external-operation gates for source publication/creative rights and Cloudflare `dist/` publication respectively.
+11. Explicit human authorization remains required for merge, repository visibility, DNS/routing, Cloudflare configuration, and production release actions.
 
 A successful CI run, checksum, Git blob ID, preview deployment, generated record, structurally valid evidence record, or completed evidence record must not be presented as proving a different property or authorizing a different action.
 
