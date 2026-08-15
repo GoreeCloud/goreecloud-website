@@ -50,6 +50,21 @@ python scripts/create_release_evidence.py --commit <40-character-lowercase-git-s
 
 The generator uses the Central-Time date, the approved lowercase/ISO/hyphen technical filename pattern, the canonical template, and non-overwriting creation. It binds the working record to the supplied SHA while leaving every acceptance checkbox unchecked. It does not fetch evidence, validate the candidate, authorize release, or infer readiness.
 
+After a working record is edited, validate its structural and privacy boundaries with:
+
+```bash
+python scripts/validate_release_evidence.py
+```
+
+The validator checks candidate/filename/SHA binding, Central-Time 12-hour record metadata, private-network and selected secret patterns, final-disposition consistency, and fail-closed authorization structure. It does not decide whether the underlying human review was substantively correct.
+
+Record-state lifecycle:
+
+- keep `Record state` as `Working — not accepted` while no final candidate disposition is selected;
+- when exactly one final disposition is selected, update `Record state` to the matching canonical value: `Accepted`, `Blocked`, `Rejected`, or `Superseded`;
+- an `Accepted` record must retain the required acceptance/gate checkboxes and record at least one explicitly authorized action with the authorizing person/role and authorization date/time;
+- a generated record, a structurally valid record, or a green validation result does not itself authorize any action.
+
 Authority boundary:
 
 - a completed record is historical evidence, not current policy;
@@ -74,11 +89,12 @@ The repository uses these records together without treating them as interchangea
 3. `docs/release-readiness-checklist.md` controls the reusable manual release procedure.
 4. `docs/release-evidence-template.md` defines the structure of candidate-specific historical evidence.
 5. `scripts/create_release_evidence.py` safely instantiates a working candidate record but has no authority to validate or accept it.
-6. GitHub Actions and repository validators provide machine-generated validation evidence for the exact candidate they run against.
-7. Issues #5 and #6 remain the tracked decision/external-operation gates for source publication/creative rights and Cloudflare `dist/` publication respectively.
-8. Explicit human authorization remains required for merge, repository visibility, DNS/routing, Cloudflare configuration, and production release actions.
+6. `scripts/validate_release_evidence.py` validates record structure, candidate binding, disposition consistency, and selected privacy/safety invariants but does not determine substantive release acceptance.
+7. GitHub Actions and repository validators provide machine-generated validation evidence for the exact candidate they run against.
+8. Issues #5 and #6 remain the tracked decision/external-operation gates for source publication/creative rights and Cloudflare `dist/` publication respectively.
+9. Explicit human authorization remains required for merge, repository visibility, DNS/routing, Cloudflare configuration, and production release actions.
 
-A successful CI run, checksum, Git blob ID, preview deployment, generated record, or completed evidence record must not be presented as proving a different property or authorizing a different action.
+A successful CI run, checksum, Git blob ID, preview deployment, generated record, structurally valid evidence record, or completed evidence record must not be presented as proving a different property or authorizing a different action.
 
 ## Privacy and publication boundary
 
