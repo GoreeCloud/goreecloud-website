@@ -90,6 +90,7 @@ def main() -> int:
         (
             "Validate repository guidance",
             "python scripts/validate_repository_guidance.py",
+            "python scripts/validate_accessibility.py",
         ),
         errors,
     )
@@ -97,7 +98,10 @@ def main() -> int:
         README,
         (
             "python scripts/build_public_site.py",
+            "python scripts/validate_accessibility.py",
             "Build output directory: `dist`",
+            "automated checks are regression controls, not a claim of complete WCAG conformance",
+            "screen-reader testing",
             "issue #5",
             "issue #6",
             "Passing CI does not itself authorize",
