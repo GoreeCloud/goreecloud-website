@@ -16,11 +16,11 @@ import json
 import re
 import sys
 
-from build_public_site import PUBLIC_DIRECTORIES, PUBLIC_FILES, ROOT
+from build_public_site import PUBLIC_FILES, ROOT
 
 HTML_FILES = tuple(ROOT / name for name in PUBLIC_FILES if name.endswith(".html"))
-CSS_FILES = tuple(sorted((ROOT / "css").glob("*.css")))
-JS_FILES = tuple(sorted((ROOT / "js").glob("*.js")))
+CSS_FILES = tuple(ROOT / name for name in PUBLIC_FILES if name.startswith("css/") and name.endswith(".css"))
+JS_FILES = tuple(ROOT / name for name in PUBLIC_FILES if name.startswith("js/") and name.endswith(".js"))
 MANIFEST = ROOT / "site.webmanifest"
 
 RESOURCE_LINK_RELS = {
@@ -167,9 +167,18 @@ def validate_manifest(errors: list[str]) -> None:
 def main() -> int:
     errors: list[str] = []
 
-    expected_dirs = {"assets", "css", "js"}
-    if not expected_dirs.issubset(set(PUBLIC_DIRECTORIES)):
-        errors.append("Browser-origin validator assumptions no longer match public deployment directories.")
+    required_allowlisted_runtime = {
+        "assets/favicon.svg",
+        "assets/goreecloud-icon.png",
+        "css/glaze.css",
+        "css/glaze-polish.css",
+        "js/theme-init.js",
+        "js/main.js",
+        "site.webmanifest",
+    }
+    missing = sorted(required_allowlisted_runtime.difference(PUBLIC_FILES))
+    for path in missing:
+        errors.append(f"Browser-origin validator requires public runtime file to remain explicitly allowlisted: {path}")
 
     validate_html(errors)
     validate_css(errors)
@@ -182,7 +191,7 @@ def main() -> int:
             print(f"  - {error}")
         return 1
 
-    print("Browser origin integrity validation passed: rendered resources remain local and browser code remains stateless.")
+    print("Browser origin integrity validation passed: explicitly allowlisted render resources remain local and browser code remains stateless.")
     return 0
 
 
