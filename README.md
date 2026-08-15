@@ -18,8 +18,10 @@ The browser surface is intentionally dependency-light:
 - locally hosted images and project artwork
 - no browser analytics
 - no advertising
+- no third-party browser-loaded render resources
 - no third-party fonts
 - no third-party JavaScript frameworks
+- no runtime browser network clients
 - no service worker
 - no Cloudflare Pages Functions or Worker runtime
 
@@ -48,6 +50,7 @@ Production-readiness tooling is intentionally dependency-free and uses the Pytho
 - `scripts/build_public_site.py` — creates an allowlisted `dist/` deployment artifact
 - `scripts/validate_build_artifact.py` — proves `dist/` contains exactly the reviewed public files and no repository-only content
 - `scripts/validate_performance_budget.py` — enforces static payload, request-count, and image-dimension budgets
+- `scripts/validate_browser_origin_integrity.py` — keeps browser-loaded HTML/CSS/manifest resources origin-local and rejects runtime network, cookie, worker, and service-worker clients in site JavaScript
 - `scripts/validate_public_surface.py` — validates cross-page links, fragments, canonical state, crawler policy, sitemap completeness, and sitemap dates
 - `scripts/validate_deployment_contract.py` — enforces the static Cloudflare Pages architecture and header contract
 - `scripts/validate_site.py` — validates the homepage and core public-site invariants
@@ -129,11 +132,15 @@ Glaze UI is intended to remain distinctly GoreeCloud rather than copying another
 
 ## Privacy
 
-The public site does not intentionally use analytics, behavioral tracking, advertising, fingerprinting, third-party telemetry, third-party fonts, or third-party browser scripts.
+The public site does not intentionally use analytics, behavioral tracking, advertising, fingerprinting, third-party telemetry, or third-party browser-loaded render resources. Stylesheets, scripts, images, manifest icons, and similar browser resources must remain origin-local so Cloudflare previews and the production hostname execute the same reviewed site without silently contacting another resource host.
+
+Browser JavaScript is intentionally non-networked: CI rejects `fetch`, XMLHttpRequest, WebSocket, EventSource, `sendBeacon`, worker/service-worker clients, `importScripts`, and `document.cookie` access unless the privacy and deployment architecture is deliberately revised first.
 
 When a visitor explicitly chooses Light or Dark mode, the preference is stored only in the visitor's browser using the `goreecloud-theme` `localStorage` key. Returning to System mode removes the stored override.
 
 The response policy uses `Referrer-Policy: no-referrer`. The Content Security Policy denies browser capabilities the static site does not need, including form submission, arbitrary browser connections, media loading, workers, framing, and plugin/object content.
+
+Cloudflare remains the hosting/network-delivery layer, so repository validation does not pretend to control every behavior of the delivery provider. The enforced boundary is GoreeCloud's reviewed public artifact and browser code.
 
 See `privacy.html` for the public statement that is validated against the implementation.
 
@@ -166,6 +173,7 @@ Run the production checks from the repository root:
 python scripts/validate_workflow_security.py
 python scripts/validate_security_policy.py
 python scripts/validate_privacy_policy.py
+python scripts/validate_browser_origin_integrity.py
 python scripts/validate_app_identity.py
 python scripts/validate_public_semantics.py
 python scripts/validate_public_surface.py
@@ -188,9 +196,11 @@ The checks cover, among other things:
 - canonical, Open Graph, X/Twitter, manifest, and application identity
 - sitemap completeness, canonical consistency, valid non-future `lastmod` dates, and canonical robots sitemap discovery
 - local links, assets, same-page fragments, and cross-page fragments
+- origin-local rendered resources across HTML, CSS, and the web manifest
+- no runtime browser network, cookie, worker, or service-worker clients in public JavaScript
 - document language, headings, duplicate IDs, and image alternatives
 - intrinsic image dimensions and static performance budgets
-- HTTPS-only external web references
+- HTTPS-only external navigation references
 - safe new-tab link relationships
 - CSP-compatible markup with no inline script/style/event-handler exceptions
 - no-JavaScript navigation and footer fallbacks
