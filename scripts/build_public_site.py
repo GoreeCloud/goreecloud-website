@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Build an allowlisted static artifact for GoreeCloud's public website.
+"""Build the exact allowlisted static artifact for GoreeCloud's public website.
 
 The source repository intentionally contains CI validators, GitHub metadata, and
-repository documentation that are not part of the public website. This script
-copies only the files and directories that are intended to be deployable.
+repository documentation that are not part of the public website. Every deployable
+file is named explicitly below so adding a file anywhere in the repository cannot
+silently make that file public on the next Cloudflare Pages build.
 """
 
 from __future__ import annotations
@@ -15,7 +16,8 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 DIST = ROOT / "dist"
 
-PUBLIC_FILES = (
+# Root-level browser and crawler surface.
+PUBLIC_ROOT_FILES = (
     "404.html",
     "_headers",
     "googlea0a636fd5dafd9e0.html",
@@ -25,13 +27,59 @@ PUBLIC_FILES = (
     "security.html",
     "site.webmanifest",
     "sitemap.xml",
+    ".well-known/security.txt",
 )
 
-PUBLIC_DIRECTORIES = (
-    ".well-known",
-    "assets",
-    "css",
-    "js",
+# Only artwork that is intentionally referenced by the current public experience.
+PUBLIC_ASSET_FILES = (
+    "assets/favicon.svg",
+    "assets/goreecloud-icon.png",
+    "assets/social-preview.png",
+    "assets/platform/adguard-home.svg",
+    "assets/platform/beszel.svg",
+    "assets/platform/caddy.svg",
+    "assets/platform/debian.svg",
+    "assets/platform/docker.svg",
+    "assets/platform/netbird.svg",
+    "assets/platform/ntfy.svg",
+    "assets/platform/proxmox.svg",
+    "assets/platform/searxng.svg",
+    "assets/platform/uptime-kuma.svg",
+    "assets/services/audiobookshelf.svg",
+    "assets/services/element.svg",
+    "assets/services/immich.svg",
+    "assets/services/jellyfin.svg",
+    "assets/services/navidrome.svg",
+    "assets/services/nextcloud.svg",
+    "assets/services/paperless-ngx.svg",
+    "assets/services/vaultwarden.svg",
+)
+
+# Glaze UI and page-specific presentation layers.
+PUBLIC_STYLE_FILES = (
+    "css/development.css",
+    "css/error.css",
+    "css/glaze-polish.css",
+    "css/glaze.css",
+    "css/how-it-works.css",
+    "css/platform.css",
+    "css/roadmap.css",
+    "css/social.css",
+    "css/status.css",
+    "css/style.css",
+)
+
+# Small, self-hosted progressive-enhancement surface.
+PUBLIC_SCRIPT_FILES = (
+    "js/main.js",
+    "js/theme-init.js",
+)
+
+PUBLIC_FILES = (
+    *PUBLIC_ROOT_FILES,
+    *PUBLIC_ASSET_FILES,
+    *PUBLIC_STYLE_FILES,
+    *PUBLIC_SCRIPT_FILES,
 )
 
 
@@ -40,22 +88,23 @@ def fail(message: str) -> int:
     return 1
 
 
-def reject_symlinks(path: Path) -> None:
+def reject_symlink(path: Path) -> None:
     if path.is_symlink():
         raise ValueError(f"Deployable source must not be a symlink: {path.relative_to(ROOT)}")
-    if path.is_dir():
-        for child in path.rglob("*"):
-            if child.is_symlink():
-                raise ValueError(f"Deployable source must not contain symlinks: {child.relative_to(ROOT)}")
 
 
 def main() -> int:
     try:
-        sources = [ROOT / relative for relative in (*PUBLIC_FILES, *PUBLIC_DIRECTORIES)]
+        if len(PUBLIC_FILES) != len(set(PUBLIC_FILES)):
+            return fail("public file allowlist contains a duplicate path")
+
+        sources = [ROOT / relative for relative in PUBLIC_FILES]
         for source in sources:
             if not source.exists():
                 return fail(f"required public source is missing: {source.relative_to(ROOT)}")
-            reject_symlinks(source)
+            if not source.is_file():
+                return fail(f"allowlisted public source is not a regular file: {source.relative_to(ROOT)}")
+            reject_symlink(source)
 
         if DIST.exists():
             if DIST.is_symlink():
@@ -68,9 +117,6 @@ def main() -> int:
             destination = DIST / relative
             destination.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(source, destination)
-
-        for relative in PUBLIC_DIRECTORIES:
-            shutil.copytree(ROOT / relative, DIST / relative)
 
     except (OSError, ValueError) as exc:
         return fail(str(exc))
