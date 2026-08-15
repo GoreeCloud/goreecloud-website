@@ -14,6 +14,7 @@ FEATURE_FORM = ROOT / ".github" / "ISSUE_TEMPLATE" / "feature-request.yml"
 PR_TEMPLATE = ROOT / ".github" / "pull_request_template.md"
 WORKFLOW = ROOT / ".github" / "workflows" / "validate.yml"
 README = ROOT / "README.md"
+ASSET_INVENTORY = ROOT / "docs" / "public-asset-inventory.md"
 SECURITY_URL = "https://www.goreecloud.com/security.html"
 PRIVATE_PATTERNS = (
     re.compile(r"\b10(?:\.\d{1,3}){3}\b"),
@@ -91,29 +92,49 @@ def main() -> int:
             "Validate repository guidance",
             "python scripts/validate_repository_guidance.py",
             "python scripts/validate_repository_hygiene.py",
+            "python scripts/validate_repository_history.py",
             "python scripts/validate_accessibility.py",
             "python scripts/validate_glaze_ui.py",
+            'python -m unittest discover -s tests -p "test_*.py"',
+            "fetch-depth: 0",
         ),
         errors,
     )
     readme = require_markers(
         README,
         (
-            "Current website package: **v5.7",
+            "Current website package: **v5.8",
             "python scripts/build_public_site.py",
             "python scripts/validate_repository_hygiene.py",
+            "python scripts/validate_repository_history.py",
             "python scripts/validate_accessibility.py",
             "python scripts/validate_glaze_ui.py",
+            'python -m unittest discover -s tests -p "test_*.py"',
             "Build output directory: `dist`",
             "exact, per-file allowlisted",
             "Adding a file to `assets/`, `css/`, `js/`",
             "Glaze UI is treated as a design contract",
             "automated checks are regression controls, not a claim of complete WCAG conformance",
             "screen-reader testing",
-            "repository-hygiene validator",
+            "repository-history preflight",
+            "non-shallow checkout",
+            "matched value",
+            "docs/public-asset-inventory.md",
+            "not a license grant",
+            "final human repository-history/contextual review",
             "issue #5",
             "issue #6",
             "Passing CI does not itself authorize",
+        ),
+        errors,
+    )
+    asset_inventory = require_markers(
+        ASSET_INVENTORY,
+        (
+            "not a license grant",
+            "provenance and rights verification still required",
+            "source-code license must not be assumed to relicense third-party marks",
+            "issue #5 remains open",
         ),
         errors,
     )
@@ -124,6 +145,7 @@ def main() -> int:
         (FEATURE_FORM, feature),
         (PR_TEMPLATE, pr_template),
         (README, readme),
+        (ASSET_INVENTORY, asset_inventory),
     ):
         if not text:
             continue
