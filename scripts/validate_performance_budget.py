@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Enforce conservative performance budgets for the static public website."""
+"""Enforce conservative performance budgets for the exact public website artifact."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from html.parser import HTMLParser
 from pathlib import Path
 import sys
 
-from build_public_site import PUBLIC_DIRECTORIES, PUBLIC_FILES, ROOT
+from build_public_site import PUBLIC_FILES, ROOT
 
 KIB = 1024
 HTML_FILE_BUDGET = 64 * KIB
@@ -24,11 +24,10 @@ PUBLIC_ARTIFACT_BUDGET = 512 * KIB
 MAX_HOMEPAGE_STYLESHEETS = 10
 MAX_HOMEPAGE_SCRIPTS = 3
 
-PUBLIC_HTML = (
-    ROOT / "index.html",
-    ROOT / "privacy.html",
-    ROOT / "security.html",
-    ROOT / "404.html",
+PUBLIC_HTML = tuple(
+    ROOT / relative
+    for relative in PUBLIC_FILES
+    if relative in {"index.html", "privacy.html", "security.html", "404.html"}
 )
 
 
@@ -50,10 +49,14 @@ class PerformanceHTMLParser(HTMLParser):
             self.script_count += 1
 
 
-def public_files() -> list[Path]:
-    paths = [ROOT / relative for relative in PUBLIC_FILES]
-    for relative in PUBLIC_DIRECTORIES:
-        paths.extend(path for path in (ROOT / relative).rglob("*") if path.is_file())
+def public_files(errors: list[str]) -> list[Path]:
+    paths: list[Path] = []
+    for relative in PUBLIC_FILES:
+        path = ROOT / relative
+        if not path.exists() or not path.is_file() or path.is_symlink():
+            errors.append(f"Performance budget cannot measure invalid allowlisted source: {relative}")
+            continue
+        paths.append(path)
     return paths
 
 
@@ -74,7 +77,10 @@ def enforce_total(errors: list[str], files: list[Path], budget: int, label: str)
 
 def main() -> int:
     errors: list[str] = []
-    deployable = public_files()
+    deployable = public_files(errors)
+
+    if len(deployable) != len(PUBLIC_FILES):
+        errors.append("Performance measurement must cover every explicitly allowlisted public file.")
 
     html_files = [path for path in deployable if path.suffix.lower() == ".html"]
     css_files = [path for path in deployable if path.suffix.lower() == ".css"]
@@ -101,6 +107,9 @@ def main() -> int:
         )
 
     for path in PUBLIC_HTML:
+        if not path.exists():
+            errors.append(f"Human-facing public page is missing from performance validation: {path.relative_to(ROOT)}")
+            continue
         parser = PerformanceHTMLParser()
         parser.feed(path.read_text(encoding="utf-8"))
         for src in parser.images_without_dimensions:
@@ -125,7 +134,10 @@ def main() -> int:
             print(f"  - {error}")
         return 1
 
-    print(f"Performance budget validation passed: public source artifact is {total_size / KIB:.1f} KiB.")
+    print(
+        f"Performance budget validation passed: {len(deployable)} explicitly allowlisted public files, "
+        f"{total_size / KIB:.1f} KiB."
+    )
     return 0
 
 
