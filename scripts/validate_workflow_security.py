@@ -68,6 +68,7 @@ def main() -> int:
         require(errors, validation, "cancel-in-progress: true", "Validation workflow must cancel superseded runs.")
         require(errors, validation, "timeout-minutes: 10", "Validation job must retain its 10-minute timeout.")
         require(errors, validation, "persist-credentials: false", "Checkout must keep persisted Git credentials disabled.")
+        require(errors, validation, "fetch-depth: 0", "Validation checkout must retain full reachable history for publication preflight.")
 
         for action_ref in REQUIRED_ACTIONS:
             require(
@@ -80,6 +81,7 @@ def main() -> int:
         required_validation_commands = (
             ("python scripts/validate_workflow_security.py", "workflow-security validator"),
             ("python scripts/validate_repository_hygiene.py", "repository sensitive-file hygiene validator"),
+            ("python scripts/validate_repository_history.py", "full-history publication safety preflight"),
             ("python scripts/validate_security_policy.py", "security-reporting and security.txt freshness validator"),
             ("python scripts/validate_privacy_policy.py", "privacy-statement validator"),
             ("python scripts/validate_browser_origin_integrity.py", "first-party browser-origin and statelessness validator"),
@@ -91,7 +93,7 @@ def main() -> int:
             ("python scripts/build_public_site.py", "isolated public-site build"),
             ("python scripts/validate_build_artifact.py", "isolated build-artifact validator"),
             ("python scripts/verify_remote_deployment.py --check-config", "remote-verifier configuration check"),
-            ('python -m unittest discover -s tests -p "test_*.py"', "offline remote-verifier regression test suite"),
+            ('python -m unittest discover -s tests -p "test_*.py"', "offline regression test suite"),
         )
         for command, label in required_validation_commands:
             require(errors, validation, command, f"Validation workflow must run the {label}.")
