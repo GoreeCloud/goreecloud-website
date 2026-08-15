@@ -108,6 +108,7 @@ def main() -> int:
             ("python scripts/validate_build_artifact.py", "isolated build-artifact validator"),
             ("python scripts/verify_remote_deployment.py --check-config", "remote-verifier configuration check"),
             ("python scripts/verify_remote_deployment.py --target branch-preview", "same-repository pull-request branch-preview verifier"),
+            ("python scripts/verify_remote_deployment.py --target production", "main-branch production verifier"),
             ('python -m unittest discover -s tests -p "test_*.py"', "offline regression test suite"),
             ("python scripts/validate_release_evidence.py", "candidate release-evidence validator"),
         )
@@ -131,6 +132,18 @@ def main() -> int:
             validation,
             "Branch preview verification failed after $attempts attempts.",
             "Branch-preview verification must remain fail-closed after bounded retries.",
+        )
+        require(
+            errors,
+            validation,
+            "github.event_name == 'push' && github.ref == 'refs/heads/main'",
+            "Production verification must remain limited to pushes on main.",
+        )
+        require(
+            errors,
+            validation,
+            "Production deployment verification failed after $attempts attempts.",
+            "Production verification must remain fail-closed after bounded retries.",
         )
 
         build_position = validation.find("python scripts/build_public_site.py")
