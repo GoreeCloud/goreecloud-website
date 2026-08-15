@@ -37,11 +37,9 @@ REQUIRED_SCRIPTS = {
     "js/main.js",
 }
 REQUIRED_PUBLIC_MARKERS = {
-    "Research Library canonical repository": "https://github.com/GoreeCloud/goreecloud-research-library",
     "native GoreeCloud Notes repository": "https://github.com/GoreeCloud/goreecloud-notes",
-    "GoreeCloud Memos canonical repository": "https://github.com/GoreeCloud/goreecloud-memos",
+    "GoreeCloud Memos repository": "https://github.com/GoreeCloud/memos",
     "GoreeCloud Memos product": "<strong>GoreeCloud Memos</strong>",
-    "GoreeCloud Memos stabilization status": '<span class="badge growing">Stabilizing</span>',
     "GoreeCloud Notify project": "<strong>GoreeCloud Notify</strong>",
     "public ownership purpose": "Ownership should be understandable and repeatable.",
 }
@@ -49,9 +47,6 @@ STALE_PUBLIC_COPY = (
     "A GoreeCloud-maintained Memos fork for fast private note capture",
     "Memos RC remains a protected transitional migration source",
     "transitional services remain protected until migration gates are satisfied",
-    "https://github.com/GoreeCloud/linkding",
-    "https://github.com/GoreeCloud/memos",
-    '<span class="badge growing">Quick Capture</span>',
 )
 REQUIRED_SECURITY_FIELDS = {
     "Contact": "mailto:goreecloud@gmail.com",
