@@ -6,7 +6,7 @@ from __future__ import annotations
 from pathlib import Path
 import sys
 
-from build_public_site import DIST, PUBLIC_DIRECTORIES, PUBLIC_FILES, ROOT
+from build_public_site import DIST, PUBLIC_FILES, ROOT
 
 FORBIDDEN_NAMES = {
     ".git",
@@ -19,13 +19,7 @@ FORBIDDEN_NAMES = {
 
 
 def source_file_set() -> set[Path]:
-    files = {Path(relative) for relative in PUBLIC_FILES}
-    for relative in PUBLIC_DIRECTORIES:
-        base = ROOT / relative
-        for path in base.rglob("*"):
-            if path.is_file():
-                files.add(path.relative_to(ROOT))
-    return files
+    return {Path(relative) for relative in PUBLIC_FILES}
 
 
 def artifact_file_set() -> set[Path]:
@@ -52,6 +46,9 @@ def main() -> int:
     expected = source_file_set()
     actual = artifact_file_set()
 
+    if len(expected) != len(PUBLIC_FILES):
+        errors.append("Public build allowlist contains duplicate paths.")
+
     for path in sorted(expected - actual):
         errors.append(f"Expected public file is missing from dist/: {path}")
     for path in sorted(actual - expected):
@@ -60,6 +57,12 @@ def main() -> int:
     for path in sorted(expected & actual):
         source = ROOT / path
         built = DIST / path
+        if not source.is_file():
+            errors.append(f"Allowlisted source is not a regular file: {path}")
+            continue
+        if source.is_symlink():
+            errors.append(f"Allowlisted source must not be a symlink: {path}")
+            continue
         if source.read_bytes() != built.read_bytes():
             errors.append(f"Built file differs from its reviewed source: {path}")
 
@@ -77,6 +80,9 @@ def main() -> int:
         Path("sitemap.xml"),
         Path("site.webmanifest"),
         Path(".well-known/security.txt"),
+        Path("css/glaze.css"),
+        Path("css/glaze-polish.css"),
+        Path("js/theme-init.js"),
     }
     for path in sorted(required_runtime_files - actual):
         errors.append(f"Required runtime file is missing from dist/: {path}")
@@ -88,7 +94,7 @@ def main() -> int:
         return 1
 
     total_bytes = sum((DIST / path).stat().st_size for path in actual)
-    print(f"Build artifact validation passed: {len(actual)} allowlisted files, {total_bytes} bytes.")
+    print(f"Build artifact validation passed: {len(actual)} explicitly allowlisted files, {total_bytes} bytes.")
     return 0
 
 
