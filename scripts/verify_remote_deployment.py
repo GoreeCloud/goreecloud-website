@@ -3,7 +3,13 @@
 
 The verifier intentionally supports only fixed GoreeCloud targets. It is safe to
 invoke from a manual GitHub Actions workflow because arbitrary URLs are never
-accepted and every network request stays within the declared GoreeCloud hosts.
+accepted, redirects are checked before they are followed, and every network
+request stays within the declared GoreeCloud hosts.
+
+Remote acceptance also compares every fetchable allowlisted public file against
+the exact local candidate bytes. This connects the repository's reviewed public
+artifact to the deployed HTTP surface without publishing a private repository
+commit identifier to website visitors.
 """
 
 from __future__ import annotations
@@ -11,12 +17,15 @@ from __future__ import annotations
 import argparse
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
+from hashlib import sha256
 import ssl
 import sys
 from typing import Mapping
 from urllib.error import HTTPError, URLError
 from urllib.parse import urljoin, urlparse
-from urllib.request import Request, urlopen
+from urllib.request import HTTPRedirectHandler, HTTPSHandler, Request, build_opener
+
+from build_public_site import PUBLIC_FILES, ROOT
 
 TARGETS = {
     "branch-preview": "https://agent-glaze-ui-interaction-p.goreecloud-website.pages.dev",
@@ -56,6 +65,14 @@ SECURITY_TXT_RENEWAL_BUFFER = timedelta(days=30)
 EXPECTED_SECURITY_CONTACT = "mailto:goreecloud@gmail.com"
 EXPECTED_SECURITY_CANONICAL = "https://www.goreecloud.com/.well-known/security.txt"
 EXPECTED_SECURITY_POLICY = "https://www.goreecloud.com/security.html"
+
+# Cloudflare consumes _headers as deployment configuration rather than exposing it
+# as a public resource. Every other allowlisted source file should be fetchable and
+# byte-identical to the candidate being verified.
+NON_FETCHABLE_PUBLIC_FILES = frozenset({"_headers"})
+REMOTE_INTEGRITY_FILES = tuple(
+    relative for relative in PUBLIC_FILES if relative not in NON_FETCHABLE_PUBLIC_FILES
+)
 
 REQUIRED_HEADERS = {
     "content-security-policy": (
@@ -109,7 +126,20 @@ def validate_fixed_url(url: str) -> None:
     if parsed.hostname not in ALLOWED_HOSTS:
         raise ValueError(f"Host is outside the GoreeCloud verifier allowlist: {url}")
     if parsed.username or parsed.password or parsed.query or parsed.fragment:
-        raise ValueError(f"Target must not contain credentials, query parameters, or fragments: {url}")
+        raise ValueError(
+            f"Target must not contain credentials, query parameters, or fragments: {url}"
+        )
+
+
+class AllowlistedRedirectHandler(HTTPRedirectHandler):
+    """Reject redirect destinations before urllib can make the next request."""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        try:
+            validate_fixed_url(newurl)
+        except ValueError as error:
+            raise URLError(f"Redirect target rejected: {error}") from error
+        return super().redirect_request(req, fp, code, msg, headers, newurl)
 
 
 def build_url(base_url: str, path: str) -> str:
@@ -127,12 +157,18 @@ def fetch(url: str) -> Response:
         headers={
             "User-Agent": "GoreeCloud-Deployment-Verifier/1.0",
             "Accept": "*/*",
+            # Exact candidate-byte validation must not depend on transfer encoding.
+            "Accept-Encoding": "identity",
         },
         method="GET",
     )
     context = ssl.create_default_context()
+    opener = build_opener(
+        AllowlistedRedirectHandler(),
+        HTTPSHandler(context=context),
+    )
     try:
-        with urlopen(request, timeout=TIMEOUT_SECONDS, context=context) as response:
+        with opener.open(request, timeout=TIMEOUT_SECONDS) as response:
             body = response.read(MAX_BODY_BYTES + 1)
             if len(body) > MAX_BODY_BYTES:
                 raise RuntimeError(f"Response exceeded {MAX_BODY_BYTES} bytes: {url}")
@@ -189,6 +225,50 @@ def parse_rfc3339(value: str) -> datetime | None:
     return parsed.astimezone(timezone.utc)
 
 
+def remote_path_for_public_file(relative: str) -> str:
+    """Map one reviewed public source path to its deployed fetch path."""
+
+    if not relative or relative.startswith("/"):
+        raise ValueError(f"Public integrity path must be repository-relative: {relative!r}")
+    if ".." in relative.split("/"):
+        raise ValueError(f"Public integrity path must not traverse directories: {relative!r}")
+    if relative == "index.html":
+        return "/"
+    return f"/{relative}"
+
+
+def verify_candidate_content_integrity(base_url: str, errors: list[str]) -> None:
+    """Prove the deployed public resources match this exact repository candidate."""
+
+    for relative in REMOTE_INTEGRITY_FILES:
+        source = ROOT / relative
+        if source.is_symlink() or not source.is_file():
+            errors.append(f"Candidate integrity source is unavailable or unsafe: {relative}")
+            continue
+
+        expected = source.read_bytes()
+        path = remote_path_for_public_file(relative)
+        try:
+            response = fetch(build_url(base_url, path))
+        except RuntimeError as error:
+            errors.append(str(error))
+            continue
+
+        if response.status != 200:
+            errors.append(
+                f"Candidate integrity resource {path} returned HTTP {response.status}; expected 200."
+            )
+            continue
+
+        if response.body != expected:
+            expected_digest = sha256(expected).hexdigest()
+            actual_digest = sha256(response.body).hexdigest()
+            errors.append(
+                f"Candidate content mismatch for {path}: expected SHA-256 "
+                f"{expected_digest}, deployed SHA-256 {actual_digest}."
+            )
+
+
 def verify_public_surface(base_url: str, errors: list[str]) -> None:
     for path, (expected_status, marker, expected_type) in PUBLIC_CHECKS.items():
         url = build_url(base_url, path)
@@ -204,11 +284,15 @@ def verify_public_surface(base_url: str, errors: list[str]) -> None:
 
         final_host = urlparse(response.final_url).hostname
         if final_host not in ALLOWED_HOSTS:
-            errors.append(f"{path} redirected outside the GoreeCloud host allowlist: {response.final_url}")
+            errors.append(
+                f"{path} redirected outside the GoreeCloud host allowlist: {response.final_url}"
+            )
 
         actual_type = response.headers.get("content-type", "")
         if not content_type_matches(actual_type, expected_type):
-            errors.append(f"{path} returned Content-Type {actual_type!r}; expected {expected_type!r}.")
+            errors.append(
+                f"{path} returned Content-Type {actual_type!r}; expected {expected_type!r}."
+            )
 
         if marker is not None:
             text = response.body.decode("utf-8", errors="replace")
@@ -224,7 +308,9 @@ def verify_headers(base_url: str, errors: list[str]) -> None:
         return
 
     if response.status != 200:
-        errors.append(f"Cannot validate root response headers because / returned HTTP {response.status}.")
+        errors.append(
+            f"Cannot validate root response headers because / returned HTTP {response.status}."
+        )
         return
 
     for header, markers in REQUIRED_HEADERS.items():
@@ -235,7 +321,9 @@ def verify_headers(base_url: str, errors: list[str]) -> None:
         lower_value = value.lower()
         for marker in markers:
             if marker.lower() not in lower_value:
-                errors.append(f"Root response header {header} is missing required value: {marker}")
+                errors.append(
+                    f"Root response header {header} is missing required value: {marker}"
+                )
 
 
 def verify_indexing_header(target: str, base_url: str, errors: list[str]) -> None:
@@ -246,12 +334,20 @@ def verify_indexing_header(target: str, base_url: str, errors: list[str]) -> Non
         return
 
     x_robots = response.headers.get("x-robots-tag", "").lower()
-    has_noindex = "noindex" in {token.strip() for token in x_robots.replace(";", ",").split(",") if token.strip()}
+    has_noindex = "noindex" in {
+        token.strip()
+        for token in x_robots.replace(";", ",").split(",")
+        if token.strip()
+    }
 
     if target == "branch-preview" and not has_noindex:
-        errors.append("Branch preview is missing the expected X-Robots-Tag: noindex protection.")
+        errors.append(
+            "Branch preview is missing the expected X-Robots-Tag: noindex protection."
+        )
     if target == "production" and has_noindex:
-        errors.append("Production root unexpectedly publishes X-Robots-Tag: noindex and would be excluded from search indexing.")
+        errors.append(
+            "Production root unexpectedly publishes X-Robots-Tag: noindex and would be excluded from search indexing."
+        )
 
 
 def verify_not_found_behavior(base_url: str, errors: list[str]) -> None:
@@ -266,7 +362,11 @@ def verify_not_found_behavior(base_url: str, errors: list[str]) -> None:
         return
 
     text = response.body.decode("utf-8", errors="replace")
-    for marker in ("Page Not Found — GoreeCloud", "This page isn’t here.", "noindex,follow"):
+    for marker in (
+        "Page Not Found — GoreeCloud",
+        "This page isn’t here.",
+        "noindex,follow",
+    ):
         if marker not in text:
             errors.append(f"Nested 404 response is missing expected marker: {marker}")
 
@@ -292,19 +392,25 @@ def verify_security_txt(base_url: str, errors: list[str]) -> None:
         return
 
     if response.status != 200:
-        errors.append(f"/.well-known/security.txt returned HTTP {response.status}; expected 200.")
+        errors.append(
+            f"/.well-known/security.txt returned HTTP {response.status}; expected 200."
+        )
         return
 
     cache_control = response.headers.get("cache-control", "").lower()
     if "max-age=3600" not in cache_control:
-        errors.append("/.well-known/security.txt is missing the intended one-hour Cache-Control policy.")
+        errors.append(
+            "/.well-known/security.txt is missing the intended one-hour Cache-Control policy."
+        )
 
     text = response.body.decode("utf-8", errors="replace")
     fields = parse_security_txt(text)
 
     contacts = fields.get("contact", [])
     if not contacts or contacts[0] != EXPECTED_SECURITY_CONTACT:
-        errors.append("Deployed security.txt does not publish the expected primary security contact.")
+        errors.append(
+            "Deployed security.txt does not publish the expected primary security contact."
+        )
 
     if EXPECTED_SECURITY_CANONICAL not in fields.get("canonical", []):
         errors.append("Deployed security.txt does not publish the expected canonical URL.")
@@ -314,13 +420,19 @@ def verify_security_txt(base_url: str, errors: list[str]) -> None:
 
     expires_values = fields.get("expires", [])
     if len(expires_values) != 1:
-        errors.append(f"Deployed security.txt must contain exactly one Expires field, found {len(expires_values)}.")
+        errors.append(
+            f"Deployed security.txt must contain exactly one Expires field, found {len(expires_values)}."
+        )
     else:
         expires = parse_rfc3339(expires_values[0])
         if expires is None:
-            errors.append("Deployed security.txt Expires is not a valid timezone-aware RFC3339 timestamp.")
+            errors.append(
+                "Deployed security.txt Expires is not a valid timezone-aware RFC3339 timestamp."
+            )
         elif expires - datetime.now(timezone.utc) <= SECURITY_TXT_RENEWAL_BUFFER:
-            errors.append("Deployed security.txt expires within 30 days and must be renewed before it becomes stale.")
+            errors.append(
+                "Deployed security.txt expires within 30 days and must be renewed before it becomes stale."
+            )
 
 
 def verify_production_redirect(errors: list[str]) -> None:
@@ -330,9 +442,13 @@ def verify_production_redirect(errors: list[str]) -> None:
         errors.append(str(error))
         return
     if response.status != 200:
-        errors.append(f"Apex production URL resolved to HTTP {response.status}; expected final HTTP 200.")
+        errors.append(
+            f"Apex production URL resolved to HTTP {response.status}; expected final HTTP 200."
+        )
     if urlparse(response.final_url).hostname != "www.goreecloud.com":
-        errors.append(f"Apex production URL did not resolve to the canonical www host: {response.final_url}")
+        errors.append(
+            f"Apex production URL did not resolve to the canonical www host: {response.final_url}"
+        )
 
 
 def check_configuration() -> int:
@@ -349,10 +465,24 @@ def check_configuration() -> int:
 
     if "www.goreecloud.com" not in ALLOWED_HOSTS or "goreecloud.com" not in ALLOWED_HOSTS:
         errors.append("Canonical production hosts are missing from the verifier allowlist.")
-    if not any(host.endswith(".goreecloud-website.pages.dev") for host in ALLOWED_HOSTS):
+    if not any(
+        host.endswith(".goreecloud-website.pages.dev") for host in ALLOWED_HOSTS
+    ):
         errors.append("Cloudflare branch-preview host is missing from the verifier allowlist.")
 
-    for path in (*PUBLIC_CHECKS, *REPOSITORY_ONLY_PATHS, MISSING_PATH):
+    if NON_FETCHABLE_PUBLIC_FILES != frozenset({"_headers"}):
+        errors.append("Remote integrity exclusion set must remain exactly the Cloudflare _headers control file.")
+    if set(REMOTE_INTEGRITY_FILES) != set(PUBLIC_FILES) - NON_FETCHABLE_PUBLIC_FILES:
+        errors.append("Remote integrity file set has drifted from the reviewed public artifact allowlist.")
+
+    integrity_paths: list[str] = []
+    for relative in REMOTE_INTEGRITY_FILES:
+        try:
+            integrity_paths.append(remote_path_for_public_file(relative))
+        except ValueError as error:
+            errors.append(str(error))
+
+    for path in (*PUBLIC_CHECKS, *REPOSITORY_ONLY_PATHS, *integrity_paths, MISSING_PATH):
         if not path.startswith("/") or ".." in path:
             errors.append(f"Unsafe verifier path configured: {path}")
 
@@ -369,10 +499,14 @@ def check_configuration() -> int:
         "strict-transport-security",
     }
     if set(REQUIRED_HEADERS) != required_header_names:
-        errors.append("Remote verifier required-header set has drifted from the reviewed deployment contract.")
+        errors.append(
+            "Remote verifier required-header set has drifted from the reviewed deployment contract."
+        )
 
     if SECURITY_TXT_RENEWAL_BUFFER != timedelta(days=30):
-        errors.append("Remote verifier must preserve the 30-day security.txt renewal warning window.")
+        errors.append(
+            "Remote verifier must preserve the 30-day security.txt renewal warning window."
+        )
 
     if errors:
         print("Remote deployment verifier configuration failed:")
@@ -388,6 +522,7 @@ def verify(target: str) -> int:
     base_url = TARGETS[target]
     errors: list[str] = []
 
+    verify_candidate_content_integrity(base_url, errors)
     verify_public_surface(base_url, errors)
     verify_headers(base_url, errors)
     verify_indexing_header(target, base_url, errors)
@@ -410,8 +545,16 @@ def verify(target: str) -> int:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument("--check-config", action="store_true", help="Validate verifier configuration without network access.")
-    group.add_argument("--target", choices=tuple(TARGETS), help="Verify one fixed GoreeCloud deployment target.")
+    group.add_argument(
+        "--check-config",
+        action="store_true",
+        help="Validate verifier configuration without network access.",
+    )
+    group.add_argument(
+        "--target",
+        choices=tuple(TARGETS),
+        help="Verify one fixed GoreeCloud deployment target.",
+    )
     return parser.parse_args()
 
 
