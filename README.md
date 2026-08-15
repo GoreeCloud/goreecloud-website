@@ -4,7 +4,7 @@ Public static website for GoreeCloud.
 
 ## Version
 
-Current website package: **v5.8 — production-readiness hardening in progress**
+Current website package: **v5.9 — production-readiness hardening in progress**
 
 ## Role
 
@@ -26,6 +26,14 @@ The browser surface is intentionally dependency-light:
 - no Cloudflare Pages Functions or Worker runtime
 
 Repository-only material such as CI validators, GitHub metadata, contributor documentation, development artifacts, publication-review records, and unapproved local files is kept separate from the generated public deployment artifact.
+
+## Source license and creative-rights boundary
+
+The website source code, repository automation, validation scripts, and technical repository documentation are licensed under the **Apache License 2.0**. The authoritative license text is the top-level `LICENSE` file, and CI verifies that file against the reviewed Apache-2.0 Git blob so the governing source license cannot drift silently.
+
+`NOTICE` documents the separate creative-rights boundary. Apache-2.0 does not grant unrestricted reuse of GoreeCloud trade names, logos, branding, product identity, or other brand identifiers. Original public-facing editorial content and GoreeCloud identity artwork may carry separate copyright or trademark rights. Third-party project names, logos, and marks remain subject to their respective rightsholder terms and policies.
+
+`docs/public-asset-inventory.md` remains the working publication-rights inventory for deployable artwork. Source licensing is therefore established, but issue #5 remains open for the remaining third-party mark provenance/terms review, human contextual/history disclosure review, and explicit repository-publication/visibility decision.
 
 ## Public site structure
 
@@ -51,6 +59,7 @@ Production-readiness tooling is intentionally dependency-free and uses the Pytho
 - `scripts/validate_build_artifact.py` — proves `dist/` contains exactly the reviewed public files and no repository-only content
 - `scripts/validate_repository_hygiene.py` — rejects sensitive current-tree file types, private-key material, selected reusable credential signatures, symlinks, editor artifacts, and missing local-ignore protections
 - `scripts/validate_repository_history.py` — inspects complete reachable Git history for prohibited secret-file paths, key material, selected reusable credential signatures, private-network addresses, and selected private-infrastructure identifiers without printing matched values
+- `scripts/validate_license.py` — verifies the reviewed Apache-2.0 source license and the required `NOTICE` licensing/branding boundary
 - `scripts/validate_performance_budget.py` — enforces static payload, request-count, and image-dimension budgets
 - `scripts/validate_browser_origin_integrity.py` — keeps explicitly allowlisted browser-loaded HTML/CSS/manifest resources origin-local and rejects runtime network, cookie, worker, and service-worker clients in site JavaScript
 - `scripts/validate_accessibility.py` — enforces structural accessibility invariants across the homepage, Privacy, Security, and custom 404 pages
@@ -184,7 +193,7 @@ The public security-reporting path is:
 
 The `security.txt` validator requires the reporting contact, canonical URL, policy URL, language metadata, and a single timezone-aware RFC3339 `Expires` value. CI intentionally begins failing once fewer than 30 days remain before expiration, providing a renewal window before the deployed metadata becomes stale. The remote production verifier enforces the same 30-day freshness boundary against the live file, so the scheduled production smoke check becomes an advance renewal alert as well as a reachability check.
 
-The repository remains private while the source-license/publication decision tracked in issue #5 is unresolved. Passing CI does not itself authorize a visibility, DNS, or production release change.
+The repository remains private while the remaining publication decision tracked in issue #5 is unresolved. Apache-2.0 source licensing is already established; passing CI does not itself authorize a visibility, DNS, or production release change.
 
 ## Search and crawler metadata
 
@@ -200,6 +209,7 @@ Run the production checks from the repository root. The history check requires a
 python scripts/validate_workflow_security.py
 python scripts/validate_repository_hygiene.py
 python scripts/validate_repository_history.py
+python scripts/validate_license.py
 python scripts/validate_security_policy.py
 python scripts/validate_privacy_policy.py
 python scripts/validate_browser_origin_integrity.py
@@ -223,13 +233,14 @@ node --check js/main.js
 
 GitHub Actions runs the same production gates on pull requests and on pushes to `main`. External Actions are pinned to immutable full commit SHAs, workflow permissions remain read-only, persisted checkout credentials are disabled, superseded runs are cancelled, and the validation workflow does not consume repository or environment secrets. Validation checkout uses `fetch-depth: 0` because publication safety depends on inspecting reachable history, not merely the current commit.
 
-The workflow self-validator requires the full-history checkout/preflight, current-tree repository-hygiene, Glaze UI, accessibility, privacy, security, browser-origin, public-surface, artifact, performance, offline regression-test, and remote-verifier configuration gates to remain wired into CI. Removing one of those checks therefore fails the workflow-supply-chain validation rather than silently weakening production readiness.
+The workflow self-validator requires the full-history checkout/preflight, current-tree repository-hygiene, source-license integrity, Glaze UI, accessibility, privacy, security, browser-origin, public-surface, artifact, performance, offline regression-test, and remote-verifier configuration gates to remain wired into CI. Removing one of those checks therefore fails the workflow-supply-chain validation rather than silently weakening production readiness.
 
 The checks cover, among other things:
 
 - exact per-file production allowlisting rather than directory-wide publication
 - repository sensitive-file/type hygiene and selected reusable credential signatures
 - reachable Git-history preflight with redacted finding output
+- exact Apache-2.0 source-license and NOTICE-boundary integrity
 - deployable artwork inventory synchronization for publication-rights review
 - offline regression testing of remote verifier security, indexing, redirect, 404, and repository-isolation behavior
 - GoreeCloud Glaze UI design-system participation across all human-facing pages
@@ -272,6 +283,8 @@ After an authorized production release, the default-branch deployment workflow c
 
 ## Release boundary
 
-PR validation and Cloudflare preview deployment are pre-release evidence, not authorization to publish. Before a production merge, GoreeCloud should confirm the final PR head, green CI, successful preview, the Cloudflare Pages `dist/` cutover tracked in issue #6, and the source-license/creative-rights/publication decision in issue #5—including the final human history/contextual disclosure review—while treating any DNS or visibility change as a separate explicit action.
+PR validation and Cloudflare preview deployment are pre-release evidence, not authorization to publish. Before a production merge, GoreeCloud should confirm the final PR head, green CI, successful preview, the Cloudflare Pages `dist/` cutover tracked in issue #6, and the remaining creative-rights/source-publication decision in issue #5—including the final human history/contextual disclosure review—while treating any DNS or visibility change as a separate explicit action.
+
+The source-code license is already Apache-2.0 and is CI-validated. Issue #5 remains open because source licensing does not by itself resolve third-party artwork/mark rights, contextual publication review, or repository visibility.
 
 A production-ready repository state also does not by itself establish a formal accessibility-conformance claim or complete the external Cloudflare configuration. Those require their own evidence and deliberate release decisions.
