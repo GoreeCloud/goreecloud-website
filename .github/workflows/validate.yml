@@ -59,6 +59,9 @@ jobs:
       - name: Validate isolated public artifact
         run: python scripts/validate_build_artifact.py
 
+      - name: Validate remote verifier configuration
+        run: python scripts/verify_remote_deployment.py --check-config
+
       - name: Validate repository guidance
         run: python scripts/validate_repository_guidance.py
 
