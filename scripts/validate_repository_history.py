@@ -26,11 +26,16 @@ from validate_repository_hygiene import (
     SECRET_PATTERNS,
 )
 
-# This validator and the repository-guidance validator intentionally contain detection terms.
-# Their own source blobs are excluded from literal identifier checks to avoid self-matches.
+# These validator sources intentionally embed the private-network patterns/identifiers they
+# reject from public content. They remain subject to reusable-credential scanning; only the
+# literal infrastructure checks are skipped so detector definitions do not match themselves.
 DETECTION_SOURCE_PATHS = {
     "scripts/validate_repository_history.py",
     "scripts/validate_repository_guidance.py",
+    "scripts/validate_site.py",
+    "scripts/validate_resilience.py",
+    "scripts/validate_privacy_policy.py",
+    "scripts/validate_security_policy.py",
 }
 
 PRIVATE_NETWORK_PATTERNS = (
