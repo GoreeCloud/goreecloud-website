@@ -26,16 +26,20 @@ from validate_repository_hygiene import (
     SECRET_PATTERNS,
 )
 
-# These validator sources intentionally embed the private-network patterns/identifiers they
-# reject from public content. They remain subject to reusable-credential scanning; only the
-# literal infrastructure checks are skipped so detector definitions do not match themselves.
+# These validator/test sources intentionally embed the private-network patterns or selected
+# private-infrastructure identifiers that they reject from ordinary repository content. They
+# remain subject to reusable-credential scanning; only literal infrastructure checks are skipped
+# for these exact reviewed paths so detector definitions and synthetic fixtures do not match
+# themselves. New paths must not be added here merely to silence a real finding.
 DETECTION_SOURCE_PATHS = {
     "scripts/validate_repository_history.py",
     "scripts/validate_repository_guidance.py",
+    "scripts/validate_release_evidence.py",
     "scripts/validate_site.py",
     "scripts/validate_resilience.py",
     "scripts/validate_privacy_policy.py",
     "scripts/validate_security_policy.py",
+    "tests/test_validate_release_evidence.py",
 }
 
 PRIVATE_NETWORK_PATTERNS = (
