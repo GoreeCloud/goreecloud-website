@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate GitHub Actions supply-chain and least-privilege controls."""
+"""Validate GitHub Actions supply-chain, revision-integrity, and least-privilege controls."""
 
 from __future__ import annotations
 
@@ -15,6 +15,12 @@ DEPENDABOT = ROOT / ".github" / "dependabot.yml"
 USES_RE = re.compile(r"^\s*uses:\s*([^\s#]+)", re.MULTILINE)
 SHA_RE = re.compile(r"^[0-9a-fA-F]{40}$")
 WRITE_PERMISSION_RE = re.compile(r"(?mi)^\s*[A-Za-z0-9_-]+\s*:\s*write\s*(?:#.*)?$")
+MUTABLE_RUNNER_RE = re.compile(r"(?m)^\s*runs-on:\s*[^\s#]*-latest\s*(?:#.*)?$")
+REQUIRED_RUNNER = "ubuntu-24.04"
+REQUIRED_PYTHON = "3.13.14"
+REQUIRED_NODE = "22.22.0"
+VALIDATION_SOURCE_REF = "ref: ${{ github.event.pull_request.head.sha || github.sha }}"
+REMOTE_SOURCE_REF = "ref: ${{ github.sha }}"
 REQUIRED_ACTIONS = (
     "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",  # v7.0.1
     "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",  # v7.0.0
@@ -36,6 +42,8 @@ def main() -> int:
 
     for path in workflow_paths:
         text = path.read_text(encoding="utf-8")
+        if MUTABLE_RUNNER_RE.search(text):
+            errors.append(f"Workflow runner must not use a mutable *-latest label: {path.relative_to(ROOT)}")
         for action_ref in USES_RE.findall(text):
             if action_ref.startswith("./") or action_ref.startswith("docker://"):
                 continue
@@ -66,9 +74,13 @@ def main() -> int:
         require(errors, validation, "permissions:\n  contents: read", "Validation workflow must declare read-only contents permission.")
         require(errors, validation, "concurrency:\n", "Validation workflow must define concurrency control.")
         require(errors, validation, "cancel-in-progress: true", "Validation workflow must cancel superseded runs.")
+        require(errors, validation, f"runs-on: {REQUIRED_RUNNER}", f"Validation job must use the explicit {REQUIRED_RUNNER} runner family.")
         require(errors, validation, "timeout-minutes: 10", "Validation job must retain its 10-minute timeout.")
+        require(errors, validation, VALIDATION_SOURCE_REF, "Validation checkout must execute the exact pull-request head SHA or exact push SHA.")
         require(errors, validation, "persist-credentials: false", "Checkout must keep persisted Git credentials disabled.")
         require(errors, validation, "fetch-depth: 0", "Validation checkout must retain full reachable history for publication preflight.")
+        require(errors, validation, f'python-version: "{REQUIRED_PYTHON}"', f"Validation Python must be pinned exactly to {REQUIRED_PYTHON}.")
+        require(errors, validation, f'node-version: "{REQUIRED_NODE}"', f"Validation Node.js must be pinned exactly to {REQUIRED_NODE}.")
 
         for action_ref in REQUIRED_ACTIONS:
             require(
@@ -122,8 +134,11 @@ def main() -> int:
         if not re.search(r"(?m)^\s*timezone:\s*(['\"]?)America/Chicago\1\s*$", remote):
             errors.append("Production smoke schedule must retain the America/Chicago timezone.")
         require(errors, remote, "permissions:\n  contents: read", "Remote deployment workflow must remain read-only.")
+        require(errors, remote, f"runs-on: {REQUIRED_RUNNER}", f"Remote deployment job must use the explicit {REQUIRED_RUNNER} runner family.")
+        require(errors, remote, REMOTE_SOURCE_REF, "Remote deployment verification must check out the exact workflow run SHA.")
         require(errors, remote, "persist-credentials: false", "Remote verification checkout must disable persisted credentials.")
         require(errors, remote, "timeout-minutes: 5", "Remote deployment verification must retain its five-minute timeout.")
+        require(errors, remote, f'python-version: "{REQUIRED_PYTHON}"', f"Remote verification Python must be pinned exactly to {REQUIRED_PYTHON}.")
         require(errors, remote, "- branch-preview", "Manual remote verification must retain branch-preview as a fixed choice.")
         require(errors, remote, "- production", "Manual remote verification must retain production as a fixed choice.")
         require(errors, remote, 'TARGET: ${{ inputs.target }}', "Manual target input must pass through an environment variable.")
