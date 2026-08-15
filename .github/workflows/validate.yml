@@ -32,6 +32,9 @@ jobs:
       - name: Validate workflow supply chain
         run: python scripts/validate_workflow_security.py
 
+      - name: Validate repository hygiene
+        run: python scripts/validate_repository_hygiene.py
+
       - name: Validate security reporting
         run: python scripts/validate_security_policy.py
 
@@ -43,6 +46,9 @@ jobs:
 
       - name: Validate structural accessibility
         run: python scripts/validate_accessibility.py
+
+      - name: Validate Glaze UI design contract
+        run: python scripts/validate_glaze_ui.py
 
       - name: Validate application identity
         run: python scripts/validate_app_identity.py
