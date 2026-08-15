@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate homepage identity, policy discoverability, and loading semantics."""
+"""Validate homepage identity, search/social metadata, policy discoverability, and loading semantics."""
 
 from __future__ import annotations
 
@@ -9,6 +9,9 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 INDEX = ROOT / "index.html"
+CANONICAL_URL = "https://www.goreecloud.com/"
+SOCIAL_PREVIEW_URL = "https://www.goreecloud.com/assets/social-preview.png"
+EXPECTED_TITLE = "GoreeCloud — Privacy-First Personal & Family Cloud"
 
 SOCIAL_PROFILES = {
     "https://instagram.com/goreecloud",
@@ -33,13 +36,21 @@ class HomepageParser(HTMLParser):
         self.footer_nav_hrefs: set[str] = set()
         self._footer_nav_depth = 0
         self._platform_link_depth = 0
+        self._in_title = False
+        self.title_parts: list[str] = []
         self.platform_images: list[dict[str, str]] = []
+
+    @property
+    def title(self) -> str:
+        return "".join(self.title_parts).strip()
 
     def handle_starttag(self, tag: str, attrs_list: list[tuple[str, str | None]]) -> None:
         attrs = {key: value or "" for key, value in attrs_list}
         classes = set(attrs.get("class", "").split())
 
-        if tag == "meta":
+        if tag == "title":
+            self._in_title = True
+        elif tag == "meta":
             if attrs.get("name"):
                 self.meta_names[attrs["name"]] = attrs.get("content", "")
             if attrs.get("property"):
@@ -66,7 +77,13 @@ class HomepageParser(HTMLParser):
         if tag == "img" and self._platform_link_depth:
             self.platform_images.append(attrs)
 
+    def handle_data(self, data: str) -> None:
+        if self._in_title:
+            self.title_parts.append(data)
+
     def handle_endtag(self, tag: str) -> None:
+        if tag == "title":
+            self._in_title = False
         if self._footer_nav_depth:
             self._footer_nav_depth -= 1
         if self._platform_link_depth:
@@ -87,12 +104,60 @@ def main() -> int:
     elif parser.main_attrs.get("tabindex") != "-1":
         errors.append("Homepage main skip-link target must use tabindex=\"-1\" for reliable programmatic focus.")
 
+    if parser.title != EXPECTED_TITLE:
+        errors.append(f"Homepage title must remain {EXPECTED_TITLE!r}, found {parser.title!r}.")
+    if not parser.meta_names.get("description", "").strip():
+        errors.append("Homepage must publish a non-empty meta description.")
+    if parser.meta_names.get("robots") != "index,follow,max-image-preview:large":
+        errors.append("Homepage robots metadata must remain index,follow,max-image-preview:large.")
     if parser.meta_names.get("author") != "GoreeCloud":
         errors.append("Homepage must identify GoreeCloud with meta name=\"author\".")
-    if parser.meta_names.get("twitter:site") != "@GoreeCloud":
-        errors.append("Homepage must identify the official @GoreeCloud account with twitter:site metadata.")
-    if parser.meta_properties.get("og:image:type") != "image/png":
-        errors.append("Homepage Open Graph image type must remain image/png.")
+
+    canonical_links = [
+        link for link in parser.links
+        if "canonical" in link.get("rel", "").split()
+    ]
+    if len(canonical_links) != 1 or canonical_links[0].get("href") != CANONICAL_URL:
+        errors.append(f"Homepage must publish exactly one canonical link to {CANONICAL_URL}.")
+
+    expected_og = {
+        "og:type": "website",
+        "og:locale": "en_US",
+        "og:site_name": "GoreeCloud",
+        "og:title": EXPECTED_TITLE,
+        "og:url": CANONICAL_URL,
+        "og:image": SOCIAL_PREVIEW_URL,
+        "og:image:type": "image/png",
+        "og:image:width": "1200",
+        "og:image:height": "630",
+    }
+    for key, expected in expected_og.items():
+        actual = parser.meta_properties.get(key)
+        if actual != expected:
+            errors.append(f"Homepage {key} must be {expected!r}, found {actual!r}.")
+
+    og_description = parser.meta_properties.get("og:description", "")
+    og_image_alt = parser.meta_properties.get("og:image:alt", "")
+    if not og_description.strip():
+        errors.append("Homepage must publish a non-empty og:description.")
+    if not og_image_alt.strip():
+        errors.append("Homepage must publish non-empty og:image:alt text.")
+
+    expected_twitter = {
+        "twitter:card": "summary_large_image",
+        "twitter:site": "@GoreeCloud",
+        "twitter:title": EXPECTED_TITLE,
+        "twitter:image": SOCIAL_PREVIEW_URL,
+    }
+    for key, expected in expected_twitter.items():
+        actual = parser.meta_names.get(key)
+        if actual != expected:
+            errors.append(f"Homepage {key} must be {expected!r}, found {actual!r}.")
+
+    if parser.meta_names.get("twitter:description") != og_description:
+        errors.append("Homepage twitter:description must stay aligned with og:description.")
+    if parser.meta_names.get("twitter:image:alt") != og_image_alt:
+        errors.append("Homepage twitter:image:alt must stay aligned with og:image:alt.")
 
     apple_icons = [
         link for link in parser.links
