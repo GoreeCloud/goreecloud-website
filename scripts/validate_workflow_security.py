@@ -94,6 +94,8 @@ def main() -> int:
             ("python scripts/validate_workflow_security.py", "workflow-security validator"),
             ("python scripts/validate_repository_hygiene.py", "repository sensitive-file hygiene validator"),
             ("python scripts/validate_repository_history.py", "full-history publication safety preflight"),
+            ("python scripts/validate_license.py", "source-license and notice validator"),
+            ("python scripts/validate_governance_readiness.py", "GoreeCloud governance-readiness validator"),
             ("python scripts/validate_security_policy.py", "security-reporting and security.txt freshness validator"),
             ("python scripts/validate_privacy_policy.py", "privacy-statement validator"),
             ("python scripts/validate_browser_origin_integrity.py", "first-party browser-origin and statelessness validator"),

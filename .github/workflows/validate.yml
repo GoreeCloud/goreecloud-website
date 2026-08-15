@@ -43,6 +43,9 @@ jobs:
       - name: Validate source license
         run: python scripts/validate_license.py
 
+      - name: Validate GoreeCloud governance readiness
+        run: python scripts/validate_governance_readiness.py
+
       - name: Validate security reporting
         run: python scripts/validate_security_policy.py
 
