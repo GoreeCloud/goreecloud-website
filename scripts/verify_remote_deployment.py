@@ -60,15 +60,33 @@ EXPECTED_SECURITY_POLICY = "https://www.goreecloud.com/security.html"
 REQUIRED_HEADERS = {
     "content-security-policy": (
         "default-src 'self'",
+        "base-uri 'self'",
         "object-src 'none'",
         "frame-ancestors 'none'",
         "form-action 'none'",
+        "script-src 'self'",
+        "style-src 'self'",
+        "img-src 'self' data:",
+        "font-src 'self'",
         "connect-src 'none'",
+        "media-src 'none'",
+        "manifest-src 'self'",
         "worker-src 'none'",
+        "upgrade-insecure-requests",
+    ),
+    "permissions-policy": (
+        "accelerometer=()",
+        "camera=()",
+        "display-capture=()",
+        "geolocation=()",
+        "microphone=()",
+        "payment=()",
+        "usb=()",
     ),
     "referrer-policy": ("no-referrer",),
     "x-content-type-options": ("nosniff",),
     "x-frame-options": ("DENY",),
+    "x-permitted-cross-domain-policies": ("none",),
     "x-dns-prefetch-control": ("off",),
     "cross-origin-opener-policy": ("same-origin",),
     "origin-agent-cluster": ("?1",),
@@ -337,6 +355,21 @@ def check_configuration() -> int:
     for path in (*PUBLIC_CHECKS, *REPOSITORY_ONLY_PATHS, MISSING_PATH):
         if not path.startswith("/") or ".." in path:
             errors.append(f"Unsafe verifier path configured: {path}")
+
+    required_header_names = {
+        "content-security-policy",
+        "permissions-policy",
+        "referrer-policy",
+        "x-content-type-options",
+        "x-frame-options",
+        "x-permitted-cross-domain-policies",
+        "x-dns-prefetch-control",
+        "cross-origin-opener-policy",
+        "origin-agent-cluster",
+        "strict-transport-security",
+    }
+    if set(REQUIRED_HEADERS) != required_header_names:
+        errors.append("Remote verifier required-header set has drifted from the reviewed deployment contract.")
 
     if SECURITY_TXT_RENEWAL_BUFFER != timedelta(days=30):
         errors.append("Remote verifier must preserve the 30-day security.txt renewal warning window.")
