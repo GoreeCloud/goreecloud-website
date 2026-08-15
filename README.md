@@ -48,17 +48,17 @@ Production-readiness tooling is intentionally dependency-free and uses the Pytho
 - `scripts/build_public_site.py` — creates an allowlisted `dist/` deployment artifact
 - `scripts/validate_build_artifact.py` — proves `dist/` contains exactly the reviewed public files and no repository-only content
 - `scripts/validate_performance_budget.py` — enforces static payload, request-count, and image-dimension budgets
-- `scripts/validate_public_surface.py` — validates cross-page links, fragments, canonical state, and sitemap completeness
+- `scripts/validate_public_surface.py` — validates cross-page links, fragments, canonical state, crawler policy, sitemap completeness, and sitemap dates
 - `scripts/validate_deployment_contract.py` — enforces the static Cloudflare Pages architecture and header contract
-- `scripts/verify_remote_deployment.py` — verifies the actual deployed HTTP surface after a Pages cutover using fixed GoreeCloud targets only
 - `scripts/validate_site.py` — validates the homepage and core public-site invariants
 - `scripts/validate_resilience.py` — validates 404 behavior, failure paths, privacy boundaries, and response-header requirements
 - `scripts/validate_app_identity.py` — validates browser/site identity metadata
-- `scripts/validate_public_semantics.py` — validates public metadata and semantic guarantees
+- `scripts/validate_public_semantics.py` — validates public, canonical, Open Graph, X/Twitter, and semantic metadata guarantees
 - `scripts/validate_privacy_policy.py` — keeps the privacy statement synchronized with implementation
-- `scripts/validate_security_policy.py` — validates public security-reporting behavior
-- `scripts/validate_repository_guidance.py` — validates issue/PR safety and release-boundary guidance
-- `scripts/validate_workflow_security.py` — enforces immutable GitHub Actions references, least privilege, and the remote-verification workflow contract
+- `scripts/validate_security_policy.py` — validates public security-reporting behavior and security.txt freshness
+- `scripts/verify_remote_deployment.py` — verifies fixed GoreeCloud preview/production HTTP surfaces and repository isolation
+- `scripts/validate_repository_guidance.py` — validates issue/PR safety guidance
+- `scripts/validate_workflow_security.py` — enforces immutable GitHub Actions references and least privilege
 
 Generated `dist/` output and local Python bytecode are ignored by Git.
 
@@ -76,7 +76,7 @@ The intended production settings are:
 
 `dist/` is the production boundary. The build script copies only the explicitly allowlisted public pages, metadata, headers, JavaScript, CSS, and artwork into that directory. CI then compares every generated file byte-for-byte with its reviewed source and rejects missing files, unexpected files, symlinks, or repository-only content.
 
-For the existing Cloudflare Pages project, the dashboard build command and output-directory settings must be changed deliberately before relying on this boundary in production. That external cutover and its preview verification are tracked in **issue #6**. This repository does not introduce a Wrangler configuration file because an established Pages project should not silently change configuration ownership without first reviewing the current deployed settings.
+For the existing Cloudflare Pages project, the dashboard build command and output-directory settings must be changed deliberately before relying on this boundary in production. That external cutover and its preview verification are tracked in **issue #6**. This repository does not introduce a Wrangler configuration file because Cloudflare recommends verifying or downloading the existing Pages configuration before making a Wrangler file the source of truth for an established project.
 
 The documented live routing uses `https://www.goreecloud.com/` as the final public website address. The apex `https://goreecloud.com/` redirects permanently to the `www` hostname. Canonical, Open Graph, robots, and sitemap metadata therefore use the final `www` address.
 
@@ -94,32 +94,6 @@ python scripts/validate_build_artifact.py
 The generated artifact must contain only the intentional public surface. Files such as `README.md`, `SECURITY.md`, `.github/`, `scripts/`, and `.gitignore` are repository concerns and must never be copied into `dist/`.
 
 The site currently uses no server-side application runtime, database, form handler, service worker, or Cloudflare Pages Function. Adding any of those changes the security and deployment model and requires an intentional revision of the deployment contract and validators.
-
-## Remote deployment verification
-
-Repository CI proves the source and generated artifact are internally correct; it cannot prove that an existing Cloudflare Pages project is actually configured to publish `dist/`. After changing the Pages build command or output directory, verify the deployed HTTP surface explicitly.
-
-First validate the verifier itself without network access:
-
-```bash
-python scripts/verify_remote_deployment.py --check-config
-```
-
-Then verify the stable branch preview after the Pages `dist/` cutover:
-
-```bash
-python scripts/verify_remote_deployment.py --target branch-preview
-```
-
-After an authorized production release, verify the live site separately:
-
-```bash
-python scripts/verify_remote_deployment.py --target production
-```
-
-The verifier accepts only the fixed `branch-preview` and `production` choices. It does not accept arbitrary URLs. It checks public pages and assets, expected MIME types, the global security-header policy, the custom nested-path 404, the one-hour `security.txt` cache rule, and repository isolation. In particular, `README.md`, `SECURITY.md`, `scripts/validate_site.py`, and `.github/workflows/validate.yml` must return HTTP 404 once Cloudflare is truly publishing the isolated artifact. The production target also verifies that the apex domain resolves to the canonical `www` host.
-
-`.github/workflows/verify-deployment.yml` provides the same two fixed targets as a manual, read-only GitHub Actions workflow. GitHub manual workflows only become dispatchable once the workflow file exists on the repository's default branch, so pre-merge issue #6 verification should use the local Python command above. After merge, the manual workflow provides a repeatable operator check without adding deployment credentials or write permissions.
 
 ## Performance budget
 
@@ -174,6 +148,8 @@ The public security-reporting path is:
 
 `SECURITY.md` provides repository-side reporting guidance. Public security documents deliberately exclude private family infrastructure, credentials, internal networks, administrative interfaces, and non-public data from authorized testing.
 
+The `security.txt` validator requires the reporting contact, canonical URL, policy URL, language metadata, and a single timezone-aware RFC3339 `Expires` value. CI intentionally begins failing once fewer than 30 days remain before expiration, providing a renewal window before the deployed metadata becomes stale. The remote production verifier enforces the same 30-day freshness boundary against the live file.
+
 The repository remains private while the source-license/publication decision tracked in issue #5 is unresolved. Passing CI does not itself authorize a visibility, DNS, or production release change.
 
 ## Validation
@@ -199,12 +175,12 @@ node --check js/theme-init.js
 node --check js/main.js
 ```
 
-GitHub Actions runs the same non-network production gates on pull requests and on pushes to `main`. External Actions are pinned to immutable full commit SHAs, workflow permissions remain read-only, persisted checkout credentials are disabled, superseded runs are cancelled, and validation does not consume repository or environment secrets.
+GitHub Actions runs the same production gates on pull requests and on pushes to `main`. External Actions are pinned to immutable full commit SHAs, workflow permissions remain read-only, persisted checkout credentials are disabled, superseded runs are cancelled, and the validation workflow does not consume repository or environment secrets.
 
 The checks cover, among other things:
 
-- canonical, Open Graph, manifest, and application identity
-- sitemap completeness and canonical consistency
+- canonical, Open Graph, X/Twitter, manifest, and application identity
+- sitemap completeness, canonical consistency, valid non-future `lastmod` dates, and canonical robots sitemap discovery
 - local links, assets, same-page fragments, and cross-page fragments
 - document language, headings, duplicate IDs, and image alternatives
 - intrinsic image dimensions and static performance budgets
@@ -215,14 +191,25 @@ The checks cover, among other things:
 - accessibility contrast, forced-colors, reduced-motion, and print behavior
 - custom nested-path 404 resilience
 - public privacy/security statement consistency
-- standardized and non-expired security-contact metadata
+- standardized security-contact metadata with an advance expiry-renewal window
 - private-network and selected internal-identifier leakage checks
 - static Cloudflare Pages architecture and `_headers` limits
 - isolated, allowlisted production-artifact generation
-- fixed-host remote-verifier configuration
+- fixed-target remote deployment verification
 - GitHub contribution safety boundaries
 - immutable Action dependencies and least-privilege workflow configuration
 
+## Remote deployment verification
+
+Before treating the Cloudflare `dist/` cutover as verified, run:
+
+```bash
+python scripts/verify_remote_deployment.py --check-config
+python scripts/verify_remote_deployment.py --target branch-preview
+```
+
+After an authorized production release, the default-branch deployment workflow can verify production manually and also performs a scheduled production smoke check each day at 8:17 AM America/Chicago.
+
 ## Release boundary
 
-PR validation and Cloudflare preview deployment are pre-release evidence, not authorization to publish. Before a production merge, GoreeCloud should confirm the final PR head, green CI, successful preview, the Cloudflare Pages `dist/` cutover and remote smoke verification tracked in issue #6, the source-license/publication decision in issue #5, and any DNS or visibility changes separately.
+PR validation and Cloudflare preview deployment are pre-release evidence, not authorization to publish. Before a production merge, GoreeCloud should confirm the final PR head, green CI, successful preview, the Cloudflare Pages `dist/` cutover tracked in issue #6, the source-license/publication decision in issue #5, and any DNS or visibility changes separately.
