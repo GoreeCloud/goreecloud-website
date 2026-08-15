@@ -16,6 +16,7 @@ WORKFLOW = ROOT / ".github" / "workflows" / "validate.yml"
 README = ROOT / "README.md"
 ASSET_INVENTORY = ROOT / "docs" / "public-asset-inventory.md"
 RELEASE_CHECKLIST = ROOT / "docs" / "release-readiness-checklist.md"
+RELEASE_EVIDENCE_TEMPLATE = ROOT / "docs" / "release-evidence-template.md"
 SECURITY_URL = "https://www.goreecloud.com/security.html"
 PRIVATE_PATTERNS = (
     re.compile(r"\b10(?:\.\d{1,3}){3}\b"),
@@ -168,6 +169,28 @@ def main() -> int:
         ),
         errors,
     )
+    release_evidence_template = require_markers(
+        RELEASE_EVIDENCE_TEMPLATE,
+        (
+            "GoreeCloud Website Release Evidence Record Template",
+            "one exact GoreeCloud website release candidate",
+            "exact 40-character Git commit SHA",
+            "America/Chicago",
+            "12-hour time format",
+            "Do not place credentials",
+            "Glaze UI visual and interaction acceptance",
+            "Accessibility acceptance",
+            "Source publication and creative-rights gate — issue #5",
+            "Cloudflare isolated-artifact gate — issue #6",
+            "Exceptions and accepted limitations",
+            "Release authorization",
+            "Post-release production verification",
+            "does not itself authorize a merge",
+            "must remain outside the website `dist/` artifact",
+            "Historical evidence must remain distinguishable from current state",
+        ),
+        errors,
+    )
 
     for path, text in (
         (ISSUE_CONFIG, config),
@@ -177,6 +200,7 @@ def main() -> int:
         (README, readme),
         (ASSET_INVENTORY, asset_inventory),
         (RELEASE_CHECKLIST, release_checklist),
+        (RELEASE_EVIDENCE_TEMPLATE, release_evidence_template),
     ):
         if not text:
             continue
