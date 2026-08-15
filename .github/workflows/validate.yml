@@ -40,6 +40,9 @@ jobs:
       - name: Validate reachable repository history
         run: python scripts/validate_repository_history.py
 
+      - name: Validate source license
+        run: python scripts/validate_license.py
+
       - name: Validate security reporting
         run: python scripts/validate_security_policy.py
 
