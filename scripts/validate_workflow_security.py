@@ -80,6 +80,8 @@ def main() -> int:
         required_validation_commands = (
             ("python scripts/validate_workflow_security.py", "workflow-security validator"),
             ("python scripts/validate_security_policy.py", "security-reporting and security.txt freshness validator"),
+            ("python scripts/validate_privacy_policy.py", "privacy-statement validator"),
+            ("python scripts/validate_browser_origin_integrity.py", "first-party browser-origin and statelessness validator"),
             ("python scripts/validate_public_semantics.py", "canonical search/social metadata validator"),
             ("python scripts/validate_public_surface.py", "whole-site crawler/sitemap validator"),
             ("python scripts/validate_performance_budget.py", "performance-budget validator"),
@@ -108,8 +110,8 @@ def main() -> int:
 
         require(errors, remote, "workflow_dispatch:", "Remote deployment verification must remain manually dispatchable.")
         require(errors, remote, "schedule:", "Remote deployment verification must retain its production schedule.")
-        require(errors, remote, "cron: '17 8 * * *'", "Production smoke schedule must remain 8:17 AM America/Chicago.")
-        require(errors, remote, "timezone: America/Chicago", "Production smoke schedule must retain the America/Chicago timezone.")
+        require(errors, remote, 'cron: "17 8 * * *"', "Production smoke schedule must remain 8:17 AM America/Chicago.")
+        require(errors, remote, 'timezone: "America/Chicago"', "Production smoke schedule must retain the America/Chicago timezone.")
         require(errors, remote, "permissions:\n  contents: read", "Remote deployment workflow must remain read-only.")
         require(errors, remote, "persist-credentials: false", "Remote verification checkout must disable persisted credentials.")
         require(errors, remote, "timeout-minutes: 5", "Remote deployment verification must retain its five-minute timeout.")
