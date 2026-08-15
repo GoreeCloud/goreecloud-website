@@ -44,6 +44,14 @@ REQUIRED_PUBLIC_MARKERS = {
     "GoreeCloud Memos stabilization status": '<span class="badge growing">Stabilizing</span>',
     "GoreeCloud Notify project": "<strong>GoreeCloud Notify</strong>",
     "public ownership purpose": "Ownership should be understandable and repeatable.",
+    "expanded ONLYOFFICE family service": 'data-service="onlyoffice"',
+    "expanded Stirling PDF family service": 'data-service="stirling-pdf"',
+    "expanded Actual Budget family service": 'data-service="actual-budget"',
+    "expanded GoreeCloud Tasks family service": 'data-service="tasks"',
+    "expanded GoreeCloud Contacts family service": 'data-service="contacts"',
+    "public Follow the build section": '<section id="follow"',
+    "public GoreeCloud YouTube channel": "https://www.youtube.com/@GoreeCloud",
+    "public contact section": '<section id="contact"',
 }
 STALE_PUBLIC_COPY = (
     "A GoreeCloud-maintained Memos fork for fast private note capture",
