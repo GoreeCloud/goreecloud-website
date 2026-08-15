@@ -2,8 +2,8 @@
 """Validate the GoreeCloud website source-license and notice boundary.
 
 The Apache-2.0 text is intentionally content-bound to the reviewed Git blob so a
-future edit cannot silently change the governing software license. NOTICE is
-validated separately because GoreeCloud branding and third-party marks are not
+future edit cannot silently change the governing software license. NOTICE and README
+are validated separately because GoreeCloud branding and third-party marks are not
 made reusable merely by living beside Apache-licensed source code.
 """
 
@@ -16,6 +16,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 LICENSE = ROOT / "LICENSE"
 NOTICE = ROOT / "NOTICE"
+README = ROOT / "README.md"
 EXPECTED_LICENSE_GIT_BLOB = "261eeb9e9f8b2b4b0d119366dda99c6fd7d35c64"
 NOTICE_MARKERS = (
     "GoreeCloud Website",
@@ -24,6 +25,17 @@ NOTICE_MARKERS = (
     "does not grant permission to use GoreeCloud trade names",
     "Third-party project names, product names, logos, and marks remain the property of their respective owners",
     "docs/public-asset-inventory.md",
+)
+README_MARKERS = (
+    "## Source license and creative-rights boundary",
+    "Apache License 2.0",
+    "Apache-2.0",
+    "top-level `LICENSE` file",
+    "`NOTICE` documents the separate creative-rights boundary",
+    "issue #5 remains open",
+)
+STALE_README_MARKERS = (
+    "source-license/publication decision tracked in issue #5 is unresolved",
 )
 
 
@@ -59,6 +71,17 @@ def validate() -> list[str]:
             if marker not in notice:
                 errors.append(f"NOTICE is missing required licensing boundary: {marker}")
 
+    if not README.is_file() or README.is_symlink():
+        errors.append("README.md must be a regular repository file.")
+    else:
+        readme = README.read_text(encoding="utf-8")
+        for marker in README_MARKERS:
+            if marker not in readme:
+                errors.append(f"README.md is missing required license/publication guidance: {marker}")
+        for marker in STALE_README_MARKERS:
+            if marker in readme:
+                errors.append(f"README.md contains obsolete pre-license wording: {marker}")
+
     return errors
 
 
@@ -70,7 +93,7 @@ def main() -> int:
             print(f"- {error}", file=sys.stderr)
         return 1
 
-    print("License validation passed: Apache-2.0 source terms and branding/mark boundaries are intact.")
+    print("License validation passed: Apache-2.0 source terms, NOTICE boundaries, and README guidance are synchronized.")
     return 0
 
 
