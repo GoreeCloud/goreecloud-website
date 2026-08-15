@@ -57,6 +57,8 @@ Before issue #5 is resolved, review whether a completed record is appropriate fo
 
 ## Authority relationships
 
+In shorthand: **inventory = publication/rights working record; checklist = reusable procedure; evidence template = historical candidate record**.
+
 The repository uses these records together without treating them as interchangeable:
 
 1. `scripts/build_public_site.py` controls the exact technical public deployment file set.
