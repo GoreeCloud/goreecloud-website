@@ -90,18 +90,27 @@ def main() -> int:
         (
             "Validate repository guidance",
             "python scripts/validate_repository_guidance.py",
+            "python scripts/validate_repository_hygiene.py",
             "python scripts/validate_accessibility.py",
+            "python scripts/validate_glaze_ui.py",
         ),
         errors,
     )
     readme = require_markers(
         README,
         (
+            "Current website package: **v5.7",
             "python scripts/build_public_site.py",
+            "python scripts/validate_repository_hygiene.py",
             "python scripts/validate_accessibility.py",
+            "python scripts/validate_glaze_ui.py",
             "Build output directory: `dist`",
+            "exact, per-file allowlisted",
+            "Adding a file to `assets/`, `css/`, `js/`",
+            "Glaze UI is treated as a design contract",
             "automated checks are regression controls, not a claim of complete WCAG conformance",
             "screen-reader testing",
+            "repository-hygiene validator",
             "issue #5",
             "issue #6",
             "Passing CI does not itself authorize",
