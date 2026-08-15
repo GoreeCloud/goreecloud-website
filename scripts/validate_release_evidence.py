@@ -76,7 +76,9 @@ def display_path(path: Path) -> str:
 
 
 def field_value(text: str, label: str) -> str | None:
-    pattern = re.compile(rf"(?m)^- {re.escape(label)}:\s*(.*)$")
+    # Keep blank fields line-bounded. ``\s`` would also consume a newline and could
+    # incorrectly borrow the following metadata field as this field's value.
+    pattern = re.compile(rf"(?m)^- {re.escape(label)}:[ \t]*(.*)$")
     match = pattern.search(text)
     return match.group(1).strip() if match else None
 
