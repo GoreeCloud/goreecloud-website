@@ -1,125 +1,99 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="system">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="GoreeCloud is a privacy-first, self-hosted personal and family cloud built for data ownership, recoverability, open-source independence, and long-term digital preservation.">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#07111f" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#eef5ff" media="(prefers-color-scheme: light)">
+  <title>GoreeCloud — Personal Cloud, Homelab &amp; Software Platform</title>
+  <meta name="description" content="GoreeCloud is a privacy-first, self-hosted personal and family cloud platform built around ownership, recoverability, open source, and long-term independence.">
   <meta name="robots" content="index,follow,max-image-preview:large">
-  <meta name="application-name" content="GoreeCloud">
-  <meta name="author" content="GoreeCloud">
-  <meta name="color-scheme" content="dark light">
-  <meta name="theme-color" data-theme-color="dark" content="#07111f" media="(prefers-color-scheme: dark)">
-  <meta name="theme-color" data-theme-color="light" content="#f4f7fb" media="(prefers-color-scheme: light)">
-
-  <script src="js/theme-init.js"></script>
-
-  <title>GoreeCloud — Privacy-First Personal &amp; Family Cloud</title>
-
   <link rel="canonical" href="https://www.goreecloud.com/">
-  <link rel="icon" href="assets/goreecloud-icon.png" type="image/png">
-  <link rel="apple-touch-icon" href="assets/goreecloud-icon.png">
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/status.css">
-  <link rel="stylesheet" href="css/how-it-works.css">
-  <link rel="stylesheet" href="css/platform.css">
-  <link rel="stylesheet" href="css/roadmap.css">
-  <link rel="stylesheet" href="css/development.css">
-  <link rel="stylesheet" href="css/social.css">
-  <link rel="stylesheet" href="css/glaze.css">
-  <link rel="stylesheet" href="css/glaze-polish.css">
-
   <meta property="og:type" content="website">
-  <meta property="og:locale" content="en_US">
   <meta property="og:site_name" content="GoreeCloud">
-  <meta property="og:title" content="GoreeCloud — Privacy-First Personal &amp; Family Cloud">
-  <meta property="og:description" content="A self-hosted personal and family cloud built for ownership, privacy, recoverability, open-source independence, and the future.">
+  <meta property="og:title" content="GoreeCloud — Personal Cloud, Homelab &amp; Software Platform">
+  <meta property="og:description" content="A privacy-first personal and family cloud platform built around ownership, recoverability, and open-source independence.">
   <meta property="og:url" content="https://www.goreecloud.com/">
   <meta property="og:image" content="https://www.goreecloud.com/assets/social-preview.png">
-  <meta property="og:image:type" content="image/png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="GoreeCloud — A private cloud built for family, ownership, and the future.">
-
+  <meta property="og:image:alt" content="GoreeCloud — Own your cloud. Own your data.">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:site" content="@GoreeCloud">
-  <meta name="twitter:title" content="GoreeCloud — Privacy-First Personal &amp; Family Cloud">
-  <meta name="twitter:description" content="A self-hosted personal and family cloud built for ownership, privacy, recoverability, open-source independence, and the future.">
+  <meta name="twitter:title" content="GoreeCloud — Personal Cloud, Homelab &amp; Software Platform">
+  <meta name="twitter:description" content="A privacy-first personal and family cloud platform built around ownership, recoverability, and open-source independence.">
   <meta name="twitter:image" content="https://www.goreecloud.com/assets/social-preview.png">
-  <meta name="twitter:image:alt" content="GoreeCloud — A private cloud built for family, ownership, and the future.">
+  <meta name="twitter:image:alt" content="GoreeCloud — Own your cloud. Own your data.">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="site.webmanifest">
+  <script src="js/theme-init.js"></script>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/glaze.css">
+  <link rel="stylesheet" href="css/glaze-polish.css">
 </head>
 <body>
-  <a class="skip-link" href="#main">Skip to content</a>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
 
   <header class="site-header">
-    <div class="container nav-wrap">
+    <div class="container nav-shell">
       <a class="brand" href="#top" aria-label="GoreeCloud home">
-        <img class="brand-logo" src="assets/goreecloud-icon.png" alt="" width="36" height="36">
-        <span class="brand-text">GoreeCloud</span>
+        <img src="assets/goreecloud-icon.png" alt="" width="38" height="38">
+        <span>GoreeCloud</span>
       </a>
 
-      <div class="nav-actions">
-        <button class="theme-toggle" type="button" aria-label="Switch to light theme" title="Switch theme" hidden>
-          <span class="theme-toggle-icon" aria-hidden="true">☀</span>
-          <span class="sr-only theme-toggle-label">Switch theme</span>
-        </button>
+      <nav class="site-nav" id="site-nav" aria-label="Primary navigation">
+        <a href="#services">Services</a>
+        <a href="#platform">Platform</a>
+        <a href="#development">Software</a>
+        <a href="#roadmap">Roadmap</a>
+        <a href="#about">About</a>
+      </nav>
 
-        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
-          <span class="sr-only">Toggle navigation</span>
+      <div class="nav-actions">
+        <button class="theme-toggle" type="button" title="Switch theme" hidden>
+          <span class="theme-icon" aria-hidden="true"></span>
+          <span class="theme-label">System</span>
+        </button>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Open navigation">
           <span></span><span></span><span></span>
         </button>
       </div>
-
-      <nav id="site-nav" class="site-nav" aria-label="Primary navigation">
-        <a href="#services">Services</a>
-        <a href="#platform">Platform</a>
-        <a href="#development">Projects</a>
-        <a href="#roadmap">Roadmap</a>
-        <a href="#about">About</a>
-        <a href="#follow">Follow</a>
-        <a href="#contact" class="nav-cta">Contact</a>
-      </nav>
     </div>
   </header>
 
-  <main id="main" tabindex="-1">
-    <section id="top" class="hero">
+  <main id="main-content" tabindex="-1">
+    <section id="top" class="hero section">
       <div class="container hero-grid">
         <div class="hero-copy">
-          <div class="hero-labels" aria-label="GoreeCloud characteristics">
-            <span class="glaze-chip">Glaze UI</span>
-            <span class="eyebrow">Privacy-first • Self-hosted • Family-owned</span>
-          </div>
-
-          <h1>Own your cloud. Preserve what matters.</h1>
+          <p class="eyebrow">Personal cloud • Homelab • Software platform</p>
+          <h1>Own your cloud.<br>Own your data.</h1>
           <p class="hero-lede">
-            GoreeCloud is a self-hosted personal and family cloud designed to keep files, memories,
-            media, records, credentials, knowledge, and application data under the control of the
-            people they belong to.
+            GoreeCloud is a privacy-first personal and family cloud designed around data ownership,
+            recoverability, open-source software, and long-term independence from any single vendor,
+            server, or application.
           </p>
 
           <div class="hero-actions">
             <a class="button primary" href="#services">Explore GoreeCloud</a>
-            <a class="button secondary" href="#development">See What I'm Building</a>
+            <a class="button secondary" href="#how-it-works">How it works</a>
           </div>
 
-          <ul class="hero-points" aria-label="GoreeCloud principles">
-            <li>Private by default</li>
-            <li>Open source first</li>
-            <li>Designed to be recoverable</li>
-          </ul>
+          <div class="hero-trust" aria-label="GoreeCloud operating principles">
+            <span>Self-hosted first</span>
+            <span>Private by default</span>
+            <span>Recovery designed in</span>
+          </div>
         </div>
 
-        <div class="hero-card" aria-label="GoreeCloud overview">
-          <div class="cloud-orb" aria-hidden="true">
-            <div class="orb-core">
-              <img src="assets/goreecloud-icon.png" alt="" width="140" height="140">
-            </div>
-            <span class="orbit orbit-one"></span>
-            <span class="orbit orbit-two"></span>
-            <span class="node n1"></span>
-            <span class="node n2"></span>
-            <span class="node n3"></span>
+        <div class="hero-visual" aria-hidden="true">
+          <div class="hero-orbit orbit-one"></div>
+          <div class="hero-orbit orbit-two"></div>
+          <div class="hero-core">
+            <img src="assets/goreecloud-icon.png" alt="" width="126" height="126">
           </div>
+          <div class="hero-node node-one">Data</div>
+          <div class="hero-node node-two">Apps</div>
+          <div class="hero-node node-three">Recovery</div>
           <div class="hero-card-copy">
             <span class="status-dot"></span>
             <span>Building a durable family digital foundation</span>
@@ -228,6 +202,46 @@
             <h3>Element + Matrix</h3>
             <p>Planned private family messaging through self-hosted Matrix infrastructure with individual identities and controlled access.</p>
             <span class="badge planned">Planned</span>
+          </article>
+
+          <article class="service-card" data-service="onlyoffice">
+            <div class="service-icon" aria-hidden="true">OO</div>
+            <p class="service-kicker">Office &amp; Collaboration</p>
+            <h3>ONLYOFFICE Docs</h3>
+            <p>Planned browser-based document, spreadsheet, and presentation editing integrated with the GoreeCloud file and collaboration platform.</p>
+            <span class="badge planned">Planned</span>
+          </article>
+
+          <article class="service-card" data-service="stirling-pdf">
+            <div class="service-icon" aria-hidden="true">SP</div>
+            <p class="service-kicker">Private PDF Tools</p>
+            <h3>Stirling PDF</h3>
+            <p>Planned private PDF processing for merging, splitting, converting, compressing, reorganizing, redacting, and other document workflows.</p>
+            <span class="badge planned">Planned</span>
+          </article>
+
+          <article class="service-card" data-service="actual-budget">
+            <div class="service-icon" aria-hidden="true">AB</div>
+            <p class="service-kicker">Budgeting &amp; Finance</p>
+            <h3>Actual Budget</h3>
+            <p>Planned private personal and family budgeting for accounts, expenses, goals, spending visibility, and long-term financial planning.</p>
+            <span class="badge planned">Planned</span>
+          </article>
+
+          <article class="service-card" data-service="tasks">
+            <div class="service-icon" aria-hidden="true">GT</div>
+            <p class="service-kicker">Tasks &amp; Projects</p>
+            <h3>GoreeCloud Tasks</h3>
+            <p>Native multi-user task and project management for personal, family, collaborative, and GoreeCloud operational work with private-by-default data boundaries.</p>
+            <span class="badge growing">Native Development</span>
+          </article>
+
+          <article class="service-card" data-service="contacts">
+            <div class="service-icon" aria-hidden="true">CT</div>
+            <p class="service-kicker">Contacts &amp; Address Book</p>
+            <h3>GoreeCloud Contacts</h3>
+            <p>Native contacts management built around CardDAV interoperability, controlled writes, individual data boundaries, and portable address-book data.</p>
+            <span class="badge growing">Native Development</span>
           </article>
         </div>
 
@@ -679,95 +693,28 @@
         </div>
       </div>
     </section>
-
-    <section id="follow" class="section section-alt">
-      <div class="container">
-        <div class="section-heading">
-          <p class="eyebrow">Follow the build</p>
-          <h2>GoreeCloud is being documented in public.</h2>
-          <p>Follow progress, demonstrations, lessons learned, privacy discussions, open-source development, and self-hosting content across GoreeCloud's public accounts.</p>
-        </div>
-
-        <div class="social-grid">
-          <a class="social-card" href="https://instagram.com/goreecloud" target="_blank" rel="me noopener noreferrer" aria-label="GoreeCloud on Instagram">
-            <span class="social-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24"><rect x="3.2" y="3.2" width="17.6" height="17.6" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.8" r="1"/></svg>
-            </span>
-            <strong>Instagram</strong><span>@goreecloud</span><small>Visual progress &amp; demonstrations</small>
-          </a>
-
-          <a class="social-card" href="https://www.pinterest.com/goreecloud/" target="_blank" rel="me noopener noreferrer" aria-label="GoreeCloud on Pinterest">
-            <span class="social-icon social-letter" aria-hidden="true">P</span>
-            <strong>Pinterest</strong><span>@goreecloud</span><small>Evergreen visual discovery</small>
-          </a>
-
-          <a class="social-card" href="https://www.threads.net/@goreecloud" target="_blank" rel="me noopener noreferrer" aria-label="GoreeCloud on Threads">
-            <span class="social-icon social-letter" aria-hidden="true">@</span>
-            <strong>Threads</strong><span>@goreecloud</span><small>Conversation &amp; community</small>
-          </a>
-
-          <a class="social-card" href="https://www.tiktok.com/@goreecloud" target="_blank" rel="me noopener noreferrer" aria-label="GoreeCloud on TikTok">
-            <span class="social-icon social-letter" aria-hidden="true">♪</span>
-            <strong>TikTok</strong><span>@goreecloud</span><small>Short-form demonstrations</small>
-          </a>
-
-          <a class="social-card" href="https://x.com/GoreeCloud" target="_blank" rel="me noopener noreferrer" aria-label="GoreeCloud on X">
-            <span class="social-icon social-letter" aria-hidden="true">X</span>
-            <strong>X</strong><span>@GoreeCloud</span><small>Updates &amp; milestones</small>
-          </a>
-
-          <a class="social-card" href="https://www.reddit.com/user/goreecloud/" target="_blank" rel="me noopener noreferrer" aria-label="GoreeCloud on Reddit">
-            <span class="social-icon social-letter" aria-hidden="true">r/</span>
-            <strong>Reddit</strong><span>u/goreecloud</span><small>Technical discussion</small>
-          </a>
-
-          <a class="social-card github-card" href="https://github.com/GoreeCloud" target="_blank" rel="me noopener noreferrer" aria-label="GoreeCloud on GitHub">
-            <span class="social-icon social-letter" aria-hidden="true">GH</span>
-            <strong>GitHub</strong><span>GoreeCloud</span><small>Source code &amp; development</small>
-          </a>
-        </div>
-      </div>
-    </section>
-
-    <section id="contact" class="section contact-section">
-      <div class="container contact-card">
-        <div class="contact-copy">
-          <p class="eyebrow">Contact GoreeCloud</p>
-          <h2>Questions, ideas, or want to talk self-hosting?</h2>
-          <p>Reach GoreeCloud directly at <strong>goreecloud@gmail.com</strong>.</p>
-        </div>
-        <a class="button primary contact-button" href="mailto:goreecloud@gmail.com">Send an Email</a>
-      </div>
-    </section>
   </main>
 
   <footer class="site-footer">
     <div class="container footer-grid">
       <div>
-        <a class="brand footer-brand" href="#top">
-          <img class="brand-logo" src="assets/goreecloud-icon.png" alt="" width="36" height="36">
-          <span class="brand-text">GoreeCloud</span>
+        <a class="brand footer-brand" href="#top" aria-label="GoreeCloud home">
+          <img src="assets/goreecloud-icon.png" alt="" width="34" height="34">
+          <span>GoreeCloud</span>
         </a>
-        <p>Privacy • Ownership • Open Source • Recoverability • Long-Term Preservation</p>
-        <p class="footer-glaze">Designed with <strong>Glaze UI</strong>.</p>
+        <p>A privacy-first personal and family cloud platform.</p>
       </div>
 
-      <nav class="footer-links" aria-label="Footer navigation">
-        <a href="#services">Services</a>
-        <a href="#platform">Platform</a>
-        <a href="#development">Projects</a>
-        <a href="#roadmap">Roadmap</a>
-        <a href="#about">About</a>
-        <a href="#follow">Social</a>
+      <div class="footer-links">
         <a href="privacy.html">Privacy</a>
         <a href="security.html">Security</a>
-        <a href="mailto:goreecloud@gmail.com">Email</a>
-      </nav>
+        <a href="https://github.com/GoreeCloud" target="_blank" rel="noopener noreferrer">GitHub</a>
+      </div>
 
-      <p class="copyright">© <span id="year">2026</span> GoreeCloud</p>
+      <p class="footer-meta">© <span id="year">2026</span> GoreeCloud</p>
     </div>
   </footer>
 
-  <script src="js/main.js"></script>
+  <script src="js/main.js" defer></script>
 </body>
 </html>
