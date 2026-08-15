@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 from collections import Counter
+from datetime import datetime, timedelta, timezone
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import urlparse
@@ -16,6 +17,10 @@ SECURITY_PAGE = ROOT / "security.html"
 SECURITY_MD = ROOT / "SECURITY.md"
 SITEMAP = ROOT / "sitemap.xml"
 POLICY_URL = "https://www.goreecloud.com/security.html"
+CANONICAL_SECURITY_TXT = "https://www.goreecloud.com/.well-known/security.txt"
+PRIMARY_CONTACT = "mailto:goreecloud@gmail.com"
+EXPIRY_RENEWAL_BUFFER = timedelta(days=30)
+MAX_EXPIRY_HORIZON = timedelta(days=365)
 PRIVATE_PATTERNS = (
     re.compile(r"\b10(?:\.\d{1,3}){3}\b"),
     re.compile(r"\b192\.168(?:\.\d{1,3}){2}\b"),
@@ -34,7 +39,7 @@ REQUIRED_REPOSITORY_POLICY_COPY = (
     "Do **not** open a public GitHub issue",
     "goreecloud@gmail.com",
     POLICY_URL,
-    "https://www.goreecloud.com/.well-known/security.txt",
+    CANONICAL_SECURITY_TXT,
     "does not authorize testing of private family infrastructure",
     "does not currently offer a bug bounty",
 )
@@ -95,15 +100,93 @@ class PolicyParser(HTMLParser):
             self.local_refs.add(parsed.path)
 
 
-def parse_security_txt() -> dict[str, str]:
-    fields: dict[str, str] = {}
-    for raw_line in SECURITY_TXT.read_text(encoding="utf-8").splitlines():
+def parse_security_txt(errors: list[str]) -> dict[str, list[str]]:
+    fields: dict[str, list[str]] = {}
+    for line_number, raw_line in enumerate(SECURITY_TXT.read_text(encoding="utf-8").splitlines(), start=1):
         line = raw_line.strip()
-        if not line or line.startswith("#") or ":" not in line:
+        if not line or line.startswith("#"):
+            continue
+        if ":" not in line:
+            errors.append(f"security.txt line {line_number} is not a field-name/value pair.")
             continue
         key, value = line.split(":", 1)
-        fields[key.strip()] = value.strip()
+        key = key.strip().lower()
+        value = value.strip()
+        if not key or not value:
+            errors.append(f"security.txt line {line_number} has an empty field name or value.")
+            continue
+        fields.setdefault(key, []).append(value)
     return fields
+
+
+def parse_rfc3339(value: str) -> datetime | None:
+    normalized = value[:-1] + "+00:00" if value.endswith(("Z", "z")) else value
+    try:
+        parsed = datetime.fromisoformat(normalized)
+    except ValueError:
+        return None
+    if parsed.tzinfo is None:
+        return None
+    return parsed.astimezone(timezone.utc)
+
+
+def validate_security_txt(errors: list[str], fields: dict[str, list[str]]) -> None:
+    contacts = fields.get("contact", [])
+    if not contacts:
+        errors.append("security.txt must contain at least one Contact field.")
+    elif contacts[0] != PRIMARY_CONTACT:
+        errors.append(f"security.txt preferred Contact must remain {PRIMARY_CONTACT!r}, found {contacts[0]!r}.")
+    for contact in contacts:
+        parsed = urlparse(contact)
+        if parsed.scheme not in {"mailto", "https", "tel"}:
+            errors.append(f"security.txt Contact uses an unsupported URI scheme: {contact}")
+        if parsed.scheme == "https" and not parsed.netloc:
+            errors.append(f"security.txt Contact HTTPS URI is malformed: {contact}")
+
+    expires_values = fields.get("expires", [])
+    if len(expires_values) != 1:
+        errors.append(f"security.txt must contain exactly one Expires field, found {len(expires_values)}.")
+    else:
+        expires = parse_rfc3339(expires_values[0])
+        if expires is None:
+            errors.append("security.txt Expires must be an RFC3339 timestamp with an explicit timezone.")
+        else:
+            now = datetime.now(timezone.utc)
+            remaining = expires - now
+            if remaining <= EXPIRY_RENEWAL_BUFFER:
+                errors.append(
+                    "security.txt Expires must stay more than 30 days in the future so CI provides a renewal window."
+                )
+            if remaining >= MAX_EXPIRY_HORIZON:
+                errors.append(
+                    "security.txt Expires must remain less than 365 days in the future to avoid stale disclosure metadata."
+                )
+
+    preferred_languages = fields.get("preferred-languages", [])
+    if len(preferred_languages) > 1:
+        errors.append("security.txt Preferred-Languages must not appear more than once.")
+    elif preferred_languages:
+        languages = [value.strip().lower() for value in preferred_languages[0].split(",") if value.strip()]
+        if not languages:
+            errors.append("security.txt Preferred-Languages must list at least one language tag.")
+        if "en" not in languages:
+            errors.append("security.txt Preferred-Languages must continue to include English ('en').")
+
+    canonical_values = fields.get("canonical", [])
+    if CANONICAL_SECURITY_TXT not in canonical_values:
+        errors.append(f"security.txt must publish its canonical URI: {CANONICAL_SECURITY_TXT}")
+    for canonical in canonical_values:
+        parsed = urlparse(canonical)
+        if parsed.scheme != "https" or not parsed.netloc:
+            errors.append(f"security.txt Canonical web URI must use explicit HTTPS: {canonical}")
+
+    policy_values = fields.get("policy", [])
+    if POLICY_URL not in policy_values:
+        errors.append(f"security.txt Policy must include {POLICY_URL!r}.")
+    for policy in policy_values:
+        parsed = urlparse(policy)
+        if parsed.scheme != "https" or not parsed.netloc:
+            errors.append(f"security.txt Policy web URI must use explicit HTTPS: {policy}")
 
 
 def main() -> int:
@@ -120,9 +203,8 @@ def main() -> int:
     if errors:
         return report(errors)
 
-    fields = parse_security_txt()
-    if fields.get("Policy") != POLICY_URL:
-        errors.append(f"security.txt Policy must be {POLICY_URL!r}, found {fields.get('Policy')!r}.")
+    fields = parse_security_txt(errors)
+    validate_security_txt(errors, fields)
 
     sitemap = SITEMAP.read_text(encoding="utf-8")
     if f"<loc>{POLICY_URL}</loc>" not in sitemap:
