@@ -98,9 +98,10 @@ def main() -> int:
         if build_position >= 0 and artifact_position >= 0 and build_position > artifact_position:
             errors.append("Validation workflow must build the isolated public artifact before validating it.")
 
-    # Remote verification is intentionally manual and read-only. workflow_dispatch
-    # inputs are constrained to a choice and passed through an environment variable;
-    # the Python verifier independently enforces a fixed host allowlist.
+    # Remote verification is read-only. Manual inputs are constrained to a choice
+    # and passed through an environment variable; the Python verifier independently
+    # enforces a fixed host allowlist. A daily scheduled run verifies production on
+    # the default branch without interpolating user-controlled input.
     if not REMOTE_VERIFY_WORKFLOW.exists():
         errors.append(".github/workflows/verify-deployment.yml is required.")
     else:
@@ -112,14 +113,20 @@ def main() -> int:
             ("type: choice", "choice-constrained deployment target"),
             ("- branch-preview", "branch-preview target option"),
             ("- production", "production target option"),
+            ("schedule:", "scheduled production verification trigger"),
+            ('cron: "17 8 * * *"', "off-hour daily schedule"),
+            ('timezone: "America/Chicago"', "Central Time schedule"),
             ("timeout-minutes: 5", "five-minute verification timeout"),
             ("concurrency:\n", "concurrency control"),
             ("cancel-in-progress: true", "superseded-run cancellation"),
             (CHECKOUT_ACTION, "reviewed checkout action pin"),
             (SETUP_PYTHON_ACTION, "reviewed setup-python action pin"),
             ("python scripts/verify_remote_deployment.py --check-config", "verifier configuration check"),
+            ("if: github.event_name == 'workflow_dispatch'", "manual-event guard"),
             ("TARGET: ${{ inputs.target }}", "environment-mediated target input"),
-            ('python scripts/verify_remote_deployment.py --target "$TARGET"', "remote deployment verification command"),
+            ('python scripts/verify_remote_deployment.py --target "$TARGET"', "manual deployment verification command"),
+            ("if: github.event_name == 'schedule'", "scheduled-event guard"),
+            ("python scripts/verify_remote_deployment.py --target production", "fixed scheduled production verification command"),
         )
         for marker, label in required_remote_markers:
             require(errors, remote, marker, f"Remote verification workflow must retain its {label}.")
@@ -129,8 +136,12 @@ def main() -> int:
                 "Remote verification workflow must not interpolate inputs.target directly into a run command; "
                 "pass it through the TARGET environment variable and let the verifier enforce choices."
             )
+        if remote.count("${{ inputs.target }}") != 1:
+            errors.append("Remote verification workflow must reference inputs.target exactly once, through the TARGET environment variable.")
         if remote.count("- branch-preview") != 1 or remote.count("- production") != 1:
             errors.append("Remote verification workflow must expose exactly the branch-preview and production target choices.")
+        if remote.count("schedule:") != 1:
+            errors.append("Remote verification workflow must retain exactly one scheduled trigger block.")
 
     if not DEPENDABOT.exists():
         errors.append(".github/dependabot.yml is required to keep pinned GitHub Actions reviewably updated.")
