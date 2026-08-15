@@ -27,6 +27,8 @@ SENSITIVE_TERMS = ("goreecloud-vps-01", ".netbird.selfhosted")
 REQUIRED_COPY = (
     "Privacy at GoreeCloud",
     "No behavioral tracking.",
+    "third-party browser resources",
+    "Browser-loaded site resources are kept on the GoreeCloud origin",
     "goreecloud-theme",
     "localStorage",
     "System mode requires no stored preference",
