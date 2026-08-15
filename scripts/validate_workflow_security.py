@@ -82,6 +82,7 @@ def main() -> int:
             ("python scripts/validate_security_policy.py", "security-reporting and security.txt freshness validator"),
             ("python scripts/validate_privacy_policy.py", "privacy-statement validator"),
             ("python scripts/validate_browser_origin_integrity.py", "first-party browser-origin and statelessness validator"),
+            ("python scripts/validate_accessibility.py", "whole-site structural accessibility validator"),
             ("python scripts/validate_public_semantics.py", "canonical search/social metadata validator"),
             ("python scripts/validate_public_surface.py", "whole-site crawler/sitemap validator"),
             ("python scripts/validate_performance_budget.py", "performance-budget validator"),
