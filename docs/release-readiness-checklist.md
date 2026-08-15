@@ -20,6 +20,12 @@ python scripts/create_release_evidence.py --commit <40-character-lowercase-git-s
 
 The generator creates a non-overwriting record under `docs/release-evidence/` using the Central-Time date and the approved technical filename pattern. It binds the record to the supplied full SHA but does **not** fetch evidence, run validation, check acceptance boxes, or authorize any action.
 
+After editing a working evidence record, validate its structural and privacy boundaries with:
+
+```bash
+python scripts/validate_release_evidence.py
+```
+
 Record manual evidence in that candidate-specific file using Central Time (`America/Chicago`) and the 12-hour time format. Keep the exact Git commit SHA being reviewed so evidence cannot be silently carried forward to a different release candidate.
 
 If the candidate SHA changes after manual acceptance begins, create a new candidate record or explicitly mark the older record Superseded. Do not rename, overwrite, or rewrite an older record to make it appear to cover the new candidate.
@@ -60,6 +66,7 @@ python scripts/validate_build_artifact.py
 python scripts/verify_remote_deployment.py --check-config
 python -m unittest discover -s tests -p "test_*.py"
 python scripts/validate_repository_guidance.py
+python scripts/validate_release_evidence.py
 python scripts/validate_site.py
 python scripts/validate_resilience.py
 node --check js/theme-init.js
@@ -76,6 +83,7 @@ Required evidence:
 - [ ] The isolated `dist/` artifact contains exactly the expected allowlisted files.
 - [ ] Performance budgets pass without waiver.
 - [ ] Remote-verifier configuration and dependency-free regression tests pass.
+- [ ] Release-evidence records, if present, pass structural/privacy validation without implying substantive acceptance.
 
 Automated history and rights checks are prevention/evidence controls, not substitutes for the human publication review required by issue #5.
 
@@ -193,7 +201,7 @@ Required Pages settings:
 - Build output directory: `dist`
 - Root directory: blank
 
-After those settings are deliberately applied and a new branch preview is built:
+After those settings are deliberately applied and a new branch preview is built, run from the **exact checked-out candidate** whose preview is being reviewed:
 
 ```bash
 python scripts/build_public_site.py
@@ -201,17 +209,26 @@ python scripts/validate_build_artifact.py
 python scripts/verify_remote_deployment.py --target branch-preview
 ```
 
+The remote verifier now performs two distinct checks against that fixed branch-preview target:
+
+1. deployment semantics/security behavior (status, MIME types, headers, indexing behavior, `security.txt`, custom 404, and repository-only path isolation); and
+2. **candidate content integrity** for every fetchable path in the authoritative `PUBLIC_FILES` allowlist.
+
+Candidate integrity compares the deployed response bytes with the local candidate source bytes. The Cloudflare `_headers` file is the only allowlisted source excluded because Cloudflare consumes it as deployment configuration rather than exposing it as a public resource. Redirect destinations are validated against the fixed GoreeCloud host allowlist before they are followed.
+
 Acceptance:
 
 - [ ] Fresh post-cutover branch preview deploys successfully.
-- [ ] Branch-preview verifier exits successfully.
+- [ ] Branch-preview verifier exits successfully when run from the exact candidate checkout.
+- [ ] Every fetchable allowlisted public resource is byte-identical to that candidate.
+- [ ] No verifier redirect leaves the reviewed GoreeCloud host allowlist.
 - [ ] Preview publishes `X-Robots-Tag: noindex`.
 - [ ] Required security/privacy headers reach the deployed HTTP surface.
 - [ ] Repository-only paths return 404.
 - [ ] `security.txt` identity, cache policy, and expiry checks pass.
 - [ ] Nested custom 404 behavior passes.
 
-A preview produced before the `dist/` configuration change does not satisfy issue #6.
+A preview produced before the `dist/` configuration change, or a preview whose public bytes do not match the exact reviewed candidate, does not satisfy issue #6.
 
 ## 9. Release authorization
 
@@ -219,7 +236,7 @@ Only after sections 1–8 are satisfied or an explicitly documented exception ha
 
 - [ ] Confirm the final exact SHA again.
 - [ ] Confirm final CI is green.
-- [ ] Confirm final preview evidence corresponds to that exact SHA.
+- [ ] Confirm final preview evidence corresponds to that exact SHA and its fetchable public bytes.
 - [ ] Confirm issue #5 is resolved before any repository-publication action.
 - [ ] Confirm issue #6 is resolved before treating `dist/` isolation as externally enforced.
 - [ ] Obtain explicit authorization for merge/production release.
@@ -227,7 +244,7 @@ Only after sections 1–8 are satisfied or an explicitly documented exception ha
 
 ## 10. Post-release verification
 
-After an authorized production release:
+After an authorized production release, run from the **exact released source candidate**:
 
 ```bash
 python scripts/verify_remote_deployment.py --target production
@@ -238,6 +255,7 @@ Confirm:
 - [ ] Canonical production content is reachable at `https://www.goreecloud.com/`.
 - [ ] Apex routing resolves permanently to the canonical `www` host as intended.
 - [ ] Production does **not** publish `X-Robots-Tag: noindex`.
+- [ ] Every fetchable allowlisted public resource is byte-identical to the released candidate.
 - [ ] Required public resources return expected status, MIME type, and identifying content.
 - [ ] Repository-only paths remain unavailable.
 - [ ] Security/privacy headers match the reviewed contract.
@@ -249,6 +267,6 @@ Record any production-only discrepancy as a release defect rather than normalizi
 
 ## Release boundary
 
-This checklist is intentionally fail-closed. An unchecked licensing/publication requirement, an unverified Cloudflare `dist/` boundary, a red automated production gate, or a material manual Glaze UI/accessibility defect means the release candidate is not yet fully accepted.
+This checklist is intentionally fail-closed. An unchecked licensing/publication requirement, an unverified Cloudflare `dist/` boundary, a red automated production gate, a deployed-byte mismatch, or a material manual Glaze UI/accessibility defect means the release candidate is not yet fully accepted.
 
 The checklist itself is repository-only documentation and must never be copied into the public `dist/` artifact.
