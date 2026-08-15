@@ -46,7 +46,8 @@
   background-size: 27px 27px;
 }
 
-.service-card[data-service="notes"] .service-icon {
+.service-card[data-service="notes"] .service-icon,
+.service-card[data-service="memos"] .service-icon {
   background-image: url("../assets/goreecloud-icon.png");
   background-size: 30px 30px;
 }

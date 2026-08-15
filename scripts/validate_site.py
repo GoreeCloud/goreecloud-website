@@ -38,11 +38,15 @@ REQUIRED_SCRIPTS = {
 }
 REQUIRED_PUBLIC_MARKERS = {
     "native GoreeCloud Notes repository": "https://github.com/GoreeCloud/goreecloud-notes",
+    "GoreeCloud Memos repository": "https://github.com/GoreeCloud/memos",
+    "GoreeCloud Memos product": "<strong>GoreeCloud Memos</strong>",
     "GoreeCloud Notify project": "<strong>GoreeCloud Notify</strong>",
     "public ownership purpose": "Ownership should be understandable and repeatable.",
 }
 STALE_PUBLIC_COPY = (
     "A GoreeCloud-maintained Memos fork for fast private note capture",
+    "Memos RC remains a protected transitional migration source",
+    "transitional services remain protected until migration gates are satisfied",
 )
 REQUIRED_SECURITY_FIELDS = {
     "Contact": "mailto:goreecloud@gmail.com",
