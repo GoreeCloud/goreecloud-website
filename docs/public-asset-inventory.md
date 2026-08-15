@@ -52,8 +52,8 @@ The repository filename and displayed project identity are sufficient to establi
 | `assets/platform/adguard-home.svg` | AdGuard Home | Upstream artwork source/terms to verify | `713ec820617ccda98427c3fa38f97a72165ca6e1` |
 | `assets/platform/beszel.svg` | Beszel | Upstream artwork source/terms to verify | `a0459d16b3c5b9582eea6a637e1027fe76426be4` |
 | `assets/platform/caddy.svg` | Caddy | Upstream artwork source/terms to verify | `e7c49498548a1d79228284c9de8066f31c983d8a` |
-| `assets/platform/debian.svg` | Debian | Upstream artwork source/terms to verify | `e6bd21288ffb991cab15625b0a69900a0ded5e41` |
-| `assets/platform/docker.svg` | Docker | Upstream artwork source/terms to verify | `de7b005b813f9c3c902591a3084f138777c29b30` |
+| `assets/platform/debian.svg` | Debian | Official logo/trademark policy located; exact local-file provenance and compliance review still required | `e6bd21288ffb991cab15625b0a69900a0ded5e41` |
+| `assets/platform/docker.svg` | Docker | Official brand/trademark guidance located; exact local-file provenance and permission/compliance review still required | `de7b005b813f9c3c902591a3084f138777c29b30` |
 | `assets/platform/netbird.svg` | NetBird | Upstream artwork source/terms to verify | `89bb8ba27d31b24c4f1dd308e43bd09bfae76901` |
 | `assets/platform/ntfy.svg` | ntfy | Upstream artwork source/terms to verify | `429dfed5bd19effcf1d420b17f8995353caad97f` |
 | `assets/platform/proxmox.svg` | Proxmox | Upstream artwork source/terms to verify | `10f91a01bb4fd15c7345bbbefba00a06e84bd7ac` |
@@ -68,6 +68,32 @@ The repository filename and displayed project identity are sufficient to establi
 | `assets/services/paperless-ngx.svg` | Paperless-ngx | Upstream artwork source/terms to verify | `8db3273947738f0b80644ccb706b54459a5745a5` |
 | `assets/services/vaultwarden.svg` | Vaultwarden | Upstream artwork source/terms to verify | `bb241d516206c45bfaffe5f023caaeb7d6dcc2a4` |
 
+## Verified upstream policy evidence
+
+This section records official policy material found during the pre-publication review. It deliberately distinguishes an upstream policy from proof that GoreeCloud's current local SVG is the upstream-approved file.
+
+### Debian
+
+Official sources reviewed:
+
+- Debian logo page: https://www.debian.org/logos/
+- Debian trademark policy: https://www.debian.org/trademark
+
+The Debian Project publishes an "open use" logo and states that this logo is copyright Software in the Public Interest, Inc. and is released under LGPL-3.0-or-later or, at the user's option, CC BY-SA 3.0. Debian also publishes separate trademark-use conditions, including attribution/disclaimer guidance and restrictions intended to avoid false affiliation or endorsement.
+
+This establishes an official policy path for using a Debian logo, but the current local Debian SVG has **not yet been proven byte-for-byte or visually equivalent to the specific open-use upstream variant**, and the final GoreeCloud attribution/disclaimer treatment has not yet been implemented. Keep the Debian row unresolved until those checks are complete.
+
+### Docker
+
+Official sources reviewed:
+
+- Docker brand/media resources: https://www.docker.com/company/newsroom/media-resources/
+- Docker trademark guidelines: https://www.docker.com/legal/trademark-guidelines/
+
+Docker publishes an approved logo kit and detailed logo/trademark rules. The current guidelines distinguish permitted referential use from logo-mark use, require avoidance of implied sponsorship/affiliation, specify approved logo presentation, and provide trademark-notice requirements. The guidelines also state that logo/design use is more constrained than ordinary word-mark reference.
+
+This establishes the governing official policy material, but it does **not** establish that the current local Docker SVG came from Docker's approved logo kit or that GoreeCloud's specific presentation satisfies every applicable condition. Keep the Docker row unresolved until exact source provenance and final use/notice compliance are verified.
+
 ## Deliberate boundaries
 
 - Presence in the public deployment artifact means an asset is technically published by the website; it does not mean GoreeCloud owns the underlying third-party mark.
@@ -77,6 +103,7 @@ The repository filename and displayed project identity are sufficient to establi
 - A third-party software project's open-source license must not be treated as automatic permission to redistribute its logo under that same license.
 - Replacing or adding a public asset requires updating both `PUBLIC_ASSET_FILES` and this inventory in the same reviewed change.
 - Changing the bytes of an existing public asset requires updating its reviewed Git blob ID here and reconsidering its provenance/rights status even when the filename is unchanged.
+- Official trademark/brand guidance is evidence about permitted conditions; it is not proof that a local artwork file came from the approved upstream source.
 - Repository-only design experiments, source material, or unused artwork remain outside the deployment artifact unless explicitly allowlisted.
 
 ## Publication gate
