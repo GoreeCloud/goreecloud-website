@@ -107,11 +107,31 @@ def main() -> int:
             ("python scripts/build_public_site.py", "isolated public-site build"),
             ("python scripts/validate_build_artifact.py", "isolated build-artifact validator"),
             ("python scripts/verify_remote_deployment.py --check-config", "remote-verifier configuration check"),
+            ("python scripts/verify_remote_deployment.py --target branch-preview", "same-repository pull-request branch-preview verifier"),
             ('python -m unittest discover -s tests -p "test_*.py"', "offline regression test suite"),
             ("python scripts/validate_release_evidence.py", "candidate release-evidence validator"),
         )
         for command, label in required_validation_commands:
             require(errors, validation, command, f"Validation workflow must run the {label}.")
+
+        require(
+            errors,
+            validation,
+            "github.event_name == 'pull_request'",
+            "Branch-preview verification must remain limited to pull-request events.",
+        )
+        require(
+            errors,
+            validation,
+            "github.event.pull_request.head.repo.full_name == github.repository",
+            "Branch-preview verification must remain limited to same-repository pull requests.",
+        )
+        require(
+            errors,
+            validation,
+            "Branch preview verification failed after $attempts attempts.",
+            "Branch-preview verification must remain fail-closed after bounded retries.",
+        )
 
         build_position = validation.find("python scripts/build_public_site.py")
         artifact_position = validation.find("python scripts/validate_build_artifact.py")
