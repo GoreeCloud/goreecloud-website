@@ -52,8 +52,8 @@ The repository filename and displayed project identity are sufficient to establi
 | `assets/platform/adguard-home.svg` | AdGuard Home | Upstream artwork source/terms to verify | `713ec820617ccda98427c3fa38f97a72165ca6e1` |
 | `assets/platform/beszel.svg` | Beszel | Upstream artwork source/terms to verify | `a0459d16b3c5b9582eea6a637e1027fe76426be4` |
 | `assets/platform/caddy.svg` | Caddy | Upstream artwork source/terms to verify | `e7c49498548a1d79228284c9de8066f31c983d8a` |
-| `assets/platform/debian.svg` | Debian | Official logo/trademark policy located; exact local-file provenance and compliance review still required | `e6bd21288ffb991cab15625b0a69900a0ded5e41` |
-| `assets/platform/docker.svg` | Docker | Official brand/trademark guidance located; exact local-file provenance and permission/compliance review still required | `de7b005b813f9c3c902591a3084f138777c29b30` |
+| `assets/platform/debian.svg` | Debian | Official logo/trademark policy located; Simple Icons intermediary-source evidence located; final exact-source/compliance review still required | `e6bd21288ffb991cab15625b0a69900a0ded5e41` |
+| `assets/platform/docker.svg` | Docker | Official brand/trademark guidance located; Simple Icons intermediary-source evidence located; final exact-source/permission/compliance review still required | `de7b005b813f9c3c902591a3084f138777c29b30` |
 | `assets/platform/netbird.svg` | NetBird | Upstream artwork source/terms to verify | `89bb8ba27d31b24c4f1dd308e43bd09bfae76901` |
 | `assets/platform/ntfy.svg` | ntfy | Upstream artwork source/terms to verify | `429dfed5bd19effcf1d420b17f8995353caad97f` |
 | `assets/platform/proxmox.svg` | Proxmox | Upstream artwork source/terms to verify | `10f91a01bb4fd15c7345bbbefba00a06e84bd7ac` |
@@ -81,7 +81,7 @@ Official sources reviewed:
 
 The Debian Project publishes an "open use" logo and states that this logo is copyright Software in the Public Interest, Inc. and is released under LGPL-3.0-or-later or, at the user's option, CC BY-SA 3.0. Debian also publishes separate trademark-use conditions, including attribution/disclaimer guidance and restrictions intended to avoid false affiliation or endorsement.
 
-This establishes an official policy path for using a Debian logo, but the current local Debian SVG has **not yet been proven byte-for-byte or visually equivalent to the specific open-use upstream variant**, and the final GoreeCloud attribution/disclaimer treatment has not yet been implemented. Keep the Debian row unresolved until those checks are complete.
+This establishes an official policy path for using a Debian logo, but the final GoreeCloud attribution/disclaimer treatment has not yet been implemented. Keep the Debian row unresolved until the exact-source and final presentation checks are complete.
 
 ### Docker
 
@@ -94,6 +94,18 @@ Docker publishes an approved logo kit and detailed logo/trademark rules. The cur
 
 This establishes the governing official policy material, but it does **not** establish that the current local Docker SVG came from Docker's approved logo kit or that GoreeCloud's specific presentation satisfies every applicable condition. Keep the Docker row unresolved until exact source provenance and final use/notice compliance are verified.
 
+## Intermediary-source evidence
+
+The current Debian and Docker SVGs use the same 24×24 path geometry and titles as the corresponding Simple Icons assets checked on August 15, 2026. GoreeCloud's local copies are reformatted and add explicit brand-color fills, while the Simple Icons files are normalized monochrome SVGs. This is strong evidence that these two local assets were derived from Simple Icons or from the same normalized icon geometry; it is **not** proof of the original acquisition event or a substitute for the underlying brand owner's terms.
+
+Simple Icons references reviewed:
+
+- Debian icon: https://github.com/simple-icons/simple-icons/blob/develop/icons/debian.svg
+- Docker icon: https://github.com/simple-icons/simple-icons/blob/develop/icons/docker.svg
+- Simple Icons disclaimer: https://github.com/simple-icons/simple-icons/blob/develop/DISCLAIMER.md
+
+Simple Icons' repository is distributed under CC0-1.0, but its own disclaimer expressly cautions that this does **not** mean every included brand icon is CC0. It directs users to individual icon license data, source URLs, and brand guidelines where available. Therefore GoreeCloud must continue to treat Simple Icons as an intermediary artwork source, not as a blanket rights-clearing layer for third-party marks.
+
 ## Deliberate boundaries
 
 - Presence in the public deployment artifact means an asset is technically published by the website; it does not mean GoreeCloud owns the underlying third-party mark.
@@ -104,6 +116,7 @@ This establishes the governing official policy material, but it does **not** est
 - Replacing or adding a public asset requires updating both `PUBLIC_ASSET_FILES` and this inventory in the same reviewed change.
 - Changing the bytes of an existing public asset requires updating its reviewed Git blob ID here and reconsidering its provenance/rights status even when the filename is unchanged.
 - Official trademark/brand guidance is evidence about permitted conditions; it is not proof that a local artwork file came from the approved upstream source.
+- An intermediary icon library's repository license must not be treated as a blanket license for all underlying third-party brand marks.
 - Repository-only design experiments, source material, or unused artwork remain outside the deployment artifact unless explicitly allowlisted.
 
 ## Publication gate
