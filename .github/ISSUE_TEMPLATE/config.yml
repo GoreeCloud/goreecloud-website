@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security vulnerability
+    url: https://www.goreecloud.com/security.html
+    about: Do not publish vulnerability details in an ordinary GitHub issue. Use the GoreeCloud responsible security-reporting policy.
