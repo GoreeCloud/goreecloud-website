@@ -26,15 +26,21 @@ PRIVATE_PATTERNS = (
 SENSITIVE_TERMS = ("goreecloud-vps-01", ".netbird.selfhosted")
 
 
+def normalize_guidance_text(text: str) -> str:
+    """Normalize harmless Markdown emphasis and whitespace for semantic marker checks."""
+    without_emphasis = re.sub(r"[*_]", "", text)
+    return re.sub(r"\s+", " ", without_emphasis).strip().lower()
+
+
 def require_markers(path: Path, markers: tuple[str, ...], errors: list[str]) -> str:
     if not path.exists():
         errors.append(f"Required repository guidance file is missing: {path.relative_to(ROOT)}")
         return ""
 
     text = path.read_text(encoding="utf-8")
-    lower = text.lower()
+    normalized = normalize_guidance_text(text)
     for marker in markers:
-        if marker.lower() not in lower:
+        if normalize_guidance_text(marker) not in normalized:
             errors.append(f"{path.relative_to(ROOT)} is missing required guidance: {marker}")
     return text
 
