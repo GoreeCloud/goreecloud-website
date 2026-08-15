@@ -74,13 +74,12 @@ def card_drawable(surface: str, stroke: str, ripple: str) -> str:
 
 
 def add_glaze_settings_cards(gallery: Path, commons: Path) -> None:
-    # Resource references remain module-local: Gallery and the included Commons build each
-    # receive their own drawable so Commons never depends on an app-only resource.
+    # Keep resource references module-local so the included Commons build never depends on
+    # an app-only resource. Both light and dark Commons resources are explicit.
     write(
         gallery / "app/src/main/res/drawable/glaze_settings_row_background.xml",
         card_drawable("@color/glaze_surface", "#185865F2", "#185865F2"),
     )
-
     write(
         commons / "commons/src/main/res/drawable/glaze_settings_row_background.xml",
         card_drawable("#F7F8FC", "#185865F2", "#185865F2"),
@@ -94,9 +93,6 @@ def add_glaze_settings_cards(gallery: Path, commons: Path) -> None:
 def patch_settings_rows(gallery: Path) -> None:
     settings = gallery / "app/src/main/res/layout/activity_settings.xml"
     text = read(settings)
-
-    # The upstream screen is a flat edge-to-edge preference list. Keep the information
-    # hierarchy and behavior, but give interactive rows Glaze UI spacing, surfaces and depth.
     pattern = re.compile(
         r'(?P<head><(?:RelativeLayout|androidx\.constraintlayout\.widget\.ConstraintLayout)\n'
         r'\s+android:id="@\+id/settings_[^"]+_holder"\n'
@@ -117,23 +113,21 @@ def patch_settings_rows(gallery: Path) -> None:
     if count < 20:
         fail(f"expected at least 20 Settings rows to receive Glaze cards, found {count}")
 
-    scroll_anchor = '        android:fillViewport="true"\n        android:scrollbars="none"'
-    scroll_replacement = (
+    anchor = '        android:fillViewport="true"\n        android:scrollbars="none"'
+    replacement = (
         '        android:fillViewport="true"\n'
         '        android:clipToPadding="false"\n'
         '        android:paddingBottom="20dp"\n'
         '        android:scrollbars="none"'
     )
-    if scroll_anchor not in text:
+    if anchor not in text:
         fail("Settings NestedScrollView shape changed")
-    text = text.replace(scroll_anchor, scroll_replacement, 1)
-    write(settings, text)
+    write(settings, text.replace(anchor, replacement, 1))
 
 
 def patch_customization_rows(commons: Path) -> None:
     customization = commons / "commons/src/main/res/layout/activity_customization.xml"
     text = read(customization)
-
     for holder_id in ("customization_theme_holder", "customization_font_holder"):
         pattern = re.compile(
             rf'(?P<head><RelativeLayout\n\s+android:id="@\+id/{holder_id}"\n'
@@ -151,22 +145,22 @@ def patch_customization_rows(commons: Path) -> None:
         if count != 1:
             fail(f"could not Glaze-style {holder_id}")
 
-    scroll_anchor = '        android:fillViewport="true"\n        android:scrollbars="none"'
-    scroll_replacement = (
+    anchor = '        android:fillViewport="true"\n        android:scrollbars="none"'
+    replacement = (
         '        android:fillViewport="true"\n'
         '        android:clipToPadding="false"\n'
         '        android:paddingBottom="20dp"\n'
         '        android:scrollbars="none"'
     )
-    if scroll_anchor not in text:
+    if anchor not in text:
         fail("Customization NestedScrollView shape changed")
-    text = text.replace(scroll_anchor, scroll_replacement, 1)
-    write(customization, text)
+    write(customization, text.replace(anchor, replacement, 1))
 
 
 def patch_popup_surfaces(commons: Path) -> None:
     light = commons / "commons/src/main/res/drawable/top_popup_menu_bg_light.xml"
     dark = commons / "commons/src/main/res/drawable/top_popup_menu_bg_dark.xml"
+    material_you = commons / "commons/src/main/res/drawable/dialog_you_background.xml"
 
     light_xml = """<?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
@@ -192,12 +186,26 @@ def patch_popup_surfaces(commons: Path) -> None:
     </item>
 </layer-list>
 """
+    material_you_xml = """<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/you_dialog_background_color" />
+            <corners android:radius="20dp" />
+            <stroke android:width="1dp" android:color="#1F5865F2" />
+            <padding android:left="4dp" android:top="10dp" android:right="4dp" android:bottom="10dp" />
+        </shape>
+    </item>
+</layer-list>
+"""
     write(light, light_xml)
     write(dark, dark_xml)
+    # System default uses TopPopupMenuYou, which resolves to dialog_you_background.
+    write(material_you, material_you_xml)
 
 
 def patch_notice(gallery: Path) -> None:
-    notice = f"""GoreeCloud Gallery {VERSION_NAME}\n\nGoreeCloud Gallery is a GoreeCloud-maintained Android gallery fork based on Fossify Gallery\n1.13.1 and Fossify Commons 6.1.5. It remains offline-first and adds no analytics,\nadvertising, cloud account, remote API, or Internet permission.\n\ngc.4 is the first post-gc.3 Glaze UI acceptance refinement. Real-device gc.3 testing confirmed\nthat the counterfeit-build dialog is gone, launcher-color identity leakage is gone, and the\nSettings/customization app-bar correction works. gc.4 preserves those fixes while converting\ninteractive Settings and Appearance rows from a flat edge-to-edge list into softly elevated,\nrounded Glaze surfaces with intentional spacing. The top overflow popup is also moved from\nthe upstream 8dp Material panel to a 20dp rounded GoreeCloud surface with restrained border\ndepth. No Gallery feature behavior or media-storage behavior is intentionally changed.\n\nUpstream copyright, source history, GNU GPL licensing, and third-party notices remain\napplicable. GoreeCloud rebranding does not remove those obligations.\n"""
+    notice = f"""GoreeCloud Gallery {VERSION_NAME}\n\nGoreeCloud Gallery is a GoreeCloud-maintained Android gallery fork based on Fossify Gallery\n1.13.1 and Fossify Commons 6.1.5. It remains offline-first and adds no analytics,\nadvertising, cloud account, remote API, or Internet permission.\n\ngc.4 is the first post-gc.3 Glaze UI acceptance refinement. Real-device gc.3 testing confirmed\nthat the counterfeit-build dialog is gone, launcher-color identity leakage is gone, and the\nSettings/customization app-bar correction works. gc.4 preserves those fixes while converting\ninteractive Settings and Appearance rows from a flat edge-to-edge list into softly elevated,\nrounded Glaze surfaces with intentional spacing. Overflow and system-theme popup/dialog\nsurfaces use 20dp rounded GoreeCloud geometry with restrained border depth. No Gallery\nfeature behavior or media-storage behavior is intentionally changed.\n\nUpstream copyright, source history, GNU GPL licensing, and third-party notices remain\napplicable. GoreeCloud rebranding does not remove those obligations.\n"""
     write(gallery / "GOREECLOUD-NOTICE.md", notice)
     write(gallery / "app/src/main/assets/goreecloud_notice.txt", notice)
 
@@ -208,6 +216,7 @@ def validate(gallery: Path, commons: Path) -> None:
     customization = read(commons / "commons/src/main/res/layout/activity_customization.xml")
     popup_light = read(commons / "commons/src/main/res/drawable/top_popup_menu_bg_light.xml")
     popup_dark = read(commons / "commons/src/main/res/drawable/top_popup_menu_bg_dark.xml")
+    material_you = read(commons / "commons/src/main/res/drawable/dialog_you_background.xml")
 
     checks = [
         (f"VERSION_NAME={VERSION_NAME}", props),
@@ -217,17 +226,17 @@ def validate(gallery: Path, commons: Path) -> None:
         ('@drawable/glaze_settings_row_background', customization),
         ('android:radius="20dp"', popup_light),
         ('android:radius="20dp"', popup_dark),
+        ('android:radius="20dp"', material_you),
+        ('@color/you_dialog_background_color', material_you),
         ('#F7F8FC', popup_light),
         ('#171C29', popup_dark),
     ]
     for needle, haystack in checks:
         if needle not in haystack:
             fail(f"validation missing {needle!r}")
-
     if settings.count('@drawable/glaze_settings_row_background') < 20:
         fail("too few Settings rows received Glaze card treatment")
 
-    # Validate every XML resource directly changed or created by gc.4.
     for xml_file in (
         gallery / "app/src/main/res/drawable/glaze_settings_row_background.xml",
         gallery / "app/src/main/res/layout/activity_settings.xml",
@@ -236,6 +245,7 @@ def validate(gallery: Path, commons: Path) -> None:
         commons / "commons/src/main/res/layout/activity_customization.xml",
         commons / "commons/src/main/res/drawable/top_popup_menu_bg_light.xml",
         commons / "commons/src/main/res/drawable/top_popup_menu_bg_dark.xml",
+        commons / "commons/src/main/res/drawable/dialog_you_background.xml",
     ):
         try:
             ET.parse(xml_file)
