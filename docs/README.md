@@ -40,7 +40,15 @@ Authority boundary:
 
 **Role:** Template for one-candidate historical validation evidence.
 
-Copy this template when a release candidate reaches formal manual acceptance. A completed record documents what was actually reviewed for one exact 40-character Git commit SHA, including automation, Glaze UI/accessibility acceptance, issue #5/#6 disposition, exceptions, authorization, and post-release results.
+Create a working copy when a release candidate reaches formal manual acceptance. A completed record documents what was actually reviewed for one exact 40-character Git commit SHA, including automation, Glaze UI/accessibility acceptance, issue #5/#6 disposition, exceptions, authorization, and post-release results.
+
+Use the repository generator rather than manually inventing a filename or editing the canonical template:
+
+```bash
+python scripts/create_release_evidence.py --commit <40-character-lowercase-git-sha>
+```
+
+The generator uses the Central-Time date, the approved lowercase/ISO/hyphen technical filename pattern, the canonical template, and non-overwriting creation. It binds the working record to the supplied SHA while leaving every acceptance checkbox unchecked. It does not fetch evidence, validate the candidate, authorize release, or infer readiness.
 
 Authority boundary:
 
@@ -49,7 +57,7 @@ Authority boundary:
 - rejected, blocked, and superseded records should retain their real disposition when they have historical value;
 - sensitive supporting material belongs in an appropriate protected system rather than being pasted into a repository evidence record.
 
-Recommended completed-record location after the source-publication model is approved:
+Generated record location:
 
 `docs/release-evidence/YYYY-MM-DD-<short-commit>-release-evidence.md`
 
@@ -65,11 +73,12 @@ The repository uses these records together without treating them as interchangea
 2. `docs/public-asset-inventory.md` controls the working deployable-artwork rights/provenance review record.
 3. `docs/release-readiness-checklist.md` controls the reusable manual release procedure.
 4. `docs/release-evidence-template.md` defines the structure of candidate-specific historical evidence.
-5. GitHub Actions and repository validators provide machine-generated validation evidence for the exact candidate they run against.
-6. Issues #5 and #6 remain the tracked decision/external-operation gates for source publication/creative rights and Cloudflare `dist/` publication respectively.
-7. Explicit human authorization remains required for merge, repository visibility, DNS/routing, Cloudflare configuration, and production release actions.
+5. `scripts/create_release_evidence.py` safely instantiates a working candidate record but has no authority to validate or accept it.
+6. GitHub Actions and repository validators provide machine-generated validation evidence for the exact candidate they run against.
+7. Issues #5 and #6 remain the tracked decision/external-operation gates for source publication/creative rights and Cloudflare `dist/` publication respectively.
+8. Explicit human authorization remains required for merge, repository visibility, DNS/routing, Cloudflare configuration, and production release actions.
 
-A successful CI run, checksum, Git blob ID, preview deployment, or completed evidence record must not be presented as proving a different property or authorizing a different action.
+A successful CI run, checksum, Git blob ID, preview deployment, generated record, or completed evidence record must not be presented as proving a different property or authorizing a different action.
 
 ## Privacy and publication boundary
 
