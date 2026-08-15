@@ -10,30 +10,32 @@ Passing every automated check is necessary production evidence, but **passing CI
 
 ## Recording convention
 
-When recording manual evidence, use Central Time (`America/Chicago`) and the 12-hour time format. Record the exact Git commit SHA being reviewed so evidence cannot be silently carried forward to a different release candidate.
+This checklist is the reusable procedure, not the historical evidence record. Do not turn the canonical checklist into a running release log or overwrite it with candidate-specific results.
 
-Recommended evidence header:
+Before formal manual acceptance begins, create a fail-closed working record for the exact candidate SHA:
 
-- Review date and time:
-- Exact candidate commit:
-- Pull request:
-- Reviewer:
-- Desktop browser/OS:
-- Mobile browser/device:
-- Assistive technology used, if applicable:
-- Cloudflare preview URL reviewed:
+```bash
+python scripts/create_release_evidence.py --commit <40-character-lowercase-git-sha>
+```
+
+The generator creates a non-overwriting record under `docs/release-evidence/` using the Central-Time date and the approved technical filename pattern. It binds the record to the supplied full SHA but does **not** fetch evidence, run validation, check acceptance boxes, or authorize any action.
+
+Record manual evidence in that candidate-specific file using Central Time (`America/Chicago`) and the 12-hour time format. Keep the exact Git commit SHA being reviewed so evidence cannot be silently carried forward to a different release candidate.
+
+If the candidate SHA changes after manual acceptance begins, create a new candidate record or explicitly mark the older record Superseded. Do not rename, overwrite, or rewrite an older record to make it appear to cover the new candidate.
 
 ## 1. Candidate freeze
 
 Before final acceptance:
 
 - [ ] Identify the exact intended release-candidate commit SHA.
+- [ ] Create or identify the candidate-specific working evidence record for that exact SHA.
 - [ ] Confirm PR #3 (or its successor release PR) targets `main` and is not merged accidentally.
 - [ ] Confirm there are no unintended unreviewed commits after the selected candidate.
 - [ ] Confirm the public artifact still comes only from `PUBLIC_FILES` in `scripts/build_public_site.py`.
 - [ ] Confirm repository-only `docs/`, `tests/`, `scripts/`, `.github/`, `README.md`, `SECURITY.md`, and local/development material remain outside `dist/`.
 
-If the candidate SHA changes after manual acceptance begins, rerun the checks affected by the change and record the new exact SHA.
+If the candidate SHA changes after manual acceptance begins, rerun the checks affected by the change and record them against the new exact SHA.
 
 ## 2. Automated production gates
 
