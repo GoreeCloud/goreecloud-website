@@ -24,6 +24,7 @@ GoreeCloud changes are maintained as deterministic, fail-closed source transform
 3. `build_goreecloud_gallery_gc3.py` — real-device identity corrections, Compose counterfeit-warning boundary, canonical launcher behavior, and Glaze app-bar surfaces.
 4. `build_goreecloud_gallery_gc4.py` — rounded Glaze Settings cards and refined popup/dialog geometry.
 5. `build_goreecloud_gallery_gc5.py` — legacy non-Compose counterfeit-warning removal, popup contrast correction, rounded folder/media thumbnail defaults, API-qualified navigation-bar appearance resources, and stronger release-readiness validation.
+6. `build_goreecloud_gallery_gc6.py` — removes square thumbnail controls and square rendering preferences from the GoreeCloud product surface, hard-enforces rounded folder/media thumbnails, and fixes the MaterialToolbar action-overflow theme path with explicit Glaze light/dark foreground and surface colors.
 
 Each patch script verifies the exact expected upstream source shape and terminates instead of silently applying an incomplete transformation when the baseline changes.
 
@@ -32,6 +33,7 @@ Each patch script verifies the exact expected upstream source shape and terminat
 GoreeCloud Gallery uses Glaze UI as its shared visual and interaction language. The Android implementation emphasizes:
 
 - rounded containers and media surfaces;
+- rounded thumbnail presentation as a GoreeCloud product rule rather than an optional square/rounded mode;
 - layered light and dark surfaces;
 - restrained elevation and border depth;
 - readable, explicit popup/dialog contrast;
@@ -39,6 +41,8 @@ GoreeCloud Gallery uses Glaze UI as its shared visual and interaction language. 
 - GoreeCloud-controlled launcher and product identity;
 - system-aware light/dark behavior without depending on Material You color extraction;
 - accessibility and legibility over decorative effects.
+
+Square thumbnail controls are intentionally not exposed in GoreeCloud Gallery. Media grid thumbnails, folder thumbnails, and imported/legacy thumbnail-style preferences must resolve to the rounded GoreeCloud presentation. Thumbnail spacing, folder-count presentation, folder-title limits, media duration/file-type badges, and favorite markers remain configurable where supported.
 
 ## Privacy and Network Boundary
 
@@ -50,14 +54,15 @@ Android's storage-management permissions are separate from network access and ar
 
 ## Build and Validation
 
-The gc.5 workflow performs the following gates before publishing an artifact:
+The gc.6 workflow performs the following gates before publishing an artifact:
 
 - exact upstream revision verification;
-- deterministic patch validation;
+- deterministic gc.1 through gc.6 patch validation;
 - `git diff --check` for Gallery and Commons changes;
 - source-level counterfeit-warning scan;
-- rounded-thumbnail default assertions;
-- popup contrast-selection assertion;
+- forced rounded-thumbnail configuration assertions;
+- assertions that the crop-to-square Settings row, file rounded/square toggle, and folder square/rounded selector are absent;
+- explicit MaterialToolbar light/night popup-theme assertions;
 - Android unit-test task execution;
 - Android lint;
 - FOSS debug APK compilation;
@@ -69,7 +74,9 @@ The gc.5 workflow performs the following gates before publishing an artifact:
 - SHA-256 generation;
 - GitHub Actions artifact upload.
 
-The gc.5 validation run completed successfully after lint identified and forced correction of an API-compatibility defect inherited from the earlier Glaze theme patch: `android:windowLightNavigationBar` is now isolated to API-27-qualified resources while the application continues to support its API 26 minimum.
+The earlier gc.5 validation run identified and forced correction of an API-compatibility defect inherited from the first Glaze theme patch: `android:windowLightNavigationBar` is isolated to API-27-qualified resources while the application continues to support its API 26 minimum.
+
+The gc.6 overflow correction targets a different Android theme path from the gc.5 standalone popup correction. Fossify's base Material theme hardcoded the toolbar action-overflow menu to a dark popup style. gc.6 overrides the application `AppTheme`, toolbar `popupTheme`, and action-overflow style directly so light Glaze screens use a light rounded menu with dark text and night Glaze screens use a dark rounded menu with light text.
 
 A successful build artifact is an acceptance candidate, not automatically a production release. Real-device acceptance remains required for visual behavior, storage permissions, installation/upgrade behavior, media operations, light/dark appearance, accessibility, and destructive file-operation safety.
 
@@ -78,13 +85,13 @@ A successful build artifact is an acceptance candidate, not automatically a prod
 The following items remain deliberate pre-stable-release work rather than being hidden by a successful APK build:
 
 - The upstream `testFossDebugUnitTest` task currently reports `NO-SOURCE`; the workflow executes the unit-test gate, but there are not yet GoreeCloud-specific automated application tests. Stable development should add targeted tests for fork-owned behavior where practical.
-- Android lint passes with the upstream lint baseline and still reports non-blocking warnings, including deprecated Android/Gradle APIs and other inherited technical debt. GoreeCloud-specific new lint errors are not accepted, but upstream debt should be reviewed during future baseline synchronization rather than silently expanded.
+- Android lint passes against the upstream lint baseline and still reports non-blocking warnings, including deprecated Android/Gradle APIs and other inherited technical debt. GoreeCloud-specific new lint errors are not accepted, but upstream debt should be reviewed during future baseline synchronization rather than silently expanded.
 - The upstream Android build currently emits deprecation warnings for Jetifier and Gradle behavior that will require attention before future Android Gradle Plugin/Gradle major-version upgrades.
-- The GitHub Actions runner reports Node-runtime deprecation notices for some pinned third-party workflow actions. The workflow-action versions should be refreshed as part of CI maintenance without weakening reproducibility.
+- GitHub Actions runner deprecation notices for pinned workflow actions should be addressed during CI maintenance without weakening reproducibility.
 - Current acceptance APKs rely on the Android debug-signing path. Stable GoreeCloud distribution requires a controlled, long-lived signing identity stored through approved secret handling rather than committed to source control.
-- Real-device acceptance is still required for the gc.5 popup contrast fix, rounded-thumbnail defaults, counterfeit-warning removal, storage permission flow, and core file operations.
+- Real-device acceptance is required for the gc.6 MaterialToolbar overflow contrast fix, complete removal of square thumbnail choices, forced rounded behavior with existing preferences, storage permission flow, and core file operations.
 
-These limitations do not invalidate the gc.5 acceptance APK, but they prevent treating a successful CI build alone as evidence of stable production readiness.
+These limitations do not invalidate an acceptance APK, but they prevent treating a successful CI build alone as evidence of stable production readiness.
 
 ## Release Model
 
@@ -94,8 +101,8 @@ Before stable promotion, verify at minimum:
 
 - no upstream counterfeit or promotional branding appears in normal use;
 - GoreeCloud identity is consistent across launcher, installer, About, Settings, dialogs, and secondary surfaces;
-- folder and media thumbnails default to rounded Glaze geometry;
-- overflow menus are readable in System, Light, Dark, White, Black & White, and supported Custom themes;
+- square thumbnail controls are absent and folder/media thumbnails remain rounded even when legacy or imported preferences previously selected square behavior;
+- toolbar overflow menus are readable in light and dark Glaze presentation, with foreground/background contrast matching the active presentation;
 - file browsing, viewing, editing, copy/move/delete, recycle bin, hidden/excluded items, favorites, video playback, and import/export settings behave correctly;
 - Android storage permission flows are understandable and do not request network access;
 - upgrade/rollback behavior is documented;
