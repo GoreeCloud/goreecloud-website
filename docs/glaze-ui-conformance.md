@@ -37,7 +37,7 @@ Legacy website variables remain as compatibility aliases where existing section 
 
 ## Surface hierarchy
 
-The website recognizes the five Glaze UI surface levels:
+The website recognizes the five Glaze UI surface levels: **Canvas, Solid, Raised, Glaze, and Overlay**.
 
 1. Canvas — atmospheric page background and restrained GoreeCloud gradients.
 2. Solid — readability-first opaque or near-opaque surfaces.
