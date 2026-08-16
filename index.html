@@ -451,8 +451,8 @@
             </div>
             <p class="platform-kicker">Availability</p>
             <h3>Uptime Kuma</h3>
-            <p class="platform-description">Availability checks for approved GoreeCloud applications and infrastructure endpoints.</p>
-            <p class="platform-role"><strong>Role:</strong> Service uptime and endpoint monitoring.</p>
+            <p class="platform-description">Current production availability checks for approved GoreeCloud applications and infrastructure endpoints while GoreeCloud Monitor completes parallel validation and an explicit cutover.</p>
+            <p class="platform-role"><strong>Role:</strong> Current service uptime and endpoint monitoring.</p>
           </article>
 
           <article class="platform-card">
@@ -504,56 +504,81 @@
         </div>
 
         <div class="principle-grid development-grid" aria-label="GoreeCloud software projects">
-          <div>
-            <strong>Research Library</strong>
-            <span>Maintained Linkding fork evolving into a private research-source, verification, preservation, and retrieval platform.</span>
-            <a href="https://github.com/GoreeCloud/goreecloud-research-library" target="_blank" rel="noopener noreferrer">View public repository →</a>
-          </div>
-
-          <div>
+          <div data-project="goreecloud-manager">
             <strong>GoreeCloud Manager</strong>
             <span>Native operational console providing least-privilege visibility across GoreeCloud infrastructure and protection systems.</span>
             <a href="https://github.com/GoreeCloud/goreecloud-manager" target="_blank" rel="noopener noreferrer">View public repository →</a>
           </div>
 
-          <div>
-            <strong>GoreeCloud Notes</strong>
-            <span>Native AGPL-licensed note-taking, knowledge-management, and personal-productivity application for deeper organization, retrieval, and long-term knowledge.</span>
-            <a href="https://github.com/GoreeCloud/goreecloud-notes" target="_blank" rel="noopener noreferrer">View public repository →</a>
-          </div>
-
-          <div>
-            <strong>GoreeCloud Memos</strong>
-            <span>Maintained lightweight quick-note capture application for fast, focused note entry when a full knowledge workspace is unnecessary.</span>
-            <a href="https://github.com/GoreeCloud/goreecloud-memos" target="_blank" rel="noopener noreferrer">View public repository →</a>
-          </div>
-
-          <div>
+          <div data-project="goreecloud-tasks">
             <strong>GoreeCloud Tasks</strong>
             <span>Native multi-user task and project application with private-by-default data boundaries, portability, and Todoist-inspired workflows.</span>
             <small>Active private development</small>
           </div>
 
-          <div>
+          <div data-project="goreecloud-contacts">
             <strong>GoreeCloud Contacts</strong>
             <span>Native contacts application built around CardDAV interoperability, controlled writes, and Radicale as the authoritative contact store.</span>
             <small>Active private development</small>
           </div>
 
-          <div>
+          <div data-project="goreecloud-notify">
             <strong>GoreeCloud Notify</strong>
             <span>Native notification platform in active private development, designed to replace ntfy only after compatibility, security, monitoring, backup, and migration gates are satisfied.</span>
             <small>Active private development • ntfy remains current</small>
           </div>
 
-          <div>
+          <div data-project="goreecloud-monitor">
+            <strong>GoreeCloud Monitor</strong>
+            <span>Native availability, endpoint-health, heartbeat, certificate, incident, and recovery monitoring application under active development.</span>
+            <a href="https://github.com/GoreeCloud/goreecloud-monitor" target="_blank" rel="noopener noreferrer">View public repository →</a>
+            <small>Active development • Uptime Kuma remains current</small>
+          </div>
+
+          <div data-project="goreecloud-notes">
+            <strong>GoreeCloud Notes</strong>
+            <span>Native AGPL-licensed note-taking, knowledge-management, and personal-productivity application for deeper organization, retrieval, and long-term knowledge.</span>
+            <a href="https://github.com/GoreeCloud/goreecloud-notes" target="_blank" rel="noopener noreferrer">View public repository →</a>
+          </div>
+
+          <div data-project="goreecloud-memos">
+            <strong>GoreeCloud Memos</strong>
+            <span>Maintained lightweight quick-note capture application for fast, focused note entry when a full knowledge workspace is unnecessary.</span>
+            <a href="https://github.com/GoreeCloud/goreecloud-memos" target="_blank" rel="noopener noreferrer">View public repository →</a>
+          </div>
+
+          <div data-project="goreecloud-research-library">
+            <strong>GoreeCloud Research Library</strong>
+            <span>Maintained Linkding fork evolving into a private research-source, verification, preservation, and retrieval platform.</span>
+            <a href="https://github.com/GoreeCloud/goreecloud-research-library" target="_blank" rel="noopener noreferrer">View public repository →</a>
+          </div>
+
+          <div data-project="goreecloud-bookmarks">
             <strong>GoreeCloud Bookmarks</strong>
-            <span>Planned maintained fork based on Linkwarden for private multi-user bookmarks, collections, read-later workflows, and browser integration.</span>
-            <small>Specification &amp; fork planning</small>
+            <span>Maintained Linkwarden-based bookmark, reading, annotation, and web-preservation platform with a companion browser extension.</span>
+            <a href="https://github.com/GoreeCloud/goreecloud-bookmarks" target="_blank" rel="noopener noreferrer">View public repository →</a>
+          </div>
+
+          <div data-project="goreecloud-feed">
+            <strong>GoreeCloud Feed</strong>
+            <span>Native RSS client layer over FreshRSS with a shared Glaze UI experience for web, Linux desktop, and Android while FreshRSS remains the authoritative backend.</span>
+            <a href="https://github.com/GoreeCloud/goreecloud-rss" target="_blank" rel="noopener noreferrer">View public repository →</a>
+          </div>
+
+          <div data-project="goreecloud-gallery">
+            <strong>GoreeCloud Gallery</strong>
+            <span>Maintained Android gallery application focused on offline-first local media browsing, privacy, reproducible builds, and Glaze UI release readiness.</span>
+            <a href="https://github.com/GoreeCloud/goreecloud-gallery" target="_blank" rel="noopener noreferrer">View public repository →</a>
+          </div>
+
+          <div data-project="goreevault-server">
+            <strong>GoreeVault Server</strong>
+            <span>Maintained Vaultwarden-derived credential server advancing toward a GoreeCloud-owned multi-user security product with Glaze UI and release-readiness gates.</span>
+            <a href="https://github.com/GoreeCloud/goreevault-server" target="_blank" rel="noopener noreferrer">View public repository →</a>
           </div>
         </div>
 
-        <p class="status-note">Open source first. Fork when justified. Build original software when GoreeCloud itself requires a distinct product.</p>
+        <p class="status-note">Open source first. Fork when justified. Build original software when GoreeCloud itself requires a distinct product. Public repository links appear only for projects that are currently published.</p>
       </div>
     </section>
 
@@ -707,6 +732,13 @@
             <div>
               <h3>Native software ownership expands</h3>
               <p>GoreeCloud Notes advances as the larger native knowledge and productivity project, GoreeCloud Memos remains the focused quick-note capture companion, and GoreeCloud Notify advances as the native notification platform.</p>
+            </div>
+          </article>
+          <article>
+            <time datetime="2026-08-16">August 16, 2026</time>
+            <div>
+              <h3>GoreeCloud Monitor enters public development</h3>
+              <p>GoreeCloud Monitor begins as the native availability and recovery-monitoring path while Uptime Kuma remains the production monitor until parallel validation and an explicit cutover are complete.</p>
             </div>
           </article>
           <article>
