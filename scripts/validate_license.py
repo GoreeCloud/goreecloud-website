@@ -32,7 +32,7 @@ README_MARKERS = (
     "Apache-2.0",
     "top-level `LICENSE` contains the reviewed license text",
     "`NOTICE` records the separate creative-rights boundary",
-    "issue #5 remains open",
+    "Issue #5 remains open",
 )
 STALE_README_MARKERS = (
     "source-license/publication decision tracked in issue #5 is unresolved",
