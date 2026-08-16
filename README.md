@@ -4,88 +4,64 @@ Public static website for GoreeCloud.
 
 ## Version
 
-Current website package: **v5.9 — production-readiness hardening in progress**
+Current website package: **v5.11.0 — static-first portfolio and monitoring transition**
+
+`VERSION` is the canonical machine-readable version source. `docs/stability-baseline.md` records the release scope, stability definition, and release boundaries for the current website revision.
 
 ## Role
 
-This repository contains the public-facing GoreeCloud website. It describes GoreeCloud's purpose, public software work, representative platform technologies, and long-term direction without publishing private infrastructure details.
+This repository contains the public-facing GoreeCloud website. It explains GoreeCloud's purpose, public software work, representative platform technologies, and long-term direction without publishing private infrastructure details.
 
-The browser surface is intentionally dependency-light:
+The browser surface is deliberately small and privacy-preserving:
 
-- static HTML
-- locally hosted CSS
-- locally hosted JavaScript
-- locally hosted images and project artwork
-- no browser analytics
-- no advertising
-- no third-party browser-loaded render resources
-- no third-party fonts
-- no third-party JavaScript frameworks
-- no runtime browser network clients
-- no service worker
-- no Cloudflare Pages Functions or Worker runtime
+- static HTML;
+- locally hosted CSS and JavaScript;
+- locally hosted images and project artwork;
+- no browser analytics, advertising, behavioral tracking, or fingerprinting;
+- no third-party browser-loaded render resources or fonts;
+- no third-party JavaScript framework;
+- no runtime browser network clients;
+- no service worker;
+- no Cloudflare Pages Functions or Worker runtime.
 
-Repository-only material such as CI validators, GitHub metadata, contributor documentation, development artifacts, publication-review records, and unapproved local files is kept separate from the generated public deployment artifact.
+The public software portfolio is static HTML. JavaScript is limited to appearance, navigation state, section highlighting, and the footer year so the no-JavaScript and normal experiences expose the same project information.
+
+## Current public software portfolio
+
+Public repository links are shown only for projects that are currently published. The current public portfolio includes GoreeCloud Manager, GoreeCloud Monitor, GoreeCloud Notes, GoreeCloud Memos, GoreeCloud Research Library, GoreeCloud Bookmarks, GoreeCloud Feed, GoreeCloud Gallery, and GoreeVault Server.
+
+GoreeCloud Tasks, GoreeCloud Contacts, and GoreeCloud Notify remain represented as active private development without public repository links. GoreeCloud Monitor is in active development; **Uptime Kuma remains the current production availability monitor until GoreeCloud Monitor completes parallel validation and an explicit cutover**.
 
 ## Source license and creative-rights boundary
 
-The website source code, repository automation, validation scripts, and technical repository documentation are licensed under the **Apache License 2.0**. The authoritative license text is the top-level `LICENSE` file, and CI verifies that file against the reviewed Apache-2.0 Git blob so the governing source license cannot drift silently.
+The website source code, repository automation, validation scripts, and technical repository documentation are licensed under the **Apache License 2.0**. The authoritative source-license identifier is **Apache-2.0**, and the top-level `LICENSE` contains the reviewed license text.
 
-`NOTICE` documents the separate creative-rights boundary. Apache-2.0 does not grant unrestricted reuse of GoreeCloud trade names, logos, branding, product identity, or other brand identifiers. Original public-facing editorial content and GoreeCloud identity artwork may carry separate copyright or trademark rights. Third-party project names, logos, and marks remain subject to their respective rightsholder terms and policies.
+`NOTICE` records the separate creative-rights boundary. The source license does not grant unrestricted reuse of GoreeCloud trade names, logos, branding, editorial identity, or third-party marks.
 
-`docs/public-asset-inventory.md` remains the working publication-rights inventory for deployable artwork. Source licensing is therefore established, but issue #5 remains open for the remaining third-party mark provenance/terms review, human contextual/history disclosure review, and explicit repository-publication/visibility decision.
+`docs/public-asset-inventory.md` is the working deployable-artwork inventory and is **not a license grant**. Issue #5 remains open for the remaining third-party platform-mark review, the final human repository-history/contextual review, and the explicit repository-publication/visibility decision. Passing CI does not itself authorize a repository visibility change, DNS change, creative-rights decision, or other publication action.
 
 ## Public site structure
 
-- `index.html` — homepage and primary search/social metadata
-- `privacy.html` — public website privacy statement
-- `security.html` — public security-reporting policy
-- `404.html` — custom noindex Cloudflare Pages not-found experience
-- `.well-known/security.txt` — standardized public security-reporting contact
-- `site.webmanifest` — browser application identity
-- `robots.txt` — crawler instructions
-- `sitemap.xml` — canonical public sitemap
-- `_headers` — Cloudflare Pages security, privacy, and resource-hint headers
-- `assets/` — source location for self-hosted GoreeCloud, service, platform, and social-preview artwork; only explicitly approved files are deployable
-- `css/` — core, Glaze UI, responsive, section, accessibility, and error-page styles; only explicitly approved files are deployable
-- `js/theme-init.js` — early appearance initialization
-- `js/main.js` — appearance, navigation, and progressive interaction behavior
+- `index.html` — homepage, current static software portfolio, and primary search/social metadata;
+- `privacy.html` — public website privacy statement;
+- `security.html` — public security-reporting policy;
+- `404.html` — custom noindex not-found experience;
+- `.well-known/security.txt` — standardized security-reporting contact;
+- `site.webmanifest` — browser application identity;
+- `robots.txt` and `sitemap.xml` — crawler and canonical discovery metadata;
+- `_headers` — Cloudflare Pages security, privacy, and indexing headers;
+- `assets/` — self-hosted artwork source; only explicitly approved files are deployable;
+- `css/` — Glaze UI and responsive presentation;
+- `js/theme-init.js` — early appearance initialization;
+- `js/main.js` — appearance, navigation, section-state, and footer-year progressive behavior.
 
-## Repository tooling
-
-Production-readiness tooling is intentionally dependency-free and uses the Python standard library where practical.
-
-- `scripts/build_public_site.py` — creates an exact, per-file allowlisted `dist/` deployment artifact
-- `scripts/validate_build_artifact.py` — proves `dist/` contains exactly the reviewed public files and no repository-only content
-- `scripts/validate_repository_hygiene.py` — rejects sensitive current-tree file types, private-key material, selected reusable credential signatures, symlinks, editor artifacts, and missing local-ignore protections
-- `scripts/validate_repository_history.py` — inspects complete reachable Git history for prohibited secret-file paths, key material, selected reusable credential signatures, private-network addresses, and selected private-infrastructure identifiers without printing matched values
-- `scripts/validate_license.py` — verifies the reviewed Apache-2.0 source license and the required `NOTICE` licensing/branding boundary
-- `scripts/validate_performance_budget.py` — enforces static payload, request-count, and image-dimension budgets
-- `scripts/validate_browser_origin_integrity.py` — keeps explicitly allowlisted browser-loaded HTML/CSS/manifest resources origin-local and rejects runtime network, cookie, worker, and service-worker clients in site JavaScript
-- `scripts/validate_accessibility.py` — enforces structural accessibility invariants across the homepage, Privacy, Security, and custom 404 pages
-- `scripts/validate_glaze_ui.py` — enforces the shared Glaze UI design, appearance, branding, responsive, accessibility, and progressive-enhancement contract across all human-facing pages
-- `scripts/validate_public_surface.py` — validates cross-page links, fragments, canonical state, crawler policy, sitemap completeness, and sitemap dates
-- `scripts/validate_deployment_contract.py` — enforces the static Cloudflare Pages architecture and header contract
-- `scripts/validate_site.py` — validates the homepage and core public-site invariants
-- `scripts/validate_resilience.py` — validates 404 behavior, failure paths, privacy boundaries, and response-header requirements
-- `scripts/validate_app_identity.py` — validates browser/site identity metadata
-- `scripts/validate_public_semantics.py` — validates public, canonical, Open Graph, X/Twitter, and semantic metadata guarantees
-- `scripts/validate_privacy_policy.py` — keeps the privacy statement synchronized with implementation
-- `scripts/validate_security_policy.py` — validates public security-reporting behavior and security.txt freshness
-- `scripts/verify_remote_deployment.py` — verifies fixed GoreeCloud preview/production HTTP surfaces, repository isolation, live browser-security headers, live security.txt freshness, and preview/production indexing headers
-- `tests/test_verify_remote_deployment.py` — exercises remote-verifier security/indexing/error/redirect behavior offline with synthetic responses and mocked network access
-- `tests/test_public_asset_inventory.py` — keeps the deployable artwork allowlist synchronized with its pre-publication rights inventory
-- `docs/public-asset-inventory.md` — repository-only inventory separating GoreeCloud identity artwork from third-party project/platform marks while provenance, attribution, trademark, and reuse terms remain under issue #5 review
-- `scripts/validate_repository_guidance.py` — validates issue/PR safety guidance and maintenance documentation
-- `scripts/validate_workflow_security.py` — enforces immutable GitHub Actions references, least privilege, full-history checkout, and retention of required production gates
-
-Generated `dist/` output, local Python bytecode, local environment files, private-key/certificate-container file types, editor artifacts, and common operating-system metadata are ignored by Git. `.gitignore` is a convenience boundary rather than a security guarantee; CI independently validates repository hygiene so a force-added sensitive file type cannot silently become acceptable source.
+Repository-only CI validators, GitHub metadata, release records, publication-review material, tests, and development documentation remain outside the public artifact.
 
 ## Cloudflare Pages deployment
 
 The website is deployed through Cloudflare Pages using Git integration.
 
-The intended production settings are:
+The production settings are:
 
 - Production branch: `main`
 - Framework preset: `None`
@@ -93,123 +69,70 @@ The intended production settings are:
 - Build output directory: `dist`
 - Root directory: blank
 
-`dist/` is the production boundary. The build script copies only files named in its explicit public-file allowlist. Adding a file to `assets/`, `css/`, `js/`, the repository root, or another source directory does **not** make that file deployable. A new public file must be deliberately added to the build allowlist and then pass the browser-origin, artifact, privacy, security, accessibility, Glaze UI, and other applicable validation gates.
+`dist/` is the production boundary. The build is **exact, per-file allowlisted** rather than directory-published. Adding a file to `assets/`, `css/`, `js/`, the repository root, or any other source directory does not make that file public. A file becomes deployable only when it is intentionally added to the public allowlist and passes the applicable privacy, security, accessibility, Glaze UI, performance, artifact, and deployment checks.
 
-CI compares every generated file byte-for-byte with its reviewed source and rejects missing files, unexpected files, duplicate allowlist paths, symlinks, non-regular source entries, or repository-only content. This fail-closed design prevents a future debug file, source map, screenshot, temporary artifact, or unrelated source file from becoming public merely because it was placed under a historically public directory.
+The isolated `dist/` Cloudflare Pages cutover is complete for production and branch previews. Issue #6 is closed and remains historical implementation context for that completed migration. Exact preview and production verification continue to prove that the deployed bytes and headers match the reviewed candidate boundary.
 
-For the existing Cloudflare Pages project, the dashboard build command and output-directory settings must be changed deliberately before relying on this boundary in production. That external cutover and its preview verification are tracked in **issue #6**. This repository does not introduce a Wrangler configuration file because the existing Pages configuration should be inspected before source control is made authoritative for it.
-
-The documented live routing uses `https://www.goreecloud.com/` as the final public website address. The apex `https://goreecloud.com/` redirects permanently to the `www` hostname. Canonical, Open Graph, robots, and sitemap metadata therefore use the final `www` address.
-
-Cloudflare Pages provides deployment-aware caching, ETags, compression, and static-asset delivery. The repository deliberately avoids broad long-lived browser cache rules for ordinary versionless HTML, CSS, and JavaScript so a release cannot leave clients stuck on stale code. `/.well-known/security.txt` retains a short explicit cache policy so corrections can propagate quickly.
-
-## Production artifact
-
-Build locally with:
-
-```bash
-python scripts/build_public_site.py
-python scripts/validate_build_artifact.py
-```
-
-The generated artifact must contain only the intentional public surface. Files such as `README.md`, `SECURITY.md`, `.github/`, `scripts/`, `tests/`, `docs/`, `.gitignore`, local environment files, private keys, development files, and unapproved artwork are repository or local concerns and must never be copied into `dist/`.
-
-The source tree may contain material that is intentionally not deployed. The authoritative production decision is therefore the exact `PUBLIC_FILES` allowlist in `scripts/build_public_site.py`, not directory location alone.
-
-The site currently uses no server-side application runtime, database, form handler, service worker, or Cloudflare Pages Function. Adding any of those changes the security and deployment model and requires an intentional revision of the deployment contract, privacy statement, threat boundary, public allowlist, and validators.
-
-## Performance budget
-
-The static site has explicit CI budgets to prevent accidental growth from turning a small public site into a heavy application. The current gates limit individual and aggregate HTML, CSS, JavaScript, SVG, raster-image, and total public-artifact size.
-
-Public HTML images must declare intrinsic `width` and `height` so browsers can reserve layout space before image data arrives. Homepage stylesheet and script request counts are also bounded. These checks are regression ceilings rather than targets; smaller remains preferable where readability and maintainability are preserved.
+The live canonical website is `https://www.goreecloud.com/`; the apex domain redirects permanently to the `www` hostname.
 
 ## Glaze UI and accessibility
 
-The website is the public implementation of **Glaze UI**, GoreeCloud's shared visual and interaction language. Glaze UI is treated as a design contract rather than a decorative stylesheet.
+The website is the public implementation of **Glaze UI**, GoreeCloud's shared visual and interaction language. **Glaze UI is treated as a design contract**, not a decorative layer.
 
-The current implementation includes:
+The current implementation includes System, Light, and Dark appearance modes, operating-system appearance detection, local-only explicit-theme persistence, layered surfaces, rounded geometry, responsive layouts, visible keyboard focus, mobile navigation, reduced-motion and reduced-transparency behavior, increased-contrast and forced-colors support, print behavior, touch-friendly controls, and consistent GoreeCloud branding across human-facing pages.
 
-- System, Light, and Dark appearance modes
-- operating-system appearance detection
-- local-only explicit-theme persistence through `localStorage`
-- early self-hosted theme initialization to reduce appearance flash
-- layered and selectively translucent surfaces rather than indiscriminate glass effects
-- rounded geometry, soft depth, controlled gradients, and GoreeCloud design tokens
-- visible keyboard focus states
-- accessible mobile navigation with current open/closed labeling
-- Escape-key focus restoration
-- no-JavaScript primary-navigation fallback
-- reduced-motion behavior
-- reduced-transparency fallback
-- `prefers-contrast: more` support
-- forced-colors/high-contrast support
-- print/readable-paper presentation
-- responsive layouts and touch targets
-- semantic footer navigation
-- explicit image dimensions for layout stability
-- consistent GoreeCloud branding and icon use on every human-facing page, including Privacy, Security, and 404 surfaces
+The automated checks are regression controls, not a claim of complete WCAG conformance. Formal accessibility acceptance still requires manual keyboard review, screen-reader testing, zoom/reflow inspection, color-contrast review, touch-device review, and visual Glaze UI acceptance where appropriate.
 
-The Glaze UI validator requires the homepage, Privacy page, Security page, and custom 404 to retain responsive viewport metadata, dark/light color-scheme metadata, the shared Glaze foundation and polish stylesheets, early appearance initialization, GoreeCloud brand identity, keyboard skip links, a programmatically focusable main landmark, and at least one shared Glaze surface or control. It also protects the common design tokens, light/system theme behavior, focus states, layered surfaces, responsive breakpoint, reduced-transparency and reduced-motion fallbacks, increased-contrast handling, forced-colors handling, print behavior, and System/Light/Dark interaction model.
+## Privacy and browser boundary
 
-The structural accessibility validator separately checks all four human-facing HTML pages for document language, a single main landmark and h1, skip-link targeting, heading-level progression, labeled navigation landmarks, accessible names for links and buttons, valid ARIA references, image alternatives, safe focus ordering, absence of autofocus, explicit button types, and safe new-tab relationships. It also requires keyboard focus styling and a visible skip-link focus state.
+The browser JavaScript remains non-networked. CI rejects browser networking, cookie, worker, and service-worker APIs unless the privacy and deployment architecture is deliberately revised first.
 
-These automated checks are regression controls, not a claim of complete WCAG conformance. They do not replace manual keyboard review, screen-reader testing, browser zoom/reflow inspection, color-contrast measurement, touch-device review, visual Glaze UI review, or other real assistive-technology acceptance testing before a formal accessibility-conformance claim is made.
+When a visitor explicitly chooses Light or Dark mode, the site stores only the `goreecloud-theme` preference in local browser storage. Returning to System mode removes the override. No account, profile, analytics identifier, or server-side visitor record is created by the site.
 
-Glaze UI is intended to remain distinctly GoreeCloud rather than copying another vendor's interface. New public surfaces should reuse the shared design system before introducing page-specific patterns, and visual polish must never override privacy, readability, accessibility, performance, or clear interaction state.
-
-## Privacy
-
-The public site does not intentionally use analytics, behavioral tracking, advertising, fingerprinting, third-party telemetry, or third-party browser-loaded render resources. Stylesheets, scripts, images, manifest icons, and similar browser resources must remain origin-local so Cloudflare previews and the production hostname execute the same reviewed site without silently contacting another resource host.
-
-Browser JavaScript is intentionally non-networked: CI rejects `fetch`, XMLHttpRequest, WebSocket, EventSource, `sendBeacon`, worker/service-worker clients, `importScripts`, and `document.cookie` access unless the privacy and deployment architecture is deliberately revised first.
-
-When a visitor explicitly chooses Light or Dark mode, the preference is stored only in the visitor's browser using the `goreecloud-theme` `localStorage` key. Returning to System mode removes the stored override. The early theme initializer restores only an explicit stored Light/Dark choice; operating-system preference behavior remains owned by the shared CSS and normal interaction script instead of being duplicated across layers.
-
-The response policy uses `Referrer-Policy: no-referrer`. The Content Security Policy denies browser capabilities the static site does not need, including form submission, arbitrary browser connections, media loading, workers, framing, and plugin/object content. The Permissions Policy additionally denies unnecessary device/browser capabilities.
-
-Cloudflare remains the hosting/network-delivery layer, so repository validation does not pretend to control every behavior of the delivery provider. The enforced boundary is GoreeCloud's reviewed public artifact and browser code. The remote verifier checks the deployed response headers so repository configuration and the visitor-visible HTTP surface cannot silently diverge after the Cloudflare `dist/` cutover.
-
-See `privacy.html` for the public statement that is validated against the implementation.
+The deployed response policy uses a restrictive Content Security Policy, `Referrer-Policy: no-referrer`, and a Permissions Policy that denies browser capabilities the static site does not need.
 
 ## Security and repository hygiene
 
-Do not commit passwords, API keys, tokens, `.env` files, SSH private keys, private network addresses, private hostnames, internal access details, backup destinations, recovery credentials, or private family information.
+Do not commit passwords, API keys, tokens, `.env` files, SSH private keys, private network addresses, private hostnames, internal administrative details, backup destinations, recovery credentials, or private family information.
 
-The repository-hygiene validator provides a current-tree prevention layer. It rejects tracked/source symlinks; environment and secret-bearing configuration files; common private-key and certificate-container file types; SSH private-key filenames; editor/merge artifacts; selected operating-system metadata; private-key blocks; and several high-confidence reusable token/credential signatures.
+The current-tree hygiene validator rejects selected secret-bearing file types, private-key material, reusable credential signatures, symlinks, editor artifacts, and other inappropriate repository content.
 
-The separate repository-history preflight requires a non-shallow checkout and scans every reachable historical blob path plus text-sized historical blob content. It checks for secret-bearing filenames, reusable credential/key signatures, private-network address patterns, and selected private-infrastructure identifiers. Findings intentionally disclose only the finding class, object ID, and historical path—not the matched value. Validator files that embed infrastructure identifiers solely to detect them are exempt only from those literal self-matches; reusable-credential scanning still applies to those detector sources.
+The separate **repository-history preflight** requires a **non-shallow checkout** and scans every reachable historical blob path plus eligible text content for prohibited secret paths, private-key material, selected reusable credential signatures, private-network address patterns, and selected internal identifiers. Findings disclose only the finding class, object identifier, and historical path—not the matched value.
 
-A green automated history preflight is useful publication evidence, but it is not proof that every historical or contextual disclosure is appropriate. Issue #5 therefore still requires a final human repository-history/contextual review before any public visibility change. GoreeCloud's source-control policy treats an active credential committed to Git as compromised even if the repository is private or the value is later deleted; such a real finding would require rotation/revocation and an intentional history-remediation decision rather than merely updating the latest tree.
+A green automated history scan is useful evidence but is not a substitute for the final human repository-history/contextual review required by issue #5.
 
-The deployable artwork rights boundary is also repository-controlled. `docs/public-asset-inventory.md` is not a license grant: it identifies GoreeCloud-branded presentation assets separately from third-party project/platform marks and keeps provenance, attribution, trademark, copyright, and reuse terms explicitly unresolved until issue #5 is completed. CI requires the inventory to stay synchronized with the exact public asset allowlist.
+## Repository tooling
 
-The public security-reporting path is:
+Production-readiness tooling is dependency-light and primarily uses the Python standard library:
 
-- `https://www.goreecloud.com/security.html`
-- `https://www.goreecloud.com/.well-known/security.txt`
-
-`SECURITY.md` provides repository-side reporting guidance. Public security documents deliberately exclude private family infrastructure, credentials, internal networks, administrative interfaces, and non-public data from authorized testing.
-
-The `security.txt` validator requires the reporting contact, canonical URL, policy URL, language metadata, and a single timezone-aware RFC3339 `Expires` value. CI intentionally begins failing once fewer than 30 days remain before expiration, providing a renewal window before the deployed metadata becomes stale. The remote production verifier enforces the same 30-day freshness boundary against the live file, so the scheduled production smoke check becomes an advance renewal alert as well as a reachability check.
-
-The repository remains private while the remaining publication decision tracked in issue #5 is unresolved. Apache-2.0 source licensing is already established; passing CI does not itself authorize a visibility, DNS, or production release change.
-
-## Search and crawler metadata
-
-The homepage canonical URL, Open Graph metadata, X/Twitter card metadata, social-preview URL, title, and preview alt text are validated as one contract so social/search identity cannot drift across fields.
-
-`robots.txt` must continue to allow the public site and publish exactly the canonical `https://www.goreecloud.com/sitemap.xml` location. The sitemap must contain exactly the intentional indexable public URLs, and every entry must carry one valid, non-future `lastmod` date. A `lastmod` value should be changed only when that page receives a significant content, structured-data, or link update rather than merely because a deployment occurred.
+- `scripts/build_public_site.py` — builds the isolated `dist/` artifact from an explicit allowlist;
+- `scripts/validate_build_artifact.py` — proves the generated artifact contains exactly the reviewed public files;
+- `scripts/validate_repository_hygiene.py` — current-tree sensitive-content and repository-hygiene checks;
+- `scripts/validate_repository_history.py` — reachable-history publication-safety preflight;
+- `scripts/validate_license.py` — Apache-2.0 and NOTICE-boundary validation;
+- `scripts/validate_governance_readiness.py` — governance applicability and readiness boundaries;
+- `scripts/validate_accessibility.py` — structural accessibility regression controls;
+- `scripts/validate_glaze_ui.py` — Glaze UI design-contract validation;
+- `scripts/validate_browser_origin_integrity.py` — origin-local browser-resource and non-networked-JavaScript enforcement;
+- `scripts/validate_public_surface.py` — links, fragments, crawler policy, sitemap, and canonical-surface checks;
+- `scripts/validate_deployment_contract.py` — Cloudflare static-publication contract;
+- `scripts/validate_performance_budget.py` — public payload and request-count budgets;
+- `scripts/verify_remote_deployment.py` — exact preview/production HTTP and artifact verification;
+- `scripts/validate_repository_guidance.py` — repository safety and maintenance guidance validation;
+- `scripts/validate_release_evidence.py` — release-evidence record validation;
+- `tests/test_project_portfolio_contract.py` — static project-inventory, repository-link, no-JavaScript, and monitoring-transition regression coverage;
+- `tests/test_stability_baseline.py` — version, stability-contract, guidance synchronization, and release-boundary regression coverage.
 
 ## Validation
 
-Run the production checks from the repository root. The history check requires a complete reachable Git history rather than a shallow clone.
+Run the production checks from the repository root. The reachable-history check requires a complete Git history.
 
 ```bash
 python scripts/validate_workflow_security.py
 python scripts/validate_repository_hygiene.py
 python scripts/validate_repository_history.py
 python scripts/validate_license.py
+python scripts/validate_governance_readiness.py
 python scripts/validate_security_policy.py
 python scripts/validate_privacy_policy.py
 python scripts/validate_browser_origin_integrity.py
@@ -225,66 +148,21 @@ python scripts/validate_build_artifact.py
 python scripts/verify_remote_deployment.py --check-config
 python -m unittest discover -s tests -p "test_*.py"
 python scripts/validate_repository_guidance.py
+python scripts/validate_release_evidence.py
 python scripts/validate_site.py
 python scripts/validate_resilience.py
 node --check js/theme-init.js
 node --check js/main.js
 ```
 
-GitHub Actions runs the same production gates on pull requests and on pushes to `main`. External Actions are pinned to immutable full commit SHAs, workflow permissions remain read-only, persisted checkout credentials are disabled, superseded runs are cancelled, and the validation workflow does not consume repository or environment secrets. Validation checkout uses `fetch-depth: 0` because publication safety depends on inspecting reachable history, not merely the current commit.
+GitHub Actions runs these gates on pull requests and pushes to `main`. External Actions are pinned to immutable revisions, workflow permissions remain read-only, persisted checkout credentials are disabled, and validation uses full reachable history where required.
 
-The workflow self-validator requires the full-history checkout/preflight, current-tree repository-hygiene, source-license integrity, Glaze UI, accessibility, privacy, security, browser-origin, public-surface, artifact, performance, offline regression-test, and remote-verifier configuration gates to remain wired into CI. Removing one of those checks therefore fails the workflow-supply-chain validation rather than silently weakening production readiness.
-
-The checks cover, among other things:
-
-- exact per-file production allowlisting rather than directory-wide publication
-- repository sensitive-file/type hygiene and selected reusable credential signatures
-- reachable Git-history preflight with redacted finding output
-- exact Apache-2.0 source-license and NOTICE-boundary integrity
-- deployable artwork inventory synchronization for publication-rights review
-- offline regression testing of remote verifier security, indexing, redirect, 404, and repository-isolation behavior
-- GoreeCloud Glaze UI design-system participation across all human-facing pages
-- canonical, Open Graph, X/Twitter, manifest, and application identity
-- sitemap completeness, canonical consistency, valid non-future `lastmod` dates, and canonical robots sitemap discovery
-- local links, assets, same-page fragments, and cross-page fragments
-- origin-local rendered resources across allowlisted HTML, CSS, and the web manifest
-- no runtime browser network, cookie, worker, or service-worker clients in public JavaScript
-- whole-site structural accessibility including skip links, landmark labeling, accessible interactive names, ARIA target integrity, heading progression, focus order, and image alternatives
-- intrinsic image dimensions and static performance budgets
-- HTTPS-only external navigation references
-- safe new-tab link relationships
-- CSP-compatible markup with no inline script/style/event-handler exceptions
-- no-JavaScript navigation and footer fallbacks
-- accessibility contrast, forced-colors, reduced-motion, reduced-transparency, and print behavior
-- custom nested-path 404 resilience
-- public privacy/security statement consistency
-- standardized security-contact metadata with an advance expiry-renewal window
-- private-network and selected internal-identifier leakage checks
-- static Cloudflare Pages architecture and `_headers` limits
-- fixed-target remote deployment verification
-- branch previews must be excluded from indexing while production must remain indexable
-- GitHub contribution safety boundaries
-- immutable Action dependencies and least-privilege workflow configuration
-
-## Remote deployment verification
-
-Before treating the Cloudflare `dist/` cutover as verified, run:
-
-```bash
-python scripts/verify_remote_deployment.py --check-config
-python scripts/verify_remote_deployment.py --target branch-preview
-```
-
-Branch-preview verification requires the deployment root to publish `X-Robots-Tag: noindex`. Production verification checks the opposite boundary: the canonical production root must not publish `noindex`, because a production-only indexing header can override otherwise-correct HTML and crawler metadata.
-
-The remote verifier also checks that repository-only paths are not publicly reachable, required public resources have the expected status/content type/identity markers, the custom nested 404 is active, `security.txt` is current and correctly cached, and the reviewed browser-security header contract reaches the live deployment.
-
-After an authorized production release, the default-branch deployment workflow can verify production manually and also performs a scheduled production smoke check each day at 8:17 AM America/Chicago.
+Pull requests additionally verify the exact Cloudflare branch-preview candidate. Pushes to `main` verify the exact production deployment. A passing branch preview alone is not a stable release, and a merge alone is not a stable release.
 
 ## Release boundary
 
-PR validation and Cloudflare preview deployment are pre-release evidence, not authorization to publish. Before a production merge, GoreeCloud should confirm the final PR head, green CI, successful preview, the Cloudflare Pages `dist/` cutover tracked in issue #6, and the remaining creative-rights/source-publication decision in issue #5—including the final human history/contextual disclosure review—while treating any DNS or visibility change as a separate explicit action.
+PR validation and Cloudflare preview deployment are pre-release evidence, not authorization to publish. Before a production merge, confirm the exact intended candidate, green CI, successful exact branch-preview verification, current release/version documentation, and the applicable issue #5 publication-rights boundary. After merge, exact production verification must also succeed.
 
-The source-code license is already Apache-2.0 and is CI-validated. Issue #5 remains open because source licensing does not by itself resolve third-party artwork/mark rights, contextual publication review, or repository visibility.
+Issue #6 documents the already-completed isolated-artifact Cloudflare cutover; it is no longer a pending release prerequisite. Repository visibility, DNS, Cloudflare project-setting changes, and creative-rights/publication decisions remain separate explicit actions.
 
-A production-ready repository state also does not by itself establish a formal accessibility-conformance claim or complete the external Cloudflare configuration. Those require their own evidence and deliberate release decisions.
+Passing CI does not itself authorize a merge, repository visibility change, DNS change, or other production/publication action. A production-ready repository state also does not establish formal accessibility conformance or complete the remaining issue #5 publication-rights and visibility review.

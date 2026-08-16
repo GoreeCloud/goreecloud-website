@@ -14,11 +14,13 @@ FEATURE_FORM = ROOT / ".github" / "ISSUE_TEMPLATE" / "feature-request.yml"
 PR_TEMPLATE = ROOT / ".github" / "pull_request_template.md"
 WORKFLOW = ROOT / ".github" / "workflows" / "validate.yml"
 README = ROOT / "README.md"
+VERSION = ROOT / "VERSION"
 DOCS_INDEX = ROOT / "docs" / "README.md"
 ASSET_INVENTORY = ROOT / "docs" / "public-asset-inventory.md"
 RELEASE_CHECKLIST = ROOT / "docs" / "release-readiness-checklist.md"
 RELEASE_EVIDENCE_TEMPLATE = ROOT / "docs" / "release-evidence-template.md"
 SECURITY_URL = "https://www.goreecloud.com/security.html"
+
 PRIVATE_PATTERNS = (
     re.compile(r"\b10(?:\.\d{1,3}){3}\b"),
     re.compile(r"\b192\.168(?:\.\d{1,3}){2}\b"),
@@ -47,8 +49,21 @@ def require_markers(path: Path, markers: tuple[str, ...], errors: list[str]) -> 
     return text
 
 
+def current_version(errors: list[str]) -> str:
+    if not VERSION.exists():
+        errors.append("Canonical VERSION file is missing.")
+        return ""
+
+    version = VERSION.read_text(encoding="utf-8").strip()
+    if not re.fullmatch(r"(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)", version):
+        errors.append("VERSION must contain one strict SemVer value.")
+        return ""
+    return version
+
+
 def main() -> int:
     errors: list[str] = []
+    version = current_version(errors)
 
     config = require_markers(
         ISSUE_CONFIG,
@@ -112,38 +127,41 @@ def main() -> int:
         ),
         errors,
     )
-    readme = require_markers(
-        README,
-        (
-            "Current website package: **v5.9",
-            "## Source license and creative-rights boundary",
-            "Apache License 2.0",
-            "Apache-2.0",
-            "python scripts/build_public_site.py",
-            "python scripts/validate_repository_hygiene.py",
-            "python scripts/validate_repository_history.py",
-            "python scripts/validate_license.py",
-            "python scripts/validate_accessibility.py",
-            "python scripts/validate_glaze_ui.py",
-            'python -m unittest discover -s tests -p "test_*.py"',
-            "Build output directory: `dist`",
-            "exact, per-file allowlisted",
-            "Adding a file to `assets/`, `css/`, `js/`",
-            "Glaze UI is treated as a design contract",
-            "automated checks are regression controls, not a claim of complete WCAG conformance",
-            "screen-reader testing",
-            "repository-history preflight",
-            "non-shallow checkout",
-            "matched value",
-            "docs/public-asset-inventory.md",
-            "not a license grant",
-            "final human repository-history/contextual review",
-            "issue #5",
-            "issue #6",
-            "Passing CI does not itself authorize",
-        ),
-        errors,
+
+    readme_markers = (
+        f"Current website package: **v{version}" if version else "Current website package:",
+        "`VERSION` is the canonical machine-readable version source",
+        "## Source license and creative-rights boundary",
+        "Apache License 2.0",
+        "Apache-2.0",
+        "python scripts/build_public_site.py",
+        "python scripts/validate_repository_hygiene.py",
+        "python scripts/validate_repository_history.py",
+        "python scripts/validate_license.py",
+        "python scripts/validate_accessibility.py",
+        "python scripts/validate_glaze_ui.py",
+        'python -m unittest discover -s tests -p "test_*.py"',
+        "Build output directory: `dist`",
+        "exact, per-file allowlisted",
+        "Adding a file to `assets/`, `css/`, `js/`",
+        "Glaze UI is treated as a design contract",
+        "automated checks are regression controls, not a claim of complete WCAG conformance",
+        "screen-reader testing",
+        "repository-history preflight",
+        "non-shallow checkout",
+        "matched value",
+        "docs/public-asset-inventory.md",
+        "not a license grant",
+        "final human repository-history/contextual review",
+        "issue #5",
+        "Issue #6 is closed",
+        "isolated `dist/` Cloudflare Pages cutover is complete",
+        "Passing CI does not itself authorize",
+        "GoreeCloud Monitor",
+        "Uptime Kuma remains the current production availability monitor",
     )
+    readme = require_markers(README, readme_markers, errors)
+
     docs_index = require_markers(
         DOCS_INDEX,
         (

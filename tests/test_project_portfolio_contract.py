@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
-"""Regression tests for the public software-portfolio enhancement contract.
+"""Regression tests for the static GoreeCloud public software portfolio.
 
-The homepage retains useful static development content while ``js/main.js`` reconciles
-newer public projects at runtime. These tests keep that enhancement narrow, idempotent,
-and safe: project repositories must remain GoreeCloud-controlled HTTPS GitHub URLs,
-external links must preserve opener isolation, and the Bookmarks reconciliation must not
-regress to planning-only presentation when JavaScript is available.
+The public project inventory is intentionally present in ``index.html`` instead of being
+injected by JavaScript. This keeps the normal and no-JavaScript experiences aligned,
+improves crawlability, and reduces unnecessary client-side mutation while preserving the
+privacy and repository-publication boundaries of private projects.
 """
 
 from __future__ import annotations
@@ -19,38 +18,57 @@ ROOT = Path(__file__).resolve().parents[1]
 INDEX = (ROOT / "index.html").read_text(encoding="utf-8")
 MAIN_JS = (ROOT / "js" / "main.js").read_text(encoding="utf-8")
 
-EXPECTED_DYNAMIC_PROJECTS = {
-    "GoreeVault Server": "https://github.com/GoreeCloud/goreevault-server",
+PUBLIC_PROJECTS = {
+    "GoreeCloud Manager": "https://github.com/GoreeCloud/goreecloud-manager",
+    "GoreeCloud Monitor": "https://github.com/GoreeCloud/goreecloud-monitor",
+    "GoreeCloud Notes": "https://github.com/GoreeCloud/goreecloud-notes",
+    "GoreeCloud Memos": "https://github.com/GoreeCloud/goreecloud-memos",
+    "GoreeCloud Research Library": "https://github.com/GoreeCloud/goreecloud-research-library",
+    "GoreeCloud Bookmarks": "https://github.com/GoreeCloud/goreecloud-bookmarks",
     "GoreeCloud Feed": "https://github.com/GoreeCloud/goreecloud-rss",
     "GoreeCloud Gallery": "https://github.com/GoreeCloud/goreecloud-gallery",
+    "GoreeVault Server": "https://github.com/GoreeCloud/goreevault-server",
 }
-BOOKMARKS_REPOSITORY = "https://github.com/GoreeCloud/goreecloud-bookmarks"
 
-PROJECT_RE = re.compile(
-    r"name:\s*'(?P<name>[^']+)'\s*,\s*"
-    r"description:\s*'(?P<description>[^']+)'\s*,\s*"
-    r"repository:\s*'(?P<repository>https://[^']+)'",
-    re.MULTILINE,
-)
+PRIVATE_PROJECTS = {
+    "GoreeCloud Tasks": "https://github.com/GoreeCloud/goreecloud-tasks",
+    "GoreeCloud Contacts": "https://github.com/GoreeCloud/goreecloud-contacts",
+    "GoreeCloud Notify": "https://github.com/GoreeCloud/goreecloud-notify",
+}
+
+EXPECTED_PROJECT_SLUGS = {
+    "goreecloud-manager",
+    "goreecloud-tasks",
+    "goreecloud-contacts",
+    "goreecloud-notify",
+    "goreecloud-monitor",
+    "goreecloud-notes",
+    "goreecloud-memos",
+    "goreecloud-research-library",
+    "goreecloud-bookmarks",
+    "goreecloud-feed",
+    "goreecloud-gallery",
+    "goreevault-server",
+}
+
+PROJECT_SLUG_RE = re.compile(r'data-project="([a-z0-9-]+)"')
 
 
 class ProjectPortfolioContractTests(unittest.TestCase):
-    """Protect the small JavaScript portfolio reconciliation layer."""
+    """Protect the static public project inventory and migration boundaries."""
 
-    def test_dynamic_project_inventory_is_explicit_and_unique(self) -> None:
-        projects = PROJECT_RE.findall(MAIN_JS)
-        self.assertEqual(len(projects), len(EXPECTED_DYNAMIC_PROJECTS))
+    def test_project_inventory_is_static_explicit_and_unique(self) -> None:
+        slugs = PROJECT_SLUG_RE.findall(INDEX)
+        self.assertEqual(set(slugs), EXPECTED_PROJECT_SLUGS)
+        self.assertEqual(len(slugs), len(set(slugs)), "Public project markers must be unique.")
 
-        names = [name for name, _description, _repository in projects]
-        self.assertEqual(len(names), len(set(names)), "Dynamic project names must be unique.")
-
-        actual = {name: repository for name, _description, repository in projects}
-        self.assertEqual(actual, EXPECTED_DYNAMIC_PROJECTS)
+        for project_name in [*PUBLIC_PROJECTS, *PRIVATE_PROJECTS]:
+            with self.subTest(project=project_name):
+                self.assertIn(f"<strong>{project_name}</strong>", INDEX)
 
     def test_public_project_links_remain_goreecloud_controlled_https_urls(self) -> None:
-        repositories = [*EXPECTED_DYNAMIC_PROJECTS.values(), BOOKMARKS_REPOSITORY]
-        for repository in repositories:
-            with self.subTest(repository=repository):
+        for project_name, repository in PUBLIC_PROJECTS.items():
+            with self.subTest(project=project_name):
                 parsed = urlparse(repository)
                 self.assertEqual(parsed.scheme, "https")
                 self.assertEqual(parsed.hostname, "github.com")
@@ -58,29 +76,33 @@ class ProjectPortfolioContractTests(unittest.TestCase):
                 self.assertFalse(parsed.params)
                 self.assertFalse(parsed.query)
                 self.assertFalse(parsed.fragment)
+                self.assertIn(f'href="{repository}" target="_blank" rel="noopener noreferrer"', INDEX)
 
-    def test_generated_external_links_preserve_opener_isolation(self) -> None:
-        self.assertIn("link.target = '_blank';", MAIN_JS)
-        self.assertIn("link.rel = 'noopener noreferrer';", MAIN_JS)
+    def test_private_development_projects_do_not_publish_repository_links(self) -> None:
+        for project_name, repository in PRIVATE_PROJECTS.items():
+            with self.subTest(project=project_name):
+                self.assertIn(project_name, INDEX)
+                self.assertNotIn(repository, INDEX)
 
-    def test_bookmarks_reconciliation_preserves_current_public_repository(self) -> None:
-        self.assertIn("'GoreeCloud Bookmarks'", MAIN_JS)
-        self.assertIn(BOOKMARKS_REPOSITORY, MAIN_JS)
-        self.assertIn("status?.remove();", MAIN_JS)
-        self.assertIn("Maintained Linkwarden-based bookmark", MAIN_JS)
+    def test_monitor_transition_preserves_uptime_kuma_as_current_production(self) -> None:
+        self.assertIn("GoreeCloud Monitor", INDEX)
+        self.assertIn("Uptime Kuma remains the production monitor", INDEX)
+        self.assertIn("parallel validation and an explicit cutover", INDEX)
+        self.assertIn("Current production availability checks", INDEX)
 
-    def test_reconciliation_is_idempotent_and_scoped_to_development_grid(self) -> None:
-        self.assertIn("#development .development-grid", MAIN_JS)
-        self.assertIn("const existingNames = new Set(", MAIN_JS)
-        self.assertIn("if (!existingNames.has(project.name))", MAIN_JS)
-        self.assertEqual(MAIN_JS.count("reconcilePublicProjectPortfolio();"), 1)
+    def test_bookmarks_static_content_reflects_current_public_repository(self) -> None:
+        self.assertIn("Maintained Linkwarden-based bookmark", INDEX)
+        self.assertIn(PUBLIC_PROJECTS["GoreeCloud Bookmarks"], INDEX)
+        self.assertNotIn("Specification &amp; fork planning", INDEX)
 
-    def test_static_homepage_retains_development_fallback_content(self) -> None:
-        self.assertIn('id="development"', INDEX)
-        self.assertIn('class="principle-grid development-grid"', INDEX)
-        self.assertIn("GoreeCloud Bookmarks", INDEX)
-        self.assertIn("Research Library", INDEX)
-        self.assertIn("GoreeCloud Manager", INDEX)
+    def test_javascript_does_not_mutate_project_portfolio(self) -> None:
+        for removed_marker in (
+            "CURRENT_PUBLIC_PROJECTS",
+            "createProjectCard",
+            "reconcilePublicProjectPortfolio",
+            "#development .development-grid",
+        ):
+            self.assertNotIn(removed_marker, MAIN_JS)
 
 
 if __name__ == "__main__":
