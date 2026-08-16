@@ -17,6 +17,7 @@ from build_public_site import PUBLIC_FILES  # noqa: E402
 
 VERSION_PATH = ROOT / "VERSION"
 BASELINE_PATH = ROOT / "docs" / "stability-baseline.md"
+GLAZE_CONFORMANCE_PATH = ROOT / "docs" / "glaze-ui-conformance.md"
 README_PATH = ROOT / "README.md"
 SEMVER_RE = re.compile(r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$")
 
@@ -26,6 +27,7 @@ class StabilityBaselineTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.version = VERSION_PATH.read_text(encoding="utf-8").strip()
         cls.baseline = BASELINE_PATH.read_text(encoding="utf-8")
+        cls.glaze_conformance = GLAZE_CONFORMANCE_PATH.read_text(encoding="utf-8")
         cls.readme = README_PATH.read_text(encoding="utf-8")
 
     def test_version_is_strict_semver(self) -> None:
@@ -59,16 +61,29 @@ class StabilityBaselineTests(unittest.TestCase):
     def test_version_metadata_is_repository_only(self) -> None:
         self.assertNotIn("VERSION", PUBLIC_FILES)
         self.assertNotIn("docs/stability-baseline.md", PUBLIC_FILES)
+        self.assertNotIn("docs/glaze-ui-conformance.md", PUBLIC_FILES)
 
-    def test_511_scope_preserves_static_privacy_and_glaze_boundaries(self) -> None:
+    def test_512_scope_preserves_static_privacy_and_glaze_boundaries(self) -> None:
         for marker in (
             "static homepage",
             "GoreeCloud Monitor",
-            "Glaze UI",
+            "Glaze UI 1.0",
+            "semantic tokens",
+            "adaptive ranges",
             "privacy",
             "isolated publication",
         ):
             self.assertIn(marker, self.baseline)
+
+    def test_glaze_conformance_records_current_target(self) -> None:
+        for marker in (
+            "Target Glaze UI version: **1.0.0**",
+            "GoreeCloud/glaze-ui",
+            "Canvas, Solid, Raised, Glaze, and Overlay",
+            "Visual acceptance: **Preserved**",
+            "No production Glaze UI exception is recorded",
+        ):
+            self.assertIn(marker, self.glaze_conformance)
 
 
 if __name__ == "__main__":
