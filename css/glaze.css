@@ -1,131 +1,217 @@
-/* GoreeCloud public website — Glaze UI v1 foundation
+/* GoreeCloud public website — Glaze UI 1.0 foundation
  *
- * This stylesheet intentionally loads after the site section styles. It supplies the
- * shared Glaze UI tokens, light/dark appearance behavior, accessibility refinements,
- * layered surfaces, and compatibility overrides without requiring third-party assets.
+ * Website-specific implementation of the canonical GoreeCloud Glaze UI semantics.
+ * The established GoreeCloud website palette and composition remain product-specific;
+ * shared --glaze-* roles provide the versioned cross-application design contract.
  */
 
 :root {
   color-scheme: dark;
-  --bg: #06101d;
-  --bg-soft: #0a1727;
+
+  /* Glaze UI 1.0 semantic foundation. */
+  --glaze-font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --glaze-canvas: #06101d;
+  --glaze-canvas-accent: #0a1727;
+  --glaze-surface: rgba(255, 255, 255, .045);
+  --glaze-surface-strong: rgba(10, 24, 42, .92);
+  --glaze-surface-muted: rgba(255, 255, 255, .025);
+  --glaze-text: #f6f9ff;
+  --glaze-muted: #a5b4c9;
+  --glaze-line: rgba(126, 164, 219, .18);
+  --glaze-accent: #4b7cff;
+  --glaze-accent-2: #38cfff;
+  --glaze-success: #68e4a8;
+  --glaze-warning: #ffbd78;
+  --glaze-danger: #ff8a80;
+  --glaze-radius-sm: 10px;
+  --glaze-radius-md: 14px;
+  --glaze-radius-control: 16px;
+  --glaze-radius-lg: 22px;
+  --glaze-radius-xl: 28px;
+  --glaze-radius-2xl: 32px;
+  --glaze-radius-pill: 999px;
+  --glaze-space-1: 4px;
+  --glaze-space-2: 8px;
+  --glaze-space-3: 12px;
+  --glaze-space-4: 16px;
+  --glaze-space-5: 20px;
+  --glaze-space-6: 24px;
+  --glaze-space-8: 32px;
+  --glaze-space-10: 40px;
+  --glaze-space-12: 48px;
+  --glaze-space-16: 64px;
+  --glaze-target-min: 44px;
+  --glaze-target-comfortable: 48px;
+  --glaze-blur: 22px;
+  --glaze-blur-overlay: 28px;
+  --glaze-opacity-disabled: .55;
+  --glaze-shadow-soft: 0 12px 34px rgba(0, 0, 0, .16);
+  --glaze-shadow-raised: 0 24px 72px rgba(0, 0, 0, .30);
+  --glaze-shadow-overlay: 0 28px 80px rgba(0, 0, 0, .34);
+  --glaze-motion-instant: 90ms;
+  --glaze-motion-fast: 160ms;
+  --glaze-motion-standard: 220ms;
+  --glaze-motion-emphasized: 320ms;
+  --glaze-ease-standard: cubic-bezier(.2, 0, 0, 1);
+  --glaze-ease-emphasized: cubic-bezier(.2, .8, .2, 1);
+  --glaze-focus-width: 3px;
+  --glaze-focus-offset: 3px;
+  --glaze-content-max: 1180px;
+  --glaze-reading-max: 760px;
+
+  /* Website compatibility aliases. New shared behavior should prefer --glaze-* roles. */
+  --bg: var(--glaze-canvas);
+  --bg-soft: var(--glaze-canvas-accent);
   --panel: rgba(15, 31, 52, .72);
-  --panel-strong: rgba(10, 24, 42, .92);
-  --surface: rgba(255, 255, 255, .045);
-  --surface-soft: rgba(255, 255, 255, .025);
+  --panel-strong: var(--glaze-surface-strong);
+  --surface: var(--glaze-surface);
+  --surface-soft: var(--glaze-surface-muted);
   --surface-strong: rgba(8, 21, 38, .82);
   --surface-hover: rgba(255, 255, 255, .065);
   --section-alt: rgba(255, 255, 255, .018);
   --header-bg: rgba(5, 14, 27, .78);
-  --border: rgba(126, 164, 219, .18);
+  --border: var(--glaze-line);
   --border-strong: rgba(62, 201, 255, .34);
   --grid-line: rgba(122, 168, 226, .045);
-  --text: #f6f9ff;
+  --text: var(--glaze-text);
   --text-soft: #d7e0ed;
-  --muted: #a5b4c9;
+  --muted: var(--glaze-muted);
   --muted-strong: #becadd;
-  --blue: #4b7cff;
+  --blue: var(--glaze-accent);
   --blue-strong: #2c62f2;
-  --cyan: #38cfff;
-  --green: #68e4a8;
-  --amber: #ffbd78;
+  --cyan: var(--glaze-accent-2);
+  --green: var(--glaze-success);
+  --amber: var(--glaze-warning);
   --focus: #8ce9ff;
-  --shadow: 0 24px 72px rgba(0, 0, 0, .30);
-  --shadow-soft: 0 12px 34px rgba(0, 0, 0, .16);
-  --radius: 22px;
-  --radius-small: 14px;
-  --container: 1180px;
+  --shadow: var(--glaze-shadow-raised);
+  --shadow-soft: var(--glaze-shadow-soft);
+  --radius: var(--glaze-radius-lg);
+  --radius-small: var(--glaze-radius-md);
+  --container: var(--glaze-content-max);
 }
 
 :root[data-theme="light"] {
   color-scheme: light;
-  --bg: #f4f7fb;
-  --bg-soft: #eaf0f7;
+  --glaze-canvas: #f4f7fb;
+  --glaze-canvas-accent: #eaf0f7;
+  --glaze-surface: rgba(255, 255, 255, .72);
+  --glaze-surface-strong: rgba(255, 255, 255, .94);
+  --glaze-surface-muted: rgba(255, 255, 255, .54);
+  --glaze-text: #102033;
+  --glaze-muted: #60738a;
+  --glaze-line: rgba(50, 84, 132, .16);
+  --glaze-accent: #315ed6;
+  --glaze-accent-2: #007da6;
+  --glaze-success: #15885a;
+  --glaze-warning: #9a5a14;
+  --glaze-danger: #b42318;
+  --glaze-shadow-soft: 0 12px 34px rgba(30, 55, 88, .10);
+  --glaze-shadow-raised: 0 24px 72px rgba(30, 55, 88, .14);
+  --glaze-shadow-overlay: 0 28px 80px rgba(30, 55, 88, .18);
   --panel: rgba(255, 255, 255, .76);
-  --panel-strong: rgba(255, 255, 255, .94);
-  --surface: rgba(255, 255, 255, .72);
-  --surface-soft: rgba(255, 255, 255, .54);
   --surface-strong: rgba(255, 255, 255, .88);
   --surface-hover: rgba(255, 255, 255, .92);
   --section-alt: rgba(225, 234, 245, .52);
   --header-bg: rgba(247, 250, 253, .78);
-  --border: rgba(50, 84, 132, .16);
   --border-strong: rgba(14, 136, 190, .32);
   --grid-line: rgba(50, 84, 132, .055);
-  --text: #102033;
   --text-soft: #283d54;
-  --muted: #60738a;
   --muted-strong: #485d75;
-  --blue: #315ed6;
   --blue-strong: #2452ca;
-  --cyan: #007da6;
-  --green: #15885a;
-  --amber: #9a5a14;
   --focus: #006f9a;
-  --shadow: 0 24px 72px rgba(30, 55, 88, .14);
-  --shadow-soft: 0 12px 34px rgba(30, 55, 88, .10);
 }
 
 @media (prefers-color-scheme: light) {
   :root:not([data-theme]) {
     color-scheme: light;
-    --bg: #f4f7fb;
-    --bg-soft: #eaf0f7;
+    --glaze-canvas: #f4f7fb;
+    --glaze-canvas-accent: #eaf0f7;
+    --glaze-surface: rgba(255, 255, 255, .72);
+    --glaze-surface-strong: rgba(255, 255, 255, .94);
+    --glaze-surface-muted: rgba(255, 255, 255, .54);
+    --glaze-text: #102033;
+    --glaze-muted: #60738a;
+    --glaze-line: rgba(50, 84, 132, .16);
+    --glaze-accent: #315ed6;
+    --glaze-accent-2: #007da6;
+    --glaze-success: #15885a;
+    --glaze-warning: #9a5a14;
+    --glaze-danger: #b42318;
+    --glaze-shadow-soft: 0 12px 34px rgba(30, 55, 88, .10);
+    --glaze-shadow-raised: 0 24px 72px rgba(30, 55, 88, .14);
+    --glaze-shadow-overlay: 0 28px 80px rgba(30, 55, 88, .18);
     --panel: rgba(255, 255, 255, .76);
-    --panel-strong: rgba(255, 255, 255, .94);
-    --surface: rgba(255, 255, 255, .72);
-    --surface-soft: rgba(255, 255, 255, .54);
     --surface-strong: rgba(255, 255, 255, .88);
     --surface-hover: rgba(255, 255, 255, .92);
     --section-alt: rgba(225, 234, 245, .52);
     --header-bg: rgba(247, 250, 253, .78);
-    --border: rgba(50, 84, 132, .16);
     --border-strong: rgba(14, 136, 190, .32);
     --grid-line: rgba(50, 84, 132, .055);
-    --text: #102033;
     --text-soft: #283d54;
-    --muted: #60738a;
     --muted-strong: #485d75;
-    --blue: #315ed6;
     --blue-strong: #2452ca;
-    --cyan: #007da6;
-    --green: #15885a;
-    --amber: #9a5a14;
     --focus: #006f9a;
-    --shadow: 0 24px 72px rgba(30, 55, 88, .14);
-    --shadow-soft: 0 12px 34px rgba(30, 55, 88, .10);
   }
 }
 
 html {
-  accent-color: var(--blue);
+  accent-color: var(--glaze-accent);
 }
 
 body {
+  font-family: var(--glaze-font-sans);
   background:
-    radial-gradient(circle at 16% -8%, color-mix(in srgb, var(--blue) 15%, transparent), transparent 32rem),
-    radial-gradient(circle at 92% 18%, color-mix(in srgb, var(--cyan) 8%, transparent), transparent 28rem),
-    var(--bg);
+    radial-gradient(circle at 16% -8%, color-mix(in srgb, var(--glaze-accent) 15%, transparent), transparent 32rem),
+    radial-gradient(circle at 92% 18%, color-mix(in srgb, var(--glaze-accent-2) 8%, transparent), transparent 28rem),
+    var(--glaze-canvas);
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 }
 
 ::selection {
-  background: color-mix(in srgb, var(--blue) 28%, transparent);
-  color: var(--text);
+  background: color-mix(in srgb, var(--glaze-accent) 28%, transparent);
+  color: var(--glaze-text);
 }
 
 :where(a, button):focus-visible {
-  outline: 3px solid var(--focus);
-  outline-offset: 3px;
-  border-radius: 10px;
+  outline: var(--glaze-focus-width) solid var(--focus);
+  outline-offset: var(--glaze-focus-offset);
+  border-radius: var(--glaze-radius-sm);
+}
+
+/* Canonical surface hierarchy helpers. */
+.glaze-surface-solid {
+  background: var(--glaze-surface-strong);
+  border: 1px solid var(--glaze-line);
+}
+
+.glaze-surface-raised {
+  background: var(--glaze-surface-strong);
+  border: 1px solid var(--glaze-line);
+  box-shadow: var(--glaze-shadow-raised);
+}
+
+.glaze-surface {
+  background: var(--glaze-surface);
+  border: 1px solid var(--glaze-line);
+  box-shadow: var(--glaze-shadow-raised);
+  -webkit-backdrop-filter: blur(var(--glaze-blur)) saturate(135%);
+  backdrop-filter: blur(var(--glaze-blur)) saturate(135%);
+}
+
+.glaze-overlay {
+  background: color-mix(in srgb, var(--glaze-surface-strong) 92%, transparent);
+  border: 1px solid var(--glaze-line);
+  box-shadow: var(--glaze-shadow-overlay);
+  -webkit-backdrop-filter: blur(var(--glaze-blur-overlay)) saturate(140%);
+  backdrop-filter: blur(var(--glaze-blur-overlay)) saturate(140%);
 }
 
 .site-header {
   background: var(--header-bg);
   box-shadow: 0 1px 0 var(--border);
-  -webkit-backdrop-filter: blur(22px) saturate(135%);
-  backdrop-filter: blur(22px) saturate(135%);
+  -webkit-backdrop-filter: blur(var(--glaze-blur)) saturate(135%);
+  backdrop-filter: blur(var(--glaze-blur)) saturate(135%);
 }
 
 .nav-wrap {
@@ -140,11 +226,11 @@ body {
 
 .theme-toggle,
 .nav-toggle {
-  min-width: 44px;
-  min-height: 44px;
+  min-width: var(--glaze-target-min);
+  min-height: var(--glaze-target-min);
   color: var(--text);
   border: 1px solid var(--border);
-  border-radius: 999px;
+  border-radius: var(--glaze-radius-pill);
   background: var(--surface);
   cursor: pointer;
 }
@@ -209,10 +295,10 @@ body {
 .glaze-chip {
   display: inline-flex;
   align-items: center;
-  min-height: 28px;
+  min-height: 32px;
   padding: .35rem .68rem;
   border: 1px solid var(--border-strong);
-  border-radius: 999px;
+  border-radius: var(--glaze-radius-pill);
   color: var(--cyan);
   background: color-mix(in srgb, var(--cyan) 7%, var(--surface));
   font-size: .72rem;
@@ -240,8 +326,14 @@ body {
 }
 
 .button {
-  min-height: 48px;
-  border-radius: 14px;
+  min-height: var(--glaze-target-comfortable);
+  border-radius: var(--glaze-radius-md);
+  transition:
+    transform var(--glaze-motion-fast) var(--glaze-ease-standard),
+    background-color var(--glaze-motion-fast) var(--glaze-ease-standard),
+    border-color var(--glaze-motion-fast) var(--glaze-ease-standard),
+    box-shadow var(--glaze-motion-fast) var(--glaze-ease-standard),
+    opacity var(--glaze-motion-fast) var(--glaze-ease-standard);
 }
 
 .button.primary {
@@ -271,6 +363,19 @@ body {
   box-shadow: var(--shadow-soft);
   -webkit-backdrop-filter: blur(16px) saturate(120%);
   backdrop-filter: blur(16px) saturate(120%);
+}
+
+.service-card,
+.how-card,
+.platform-card,
+.roadmap-card,
+.principle-grid > div,
+.social-card {
+  transition:
+    transform var(--glaze-motion-standard) var(--glaze-ease-standard),
+    border-color var(--glaze-motion-fast) var(--glaze-ease-standard),
+    box-shadow var(--glaze-motion-standard) var(--glaze-ease-standard),
+    background-color var(--glaze-motion-standard) var(--glaze-ease-standard);
 }
 
 .hero-card {
@@ -317,9 +422,9 @@ body {
 
 .badge.active,
 .platform-state.active {
-  color: var(--green);
-  background: color-mix(in srgb, var(--green) 9%, transparent);
-  border-color: color-mix(in srgb, var(--green) 28%, transparent);
+  color: var(--glaze-success);
+  background: color-mix(in srgb, var(--glaze-success) 9%, transparent);
+  border-color: color-mix(in srgb, var(--glaze-success) 28%, transparent);
 }
 
 .badge.planned,
@@ -329,16 +434,11 @@ body {
   border-color: color-mix(in srgb, var(--muted) 20%, transparent);
 }
 
-.badge.growing {
-  color: var(--amber);
-  background: color-mix(in srgb, var(--amber) 8%, transparent);
-  border-color: color-mix(in srgb, var(--amber) 26%, transparent);
-}
-
+.badge.growing,
 .roadmap-state {
-  color: var(--amber);
-  background: color-mix(in srgb, var(--amber) 8%, transparent);
-  border-color: color-mix(in srgb, var(--amber) 26%, transparent);
+  color: var(--glaze-warning);
+  background: color-mix(in srgb, var(--glaze-warning) 8%, transparent);
+  border-color: color-mix(in srgb, var(--glaze-warning) 26%, transparent);
 }
 
 .roadmap-current {
@@ -362,7 +462,7 @@ body {
   align-items: center;
   margin-bottom: 1.2rem;
   padding: 1.25rem 1.35rem;
-  border-radius: var(--radius);
+  border-radius: var(--glaze-radius-lg);
 }
 
 .glaze-callout h3 {
@@ -412,6 +512,8 @@ body {
   }
 }
 
+/* Website navigation keeps its proven product-specific 720px treatment while the
+ * shared Glaze UI adaptive ranges below remain available as the common vocabulary. */
 @media (max-width: 720px) {
   .nav-actions {
     display: flex;
@@ -419,8 +521,8 @@ body {
 
   .site-nav {
     background: var(--panel-strong);
-    -webkit-backdrop-filter: blur(22px) saturate(130%);
-    backdrop-filter: blur(22px) saturate(130%);
+    -webkit-backdrop-filter: blur(var(--glaze-blur)) saturate(130%);
+    backdrop-filter: blur(var(--glaze-blur)) saturate(130%);
   }
 
   .glaze-callout {
@@ -453,8 +555,47 @@ body {
   }
 }
 
+/* Glaze UI 1.0 adaptive layout vocabulary. */
+@media (max-width: 599px) {
+  .glaze-adaptive-hide-compact { display: none !important; }
+}
+
+@media (min-width: 600px) and (max-width: 1023px) {
+  .glaze-adaptive-hide-medium { display: none !important; }
+}
+
+@media (min-width: 1024px) and (max-width: 1439px) {
+  .glaze-adaptive-hide-expanded { display: none !important; }
+}
+
+@media (min-width: 1440px) {
+  .glaze-adaptive-hide-wide { display: none !important; }
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .site-header,
+  .glaze-surface,
+  .glaze-overlay,
+  .hero-card,
+  .service-card,
+  .how-card,
+  .platform-card,
+  .roadmap-card,
+  .principle-grid > div,
+  .timeline article > div,
+  .social-card,
+  .contact-card,
+  .glaze-callout {
+    background: var(--glaze-surface-strong);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
 @media (prefers-reduced-transparency: reduce) {
   .site-header,
+  .glaze-surface,
+  .glaze-overlay,
   .hero-card,
   .service-card,
   .how-card,
@@ -467,11 +608,21 @@ body {
   .glaze-callout {
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
-    background: var(--panel-strong);
+    background: var(--glaze-surface-strong);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto !important;
+  }
+
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+
   .button,
   .service-card,
   .platform-card,
