@@ -1,7 +1,11 @@
-/* GoreeCloud public website — Glaze UI interaction and progressive-enhancement polish. */
+/* GoreeCloud public website — Glaze UI 1.0 interaction and progressive-enhancement polish. */
 
 .theme-toggle {
-  transition: background-color .18s ease, border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+  transition:
+    background-color var(--glaze-motion-fast) var(--glaze-ease-standard),
+    border-color var(--glaze-motion-fast) var(--glaze-ease-standard),
+    box-shadow var(--glaze-motion-fast) var(--glaze-ease-standard),
+    transform var(--glaze-motion-fast) var(--glaze-ease-standard);
 }
 
 .theme-toggle[data-theme-mode="system"] {
@@ -11,7 +15,10 @@
 
 .site-nav a {
   position: relative;
-  transition: color .18s ease, background-color .18s ease, border-color .18s ease;
+  transition:
+    color var(--glaze-motion-fast) var(--glaze-ease-standard),
+    background-color var(--glaze-motion-fast) var(--glaze-ease-standard),
+    border-color var(--glaze-motion-fast) var(--glaze-ease-standard);
 }
 
 .site-nav a:not(.nav-cta)::after {
@@ -21,11 +28,13 @@
   right: 12%;
   bottom: -.52rem;
   height: 2px;
-  border-radius: 999px;
+  border-radius: var(--glaze-radius-pill);
   background: linear-gradient(90deg, var(--blue), var(--cyan));
   opacity: 0;
   transform: scaleX(.45);
-  transition: opacity .18s ease, transform .18s ease;
+  transition:
+    opacity var(--glaze-motion-fast) var(--glaze-ease-standard),
+    transform var(--glaze-motion-fast) var(--glaze-ease-standard);
 }
 
 .site-nav a[aria-current="location"] {
@@ -77,7 +86,7 @@
     align-items: stretch;
     padding: .8rem;
     border: 1px solid var(--border);
-    border-radius: 16px;
+    border-radius: var(--glaze-radius-control);
     background: var(--panel-strong);
     box-shadow: var(--shadow-soft);
   }
@@ -89,14 +98,20 @@
 
 @media (prefers-contrast: more) {
   :root {
-    --border: color-mix(in srgb, var(--text) 42%, transparent);
+    --glaze-line: color-mix(in srgb, var(--glaze-text) 42%, transparent);
+    --glaze-surface: var(--glaze-surface-strong);
+    --border: var(--glaze-line);
     --border-strong: color-mix(in srgb, var(--text) 64%, var(--cyan));
     --muted: var(--muted-strong);
+    --glaze-shadow-raised: none;
+    --glaze-shadow-soft: none;
     --shadow: none;
     --shadow-soft: none;
   }
 
   .site-header,
+  .glaze-surface,
+  .glaze-overlay,
   .hero-card,
   .service-card,
   .how-card,
@@ -111,6 +126,10 @@
     backdrop-filter: none;
   }
 
+  .glaze-surface,
+  .glaze-surface-raised,
+  .glaze-surface-solid,
+  .glaze-overlay,
   .theme-toggle,
   .nav-toggle,
   .button.secondary,
@@ -129,6 +148,10 @@
 
 @media (forced-colors: active) {
   .site-header,
+  .glaze-surface,
+  .glaze-surface-raised,
+  .glaze-surface-solid,
+  .glaze-overlay,
   .hero-card,
   .service-card,
   .how-card,
@@ -140,6 +163,7 @@
   .contact-card,
   .glaze-callout {
     background: Canvas;
+    color: CanvasText;
     border: 1px solid CanvasText;
     box-shadow: none;
     -webkit-backdrop-filter: none;
@@ -157,6 +181,11 @@
     box-shadow: none;
   }
 
+  .button.primary {
+    background: Highlight;
+    color: HighlightText;
+  }
+
   .site-nav a[aria-current="location"] {
     outline: 2px solid LinkText;
     outline-offset: 2px;
@@ -170,6 +199,16 @@
 @media print {
   :root {
     color-scheme: light;
+    --glaze-canvas: #fff;
+    --glaze-canvas-accent: #fff;
+    --glaze-text: #000;
+    --glaze-muted: #333;
+    --glaze-line: #999;
+    --glaze-surface: #fff;
+    --glaze-surface-muted: #fff;
+    --glaze-surface-strong: #fff;
+    --glaze-shadow-raised: none;
+    --glaze-shadow-soft: none;
     --text: #000;
     --text-soft: #111;
     --muted: #333;
