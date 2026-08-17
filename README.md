@@ -34,7 +34,7 @@ Public repositories link directly to their GitHub source. GoreeCloud Tasks, Gore
 
 The portfolio includes Glaze UI, GoreeCloud Manager, GoreeVault Server, GoreeCloud Research Library, GoreeCloud Notes, GoreeCloud Memos, GoreeCloud Bookmarks and its browser extension, GoreeCloud Tasks, GoreeCloud Contacts, GoreeCloud Calendar, GoreeCloud Notify, GoreeCloud Monitor, GoreeCloud Search, GoreeCloud Feed, GoreeCloud Browser, GoreeCloud Redirector, GoreeCloud Source Resync, GoreeCloud Gallery, and this website.
 
-GoreeCloud Notify and GoreeCloud Search are now the GoreeCloud-facing notification and private-search layers. Uptime Kuma remains explicitly transitional while **GoreeCloud Monitoring** completes validation and an authorized cutover.
+GoreeCloud Notify and GoreeCloud Search are now the GoreeCloud-facing notification and private-search layers. **Uptime Kuma remains the current production availability monitor**, but it is explicitly transitional while **GoreeCloud Monitoring** completes validation and an authorized cutover.
 
 ## Source license and creative-rights boundary
 
