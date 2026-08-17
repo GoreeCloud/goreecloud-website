@@ -2,7 +2,7 @@
 
 ## Current stable version
 
-The repository-defined stable version is **5.12.0**.
+The repository-defined stable version is **5.13.0**.
 
 `VERSION` is the canonical machine-readable version source. The version file and this stability record are repository metadata only; neither is part of the isolated Cloudflare `dist/` publication allowlist.
 
@@ -24,28 +24,28 @@ A GoreeCloud website revision is considered stable only when all of the followin
 
 A passing branch preview alone is not a stable release. A merge alone is not a stable release. Stability requires the reviewed source, isolated artifact, and deployed production bytes to agree.
 
-## 5.12.0 scope
+## 5.13.0 scope
 
-Version 5.12.0 advances the stable v5 foundation by aligning the website with the active **Glaze UI 1.0** design-system contract while preserving the accepted public appearance and the static-first privacy model introduced in 5.11.0.
+Version 5.13.0 extends the stable Glaze UI 1.0 website foundation with a dedicated GitHub repository directory synchronized to the current authenticated GoreeCloud software portfolio.
 
 The release:
 
-- records the website's target Glaze UI version and conformance state in `docs/glaze-ui-conformance.md`;
-- aligns the website foundation with canonical `--glaze-*` semantic tokens while retaining compatibility aliases for established section styles;
-- formalizes Canvas, Solid, Raised, Glaze, and Overlay surface semantics without forcing translucency onto every component;
-- standardizes Glaze UI target sizing, focus geometry, motion durations, easing, blur, shadows, radii, spacing, and semantic status colors;
-- exposes the Compact, Medium, Expanded, and Wide adaptive ranges defined by Glaze UI 1.0;
-- strengthens solid fallbacks when backdrop filtering is unsupported or reduced transparency is requested;
-- strengthens reduced-motion behavior so nonessential animation and smooth scrolling are removed;
-- updates the Glaze UI validator so semantic tokens, motion, adaptive ranges, resilience fallbacks, canonical-version targeting, and the conformance record cannot silently drift;
-- retains the static homepage and current public project inventory from 5.11.0, including GoreeCloud Monitor and the explicit Uptime Kuma production-monitoring boundary;
-- preserves privacy, local assets, dependency-light delivery, GoreeCloud identity, and isolated publication through Cloudflare Pages.
+- adds `repositories.html` as a canonical, indexable public directory for the current GoreeCloud repository portfolio;
+- represents all 20 current GoreeCloud repositories and preserves the verified boundary of 16 public repositories and 4 private repositories;
+- groups repositories by functional role so design-system, platform, security, knowledge, productivity, monitoring, browser, media, and web-presence responsibilities remain understandable;
+- publishes direct GitHub links only for repositories that are currently public and identifies private repositories without exposing private source contents;
+- adds a Glaze UI repository-directory presentation layer with responsive layouts, reduced-motion behavior, reduced-transparency fallback, and forced-colors support;
+- adds repository discovery to the website navigation and homepage progressive-enhancement surface;
+- adds the repository directory to the sitemap and exact public-file allowlist;
+- expands full-public-surface validation to include the repository directory and its canonical URL;
+- expands accessibility and Glaze UI structural validation so the new page is held to the same public-interface contract as the other human-facing pages;
+- preserves the static-first privacy boundary, local assets, dependency-light delivery, security headers, isolated Cloudflare Pages publication model, and exact deployed-byte verification.
 
 ## Glaze UI stable-release boundary
 
 Glaze UI is a design contract and a visual identity requirement. Automated conformance checks are necessary regression evidence, but they do not replace visual acceptance, manual keyboard review, screen-reader testing, zoom/reflow inspection, color-contrast review, or touch-device review when a material interface change warrants those checks.
 
-The 5.12.0 alignment intentionally does not redesign the accepted public composition. Visual acceptance is therefore preserved while the underlying design-system semantics and automated contract are strengthened.
+The 5.13.0 repository directory uses the existing Glaze UI 1.0 foundation rather than changing the canonical design system. Its new cards, repository status treatments, responsive composition, and resilience fallbacks remain application-specific website implementation details subject to the shared Glaze UI contract.
 
 ## Release boundaries
 
