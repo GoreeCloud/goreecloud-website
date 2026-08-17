@@ -4,7 +4,7 @@ Public static website for GoreeCloud.
 
 ## Version
 
-Current website package: **v5.13.0 — GitHub repository directory and portfolio synchronization**
+Current website package: **v5.14.0 — replacement-path reconciliation, complete project overview, and theme-surface correction**
 
 `VERSION` is the canonical machine-readable version source. `docs/stability-baseline.md` defines the release scope and the evidence required before a revision is treated as stable. `docs/glaze-ui-conformance.md` records the website's targeted Glaze UI version and conformance state.
 
@@ -34,7 +34,7 @@ Public repositories link directly to their GitHub source. GoreeCloud Tasks, Gore
 
 The portfolio includes Glaze UI, GoreeCloud Manager, GoreeVault Server, GoreeCloud Research Library, GoreeCloud Notes, GoreeCloud Memos, GoreeCloud Bookmarks and its browser extension, GoreeCloud Tasks, GoreeCloud Contacts, GoreeCloud Calendar, GoreeCloud Notify, GoreeCloud Monitor, GoreeCloud Search, GoreeCloud Feed, GoreeCloud Browser, GoreeCloud Redirector, GoreeCloud Source Resync, GoreeCloud Gallery, and this website.
 
-GoreeCloud Monitor is an active native monitoring project. **Uptime Kuma remains the current production availability monitor** until GoreeCloud Monitor completes parallel validation and an explicit authorized cutover.
+GoreeCloud Notify and GoreeCloud Search are now the GoreeCloud-facing notification and private-search layers. Uptime Kuma remains explicitly transitional while **GoreeCloud Monitoring** completes validation and an authorized cutover.
 
 ## Source license and creative-rights boundary
 
@@ -88,7 +88,7 @@ The website is a GoreeCloud reference implementation of **Glaze UI 1.0**. **Glaz
 
 The canonical shared design-system source is `GoreeCloud/glaze-ui`. The website records its target and conformance state in `docs/glaze-ui-conformance.md` rather than silently assuming compatibility.
 
-The 5.13.0 release preserves the site's established visual identity and the 5.12.0 Glaze UI alignment while extending the same foundation to the repository directory. The shared foundation includes:
+The 5.14.0 release preserves the site's established visual identity and corrects theme drift in repository and platform components. Those surfaces now use the canonical Glaze UI semantic tokens instead of dark-only fallback values, keeping light mode consistently light while preserving the separately intentional dark theme. The shared foundation includes:
 
 - semantic `--glaze-*` design tokens for canvas, surfaces, text, semantic colors, spacing, radii, target sizes, blur, shadows, focus, motion, and content widths;
 - the Canvas, Solid, Raised, Glaze, and Overlay surface hierarchy;
