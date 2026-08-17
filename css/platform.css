@@ -5,8 +5,8 @@
   overflow: hidden;
   border-top: 1px solid var(--border);
   background:
-    radial-gradient(circle at 88% 12%, rgba(22, 93, 255, .07), transparent 24rem),
-    radial-gradient(circle at 12% 88%, rgba(0, 194, 255, .035), transparent 22rem);
+    radial-gradient(circle at 88% 12%, color-mix(in srgb, var(--blue) 7%, transparent), transparent 24rem),
+    radial-gradient(circle at 12% 88%, color-mix(in srgb, var(--cyan) 4%, transparent), transparent 22rem);
 }
 
 .platform-section .section-heading {
@@ -26,14 +26,14 @@
   padding: 1.35rem;
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  background: linear-gradient(180deg, rgba(255,255,255,.032), rgba(255,255,255,.012));
-  box-shadow: 0 12px 36px rgba(0,0,0,.12);
-  transition: transform .2s ease, border-color .2s ease;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--glaze-surface-strong) 76%, transparent), color-mix(in srgb, var(--glaze-surface) 68%, transparent));
+  box-shadow: var(--glaze-shadow-soft);
+  transition: transform var(--glaze-motion-fast) var(--glaze-ease-standard), border-color var(--glaze-motion-fast) var(--glaze-ease-standard);
 }
 
 .platform-card:hover {
   transform: translateY(-3px);
-  border-color: rgba(0,194,255,.30);
+  border-color: color-mix(in srgb, var(--cyan) 34%, var(--border));
 }
 
 .platform-card-head {
@@ -43,21 +43,29 @@
   gap: 1rem;
 }
 
-.platform-logo-link {
+.platform-logo-link,
+.platform-native-mark {
   width: 58px;
   height: 58px;
   flex: 0 0 auto;
   display: grid;
   place-items: center;
-  border: 1px solid rgba(86,145,255,.18);
+  border: 1px solid color-mix(in srgb, var(--blue) 20%, var(--border));
   border-radius: 15px;
-  background: rgba(255,255,255,.025);
+  background: color-mix(in srgb, var(--glaze-surface-strong) 72%, transparent);
+}
+
+.platform-native-mark {
+  color: var(--cyan);
+  font-size: .8rem;
+  font-weight: 900;
+  letter-spacing: .06em;
 }
 
 .platform-logo-link:hover,
 .platform-logo-link:focus-visible {
-  border-color: rgba(0,194,255,.36);
-  background: rgba(255,255,255,.04);
+  border-color: color-mix(in srgb, var(--cyan) 40%, var(--border));
+  background: var(--glaze-surface-strong);
 }
 
 .platform-logo-link img {
@@ -88,20 +96,20 @@
 }
 
 .platform-state.active {
-  color: #9cf0be;
-  background: rgba(87,223,157,.07);
-  border-color: rgba(87,223,157,.24);
+  color: var(--glaze-success);
+  background: color-mix(in srgb, var(--glaze-success) 8%, transparent);
+  border-color: color-mix(in srgb, var(--glaze-success) 26%, transparent);
 }
 
 .platform-state.planned {
-  color: #bdc9da;
-  background: rgba(158,175,199,.05);
-  border-color: rgba(158,175,199,.16);
+  color: var(--muted-strong);
+  background: color-mix(in srgb, var(--glaze-muted) 6%, transparent);
+  border-color: color-mix(in srgb, var(--glaze-muted) 18%, transparent);
 }
 
 .platform-kicker {
   margin: 1.15rem 0 .35rem;
-  color: #66a0ff;
+  color: var(--blue);
   font-size: .69rem;
   font-weight: 850;
   letter-spacing: .12em;
@@ -122,8 +130,8 @@
 .platform-role {
   margin: .95rem 0 0;
   padding-top: .85rem;
-  border-top: 1px solid rgba(86,145,255,.12);
-  color: #aebdd1;
+  border-top: 1px solid color-mix(in srgb, var(--blue) 14%, transparent);
+  color: var(--muted-strong);
   font-size: .82rem;
 }
 
@@ -134,10 +142,10 @@
 .platform-note {
   margin: 1.35rem 0 0;
   padding: 1rem 1.15rem;
-  border: 1px solid rgba(0,194,255,.18);
+  border: 1px solid color-mix(in srgb, var(--cyan) 20%, var(--border));
   border-radius: 15px;
-  background: rgba(5,13,29,.58);
-  color: #aebdd1;
+  background: color-mix(in srgb, var(--glaze-surface-strong) 78%, transparent);
+  color: var(--muted-strong);
   font-size: .88rem;
 }
 
@@ -147,7 +155,7 @@
 
 .platform-legal {
   margin: .75rem 0 0;
-  color: rgba(158,175,199,.72);
+  color: var(--muted);
   font-size: .72rem;
 }
 
@@ -162,4 +170,16 @@
     flex-basis: 100%;
     min-height: 0;
   }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .platform-card { transition: none; }
+  .platform-card:hover { transform: none; }
+}
+
+@media (forced-colors: active) {
+  .platform-card,
+  .platform-logo-link,
+  .platform-native-mark,
+  .platform-note { border-color: CanvasText; }
 }
