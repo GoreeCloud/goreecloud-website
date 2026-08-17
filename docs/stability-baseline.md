@@ -38,8 +38,9 @@ The release:
 - adds repository discovery to the website navigation and homepage progressive-enhancement surface;
 - adds the repository directory to the sitemap and exact public-file allowlist;
 - expands full-public-surface validation to include the repository directory and its canonical URL;
-- expands accessibility and Glaze UI structural validation so the new page is held to the same public-interface contract as the other human-facing pages;
-- preserves the static-first privacy boundary, local assets, dependency-light delivery, security headers, isolated Cloudflare Pages publication model, and exact deployed-byte verification.
+- preserves the static homepage and its existing software overview, including GoreeCloud Monitor and the explicit boundary that production monitoring changes require a separate authorized cutover;
+- preserves the Glaze UI 1.0 semantic tokens, adaptive ranges, accessibility and resilience foundation established by 5.12.0;
+- preserves privacy, local assets, dependency-light delivery, security headers, isolated publication through Cloudflare Pages, and exact deployed-byte verification.
 
 ## Glaze UI stable-release boundary
 
