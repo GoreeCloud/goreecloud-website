@@ -23,6 +23,17 @@ SOCIAL_PROFILES = {
     "https://github.com/GoreeCloud",
 }
 
+EXPECTED_PLATFORM_IMAGE_SOURCES = {
+    "assets/platform/proxmox.svg",
+    "assets/platform/debian.svg",
+    "assets/platform/docker.svg",
+    "assets/platform/netbird.svg",
+    "assets/platform/adguard-home.svg",
+    "assets/platform/caddy.svg",
+    "assets/platform/beszel.svg",
+    "assets/platform/uptime-kuma.svg",
+}
+
 
 class HomepageParser(HTMLParser):
     def __init__(self) -> None:
@@ -191,8 +202,17 @@ def main() -> int:
         if not {"me", "noopener", "noreferrer"}.issubset(rel):
             errors.append(f"Official social profile must use rel=me noopener noreferrer: {href}")
 
-    if len(parser.platform_images) != 10:
-        errors.append(f"Expected 10 below-fold platform logo images, found {len(parser.platform_images)}.")
+    platform_sources = {image.get("src", "") for image in parser.platform_images}
+    if platform_sources != EXPECTED_PLATFORM_IMAGE_SOURCES:
+        missing = sorted(EXPECTED_PLATFORM_IMAGE_SOURCES - platform_sources)
+        unexpected = sorted(platform_sources - EXPECTED_PLATFORM_IMAGE_SOURCES)
+        if missing:
+            errors.append(f"Expected platform logo images are missing: {', '.join(missing)}")
+        if unexpected:
+            errors.append(f"Unexpected platform logo images are present: {', '.join(unexpected)}")
+    if len(parser.platform_images) != len(platform_sources):
+        errors.append("Platform logo images must not be duplicated.")
+
     for image in parser.platform_images:
         src = image.get("src", "(missing src)")
         if image.get("loading") != "lazy":
