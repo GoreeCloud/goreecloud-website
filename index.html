@@ -333,7 +333,8 @@
           <p>
             The current VPS foundation and planned local Proxmox environment use separate technologies
             for virtualization, Linux, containers, private networking, DNS, HTTPS, monitoring, notifications,
-            backup, and private search.
+            backup, and private search. GoreeCloud-owned applications replace upstream-facing product layers
+            where that provides durable control while foundational infrastructure remains open-source first.
           </p>
         </div>
 
@@ -418,15 +419,13 @@
 
           <article class="platform-card">
             <div class="platform-card-head">
-              <a class="platform-logo-link" href="https://ntfy.sh/" target="_blank" rel="noopener noreferrer" aria-label="ntfy official website">
-                <img src="assets/platform/ntfy.svg" alt="ntfy logo" width="38" height="38" loading="lazy" decoding="async">
-              </a>
+              <span class="platform-native-mark" aria-hidden="true">GN</span>
               <span class="platform-state active">Active</span>
             </div>
             <p class="platform-kicker">Notifications</p>
-            <h3>ntfy</h3>
-            <p class="platform-description">Self-hosted operational alert delivery to approved web and mobile clients while GoreeCloud Notify is developed as the controlled native replacement path.</p>
-            <p class="platform-role"><strong>Role:</strong> Current centralized infrastructure notifications.</p>
+            <h3>GoreeCloud Notify</h3>
+            <p class="platform-description">GoreeCloud's controlled notification and alert-delivery layer. It has replaced ntfy as the GoreeCloud-facing notification service while keeping notification data and delivery policy under direct platform control.</p>
+            <p class="platform-role"><strong>Role:</strong> Centralized GoreeCloud application and infrastructure notifications.</p>
           </article>
 
           <article class="platform-card">
@@ -436,10 +435,10 @@
               </a>
               <span class="platform-state active">Active</span>
             </div>
-            <p class="platform-kicker">Monitoring</p>
+            <p class="platform-kicker">Resource Monitoring</p>
             <h3>Beszel</h3>
-            <p class="platform-description">System and container visibility for the current GoreeCloud server foundation.</p>
-            <p class="platform-role"><strong>Role:</strong> Resource and host-health visibility.</p>
+            <p class="platform-description">System and container resource visibility for the current GoreeCloud server foundation.</p>
+            <p class="platform-role"><strong>Role:</strong> Resource and host-health visibility alongside specialized availability monitoring.</p>
           </article>
 
           <article class="platform-card">
@@ -447,31 +446,46 @@
               <a class="platform-logo-link" href="https://github.com/louislam/uptime-kuma" target="_blank" rel="noopener noreferrer" aria-label="Uptime Kuma official repository">
                 <img src="assets/platform/uptime-kuma.svg" alt="Uptime Kuma logo" width="38" height="38" loading="lazy" decoding="async">
               </a>
-              <span class="platform-state active">Active</span>
+              <span class="platform-state active">Current</span>
             </div>
             <p class="platform-kicker">Availability</p>
             <h3>Uptime Kuma</h3>
-            <p class="platform-description">Current production availability checks for approved GoreeCloud applications and infrastructure endpoints while GoreeCloud Monitor completes parallel validation and an explicit cutover.</p>
-            <p class="platform-role"><strong>Role:</strong> Current service uptime and endpoint monitoring.</p>
+            <p class="platform-description">Current production availability checks for approved GoreeCloud applications and infrastructure endpoints. It remains in service until GoreeCloud Monitoring completes validation and an explicitly controlled cutover.</p>
+            <p class="platform-role"><strong>Role:</strong> Transitional production uptime and endpoint monitoring.</p>
           </article>
 
           <article class="platform-card">
             <div class="platform-card-head">
-              <a class="platform-logo-link" href="https://github.com/searxng/searxng" target="_blank" rel="noopener noreferrer" aria-label="SearXNG official repository">
-                <img src="assets/platform/searxng.svg" alt="SearXNG logo" width="38" height="38" loading="lazy" decoding="async">
+              <a class="platform-logo-link" href="https://github.com/GoreeCloud/goreecloud-monitor" target="_blank" rel="noopener noreferrer" aria-label="GoreeCloud Monitor public repository">
+                <span class="platform-native-mark" aria-hidden="true">GM</span>
+              </a>
+              <span class="platform-state planned">Replacement</span>
+            </div>
+            <p class="platform-kicker">GoreeCloud Availability</p>
+            <h3>GoreeCloud Monitoring</h3>
+            <p class="platform-description">GoreeCloud-owned availability, endpoint-health, heartbeat, certificate, incident, outage, recovery, and monitoring workflows being validated as the replacement for Uptime Kuma.</p>
+            <p class="platform-role"><strong>Role:</strong> Long-term specialized GoreeCloud availability-monitoring authority.</p>
+          </article>
+
+          <article class="platform-card">
+            <div class="platform-card-head">
+              <a class="platform-logo-link" href="https://github.com/GoreeCloud/goreecloud-search" target="_blank" rel="noopener noreferrer" aria-label="GoreeCloud Search public repository">
+                <span class="platform-native-mark" aria-hidden="true">GS</span>
               </a>
               <span class="platform-state active">Active</span>
             </div>
             <p class="platform-kicker">Private Search</p>
-            <h3>SearXNG</h3>
-            <p class="platform-description">Privately administered metasearch for reduced dependence on a single commercial search provider.</p>
-            <p class="platform-role"><strong>Role:</strong> Private metasearch and future local-AI research foundation.</p>
+            <h3>GoreeCloud Search</h3>
+            <p class="platform-description">GoreeCloud's private search and metasearch layer has replaced the direct SearXNG-facing service. The maintained search code retains its open-source lineage while the user-facing product and integrations are GoreeCloud controlled.</p>
+            <p class="platform-role"><strong>Role:</strong> Private search, discovery, browser integration, and local-AI research gateway.</p>
           </article>
         </div>
 
         <p class="platform-note">
           <strong>Current → target:</strong> GoreeCloud currently operates a VPS-centered foundation.
-          The long-term direction moves primary workloads to locally owned Proxmox hosts while preserving
+          GoreeCloud Notify and GoreeCloud Search now provide the GoreeCloud-facing notification and search layers.
+          Uptime Kuma remains transitional until GoreeCloud Monitoring completes validation and an explicit cutover.
+          The long-term infrastructure direction moves primary workloads to locally owned Proxmox hosts while preserving
           portability, private access, monitoring, controlled DNS and HTTPS, and independent recovery.
         </p>
         <p class="platform-legal">Third-party logos identify their respective technologies and remain the property of their respective owners. This is a representative public foundation, not a complete infrastructure inventory.</p>
@@ -486,8 +500,9 @@
           <p>
             I use mature open-source software where it already solves the problem well, maintain
             GoreeCloud-specific forks when customization is justified, and build original applications
-            when GoreeCloud needs a purpose-built product. The long-term direction is greater software
-            ownership without needlessly forking foundational dependencies that are already sustainable upstream.
+            when GoreeCloud needs a purpose-built product. The project overview now reflects every active
+            GoreeCloud software repository except the private website deployment source, which is documented
+            in the complete repository directory.
           </p>
         </div>
 
@@ -495,6 +510,7 @@
           <div>
             <span class="glaze-chip">Design system</span>
             <h3>Glaze UI</h3>
+            <a href="https://github.com/GoreeCloud/glaze-ui" target="_blank" rel="noopener noreferrer">View public repository →</a>
           </div>
           <p>
             Glaze UI is GoreeCloud's shared visual and interaction language: Material-style structure,
@@ -522,17 +538,47 @@
             <small>Active private development</small>
           </div>
 
+          <div data-project="goreecloud-calendar">
+            <strong>GoreeCloud Calendar</strong>
+            <span>Native GoreeCloud calendar client built around standards-based CalDAV interoperability and the shared Radicale calendar authority.</span>
+            <a href="https://github.com/GoreeCloud/goreecloud-calendar" target="_blank" rel="noopener noreferrer">View public repository →</a>
+          </div>
+
           <div data-project="goreecloud-notify">
             <strong>GoreeCloud Notify</strong>
-            <span>Native notification platform in active private development, designed to replace ntfy only after compatibility, security, monitoring, backup, and migration gates are satisfied.</span>
-            <small>Active private development • ntfy remains current</small>
+            <span>GoreeCloud-owned notification and alert-delivery platform now serving as the GoreeCloud-facing replacement for ntfy.</span>
+            <small>Active GoreeCloud service • private repository</small>
           </div>
 
           <div data-project="goreecloud-monitor">
-            <strong>GoreeCloud Monitor</strong>
-            <span>Native availability, endpoint-health, heartbeat, certificate, incident, and recovery monitoring application under active development.</span>
+            <strong>GoreeCloud Monitoring</strong>
+            <span>Native availability, endpoint-health, heartbeat, certificate, incident, outage, recovery, and monitoring application under active validation as the replacement for Uptime Kuma.</span>
             <a href="https://github.com/GoreeCloud/goreecloud-monitor" target="_blank" rel="noopener noreferrer">View public repository →</a>
-            <small>Active development • Uptime Kuma remains current</small>
+            <small>Active development • Uptime Kuma remains transitional</small>
+          </div>
+
+          <div data-project="goreecloud-search">
+            <strong>GoreeCloud Search</strong>
+            <span>GoreeCloud-maintained private search and metasearch gateway that now replaces the direct SearXNG-facing service for GoreeCloud search, browser, research, and AI workflows.</span>
+            <a href="https://github.com/GoreeCloud/goreecloud-search" target="_blank" rel="noopener noreferrer">View public repository →</a>
+          </div>
+
+          <div data-project="goreecloud-browser">
+            <strong>GoreeCloud Browser</strong>
+            <span>GoreeCloud-maintained Firefox/Gecko browser distribution designed for deeper integration with GoreeVault, Bookmarks, Search, and other GoreeCloud services.</span>
+            <a href="https://github.com/GoreeCloud/goreecloud-browser" target="_blank" rel="noopener noreferrer">View public repository →</a>
+          </div>
+
+          <div data-project="goreecloud-redirector">
+            <strong>GoreeCloud Redirector</strong>
+            <span>Privacy-first browser extension that routes selected external-service URLs toward GoreeCloud-controlled alternatives using local redirect rules.</span>
+            <a href="https://github.com/GoreeCloud/goreecloud-redirector" target="_blank" rel="noopener noreferrer">View public repository →</a>
+          </div>
+
+          <div data-project="goreecloud-source-resync">
+            <strong>GoreeCloud Source Resync</strong>
+            <span>Firefox workflow extension for requesting resynchronization of supported Google Drive sources attached to active ChatGPT Project Sources.</span>
+            <a href="https://github.com/GoreeCloud/goreecloud-source-resync" target="_blank" rel="noopener noreferrer">View public repository →</a>
           </div>
 
           <div data-project="goreecloud-notes">
@@ -555,8 +601,14 @@
 
           <div data-project="goreecloud-bookmarks">
             <strong>GoreeCloud Bookmarks</strong>
-            <span>Maintained Linkwarden-based bookmark, reading, annotation, and web-preservation platform with a companion browser extension.</span>
+            <span>Maintained Linkwarden-based bookmark, reading, annotation, and web-preservation platform.</span>
             <a href="https://github.com/GoreeCloud/goreecloud-bookmarks" target="_blank" rel="noopener noreferrer">View public repository →</a>
+          </div>
+
+          <div data-project="goreecloud-bookmark-browser-extension">
+            <strong>GoreeCloud Bookmarks Browser Extension</strong>
+            <span>Official browser integration for saving and managing bookmarks and web content directly from supported browsers.</span>
+            <a href="https://github.com/GoreeCloud/goreecloud-bookmark-browser-extension" target="_blank" rel="noopener noreferrer">View public repository →</a>
           </div>
 
           <div data-project="goreecloud-feed">
@@ -578,7 +630,7 @@
           </div>
         </div>
 
-        <p class="status-note">Open source first. Fork when justified. Build original software when GoreeCloud itself requires a distinct product. Public repository links appear only for projects that are currently published.</p>
+        <p class="status-note">Open source first. Fork when justified. Build original software when GoreeCloud itself requires a distinct product. The <a href="repositories.html">complete repository directory</a> documents all 20 current repositories, including the private website deployment source and public/private source boundaries.</p>
       </div>
     </section>
 
@@ -634,7 +686,7 @@
             </div>
             <p class="roadmap-kicker">Local Intelligence</p>
             <h3>Local AI</h3>
-            <p>Private model execution and knowledge workflows built around Ollama, Open WebUI, AnythingLLM, and controlled internet research through SearXNG.</p>
+            <p>Private model execution and knowledge workflows built around Ollama, Open WebUI, AnythingLLM, and controlled internet research through GoreeCloud Search.</p>
             <p class="roadmap-current"><strong>Target:</strong> A dedicated AI Services VM with local inference and GoreeCloud-owned knowledge workflows.</p>
             <ul class="roadmap-details">
               <li>Ollama model runtime</li>
@@ -738,7 +790,14 @@
             <time datetime="2026-08-16">August 16, 2026</time>
             <div>
               <h3>GoreeCloud Monitor enters public development</h3>
-              <p>GoreeCloud Monitor begins as the native availability and recovery-monitoring path while Uptime Kuma remains the production monitor until parallel validation and an explicit cutover are complete.</p>
+              <p>GoreeCloud Monitoring begins the native availability and recovery-monitoring replacement path for Uptime Kuma.</p>
+            </div>
+          </article>
+          <article>
+            <time datetime="2026-08-17">August 17, 2026</time>
+            <div>
+              <h3>GoreeCloud-owned service layers expand</h3>
+              <p>GoreeCloud Notify replaces ntfy as the notification layer, GoreeCloud Search replaces the direct SearXNG-facing search service, and the public project overview expands to reflect the complete current software portfolio.</p>
             </div>
           </article>
           <article>
