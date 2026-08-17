@@ -20,11 +20,17 @@ MAIN_JS = (ROOT / "js" / "main.js").read_text(encoding="utf-8")
 
 PUBLIC_PROJECTS = {
     "GoreeCloud Manager": "https://github.com/GoreeCloud/goreecloud-manager",
-    "GoreeCloud Monitor": "https://github.com/GoreeCloud/goreecloud-monitor",
+    "GoreeCloud Calendar": "https://github.com/GoreeCloud/goreecloud-calendar",
+    "GoreeCloud Monitoring": "https://github.com/GoreeCloud/goreecloud-monitor",
+    "GoreeCloud Search": "https://github.com/GoreeCloud/goreecloud-search",
+    "GoreeCloud Browser": "https://github.com/GoreeCloud/goreecloud-browser",
+    "GoreeCloud Redirector": "https://github.com/GoreeCloud/goreecloud-redirector",
+    "GoreeCloud Source Resync": "https://github.com/GoreeCloud/goreecloud-source-resync",
     "GoreeCloud Notes": "https://github.com/GoreeCloud/goreecloud-notes",
     "GoreeCloud Memos": "https://github.com/GoreeCloud/goreecloud-memos",
     "GoreeCloud Research Library": "https://github.com/GoreeCloud/goreecloud-research-library",
     "GoreeCloud Bookmarks": "https://github.com/GoreeCloud/goreecloud-bookmarks",
+    "GoreeCloud Bookmarks Browser Extension": "https://github.com/GoreeCloud/goreecloud-bookmark-browser-extension",
     "GoreeCloud Feed": "https://github.com/GoreeCloud/goreecloud-rss",
     "GoreeCloud Gallery": "https://github.com/GoreeCloud/goreecloud-gallery",
     "GoreeVault Server": "https://github.com/GoreeCloud/goreevault-server",
@@ -40,12 +46,18 @@ EXPECTED_PROJECT_SLUGS = {
     "goreecloud-manager",
     "goreecloud-tasks",
     "goreecloud-contacts",
+    "goreecloud-calendar",
     "goreecloud-notify",
     "goreecloud-monitor",
+    "goreecloud-search",
+    "goreecloud-browser",
+    "goreecloud-redirector",
+    "goreecloud-source-resync",
     "goreecloud-notes",
     "goreecloud-memos",
     "goreecloud-research-library",
     "goreecloud-bookmarks",
+    "goreecloud-bookmark-browser-extension",
     "goreecloud-feed",
     "goreecloud-gallery",
     "goreevault-server",
@@ -84,16 +96,32 @@ class ProjectPortfolioContractTests(unittest.TestCase):
                 self.assertIn(project_name, INDEX)
                 self.assertNotIn(repository, INDEX)
 
-    def test_monitor_transition_preserves_uptime_kuma_as_current_production(self) -> None:
-        self.assertIn("GoreeCloud Monitor", INDEX)
-        self.assertIn("Uptime Kuma remains the production monitor", INDEX)
-        self.assertIn("parallel validation and an explicit cutover", INDEX)
-        self.assertIn("Current production availability checks", INDEX)
+    def test_notification_and_search_replacements_are_current(self) -> None:
+        self.assertIn("GoreeCloud Notify", INDEX)
+        self.assertIn("has replaced ntfy", INDEX)
+        self.assertIn("GoreeCloud Search", INDEX)
+        self.assertIn("has replaced the direct SearXNG-facing service", INDEX)
+        self.assertNotIn("ntfy remains current", INDEX)
+
+    def test_monitor_transition_preserves_uptime_kuma_until_cutover(self) -> None:
+        self.assertIn("GoreeCloud Monitoring", INDEX)
+        self.assertIn("Uptime Kuma", INDEX)
+        self.assertIn("remains in service until GoreeCloud Monitoring completes validation", INDEX)
+        self.assertIn("replacement for Uptime Kuma", INDEX)
 
     def test_bookmarks_static_content_reflects_current_public_repository(self) -> None:
         self.assertIn("Maintained Linkwarden-based bookmark", INDEX)
         self.assertIn(PUBLIC_PROJECTS["GoreeCloud Bookmarks"], INDEX)
         self.assertNotIn("Specification &amp; fork planning", INDEX)
+
+    def test_glaze_ui_repository_is_linked_from_project_overview(self) -> None:
+        self.assertIn("https://github.com/GoreeCloud/glaze-ui", INDEX)
+        self.assertIn("View public repository →", INDEX)
+
+    def test_complete_repository_directory_is_discoverable(self) -> None:
+        self.assertIn('href="repositories.html"', INDEX)
+        self.assertIn("complete repository directory", INDEX)
+        self.assertIn("all 20 current repositories", INDEX)
 
     def test_javascript_does_not_mutate_project_portfolio(self) -> None:
         for removed_marker in (
