@@ -4,13 +4,13 @@ Public static website for GoreeCloud.
 
 ## Version
 
-Current website package: **v5.12.0 — Glaze UI 1.0 conformance alignment**
+Current website package: **v5.13.0 — GitHub repository directory and portfolio synchronization**
 
 `VERSION` is the canonical machine-readable version source. `docs/stability-baseline.md` defines the release scope and the evidence required before a revision is treated as stable. `docs/glaze-ui-conformance.md` records the website's targeted Glaze UI version and conformance state.
 
 ## Role
 
-This repository contains the public-facing GoreeCloud website. It explains GoreeCloud's purpose, public software work, representative platform technologies, and long-term direction without publishing private infrastructure details.
+This repository contains the public-facing GoreeCloud website. It explains GoreeCloud's purpose, public software work, representative platform technologies, current repository portfolio, and long-term direction without publishing private infrastructure details.
 
 The browser surface is intentionally small, static, and privacy-preserving:
 
@@ -24,13 +24,15 @@ The browser surface is intentionally small, static, and privacy-preserving:
 - no service worker;
 - no Cloudflare Pages Functions or Worker runtime.
 
-The public software portfolio is static HTML. JavaScript is limited to appearance, navigation state, section highlighting, and the footer year so the normal and no-JavaScript experiences expose the same public project information.
+The authoritative repository directory is static HTML. JavaScript remains limited to appearance, navigation state, section highlighting, a homepage repository-directory teaser, and the footer year. The dedicated repository page remains directly renderable without JavaScript.
 
-## Current public software portfolio
+## Current software repository portfolio
 
-The current public portfolio includes GoreeCloud Manager, GoreeCloud Monitor, GoreeCloud Notes, GoreeCloud Memos, GoreeCloud Research Library, GoreeCloud Bookmarks, GoreeCloud Feed, GoreeCloud Gallery, and GoreeVault Server.
+The authenticated GoreeCloud repository inventory currently contains **20 repositories: 16 public and 4 private**. The dedicated `repositories.html` page groups those repositories by functional role and records a concise public description, purpose, and role for each.
 
-GoreeCloud Tasks, GoreeCloud Contacts, and GoreeCloud Notify remain represented as active private development without public repository links.
+Public repositories link directly to their GitHub source. GoreeCloud Tasks, GoreeCloud Contacts, GoreeCloud Notify, and the goreecloud-website deployment-source repository remain private and are identified without exposing private source contents.
+
+The portfolio includes Glaze UI, GoreeCloud Manager, GoreeVault Server, GoreeCloud Research Library, GoreeCloud Notes, GoreeCloud Memos, GoreeCloud Bookmarks and its browser extension, GoreeCloud Tasks, GoreeCloud Contacts, GoreeCloud Calendar, GoreeCloud Notify, GoreeCloud Monitor, GoreeCloud Search, GoreeCloud Feed, GoreeCloud Browser, GoreeCloud Redirector, GoreeCloud Source Resync, GoreeCloud Gallery, and this website.
 
 GoreeCloud Monitor is an active native monitoring project. **Uptime Kuma remains the current production availability monitor** until GoreeCloud Monitor completes parallel validation and an explicit authorized cutover.
 
@@ -46,7 +48,8 @@ Issue #5 remains open for the remaining third-party platform-mark review, the fi
 
 ## Public site structure
 
-- `index.html` — homepage, current static software portfolio, and primary search/social metadata;
+- `index.html` — homepage, software overview, platform information, roadmap, public story, social links, and primary search/social metadata;
+- `repositories.html` — dedicated canonical directory of the current GoreeCloud GitHub repository portfolio;
 - `privacy.html` — public website privacy statement;
 - `security.html` — public security-reporting policy;
 - `404.html` — custom noindex not-found experience;
@@ -55,9 +58,9 @@ Issue #5 remains open for the remaining third-party platform-mark review, the fi
 - `robots.txt` and `sitemap.xml` — crawler and canonical discovery metadata;
 - `_headers` — Cloudflare Pages security, privacy, indexing, and resource-policy headers;
 - `assets/` — self-hosted artwork source; only explicitly approved files are deployable;
-- `css/` — Glaze UI, responsive, accessibility, and section presentation;
+- `css/` — Glaze UI, responsive, accessibility, repository-directory, and section presentation;
 - `js/theme-init.js` — early local appearance initialization;
-- `js/main.js` — appearance, navigation, section-state, and footer-year progressive behavior.
+- `js/main.js` — appearance, navigation, section-state, repository discovery, and footer-year progressive behavior.
 
 Repository-only CI validators, GitHub metadata, release records, publication-review material, tests, development documentation, and version metadata remain outside the public artifact.
 
@@ -85,7 +88,7 @@ The website is a GoreeCloud reference implementation of **Glaze UI 1.0**. **Glaz
 
 The canonical shared design-system source is `GoreeCloud/glaze-ui`. The website records its target and conformance state in `docs/glaze-ui-conformance.md` rather than silently assuming compatibility.
 
-The 5.12.0 alignment preserves the site's established visual identity while standardizing the implementation underneath it. The shared foundation includes:
+The 5.13.0 release preserves the site's established visual identity and the 5.12.0 Glaze UI alignment while extending the same foundation to the repository directory. The shared foundation includes:
 
 - semantic `--glaze-*` design tokens for canvas, surfaces, text, semantic colors, spacing, radii, target sizes, blur, shadows, focus, motion, and content widths;
 - the Canvas, Solid, Raised, Glaze, and Overlay surface hierarchy;
@@ -107,7 +110,7 @@ The automated checks are regression controls, not a claim of complete WCAG confo
 
 ## Privacy and browser boundary
 
-Glaze UI alignment does not introduce remote UI dependencies. The public website continues to use local/system typography and local artwork. It contains no analytics, trackers, ad technology, remote font delivery, remote icon delivery, runtime browser API client, form backend, account system, database, service worker, or browser storage beyond the explicit local appearance preference.
+Glaze UI alignment and repository-directory publication do not introduce remote UI dependencies. The public website continues to use local/system typography and local artwork. It contains no analytics, trackers, ad technology, remote font delivery, remote icon delivery, runtime browser API client, form backend, account system, database, service worker, or browser storage beyond the explicit local appearance preference.
 
 The implementation and public privacy statement are validated together so a browser capability cannot be added silently without updating the documented boundary.
 
@@ -122,7 +125,7 @@ Core commands and gates include:
 - `python scripts/validate_repository_hygiene.py` — reject current-tree sensitive file types, credential signatures, symlinks, and unsafe artifacts;
 - `python scripts/validate_repository_history.py` — perform the repository-history preflight across reachable history;
 - `python scripts/validate_license.py` — validate Apache-2.0 source terms and NOTICE/README boundaries;
-- `python scripts/validate_accessibility.py` — enforce structural accessibility invariants;
+- `python scripts/validate_accessibility.py` — enforce structural accessibility invariants across human-facing pages;
 - `python scripts/validate_glaze_ui.py` — enforce the website Glaze UI 1.0 contract and conformance record;
 - `python scripts/validate_browser_origin_integrity.py` — keep browser-loaded resources origin-local and reject prohibited runtime clients;
 - `python scripts/validate_performance_budget.py` — keep the static public artifact within explicit payload and request ceilings;

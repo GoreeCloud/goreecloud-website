@@ -20,12 +20,14 @@ ROOT = Path(__file__).resolve().parents[1]
 PUBLIC_PAGES = (
     ROOT / "index.html",
     ROOT / "privacy.html",
+    ROOT / "repositories.html",
     ROOT / "security.html",
     ROOT / "404.html",
 )
 INDEXABLE_PAGES = {
     ROOT / "index.html": "https://www.goreecloud.com/",
     ROOT / "privacy.html": "https://www.goreecloud.com/privacy.html",
+    ROOT / "repositories.html": "https://www.goreecloud.com/repositories.html",
     ROOT / "security.html": "https://www.goreecloud.com/security.html",
 }
 SITEMAP = ROOT / "sitemap.xml"
