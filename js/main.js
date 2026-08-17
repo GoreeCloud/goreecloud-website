@@ -110,8 +110,9 @@ const navToggle = document.querySelector('.nav-toggle');
 const navToggleLabel = navToggle?.querySelector('.sr-only');
 const nav = document.querySelector('.site-nav');
 const desktopNavigation = window.matchMedia('(min-width: 721px)');
+const isHomePage = location.pathname.endsWith('/') || location.pathname.endsWith('/index.html');
 
-if (nav && location.pathname.endsWith('/') || location.pathname.endsWith('/index.html')) {
+if (nav && isHomePage) {
   const projectLink = nav.querySelector('a[href="#development"]');
   if (projectLink && !nav.querySelector('a[href="repositories.html"]')) {
     const repositoryLink = document.createElement('a');
