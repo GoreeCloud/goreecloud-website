@@ -38,7 +38,10 @@ The release:
 - preserves the authoritative 20-repository directory and verified boundary of 16 public repositories and 4 private repositories;
 - replaces dark fallback values in repository and platform surfaces with canonical Glaze UI semantic tokens so explicit and system light themes remain consistently light while dark mode remains separately intentional;
 - adds regression coverage for replacement-state language, complete homepage project inventory, theme-aware surfaces, and the exact remaining third-party platform-logo set;
-- preserves the static-first privacy boundary, local assets, accessibility and resilience requirements, isolated Cloudflare Pages publication, and exact deployment verification contract established by earlier stable releases.
+- preserves the static homepage and its static-first privacy boundary;
+- preserves GoreeCloud Monitor as the repository identity for the native monitoring project while public product language uses GoreeCloud Monitoring for the replacement path;
+- preserves the Glaze UI 1.0 design contract, including semantic tokens and adaptive ranges;
+- preserves privacy, local assets, accessibility and resilience requirements, isolated publication through Cloudflare Pages, and exact deployment verification.
 
 ## Glaze UI stable-release boundary
 
