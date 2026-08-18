@@ -137,6 +137,108 @@
 .repo-private-note { color: var(--glaze-muted); font-size: .86rem; }
 .repo-footnote { margin-top: -1rem; }
 
+.repo-card[hidden], .repo-group[hidden], .repo-empty-state[hidden] { display: none !important; }
+
+.repo-tools {
+  display: grid;
+  gap: var(--glaze-space-5);
+  margin: calc(var(--glaze-space-4) * -1) 0 clamp(3rem, 7vw, 5rem);
+  padding: clamp(var(--glaze-space-5), 3vw, var(--glaze-space-8));
+  border: 1px solid var(--glaze-line);
+  border-radius: var(--glaze-radius-xl);
+  background: var(--glaze-surface);
+  box-shadow: var(--glaze-shadow-soft);
+  backdrop-filter: blur(var(--glaze-blur)) saturate(125%);
+}
+
+.repo-tools-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--glaze-space-6);
+}
+
+.repo-tools-copy { max-width: 68ch; }
+.repo-tools-copy .eyebrow { margin: 0 0 var(--glaze-space-2); }
+.repo-tools-copy h3 { margin: 0 0 var(--glaze-space-2); font-size: clamp(1.45rem, 3vw, 2.15rem); letter-spacing: -.035em; }
+.repo-tools-copy > p:last-child { margin: 0; color: var(--glaze-muted); line-height: 1.6; }
+
+.repo-reset-button,
+.repo-filter-button,
+.repo-filter-field input,
+.repo-filter-field select {
+  min-height: var(--glaze-target-comfortable);
+  border: 1px solid var(--glaze-line);
+  border-radius: var(--glaze-radius-control);
+  font: inherit;
+}
+
+.repo-reset-button,
+.repo-filter-button {
+  cursor: pointer;
+  color: var(--glaze-text);
+  background: var(--glaze-surface-strong);
+  font-weight: 800;
+  transition: border-color var(--glaze-motion-fast) var(--glaze-ease-standard), background var(--glaze-motion-fast) var(--glaze-ease-standard), transform var(--glaze-motion-fast) var(--glaze-ease-standard);
+}
+
+.repo-reset-button { flex: 0 0 auto; padding: 0 var(--glaze-space-5); }
+.repo-reset-button:hover:not(:disabled), .repo-filter-button:hover { border-color: color-mix(in srgb, var(--glaze-accent-2) 45%, var(--glaze-line)); }
+.repo-reset-button:active:not(:disabled), .repo-filter-button:active { transform: translateY(1px); }
+.repo-reset-button:disabled { cursor: default; opacity: var(--glaze-opacity-disabled); }
+
+.repo-filter-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(14rem, .8fr) minmax(15rem, auto);
+  gap: var(--glaze-space-4);
+  align-items: end;
+}
+
+.repo-filter-field { display: grid; gap: var(--glaze-space-2); min-width: 0; }
+.repo-filter-field > span { color: var(--glaze-muted); font-size: .78rem; font-weight: 850; letter-spacing: .06em; text-transform: uppercase; }
+.repo-filter-field input,
+.repo-filter-field select {
+  width: 100%;
+  padding: 0 var(--glaze-space-4);
+  color: var(--glaze-text);
+  background: color-mix(in srgb, var(--glaze-surface-strong) 92%, transparent);
+  outline: none;
+}
+.repo-filter-field input::placeholder { color: color-mix(in srgb, var(--glaze-muted) 78%, transparent); }
+.repo-filter-field input:focus-visible,
+.repo-filter-field select:focus-visible,
+.repo-reset-button:focus-visible,
+.repo-filter-button:focus-visible {
+  outline: var(--glaze-focus-width) solid var(--focus);
+  outline-offset: var(--glaze-focus-offset);
+  border-color: var(--glaze-accent-2);
+}
+
+.repo-visibility-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--glaze-space-2);
+}
+.repo-filter-button { padding: 0 var(--glaze-space-4); }
+.repo-filter-button[aria-pressed="true"] {
+  color: #fff;
+  border-color: color-mix(in srgb, var(--glaze-accent-2) 48%, transparent);
+  background: linear-gradient(135deg, var(--glaze-accent), color-mix(in srgb, var(--glaze-accent-2) 82%, var(--glaze-accent)));
+  box-shadow: 0 10px 26px color-mix(in srgb, var(--glaze-accent) 22%, transparent);
+}
+
+.repo-filter-feedback {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--glaze-space-3);
+  min-height: 1.6rem;
+}
+.repo-filter-feedback p { margin: 0; font-size: .9rem; line-height: 1.5; }
+#repo-filter-status { color: var(--glaze-muted); }
+.repo-empty-state { color: var(--glaze-warning); font-weight: 750; }
+
 .repository-teaser {
   position: relative;
   overflow: hidden;
@@ -175,6 +277,11 @@
 .repository-teaser-stats span { color: var(--glaze-muted); font-size: .88rem; line-height: 1.35; }
 .repository-teaser-actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1.25rem; }
 
+@media (max-width: 1023px) {
+  .repo-filter-grid { grid-template-columns: minmax(0, 1fr) minmax(14rem, .8fr); }
+  .repo-visibility-field { grid-column: 1 / -1; }
+}
+
 @media (max-width: 900px) {
   .repo-hero-grid, .repository-teaser-grid { grid-template-columns: 1fr; }
   .repo-grid { grid-template-columns: 1fr; }
@@ -185,18 +292,33 @@
   .repo-summary { border-radius: 24px; }
   .repo-card { border-radius: 22px; }
   .repository-teaser-stats { grid-template-columns: 1fr 1fr; }
+  .repo-tools-header { display: grid; gap: var(--glaze-space-4); }
+  .repo-reset-button { width: 100%; }
+  .repo-filter-grid { grid-template-columns: 1fr; }
+  .repo-visibility-field { grid-column: auto; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .repo-card { transition: none; }
+  .repo-card, .repo-reset-button, .repo-filter-button { transition: none; }
   .repo-card:hover { transform: none; }
+  .repo-reset-button:active:not(:disabled), .repo-filter-button:active { transform: none; }
 }
 
 @media (prefers-reduced-transparency: reduce) {
-  .repo-summary, .repository-teaser-copy, .repository-teaser-stats { backdrop-filter: none; background: var(--glaze-surface-strong); }
+  .repo-summary, .repo-tools, .repository-teaser-copy, .repository-teaser-stats { backdrop-filter: none; background: var(--glaze-surface-strong); }
+}
+
+@media (prefers-contrast: more) {
+  .repo-tools, .repo-filter-field input, .repo-filter-field select, .repo-reset-button, .repo-filter-button { border-color: currentColor; }
 }
 
 @media (forced-colors: active) {
-  .repo-card, .repo-summary, .repository-teaser-copy, .repository-teaser-stats, .repo-group-heading > span { border: 1px solid CanvasText; }
+  .repo-card, .repo-summary, .repo-tools, .repo-filter-field input, .repo-filter-field select, .repo-reset-button, .repo-filter-button, .repository-teaser-copy, .repository-teaser-stats, .repo-group-heading > span { border: 1px solid CanvasText; }
   .repo-card::after, .repo-summary::before, .repository-teaser::before { display: none; }
+  .repo-filter-button[aria-pressed="true"] { color: ButtonText; background: Highlight; forced-color-adjust: auto; }
+}
+
+@media print {
+  .repo-tools { display: none !important; }
+  .repo-card[hidden], .repo-group[hidden] { display: block !important; }
 }
