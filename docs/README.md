@@ -2,9 +2,9 @@
 
 ## Purpose
 
-This directory contains repository-only operational, governance, release, and publication-review records for the GoreeCloud public website.
+This directory contains repository-only operational, governance, release, security-observability, and publication-review records for the GoreeCloud public website.
 
-These files support release readiness, validation evidence, source-publication review, stability tracking, and long-term maintenance. They are not browser-facing website content and **must remain outside the generated `dist/` artifact**.
+These files support release readiness, validation evidence, source-publication review, stability tracking, Wardveil Security boundaries, observability governance, and long-term maintenance. They are not browser-facing website content and **must remain outside the generated `dist/` artifact**.
 
 The public website itself remains defined by the exact `PUBLIC_FILES` allowlist in `scripts/build_public_site.py`.
 
@@ -22,6 +22,21 @@ Authority boundary:
 - expires if identity or private-data features are introduced;
 - does not waive security, privacy, Glaze UI, accessibility, deployment, or release requirements;
 - is validated by `scripts/validate_governance_readiness.py`.
+
+### `wardveil-security-and-observability.md`
+
+**Role:** Website-specific Wardveil Security presentation and production-observability contract.
+
+Use this record to define how the public website applies Wardveil Security by GoreeCloud without replacing the technical controls that establish security state, and how an anonymous static site remains observable without introducing client analytics or telemetry.
+
+Authority boundary:
+
+- Wardveil is the security identity and presentation layer; it does not replace source validation, hosting controls, security headers, policies, or application-specific safeguards;
+- Glaze UI remains the design-system authority for Wardveil-facing website surfaces;
+- current observability is source- and deployment-bound through CI, isolated artifact validation, exact preview/production verification, scheduled remote checks, and responsible security reporting;
+- authentication, authorization, database, administrator-action, and server-request audit families are Not Applicable only while the site remains anonymous and static;
+- future dynamic features must add structured privacy-conscious operational/security logging and audit evidence before Stable classification;
+- is validated by `scripts/validate_wardveil_observability.py`.
 
 ### `public-asset-inventory.md`
 
@@ -106,23 +121,25 @@ Before issue #5 is resolved, review whether a completed record is appropriate fo
 
 ## Authority relationships
 
-In shorthand: **governance = mandatory-baseline applicability; inventory = publication/rights working record; stability = current stable-version contract; checklist = reusable procedure; evidence template = historical candidate record**.
+In shorthand: **governance = mandatory-baseline applicability; Wardveil/observability = website security-identity and telemetry-free operational-evidence contract; inventory = publication/rights working record; stability = current stable-version contract; checklist = reusable procedure; evidence template = historical candidate record**.
 
 The repository uses these records together without treating them as interchangeable:
 
 1. `scripts/build_public_site.py` controls the exact technical public deployment file set.
 2. `docs/governance-readiness.md` controls website-specific applicability of the mandatory multi-user/security/Glaze UI baseline.
 3. `scripts/validate_governance_readiness.py` verifies that applicability still matches the architecture and CI gates.
-4. `docs/public-asset-inventory.md` controls the working deployable-artwork rights/provenance review.
-5. `VERSION` and `docs/stability-baseline.md` identify the current stable release contract.
-6. `docs/release-readiness-checklist.md` controls the reusable manual release procedure.
-7. `docs/release-evidence-template.md` defines candidate-specific historical evidence structure.
-8. `scripts/create_release_evidence.py` safely instantiates a working candidate record but has no authority to validate or accept it.
-9. `scripts/validate_release_evidence.py` validates evidence-record structure and selected privacy/safety invariants but not substantive release acceptance.
-10. GitHub Actions and repository validators provide machine-generated validation evidence for the exact candidate they run against.
-11. Issue #5 remains the open source-publication/creative-rights/visibility decision gate.
-12. Issue #6 records the completed Cloudflare `dist/` isolated-publication cutover and is historical implementation context rather than a pending gate.
-13. **Explicit human authorization remains required** for merge, repository visibility, DNS/routing, Cloudflare configuration changes, and production release actions.
+4. `docs/wardveil-security-and-observability.md` controls the website-specific Wardveil presentation, static observability, provider-log, privacy, and future dynamic-feature audit boundary.
+5. `scripts/validate_wardveil_observability.py` fails closed on Wardveil/reporting drift, observability-contract removal, prohibited browser telemetry, or a browser runtime exporter.
+6. `docs/public-asset-inventory.md` controls the working deployable-artwork rights/provenance review.
+7. `VERSION` and `docs/stability-baseline.md` identify the current stable release contract.
+8. `docs/release-readiness-checklist.md` controls the reusable manual release procedure.
+9. `docs/release-evidence-template.md` defines candidate-specific historical evidence structure.
+10. `scripts/create_release_evidence.py` safely instantiates a working candidate record but has no authority to validate or accept it.
+11. `scripts/validate_release_evidence.py` validates evidence-record structure and selected privacy/safety invariants but not substantive release acceptance.
+12. GitHub Actions and repository validators provide machine-generated validation evidence for the exact candidate they run against.
+13. Issue #5 remains the open source-publication/creative-rights/visibility decision gate.
+14. Issue #6 records the completed Cloudflare `dist/` isolated-publication cutover and is historical implementation context rather than a pending gate.
+15. **Explicit human authorization remains required** for merge, repository visibility, DNS/routing, Cloudflare configuration changes, and production release actions.
 
 A successful CI run, checksum, Git blob ID, preview deployment, generated record, structurally valid evidence record, or completed evidence record must not be presented as proving a different property or authorizing a different action.
 
