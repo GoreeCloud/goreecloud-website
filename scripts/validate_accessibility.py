@@ -18,6 +18,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 PUBLIC_HTML = (
     ROOT / "index.html",
+    ROOT / "repositories.html",
     ROOT / "privacy.html",
     ROOT / "security.html",
     ROOT / "404.html",
@@ -127,7 +128,6 @@ class AccessibilityParser(HTMLParser):
             self.interactive_elements.append(interactive)
 
         if tag == "button" and not attrs.get("type", "").strip():
-            # Reuse invalid_links collection for a compact line-oriented diagnostic.
             self.invalid_links.append((line, "button missing explicit type"))
 
     def handle_startendtag(self, tag: str, attrs_list: list[tuple[str, str | None]]) -> None:
@@ -193,9 +193,7 @@ def validate_page(path: Path) -> list[str]:
         previous_level = parser.headings[0][0]
         for level, line in parser.headings[1:]:
             if level > previous_level + 1:
-                errors.append(
-                    f"{name}:{line}: heading level jumps from h{previous_level} to h{level}."
-                )
+                errors.append(f"{name}:{line}: heading level jumps from h{previous_level} to h{level}.")
             previous_level = level
 
     for line, attrs in parser.navs:
@@ -217,9 +215,7 @@ def validate_page(path: Path) -> list[str]:
         errors.append(f"{name}:{line}: <{tag}> must not use autofocus.")
 
     for line, href in parser.target_blank_errors:
-        errors.append(
-            f"{name}:{line}: target=\"_blank\" must include rel=\"noopener noreferrer\": {href}"
-        )
+        errors.append(f"{name}:{line}: target=\"_blank\" must include rel=\"noopener noreferrer\": {href}")
 
     for line, detail in parser.invalid_links:
         if detail == "button missing explicit type":
@@ -229,9 +225,7 @@ def validate_page(path: Path) -> list[str]:
 
     for interactive in parser.interactive_elements:
         if not interactive.accessible_name():
-            errors.append(
-                f"{name}:{interactive.line}: <{interactive.tag}> requires an accessible name."
-            )
+            errors.append(f"{name}:{interactive.line}: <{interactive.tag}> requires an accessible name.")
 
     return errors
 
@@ -261,7 +255,7 @@ def main() -> int:
             print(f"  - {error}")
         return 1
 
-    print("Accessibility validation passed across 4 human-facing HTML pages.")
+    print(f"Accessibility validation passed across {len(PUBLIC_HTML)} human-facing HTML pages.")
     return 0
 
 
