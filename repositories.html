@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Explore the current GoreeCloud GitHub repository portfolio, including Glaze UI, native applications, maintained forks, browser integrations, monitoring, search, feeds, and the public website.">
+  <meta name="description" content="Explore the current GoreeCloud GitHub repository portfolio across Glaze UI, identity, security, backup, private networking, DNS, native applications, maintained forks, browser integrations, monitoring, search, feeds, media, and the public website.">
   <meta name="robots" content="index,follow,max-image-preview:large">
   <meta name="application-name" content="GoreeCloud">
   <meta name="author" content="GoreeCloud">
@@ -22,7 +22,7 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="GoreeCloud">
   <meta property="og:title" content="GitHub Repositories — GoreeCloud">
-  <meta property="og:description" content="A dedicated directory of the current GoreeCloud software repository portfolio.">
+  <meta property="og:description" content="The current GoreeCloud software repository portfolio, organized by product and platform role.">
   <meta property="og:url" content="https://www.goreecloud.com/repositories.html">
   <meta property="og:image" content="https://www.goreecloud.com/assets/social-preview.png">
   <meta name="twitter:card" content="summary_large_image">
@@ -68,17 +68,17 @@
             <span class="eyebrow">GoreeCloud software portfolio</span>
           </div>
           <h1>GitHub repositories</h1>
-          <p class="repo-lede">GoreeCloud uses source control as a permanent development requirement. This directory presents the current repository portfolio by role so the software layer is easier to understand, inspect, and follow.</p>
+          <p class="repo-lede">GoreeCloud uses source control as a permanent development requirement. This directory presents the current repository portfolio by role while keeping private implementation details, credentials, topology, and administrative information out of the public surface.</p>
           <div class="hero-actions">
             <a class="button primary" href="https://github.com/GoreeCloud" target="_blank" rel="noopener noreferrer">Open GoreeCloud on GitHub</a>
             <a class="button secondary" href="index.html#development">Software overview</a>
           </div>
         </div>
         <aside class="repo-summary" aria-label="Repository summary">
-          <div><strong>20</strong><span>current repositories</span></div>
-          <div><strong>16</strong><span>public repositories</span></div>
-          <div><strong>4</strong><span>private repositories</span></div>
-          <p>Historical names that redirect to renamed repositories are not counted separately.</p>
+          <div><strong>28</strong><span>current repositories</span></div>
+          <div><strong>22</strong><span>public repositories</span></div>
+          <div><strong>6</strong><span>private repositories</span></div>
+          <p>Counts reflect the current GoreeCloud repository portfolio. Historical redirect names are not counted separately.</p>
         </aside>
       </div>
     </section>
@@ -88,7 +88,7 @@
         <div class="section-heading compact-heading">
           <p class="eyebrow">Repository directory</p>
           <h2>One portfolio, distinct product roles.</h2>
-          <p>Public repositories link directly to GitHub. Private repositories are identified without publishing private source contents or internal implementation details.</p>
+          <p>Public repositories link directly to GitHub. Private repositories are identified only at a high level; their source contents and internal implementation details are not published here.</p>
         </div>
 
         <div class="repo-group">
@@ -99,15 +99,35 @@
         </div>
 
         <div class="repo-group">
-          <div class="repo-group-heading"><span>02</span><div><p class="eyebrow">Core platform &amp; security</p><h3>Operations and credential ownership</h3></div></div>
+          <div class="repo-group-heading"><span>02</span><div><p class="eyebrow">Platform, identity &amp; security</p><h3>Administration, identity, credentials, and protection</h3></div></div>
           <div class="repo-grid">
             <article class="repo-card"><div class="repo-card-top"><span class="repo-mark">MG</span><span class="repo-visibility public">Public</span></div><h4>goreecloud-manager</h4><p>Native administration and operations console for the GoreeCloud personal cloud platform.</p><dl><div><dt>Purpose</dt><dd>Provide infrastructure visibility, service health, protection status, integrations, operational tasks, inventories, and future platform-management capabilities while preserving least privilege.</dd></div><div><dt>Role</dt><dd>Central GoreeCloud management and operations console.</dd></div></dl><a href="https://github.com/GoreeCloud/goreecloud-manager" target="_blank" rel="noopener noreferrer">View repository →</a></article>
+            <article class="repo-card"><div class="repo-card-top"><span class="repo-mark">ID</span><span class="repo-visibility public">Public</span></div><h4>goreecloud-identity</h4><p>GoreeCloud-maintained identity and single-sign-on project based initially on authentik.</p><dl><div><dt>Purpose</dt><dd>Develop a self-hosted centralized authentication and identity-provider layer with individual identities, strong authentication, and standards-based application integration.</dd></div><div><dt>Role</dt><dd>Platform authentication and identity authority; application-specific authorization remains with each application.</dd></div></dl><a href="https://github.com/GoreeCloud/goreecloud-identity" target="_blank" rel="noopener noreferrer">View repository →</a></article>
             <article class="repo-card"><div class="repo-card-top"><span class="repo-mark">GV</span><span class="repo-visibility public">Public</span></div><h4>goreevault-server</h4><p>Self-hosted GoreeCloud vault for passwords, passkeys, secure notes, credentials, secrets, and other sensitive information, initially based on Vaultwarden.</p><dl><div><dt>Purpose</dt><dd>Bring credential and secret management under GoreeCloud-controlled, self-hosted infrastructure while retaining compatible client functionality and strong recovery boundaries.</dd></div><div><dt>Role</dt><dd>Security, credentials, secrets, and vault backend.</dd></div></dl><a href="https://github.com/GoreeCloud/goreevault-server" target="_blank" rel="noopener noreferrer">View repository →</a></article>
+            <article class="repo-card"><div class="repo-card-top"><span class="repo-mark">WV</span><span class="repo-visibility private">Private</span></div><h4>goreecloud-wardveil-security</h4><p>Private GoreeCloud repository boundary for Wardveil Security, the platform-wide security and protection identity.</p><dl><div><dt>Purpose</dt><dd>Provide a controlled source boundary for Wardveil-specific work without treating the security identity as a substitute for the technical controls that establish security state.</dd></div><div><dt>Role</dt><dd>Private security-identity and future security-facing source repository.</dd></div></dl><span class="repo-private-note">Private security repository</span></article>
+            <article class="repo-card"><div class="repo-card-top"><span class="repo-mark">PS</span><span class="repo-visibility private">Private</span></div><h4>goreecloud-privacy-shield</h4><p>Private repository boundary for GoreeCloud Browser's first-party Privacy Shield subsystem.</p><dl><div><dt>Purpose</dt><dd>Preserve Privacy Shield as the Browser-specific privacy and content-protection capability while remaining distinct from Wardveil Security and Glaze UI.</dd></div><div><dt>Role</dt><dd>Private Browser privacy and content-protection source boundary.</dd></div></dl><span class="repo-private-note">Private Browser privacy repository</span></article>
           </div>
         </div>
 
         <div class="repo-group">
-          <div class="repo-group-heading"><span>03</span><div><p class="eyebrow">Research &amp; knowledge</p><h3>Capture, organize, and preserve knowledge</h3></div></div>
+          <div class="repo-group-heading"><span>03</span><div><p class="eyebrow">Backup &amp; recovery</p><h3>Recovery-first data protection</h3></div></div>
+          <div class="repo-grid">
+            <article class="repo-card featured"><div class="repo-card-top"><span class="repo-mark">BK</span><span class="repo-visibility public">Public</span></div><h4>goreecloud-backup</h4><p>GoreeCloud-controlled backup and recovery project based initially on Kopia's mature backup engine.</p><dl><div><dt>Purpose</dt><dd>Develop snapshot, repository, verification, retention, restoration, and recovery-management workflows around a recovery-first principle: a successful backup does not by itself prove recoverability.</dd></div><div><dt>Role</dt><dd>Long-term GoreeCloud backup and recovery product; current production recovery systems remain authoritative until controlled replacement is proven.</dd></div></dl><a href="https://github.com/GoreeCloud/goreecloud-backup" target="_blank" rel="noopener noreferrer">View repository →</a></article>
+          </div>
+        </div>
+
+        <div class="repo-group">
+          <div class="repo-group-heading"><span>04</span><div><p class="eyebrow">Private networking &amp; DNS</p><h3>Encrypted connectivity and controlled resolution</h3></div></div>
+          <div class="repo-grid">
+            <article class="repo-card featured"><div class="repo-card-top"><span class="repo-mark">NW</span><span class="repo-visibility public">Public</span></div><h4>goreecloud-network</h4><p>GoreeCloud-maintained private-networking project based initially on NetBird and its WireGuard-based connectivity foundation.</p><dl><div><dt>Purpose</dt><dd>Develop encrypted peer connectivity, enrollment, routing, private-network resources, diagnostics, and deny-by-default network access around GoreeCloud's individual user and device model.</dd></div><div><dt>Role</dt><dd>Long-term GoreeCloud private-network platform; the existing NetBird deployment remains current production until migration acceptance is complete.</dd></div></dl><a href="https://github.com/GoreeCloud/goreecloud-network" target="_blank" rel="noopener noreferrer">View repository →</a></article>
+            <article class="repo-card"><div class="repo-card-top"><span class="repo-mark">ND</span><span class="repo-visibility public">Public</span></div><h4>goreecloud-network-dashboard</h4><p>Web administration source foundation for the GoreeCloud Network project, currently derived from the NetBird dashboard.</p><dl><div><dt>Purpose</dt><dd>Provide the administrative interface foundation for peers, enrollment, users, access controls, routes, and related network-management workflows as the maintained fork evolves.</dd></div><div><dt>Role</dt><dd>Network administration and management-interface source.</dd></div></dl><a href="https://github.com/GoreeCloud/goreecloud-network-dashboard" target="_blank" rel="noopener noreferrer">View repository →</a></article>
+            <article class="repo-card"><div class="repo-card-top"><span class="repo-mark">NA</span><span class="repo-visibility public">Public</span></div><h4>goreecloud-network-android</h4><p>Android private-network client foundation for GoreeCloud Network, initially based on the NetBird Android client.</p><dl><div><dt>Purpose</dt><dd>Develop a dedicated GoreeCloud Android experience for connection state, enrollment, approved resources, DNS/security status, diagnostics, revocation, and device lifecycle while preserving mature tunnel behavior.</dd></div><div><dt>Role</dt><dd>Dedicated GoreeCloud private-network Android client under development.</dd></div></dl><a href="https://github.com/GoreeCloud/goreecloud-network-android" target="_blank" rel="noopener noreferrer">View repository →</a></article>
+            <article class="repo-card"><div class="repo-card-top"><span class="repo-mark">DNS</span><span class="repo-visibility public">Public</span></div><h4>goreecloud-dns</h4><p>GoreeCloud-maintained DNS filtering source foundation derived from AdGuard Home.</p><dl><div><dt>Purpose</dt><dd>Maintain the client-facing filtering layer used for approved DNS policy, private-name rewrites, advertisement and tracker blocking, and controlled forwarding within the GoreeCloud DNS architecture.</dd></div><div><dt>Role</dt><dd>DNS filtering and policy source foundation; recursive resolution remains a separately defined infrastructure responsibility.</dd></div></dl><a href="https://github.com/GoreeCloud/goreecloud-dns" target="_blank" rel="noopener noreferrer">View repository →</a></article>
+          </div>
+        </div>
+
+        <div class="repo-group">
+          <div class="repo-group-heading"><span>05</span><div><p class="eyebrow">Research &amp; knowledge</p><h3>Capture, organize, and preserve knowledge</h3></div></div>
           <div class="repo-grid">
             <article class="repo-card"><div class="repo-card-top"><span class="repo-mark">RL</span><span class="repo-visibility public">Public</span></div><h4>goreecloud-research-library</h4><p>Privacy-first, self-hosted research library derived from Linkding.</p><dl><div><dt>Purpose</dt><dd>Collect, organize, verify, document, revisit, and preserve research sources and important reference material.</dd></div><div><dt>Role</dt><dd>Research-source and knowledge-preservation library.</dd></div></dl><a href="https://github.com/GoreeCloud/goreecloud-research-library" target="_blank" rel="noopener noreferrer">View repository →</a></article>
             <article class="repo-card"><div class="repo-card-top"><span class="repo-mark">NT</span><span class="repo-visibility public">Public</span></div><h4>goreecloud-notes</h4><p>Self-hosted note-taking, knowledge-management, and personal-productivity platform.</p><dl><div><dt>Purpose</dt><dd>Provide a deeper organized knowledge workspace for rich notes, research, documents, attachments, retrieval, revision recovery, relationships, and long-term knowledge preservation.</dd></div><div><dt>Role</dt><dd>Full notes and knowledge-management platform.</dd></div></dl><a href="https://github.com/GoreeCloud/goreecloud-notes" target="_blank" rel="noopener noreferrer">View repository →</a></article>
@@ -116,15 +136,15 @@
         </div>
 
         <div class="repo-group">
-          <div class="repo-group-heading"><span>04</span><div><p class="eyebrow">Bookmarks &amp; web preservation</p><h3>Save the web under personal control</h3></div></div>
+          <div class="repo-group-heading"><span>06</span><div><p class="eyebrow">Bookmarks &amp; web preservation</p><h3>Save the web under personal control</h3></div></div>
           <div class="repo-grid">
             <article class="repo-card"><div class="repo-card-top"><span class="repo-mark">BM</span><span class="repo-visibility public">Public</span></div><h4>goreecloud-bookmarks</h4><p>Self-hosted bookmark, reading, annotation, and web-preservation platform.</p><dl><div><dt>Purpose</dt><dd>Collect, organize, revisit, annotate, and permanently preserve important online content.</dd></div><div><dt>Role</dt><dd>Bookmark management and web-preservation platform.</dd></div></dl><a href="https://github.com/GoreeCloud/goreecloud-bookmarks" target="_blank" rel="noopener noreferrer">View repository →</a></article>
-            <article class="repo-card"><div class="repo-card-top"><span class="repo-mark">BX</span><span class="repo-visibility public">Public</span></div><h4>goreecloud-bookmark-browser-extension</h4><p>Official browser extension for GoreeCloud Bookmarks.</p><dl><div><dt>Purpose</dt><dd>Allow users to save and manage bookmarks and web content directly from their browser.</dd></div><div><dt>Role</dt><dd>Browser integration client for GoreeCloud Bookmarks.</dd></div></dl><a href="https://github.com/GoreeCloud/goreecloud-bookmark-browser-extension" target="_blank" rel="noopener noreferrer">View repository →</a></article>
+            <article class="repo-card"><div class="repo-card-top"><span class="repo-mark">BX</span><span class="repo-visibility public">Public</span></div><h4>goreecloud-bookmark-browser-extension</h4><p>Official browser extension for GoreeCloud Bookmarks.</p><dl><div><dt>Purpose</dt><dd>Allow users to save and manage bookmarks and web content directly from supported browsers.</dd></div><div><dt>Role</dt><dd>Browser integration client for GoreeCloud Bookmarks.</dd></div></dl><a href="https://github.com/GoreeCloud/goreecloud-bookmark-browser-extension" target="_blank" rel="noopener noreferrer">View repository →</a></article>
           </div>
         </div>
 
         <div class="repo-group">
-          <div class="repo-group-heading"><span>05</span><div><p class="eyebrow">Productivity &amp; personal information</p><h3>Private everyday applications</h3></div></div>
+          <div class="repo-group-heading"><span>07</span><div><p class="eyebrow">Productivity &amp; personal information</p><h3>Private everyday applications</h3></div></div>
           <div class="repo-grid">
             <article class="repo-card"><div class="repo-card-top"><span class="repo-mark">TK</span><span class="repo-visibility private">Private</span></div><h4>goreecloud-tasks</h4><p>Privacy-first, self-hosted, multi-user task and project-management application.</p><dl><div><dt>Purpose</dt><dd>Support personal, family, collaborative, and GoreeCloud operational work with authorization-safe user boundaries, portable data, and optional operational integrations.</dd></div><div><dt>Role</dt><dd>Multi-user task and project-management platform.</dd></div></dl><span class="repo-private-note">Private development repository</span></article>
             <article class="repo-card"><div class="repo-card-top"><span class="repo-mark">CT</span><span class="repo-visibility private">Private</span></div><h4>goreecloud-contacts</h4><p>Privacy-first, self-hosted contact-management application for personal and family contacts.</p><dl><div><dt>Purpose</dt><dd>Provide a private contact-management interface while preserving Radicale/CardDAV as the authoritative contact store and maintaining standards-based portability.</dd></div><div><dt>Role</dt><dd>User-facing contact-management application and CardDAV presentation layer.</dd></div></dl><span class="repo-private-note">Private development repository</span></article>
@@ -133,33 +153,33 @@
         </div>
 
         <div class="repo-group">
-          <div class="repo-group-heading"><span>06</span><div><p class="eyebrow">Notifications &amp; monitoring</p><h3>Know when something changes or fails</h3></div></div>
+          <div class="repo-group-heading"><span>08</span><div><p class="eyebrow">Notifications &amp; monitoring</p><h3>Know when something changes or fails</h3></div></div>
           <div class="repo-grid">
-            <article class="repo-card"><div class="repo-card-top"><span class="repo-mark">NF</span><span class="repo-visibility private">Private</span></div><h4>goreecloud-notify</h4><p>Centralized GoreeCloud notification service for collecting, managing, and delivering alerts and events.</p><dl><div><dt>Purpose</dt><dd>Provide the GoreeCloud-owned notification layer that now replaces ntfy for GoreeCloud-facing application and infrastructure alerts while preserving controlled delivery and private source boundaries.</dd></div><div><dt>Role</dt><dd>Current platform notification and alert-delivery service.</dd></div></dl><span class="repo-private-note">Private source repository • active GoreeCloud service</span></article>
+            <article class="repo-card"><div class="repo-card-top"><span class="repo-mark">NF</span><span class="repo-visibility private">Private</span></div><h4>goreecloud-notify</h4><p>Centralized GoreeCloud notification service for collecting, managing, and delivering alerts and events.</p><dl><div><dt>Purpose</dt><dd>Provide the GoreeCloud-owned notification layer replacing ntfy for GoreeCloud-facing application and infrastructure alerts while preserving controlled delivery and private source boundaries.</dd></div><div><dt>Role</dt><dd>Current platform notification and alert-delivery service.</dd></div></dl><span class="repo-private-note">Private source repository • active GoreeCloud service</span></article>
             <article class="repo-card"><div class="repo-card-top"><span class="repo-mark">MN</span><span class="repo-visibility public">Public</span></div><h4>goreecloud-monitor</h4><p>Original GoreeCloud monitoring application for service availability, endpoint health, heartbeats, certificates, incidents, and recovery.</p><dl><div><dt>Purpose</dt><dd>Provide GoreeCloud-owned HTTP/HTTPS, TCP, DNS, TLS, heartbeat, outage, recovery, and availability monitoring as the planned replacement for Uptime Kuma after controlled validation and cutover.</dd></div><div><dt>Role</dt><dd>Long-term specialized GoreeCloud availability-monitoring authority.</dd></div></dl><a href="https://github.com/GoreeCloud/goreecloud-monitor" target="_blank" rel="noopener noreferrer">View repository →</a></article>
           </div>
         </div>
 
         <div class="repo-group">
-          <div class="repo-group-heading"><span>07</span><div><p class="eyebrow">Search, feeds &amp; browser</p><h3>The GoreeCloud web layer</h3></div></div>
+          <div class="repo-group-heading"><span>09</span><div><p class="eyebrow">Search, feeds &amp; browser</p><h3>The GoreeCloud web layer</h3></div></div>
           <div class="repo-grid">
-            <article class="repo-card"><div class="repo-card-top"><span class="repo-mark">SR</span><span class="repo-visibility public">Public</span></div><h4>goreecloud-search</h4><p>GoreeCloud-maintained SearXNG-derived search platform providing private, self-hosted search and metasearch.</p><dl><div><dt>Purpose</dt><dd>Provide the current GoreeCloud-controlled search gateway replacing the direct SearXNG-facing service for web search, research, browser integration, applications, local artificial intelligence, research agents, and automation.</dd></div><div><dt>Role</dt><dd>Current private search, metasearch, discovery, and AI research gateway.</dd></div></dl><a href="https://github.com/GoreeCloud/goreecloud-search" target="_blank" rel="noopener noreferrer">View repository →</a></article>
+            <article class="repo-card"><div class="repo-card-top"><span class="repo-mark">SR</span><span class="repo-visibility public">Public</span></div><h4>goreecloud-search</h4><p>GoreeCloud-maintained SearXNG-derived search platform providing private, self-hosted search and metasearch.</p><dl><div><dt>Purpose</dt><dd>Provide the current GoreeCloud-controlled search gateway for web search, research, browser integration, applications, local artificial intelligence, research agents, and automation.</dd></div><div><dt>Role</dt><dd>Current private search, metasearch, discovery, and AI research gateway.</dd></div></dl><a href="https://github.com/GoreeCloud/goreecloud-search" target="_blank" rel="noopener noreferrer">View repository →</a></article>
             <article class="repo-card"><div class="repo-card-top"><span class="repo-mark">FD</span><span class="repo-visibility public">Public</span></div><h4>goreecloud-rss</h4><p>Source repository for GoreeCloud Feed, a GoreeCloud-owned RSS experience for web, Linux desktop, and Android.</p><dl><div><dt>Purpose</dt><dd>Provide an approachable Glaze UI feed-reading experience while keeping FreshRSS authoritative for subscriptions, article state, categories, saved items, and user separation.</dd></div><div><dt>Role</dt><dd>Private multi-user RSS client over FreshRSS.</dd></div></dl><a href="https://github.com/GoreeCloud/goreecloud-rss" target="_blank" rel="noopener noreferrer">View repository →</a></article>
-            <article class="repo-card featured"><div class="repo-card-top"><span class="repo-mark">BR</span><span class="repo-visibility public">Public</span></div><h4>goreecloud-browser</h4><p>GoreeCloud-maintained Firefox/Gecko browser distribution.</p><dl><div><dt>Purpose</dt><dd>Provide a separately branded browser on Firefox's rendering and security foundation with deeper integration into GoreeVault, GoreeCloud Bookmarks, GoreeCloud Search, and other GoreeCloud services.</dd></div><div><dt>Role</dt><dd>Primary GoreeCloud web browser and desktop service-integration gateway.</dd></div></dl><a href="https://github.com/GoreeCloud/goreecloud-browser" target="_blank" rel="noopener noreferrer">View repository →</a></article>
+            <article class="repo-card featured"><div class="repo-card-top"><span class="repo-mark">BR</span><span class="repo-visibility public">Public</span></div><h4>goreecloud-browser</h4><p>GoreeCloud-maintained Firefox/Gecko browser distribution.</p><dl><div><dt>Purpose</dt><dd>Provide a separately branded browser on Firefox's rendering and security foundation with deeper integration into GoreeVault, GoreeCloud Bookmarks, GoreeCloud Search, Privacy Shield, and other GoreeCloud services.</dd></div><div><dt>Role</dt><dd>Primary GoreeCloud web browser and desktop service-integration gateway under active development.</dd></div></dl><a href="https://github.com/GoreeCloud/goreecloud-browser" target="_blank" rel="noopener noreferrer">View repository →</a></article>
             <article class="repo-card"><div class="repo-card-top"><span class="repo-mark">RD</span><span class="repo-visibility public">Public</span></div><h4>goreecloud-redirector</h4><p>Privacy-first Firefox extension for redirecting selected external-service URLs to GoreeCloud services.</p><dl><div><dt>Purpose</dt><dd>Route selected external workflows toward GoreeCloud-controlled alternatives using local declarative redirect rules and optional custom mappings.</dd></div><div><dt>Role</dt><dd>Browser URL-routing and GoreeCloud service-migration utility.</dd></div></dl><a href="https://github.com/GoreeCloud/goreecloud-redirector" target="_blank" rel="noopener noreferrer">View repository →</a></article>
             <article class="repo-card"><div class="repo-card-top"><span class="repo-mark">RS</span><span class="repo-visibility public">Public</span></div><h4>goreecloud-source-resync</h4><p>Firefox extension for the GoreeCloud ChatGPT Project Sources workflow.</p><dl><div><dt>Purpose</dt><dd>Manually request resynchronization of resyncable Google Drive sources attached to an active ChatGPT Project Sources page.</dd></div><div><dt>Role</dt><dd>Project-source synchronization and browser workflow utility.</dd></div></dl><a href="https://github.com/GoreeCloud/goreecloud-source-resync" target="_blank" rel="noopener noreferrer">View repository →</a></article>
           </div>
         </div>
 
         <div class="repo-group">
-          <div class="repo-group-heading"><span>08</span><div><p class="eyebrow">Photos &amp; media</p><h3>Local media under user control</h3></div></div>
+          <div class="repo-group-heading"><span>10</span><div><p class="eyebrow">Photos &amp; media</p><h3>Local media under user control</h3></div></div>
           <div class="repo-grid">
             <article class="repo-card"><div class="repo-card-top"><span class="repo-mark">GL</span><span class="repo-visibility public">Public</span></div><h4>goreecloud-gallery</h4><p>Offline-first Android gallery application for browsing and managing local photos and media using Glaze UI.</p><dl><div><dt>Purpose</dt><dd>Provide a private, GoreeCloud-controlled experience for browsing and managing device-local media without requiring a commercial cloud photo provider.</dd></div><div><dt>Role</dt><dd>Local photo and media gallery client.</dd></div></dl><a href="https://github.com/GoreeCloud/goreecloud-gallery" target="_blank" rel="noopener noreferrer">View repository →</a></article>
           </div>
         </div>
 
         <div class="repo-group">
-          <div class="repo-group-heading"><span>09</span><div><p class="eyebrow">Web presence</p><h3>The public GoreeCloud website</h3></div></div>
+          <div class="repo-group-heading"><span>11</span><div><p class="eyebrow">Web presence</p><h3>The public GoreeCloud website</h3></div></div>
           <div class="repo-grid">
             <article class="repo-card"><div class="repo-card-top"><span class="repo-mark">WB</span><span class="repo-visibility private">Private</span></div><h4>goreecloud-website</h4><p>Source repository for the public static GoreeCloud website.</p><dl><div><dt>Purpose</dt><dd>Publish GoreeCloud's public identity, platform information, software portfolio, principles, development progress, and related public material.</dd></div><div><dt>Role</dt><dd>Public web presence and website deployment source.</dd></div></dl><span class="repo-private-note">Private deployment-source repository</span></article>
           </div>
@@ -167,7 +187,7 @@
 
         <div class="repo-footnote glaze-callout">
           <div><span class="glaze-chip">Portfolio principle</span><h3>Everything GoreeCloud builds belongs in source control.</h3></div>
-          <p>GitHub is the current primary development platform. The longer-term source-control strategy may move the authoritative home to self-hosted Gitea while retaining GitHub for public mirrors, collaboration, and open-source participation.</p>
+          <p>GitHub is the current primary development platform. Repository visibility does not determine runtime maturity: public maintained-fork development can remain pre-production, and private repositories can serve active production roles. Each project's own specification and release evidence remain authoritative for deployment state.</p>
         </div>
       </div>
     </section>
