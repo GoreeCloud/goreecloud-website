@@ -15,13 +15,6 @@ const colorScheme = window.matchMedia('(prefers-color-scheme: light)');
 root.dataset.js = 'true';
 if (themeToggle) themeToggle.hidden = false;
 
-if (!document.querySelector('link[href="css/repositories.css"]')) {
-  const repositoryStyles = document.createElement('link');
-  repositoryStyles.rel = 'stylesheet';
-  repositoryStyles.href = 'css/repositories.css';
-  document.head.append(repositoryStyles);
-}
-
 function getThemeMode() {
   const explicitTheme = root.dataset.theme;
   return explicitTheme === 'light' || explicitTheme === 'dark' ? explicitTheme : 'system';
@@ -110,17 +103,6 @@ const navToggle = document.querySelector('.nav-toggle');
 const navToggleLabel = navToggle?.querySelector('.sr-only');
 const nav = document.querySelector('.site-nav');
 const desktopNavigation = window.matchMedia('(min-width: 721px)');
-const isHomePage = location.pathname.endsWith('/') || location.pathname.endsWith('/index.html');
-
-if (nav && isHomePage) {
-  const projectLink = nav.querySelector('a[href="#development"]');
-  if (projectLink && !nav.querySelector('a[href="repositories.html"]')) {
-    const repositoryLink = document.createElement('a');
-    repositoryLink.href = 'repositories.html';
-    repositoryLink.textContent = 'Repositories';
-    projectLink.insertAdjacentElement('afterend', repositoryLink);
-  }
-}
 
 function updateNavigationControl(open) {
   if (!navToggle) return;
@@ -206,32 +188,6 @@ if (sectionEntries.length) {
   updateActiveNavigation();
   window.addEventListener('scroll', scheduleActiveNavigationUpdate, { passive: true });
   window.addEventListener('resize', scheduleActiveNavigationUpdate);
-}
-
-const developmentSection = document.getElementById('development');
-if (developmentSection && !document.getElementById('repositories')) {
-  const repositorySection = document.createElement('section');
-  repositorySection.id = 'repositories';
-  repositorySection.className = 'section repository-teaser';
-  repositorySection.innerHTML = `
-    <div class="container repository-teaser-grid">
-      <div class="repository-teaser-copy">
-        <p class="eyebrow">GitHub repositories</p>
-        <h2>Source code is part of the platform.</h2>
-        <p>GoreeCloud currently maintains 20 repositories spanning Glaze UI, native applications, maintained forks, browser integrations, monitoring, search, feeds, media, security, and the public website. The dedicated directory explains each repository's purpose and role.</p>
-        <div class="repository-teaser-actions">
-          <a class="button primary" href="repositories.html">Explore all repositories</a>
-          <a class="button secondary" href="https://github.com/GoreeCloud" target="_blank" rel="noopener noreferrer">Open GitHub profile</a>
-        </div>
-      </div>
-      <div class="repository-teaser-stats" aria-label="Repository portfolio summary">
-        <div><strong>20</strong><span>current repositories</span></div>
-        <div><strong>16</strong><span>public repositories</span></div>
-        <div><strong>4</strong><span>private repositories</span></div>
-        <div><strong>9</strong><span>functional groups</span></div>
-      </div>
-    </div>`;
-  developmentSection.insertAdjacentElement('afterend', repositorySection);
 }
 
 const year = document.getElementById('year');

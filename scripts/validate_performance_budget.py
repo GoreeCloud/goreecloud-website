@@ -27,7 +27,7 @@ MAX_HOMEPAGE_SCRIPTS = 3
 PUBLIC_HTML = tuple(
     ROOT / relative
     for relative in PUBLIC_FILES
-    if relative in {"index.html", "privacy.html", "security.html", "404.html"}
+    if relative in {"index.html", "repositories.html", "privacy.html", "security.html", "404.html"}
 )
 
 

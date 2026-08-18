@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "as_of": "2026-08-18",
+  "counts": {
+    "total": 28,
+    "public": 22,
+    "private": 6,
+    "functional_groups": 11
+  },
+  "groups": [
+    {
+      "id": "design-system",
+      "label": "Design system",
+      "repositories": [
+        {"name": "glaze-ui", "visibility": "public"}
+      ]
+    },
+    {
+      "id": "platform-identity-security",
+      "label": "Platform, identity, and security",
+      "repositories": [
+        {"name": "goreecloud-manager", "visibility": "public"},
+        {"name": "goreecloud-identity", "visibility": "public"},
+        {"name": "goreevault-server", "visibility": "public"},
+        {"name": "goreecloud-wardveil-security", "visibility": "private"},
+        {"name": "goreecloud-privacy-shield", "visibility": "private"}
+      ]
+    },
+    {
+      "id": "backup-recovery",
+      "label": "Backup and recovery",
+      "repositories": [
+        {"name": "goreecloud-backup", "visibility": "public"}
+      ]
+    },
+    {
+      "id": "network-dns",
+      "label": "Private networking and DNS",
+      "repositories": [
+        {"name": "goreecloud-network", "visibility": "public"},
+        {"name": "goreecloud-network-dashboard", "visibility": "public"},
+        {"name": "goreecloud-network-android", "visibility": "public"},
+        {"name": "goreecloud-dns", "visibility": "public"}
+      ]
+    },
+    {
+      "id": "research-knowledge",
+      "label": "Research and knowledge",
+      "repositories": [
+        {"name": "goreecloud-research-library", "visibility": "public"},
+        {"name": "goreecloud-notes", "visibility": "public"},
+        {"name": "goreecloud-memos", "visibility": "public"}
+      ]
+    },
+    {
+      "id": "bookmarks-preservation",
+      "label": "Bookmarks and web preservation",
+      "repositories": [
+        {"name": "goreecloud-bookmarks", "visibility": "public"},
+        {"name": "goreecloud-bookmark-browser-extension", "visibility": "public"}
+      ]
+    },
+    {
+      "id": "productivity-personal-information",
+      "label": "Productivity and personal information",
+      "repositories": [
+        {"name": "goreecloud-tasks", "visibility": "private"},
+        {"name": "goreecloud-contacts", "visibility": "private"},
+        {"name": "goreecloud-calendar", "visibility": "public"}
+      ]
+    },
+    {
+      "id": "notifications-monitoring",
+      "label": "Notifications and monitoring",
+      "repositories": [
+        {"name": "goreecloud-notify", "visibility": "private"},
+        {"name": "goreecloud-monitor", "visibility": "public"}
+      ]
+    },
+    {
+      "id": "search-feeds-browser",
+      "label": "Search, feeds, and browser",
+      "repositories": [
+        {"name": "goreecloud-search", "visibility": "public"},
+        {"name": "goreecloud-rss", "visibility": "public"},
+        {"name": "goreecloud-browser", "visibility": "public"},
+        {"name": "goreecloud-redirector", "visibility": "public"},
+        {"name": "goreecloud-source-resync", "visibility": "public"}
+      ]
+    },
+    {
+      "id": "photos-media",
+      "label": "Photos and media",
+      "repositories": [
+        {"name": "goreecloud-gallery", "visibility": "public"}
+      ]
+    },
+    {
+      "id": "web-presence",
+      "label": "Web presence",
+      "repositories": [
+        {"name": "goreecloud-website", "visibility": "private"}
+      ]
+    }
+  ]
+}

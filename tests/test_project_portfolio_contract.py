@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Regression tests for the static GoreeCloud public software portfolio.
+"""Regression tests for the representative GoreeCloud homepage software portfolio.
 
-The public project inventory is intentionally present in ``index.html`` instead of being
-injected by JavaScript. This keeps the normal and no-JavaScript experiences aligned,
-improves crawlability, and reduces unnecessary client-side mutation while preserving the
-privacy and repository-publication boundaries of private projects.
+The homepage project overview is intentionally static and representative rather than an
+exhaustive repository inventory. The complete source-controlled portfolio lives in
+``repositories.html`` and ``docs/repository-portfolio.json``. This keeps normal and
+no-JavaScript experiences aligned without duplicating every repository as a homepage card.
 """
 
 from __future__ import annotations
@@ -67,7 +67,7 @@ PROJECT_SLUG_RE = re.compile(r'data-project="([a-z0-9-]+)"')
 
 
 class ProjectPortfolioContractTests(unittest.TestCase):
-    """Protect the static public project inventory and migration boundaries."""
+    """Protect the static representative project overview and migration boundaries."""
 
     def test_project_inventory_is_static_explicit_and_unique(self) -> None:
         slugs = PROJECT_SLUG_RE.findall(INDEX)
@@ -121,14 +121,16 @@ class ProjectPortfolioContractTests(unittest.TestCase):
     def test_complete_repository_directory_is_discoverable(self) -> None:
         self.assertIn('href="repositories.html"', INDEX)
         self.assertIn("complete repository directory", INDEX)
-        self.assertIn("all 20 current repositories", INDEX)
+        self.assertIn("all 28 current repositories", INDEX)
+        self.assertIn("representative", INDEX)
 
-    def test_javascript_does_not_mutate_project_portfolio(self) -> None:
+    def test_javascript_does_not_mutate_project_or_repository_portfolios(self) -> None:
         for removed_marker in (
             "CURRENT_PUBLIC_PROJECTS",
             "createProjectCard",
             "reconcilePublicProjectPortfolio",
             "#development .development-grid",
+            "repositorySection.innerHTML",
         ):
             self.assertNotIn(removed_marker, MAIN_JS)
 

@@ -46,6 +46,9 @@ jobs:
       - name: Validate GoreeCloud governance readiness
         run: python scripts/validate_governance_readiness.py
 
+      - name: Validate repository portfolio integrity
+        run: python scripts/validate_repository_portfolio.py
+
       - name: Validate security reporting
         run: python scripts/validate_security_policy.py
 
