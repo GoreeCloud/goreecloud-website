@@ -13,10 +13,12 @@ SECURITY_TXT = ROOT / ".well-known" / "security.txt"
 OBSERVABILITY = ROOT / "docs" / "wardveil-security-and-observability.md"
 MAIN_JS = ROOT / "js" / "main.js"
 THEME_JS = ROOT / "js" / "theme-init.js"
+VALIDATION_WORKFLOW = ROOT / ".github" / "workflows" / "validate.yml"
 
 WARDVEIL_IDENTITY = "Wardveil Security by GoreeCloud"
 SECURITY_CONTACT = "security@goreecloud.com"
 PROTECTED_PHRASE = "Protected by Wardveil"
+WORKFLOW_COMMAND = "python scripts/validate_wardveil_observability.py"
 
 REQUIRED_OBSERVABILITY_COPY = (
     WARDVEIL_IDENTITY,
@@ -52,7 +54,15 @@ def require(errors: list[str], text: str, marker: str, location: str) -> None:
 def main() -> int:
     errors: list[str] = []
 
-    for path in (SECURITY_PAGE, SECURITY_MD, SECURITY_TXT, OBSERVABILITY, MAIN_JS, THEME_JS):
+    for path in (
+        SECURITY_PAGE,
+        SECURITY_MD,
+        SECURITY_TXT,
+        OBSERVABILITY,
+        MAIN_JS,
+        THEME_JS,
+        VALIDATION_WORKFLOW,
+    ):
         if not path.exists():
             errors.append(f"Required Wardveil/observability file is missing: {path.relative_to(ROOT)}")
     if errors:
@@ -62,6 +72,7 @@ def main() -> int:
     security_md = SECURITY_MD.read_text(encoding="utf-8")
     security_txt = SECURITY_TXT.read_text(encoding="utf-8")
     observability = OBSERVABILITY.read_text(encoding="utf-8")
+    validation_workflow = VALIDATION_WORKFLOW.read_text(encoding="utf-8")
     browser_source = "\n".join(
         (
             MAIN_JS.read_text(encoding="utf-8"),
@@ -75,6 +86,7 @@ def main() -> int:
     require(errors, security_md, WARDVEIL_IDENTITY, "SECURITY.md")
     require(errors, security_md, SECURITY_CONTACT, "SECURITY.md")
     require(errors, security_txt, f"Contact: mailto:{SECURITY_CONTACT}", ".well-known/security.txt")
+    require(errors, validation_workflow, WORKFLOW_COMMAND, ".github/workflows/validate.yml")
 
     for marker in REQUIRED_OBSERVABILITY_COPY:
         require(errors, observability, marker, "docs/wardveil-security-and-observability.md")
