@@ -14,6 +14,7 @@ MANIFEST = ROOT / "docs" / "repository-portfolio.json"
 DIRECTORY = ROOT / "repositories.html"
 HOMEPAGE = ROOT / "index.html"
 MAIN_JS = ROOT / "js" / "main.js"
+REPOSITORY_CSS = ROOT / "css" / "repositories.css"
 
 
 def validate_manifest(data: dict) -> list[str]:
@@ -85,12 +86,75 @@ def validate_manifest(data: dict) -> list[str]:
     return errors
 
 
+def validate_discovery_enhancement(main_js: str, repository_css: str) -> list[str]:
+    """Validate the local-only progressive repository discovery controls."""
+    errors: list[str] = []
+    required_js_markers = (
+        "const repositoryDirectory = document.querySelector('.repo-directory-section');",
+        "tools.className = 'repo-tools';",
+        "searchInput.type = 'search';",
+        "searchInput.autocomplete = 'off';",
+        "groupSelect",
+        "Repository visibility",
+        "status.setAttribute('role', 'status');",
+        "status.setAttribute('aria-live', 'polite');",
+        "card.hidden = !matches;",
+        "group.hidden = visibleInGroup === 0;",
+        "directoryHeading.insertAdjacentElement('afterend', tools);",
+        "not stored, added to the URL, or sent anywhere",
+        "repositoryCards.length",
+        "searchInput.focus();",
+    )
+    for marker in required_js_markers:
+        if marker not in main_js:
+            errors.append(f"Repository discovery enhancement is missing required behavior: {marker}")
+
+    if "const repositoryDirectory =" in main_js:
+        filter_source = main_js.split("const repositoryDirectory =", 1)[1]
+        prohibited_filter_behavior = (
+            "localStorage",
+            "sessionStorage",
+            "URLSearchParams",
+            "history.pushState",
+            "history.replaceState",
+            "fetch(",
+            "XMLHttpRequest",
+            "sendBeacon",
+        )
+        for marker in prohibited_filter_behavior:
+            if marker in filter_source:
+                errors.append(
+                    "Repository search/filter controls must remain local, ephemeral, and network-independent: "
+                    f"{marker}"
+                )
+
+    required_css_markers = (
+        ".repo-tools {",
+        "min-height: var(--glaze-target-comfortable);",
+        ".repo-filter-button[aria-pressed=\"true\"]",
+        "@media (max-width: 1023px)",
+        "@media (max-width: 599px)",
+        "@media (prefers-reduced-motion: reduce)",
+        "@media (prefers-reduced-transparency: reduce)",
+        "@media (prefers-contrast: more)",
+        "@media (forced-colors: active)",
+        "@media print",
+        ".repo-card[hidden], .repo-group[hidden] { display: block !important; }",
+    )
+    for marker in required_css_markers:
+        if marker not in repository_css:
+            errors.append(f"Repository discovery presentation is missing required Glaze UI behavior: {marker}")
+
+    return errors
+
+
 def validate(root: Path = ROOT) -> list[str]:
     errors: list[str] = []
     manifest_path = root / "docs" / "repository-portfolio.json"
     directory_path = root / "repositories.html"
     homepage_path = root / "index.html"
     main_js_path = root / "js" / "main.js"
+    repository_css_path = root / "css" / "repositories.css"
 
     try:
         data = json.loads(manifest_path.read_text(encoding="utf-8"))
@@ -104,6 +168,7 @@ def validate(root: Path = ROOT) -> list[str]:
     directory = directory_path.read_text(encoding="utf-8")
     homepage = homepage_path.read_text(encoding="utf-8")
     main_js = main_js_path.read_text(encoding="utf-8")
+    repository_css = repository_css_path.read_text(encoding="utf-8")
     counts = data["counts"]
 
     summary_markers = (
@@ -190,6 +255,7 @@ def validate(root: Path = ROOT) -> list[str]:
         if marker in directory or marker in homepage or marker in main_js:
             errors.append(f"Stale repository portfolio count must not remain public: {marker}")
 
+    errors.extend(validate_discovery_enhancement(main_js, repository_css))
     return errors
 
 
