@@ -54,6 +54,8 @@ Glaze UI is a design contract and a visual identity requirement. Automated confo
 
 Version 5.16.0 does not change the canonical Glaze UI version. The repository directory and homepage repository summary use the existing Glaze UI 1.0 surface, token, focus, accessibility, adaptive, reduced-motion, reduced-transparency, forced-colors, and resilience semantics. Moving repository content from JavaScript into static HTML changes the content authority and progressive-enhancement boundary, not the design-system authority.
 
+The stable boundary explicitly preserves the existing **semantic tokens**, **adaptive ranges**, static homepage delivery, GoreeCloud Monitor transition language, privacy controls, and isolated publication model from earlier stable releases.
+
 ## Repository portfolio authority and privacy boundary
 
 `docs/repository-portfolio.json` is repository metadata and must remain outside the generated public artifact. It records repository names, visibility states, group membership, and derived totals only. It must not become a vehicle for private URLs, source contents, credentials, private hostnames, private IP addresses, internal topology, administrative endpoints, or sensitive implementation data.
