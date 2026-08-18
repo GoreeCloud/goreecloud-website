@@ -96,12 +96,21 @@ class ProjectPortfolioContractTests(unittest.TestCase):
                 self.assertIn(project_name, INDEX)
                 self.assertNotIn(repository, INDEX)
 
-    def test_notification_and_search_replacements_are_current(self) -> None:
+    def test_notification_and_search_transitions_are_current(self) -> None:
         self.assertIn("GoreeCloud Notify", INDEX)
-        self.assertIn("has replaced ntfy", INDEX)
+        self.assertIn("GoreeCloud Notify is a release candidate", INDEX)
+        self.assertIn("ntfy remains the current production notification service", INDEX)
+        self.assertNotIn("has replaced ntfy", INDEX)
+        self.assertNotIn("GoreeCloud Notify replaces ntfy", INDEX)
+
         self.assertIn("GoreeCloud Search", INDEX)
         self.assertIn("has replaced the direct SearXNG-facing service", INDEX)
-        self.assertNotIn("ntfy remains current", INDEX)
+
+    def test_memos_static_content_reflects_accepted_production(self) -> None:
+        self.assertIn("GoreeCloud Memos", INDEX)
+        self.assertIn("GoreeCloud Memos v0.1.2 is the accepted Stable production service", INDEX)
+        self.assertIn('<span class="badge active">Available Now</span>', INDEX)
+        self.assertNotIn('<span class="badge growing">Stabilizing</span>', INDEX)
 
     def test_monitor_transition_preserves_uptime_kuma_until_cutover(self) -> None:
         self.assertIn("GoreeCloud Monitoring", INDEX)

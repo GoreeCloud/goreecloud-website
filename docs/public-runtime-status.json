@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "as_of": "2026-08-18",
+  "purpose": "Repository-only public-status authority used to keep website maturity and migration claims aligned with accepted GoreeCloud records.",
+  "services": {
+    "goreecloud-memos": {
+      "public_name": "GoreeCloud Memos",
+      "state": "stable-production",
+      "public_label": "Available Now",
+      "current_service": "GoreeCloud Memos v0.1.2"
+    },
+    "goreecloud-notify": {
+      "public_name": "GoreeCloud Notify",
+      "state": "release-candidate",
+      "public_label": "Release Candidate",
+      "current_service": "ntfy",
+      "transition": "GoreeCloud Notify is intended to replace ntfy only after controlled production acceptance and cutover."
+    },
+    "goreecloud-search": {
+      "public_name": "GoreeCloud Search",
+      "state": "stable-production",
+      "public_label": "Active",
+      "current_service": "GoreeCloud Search",
+      "transition": "GoreeCloud Search has replaced the direct SearXNG-facing search service."
+    },
+    "goreecloud-monitor": {
+      "public_name": "GoreeCloud Monitoring",
+      "state": "active-development",
+      "public_label": "Replacement",
+      "current_service": "Uptime Kuma",
+      "transition": "Uptime Kuma remains production until GoreeCloud Monitoring completes controlled acceptance and cutover."
+    }
+  }
+}

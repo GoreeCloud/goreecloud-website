@@ -41,8 +41,11 @@ REQUIRED_PUBLIC_MARKERS = {
     "native GoreeCloud Notes repository": "https://github.com/GoreeCloud/goreecloud-notes",
     "GoreeCloud Memos canonical repository": "https://github.com/GoreeCloud/goreecloud-memos",
     "GoreeCloud Memos product": "<strong>GoreeCloud Memos</strong>",
-    "GoreeCloud Memos stabilization status": '<span class="badge growing">Stabilizing</span>',
+    "GoreeCloud Memos accepted production status": '<span class="badge active">Available Now</span>',
+    "GoreeCloud Memos accepted production wording": "GoreeCloud Memos v0.1.2 is the accepted Stable production service",
     "GoreeCloud Notify project": "<strong>GoreeCloud Notify</strong>",
+    "GoreeCloud Notify release-candidate status": "GoreeCloud Notify is a release candidate",
+    "ntfy production migration boundary": "ntfy remains the current production notification service",
     "public ownership purpose": "Ownership should be understandable and repeatable.",
     "expanded ONLYOFFICE family service": 'data-service="onlyoffice"',
     "expanded Stirling PDF family service": 'data-service="stirling-pdf"',
@@ -60,6 +63,9 @@ STALE_PUBLIC_COPY = (
     "https://github.com/GoreeCloud/linkding",
     "https://github.com/GoreeCloud/memos",
     '<span class="badge growing">Quick Capture</span>',
+    '<span class="badge growing">Stabilizing</span>',
+    "has replaced ntfy",
+    "GoreeCloud Notify replaces ntfy",
 )
 REQUIRED_SECURITY_FIELDS = {
     "Contact": "mailto:security@goreecloud.com",
