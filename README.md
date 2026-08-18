@@ -4,9 +4,9 @@ Public static website for GoreeCloud.
 
 ## Version
 
-Current website package: **v5.16.0 — repository portfolio integrity and static-first inventory hardening**
+Current website package: **v5.17.0 — public runtime-status integrity and migration-boundary hardening**
 
-`VERSION` is the canonical machine-readable version source. `docs/stability-baseline.md` defines the release scope and the evidence required before a revision is treated as stable. `docs/glaze-ui-conformance.md` records the website's targeted Glaze UI version and conformance state. `docs/wardveil-security-and-observability.md` defines the website-specific Wardveil Security and observability boundary. `docs/repository-portfolio.json` is the repository-only machine-readable authority for the current public/private GitHub portfolio counts and grouping.
+`VERSION` is the canonical machine-readable version source. `docs/stability-baseline.md` defines the release scope and the evidence required before a revision is treated as stable. `docs/glaze-ui-conformance.md` records the website's targeted Glaze UI version and conformance state. `docs/wardveil-security-and-observability.md` defines the website-specific Wardveil Security and observability boundary. `docs/repository-portfolio.json` is the repository-only machine-readable authority for the current public/private GitHub portfolio counts and grouping. `docs/public-runtime-status.json` is the separate repository-only authority for reviewed public maturity and migration claims that must not be inferred from repository visibility.
 
 ## Role
 
@@ -24,7 +24,7 @@ The browser surface is intentionally small, static, and privacy-preserving:
 - no service worker;
 - no Cloudflare Pages Functions or Worker runtime.
 
-The authoritative repository directory and homepage repository summary are static HTML. JavaScript remains limited to appearance, mobile-navigation behavior, section highlighting, and the footer year. Repository counts, visibility, grouping, and public/private boundaries do not depend on JavaScript and remain available to crawlers, assistive technology, and no-JavaScript users.
+The authoritative repository directory and homepage repository summary are static HTML. JavaScript remains limited to appearance, mobile-navigation behavior, section highlighting, and the footer year. Repository counts, visibility, grouping, public/private boundaries, and reviewed runtime-status claims do not depend on JavaScript and remain available to crawlers, assistive technology, and no-JavaScript users.
 
 ## Current software repository portfolio
 
@@ -36,7 +36,9 @@ The portfolio includes Glaze UI; GoreeCloud Manager; GoreeCloud Identity; GoreeV
 
 The public homepage intentionally presents a representative software overview instead of duplicating the exhaustive repository directory. `docs/repository-portfolio.json`, `scripts/validate_repository_portfolio.py`, and `tests/test_repository_portfolio.py` fail closed when declared counts, public/private visibility, required public links, private-link boundaries, homepage summary, or the exhaustive directory drift from the reviewed portfolio.
 
-Public source availability does not imply production acceptance. GoreeCloud Network remains under controlled fork-to-native development while the existing NetBird environment remains the current private-network production platform. GoreeCloud Backup remains under active development while current accepted recovery systems remain authoritative. GoreeCloud Notify and GoreeCloud Search are now the GoreeCloud-facing notification and private-search layers. **Uptime Kuma remains the current production availability monitor**, but it is explicitly transitional while **GoreeCloud Monitoring** completes validation and an authorized cutover.
+Public source availability does not imply production acceptance. GoreeCloud Network remains under controlled fork-to-native development while the existing NetBird environment remains the current private-network production platform. GoreeCloud Backup remains under active development while current accepted recovery systems remain authoritative. **GoreeCloud Memos v0.1.2 is accepted Stable production. GoreeCloud Search is the current GoreeCloud-facing private-search layer. GoreeCloud Notify is a release candidate and ntfy remains the current production notification service until controlled production acceptance and cutover. Uptime Kuma remains the current production availability monitor**, but it is explicitly transitional while **GoreeCloud Monitoring** completes validation and an authorized cutover.
+
+`docs/public-runtime-status.json`, `scripts/validate_public_runtime_status.py`, and the project-portfolio regression suite protect these reviewed maturity boundaries. A public repository, green CI run, published release candidate, or deployable source tree is not treated as proof of a production cutover.
 
 ## Source license and creative-rights boundary
 
@@ -64,7 +66,7 @@ Issue #5 remains open for the remaining third-party platform-mark review, the fi
 - `js/theme-init.js` — early local appearance initialization;
 - `js/main.js` — appearance, navigation, section-state, and footer-year progressive behavior.
 
-Repository-only CI validators, GitHub metadata, release records, publication-review material, tests, development documentation, observability contracts, repository-portfolio metadata, and version metadata remain outside the public artifact.
+Repository-only CI validators, GitHub metadata, release records, publication-review material, tests, development documentation, observability contracts, repository-portfolio metadata, runtime-status metadata, and version metadata remain outside the public artifact.
 
 ## Cloudflare Pages deployment
 
@@ -90,7 +92,7 @@ The website is a GoreeCloud reference implementation of **Glaze UI 1.0**. **Glaz
 
 The canonical shared design-system source is `GoreeCloud/glaze-ui`. The website records its target and conformance state in `docs/glaze-ui-conformance.md` rather than silently assuming compatibility.
 
-The 5.16.0 candidate preserves the site's established visual identity, 5.14.0 theme-surface correction, and 5.15.0 Wardveil integration while moving repository facts from runtime-generated JavaScript into directly rendered Glaze UI HTML. The same repository presentation layer is now explicitly loaded by the homepage rather than inserted at runtime. The shared foundation includes:
+The 5.17.0 candidate preserves the site's established visual identity, 5.16.0 static repository presentation, 5.15.0 Wardveil integration, and earlier theme-surface corrections. Runtime-status changes reuse the existing Glaze UI semantic badges, cards, platform states, typography, and adaptive behavior rather than introducing a new visual system. The shared foundation includes:
 
 - semantic `--glaze-*` design tokens for canvas, surfaces, text, semantic colors, spacing, radii, target sizes, blur, shadows, focus, motion, and content widths;
 - the Canvas, Solid, Raised, Glaze, and Overlay surface hierarchy;
@@ -126,9 +128,9 @@ The public website does not use the phrase **Protected by Wardveil** as a blanke
 
 ## Privacy and browser boundary
 
-Glaze UI alignment, Wardveil presentation, observability governance, and static repository-directory publication do not introduce remote UI dependencies. The public website continues to use local/system typography and local artwork. It contains no analytics, trackers, ad technology, remote font delivery, remote icon delivery, runtime browser API client, form backend, account system, database, service worker, or browser storage beyond the explicit local appearance preference.
+Glaze UI alignment, Wardveil presentation, observability governance, static repository-directory publication, and runtime-status governance do not introduce remote UI dependencies. The public website continues to use local/system typography and local artwork. It contains no analytics, trackers, ad technology, remote font delivery, remote icon delivery, runtime browser API client, form backend, account system, database, service worker, or browser storage beyond the explicit local appearance preference.
 
-Repository portfolio metadata is repository-only. The browser does not fetch GitHub inventory data, and private repository URLs are not published from the directory. The implementation, public privacy statement, Wardveil/observability contract, and repository-portfolio validator are kept aligned so browser data collection, runtime networking, dynamic security-sensitive behavior, or public/private portfolio drift cannot be added silently without updating the documented boundary.
+Repository portfolio and runtime-status metadata are repository-only. The browser does not fetch GitHub inventory or status metadata, and private repository URLs are not published from the directory. The implementation, public privacy statement, Wardveil/observability contract, repository-portfolio validator, and runtime-status validator are kept aligned so browser data collection, runtime networking, dynamic security-sensitive behavior, portfolio drift, or maturity-claim drift cannot be added silently without updating the documented boundary.
 
 ## Repository tooling
 
@@ -151,6 +153,7 @@ Core commands and gates include:
 - `python scripts/validate_security_policy.py` — validate Wardveil public security-reporting behavior and `security.txt` freshness;
 - `python scripts/validate_wardveil_observability.py` — fail closed on Wardveil identity drift, security-contact drift, observability-contract removal, prohibited browser telemetry, or runtime exporter introduction;
 - `python scripts/validate_repository_portfolio.py` — fail closed on repository-count, visibility, public-link, private-link, static-homepage, directory-completeness, and stale-inventory drift;
+- `python scripts/validate_public_runtime_status.py` — fail closed on reviewed production-state, release-candidate, replacement, and migration-boundary drift;
 - `python scripts/verify_remote_deployment.py` — compare deployed public bytes and live headers with the exact reviewed candidate.
 
 Run the complete offline regression suite with:
