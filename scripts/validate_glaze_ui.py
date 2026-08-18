@@ -17,6 +17,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 HUMAN_PAGES = (
     ROOT / "index.html",
+    ROOT / "repositories.html",
     ROOT / "privacy.html",
     ROOT / "security.html",
     ROOT / "404.html",
