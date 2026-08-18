@@ -75,7 +75,7 @@ MISSING_PATH = "/__goreecloud-deployment-smoke__/missing/nested/path"
 MAX_BODY_BYTES = 1_048_576
 TIMEOUT_SECONDS = 15
 SECURITY_TXT_RENEWAL_BUFFER = timedelta(days=30)
-EXPECTED_SECURITY_CONTACT = "mailto:goreecloud@gmail.com"
+EXPECTED_SECURITY_CONTACT = "mailto:security@goreecloud.com"
 EXPECTED_SECURITY_CANONICAL = "https://www.goreecloud.com/.well-known/security.txt"
 EXPECTED_SECURITY_POLICY = "https://www.goreecloud.com/security.html"
 
