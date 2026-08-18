@@ -220,8 +220,8 @@
             <div class="service-icon" aria-hidden="true">GM</div>
             <p class="service-kicker">Quick Capture</p>
             <h3>GoreeCloud Memos</h3>
-            <p>A lightweight GoreeCloud quick-note capture application for fast, focused notes when a full knowledge workspace is unnecessary.</p>
-            <span class="badge growing">Stabilizing</span>
+            <p>A lightweight GoreeCloud quick-note capture application for fast, focused notes when a full knowledge workspace is unnecessary. GoreeCloud Memos v0.1.2 is the accepted Stable production service.</p>
+            <span class="badge active">Available Now</span>
           </article>
 
           <article class="service-card" data-service="element">
@@ -422,12 +422,12 @@
           <article class="platform-card">
             <div class="platform-card-head">
               <span class="platform-native-mark" aria-hidden="true">GN</span>
-              <span class="platform-state active">Active</span>
+              <span class="platform-state planned">Release Candidate</span>
             </div>
             <p class="platform-kicker">Notifications</p>
             <h3>GoreeCloud Notify</h3>
-            <p class="platform-description">GoreeCloud's controlled notification and alert-delivery layer. It has replaced ntfy as the GoreeCloud-facing notification service while keeping notification data and delivery policy under direct platform control.</p>
-            <p class="platform-role"><strong>Role:</strong> Centralized GoreeCloud application and infrastructure notifications.</p>
+            <p class="platform-description">GoreeCloud Notify is a release candidate for the long-term GoreeCloud notification and alert-delivery layer. ntfy remains the current production notification service until target backup and recovery, monitoring, runtime, manual acceptance, controlled migration, and rollback validation are complete.</p>
+            <p class="platform-role"><strong>Role:</strong> Planned centralized GoreeCloud application and infrastructure notification authority after controlled production acceptance.</p>
           </article>
 
           <article class="platform-card">
@@ -452,7 +452,7 @@
             </div>
             <p class="platform-kicker">Availability</p>
             <h3>Uptime Kuma</h3>
-            <p class="platform-description">Current production availability checks for approved GoreeCloud applications and infrastructure endpoints. It remains in service until GoreeCloud Monitoring completes validation and an explicitly controlled cutover.</p>
+            <p class="platform-description">Current production availability checks for approved GoreeCloud applications and infrastructure endpoints. Uptime Kuma remains in service until GoreeCloud Monitoring completes validation and an explicitly controlled cutover.</p>
             <p class="platform-role"><strong>Role:</strong> Transitional production uptime and endpoint monitoring.</p>
           </article>
 
@@ -485,7 +485,7 @@
 
         <p class="platform-note">
           <strong>Current → target:</strong> GoreeCloud currently operates a VPS-centered foundation.
-          GoreeCloud Notify and GoreeCloud Search now provide the GoreeCloud-facing notification and search layers.
+          GoreeCloud Search provides the current GoreeCloud-facing search layer; ntfy remains the current production notification service while GoreeCloud Notify completes controlled production acceptance.
           Uptime Kuma remains transitional until GoreeCloud Monitoring completes validation and an explicit cutover.
           The long-term infrastructure direction moves primary workloads to locally owned Proxmox hosts while preserving
           portability, private access, monitoring, controlled DNS and HTTPS, and independent recovery.
@@ -547,8 +547,8 @@
 
           <div data-project="goreecloud-notify">
             <strong>GoreeCloud Notify</strong>
-            <span>GoreeCloud-owned notification and alert-delivery platform now serving as the GoreeCloud-facing replacement for ntfy.</span>
-            <small>Active GoreeCloud service • private repository</small>
+            <span>GoreeCloud Notify is a release candidate intended to become the GoreeCloud-owned notification and alert-delivery platform after controlled production acceptance. ntfy remains the current production notification service.</span>
+            <small>Release candidate • private repository • ntfy remains current</small>
           </div>
 
           <div data-project="goreecloud-monitor">
@@ -590,8 +590,9 @@
 
           <div data-project="goreecloud-memos">
             <strong>GoreeCloud Memos</strong>
-            <span>Maintained lightweight quick-note capture application for fast, focused note entry when a full knowledge workspace is unnecessary.</span>
+            <span>Maintained lightweight quick-note capture application for fast, focused note entry when a full knowledge workspace is unnecessary. GoreeCloud Memos v0.1.2 is the accepted Stable production service.</span>
             <a href="https://github.com/GoreeCloud/goreecloud-memos" target="_blank" rel="noopener noreferrer">View public repository →</a>
+            <small>Stable production v0.1.2</small>
           </div>
 
           <div data-project="goreecloud-research-library">
@@ -818,7 +819,7 @@
             <time datetime="2026-08-17">August 17, 2026</time>
             <div>
               <h3>GoreeCloud-owned service layers expand</h3>
-              <p>GoreeCloud Notify replaces ntfy as the notification layer, GoreeCloud Search replaces the direct SearXNG-facing search service, and the public repository portfolio continues expanding across GoreeCloud-controlled software.</p>
+              <p>GoreeCloud Notify reaches release-candidate source maturity while ntfy remains the current production notification service; GoreeCloud Search replaces the direct SearXNG-facing search service; and the public repository portfolio continues expanding across GoreeCloud-controlled software.</p>
             </div>
           </article>
           <article>
