@@ -4,9 +4,9 @@ Public static website for GoreeCloud.
 
 ## Version
 
-Current website package: **v5.14.0 — replacement-path reconciliation, complete project overview, and theme-surface correction**
+Current website package: **v5.15.0 — Wardveil security reporting and static observability hardening**
 
-`VERSION` is the canonical machine-readable version source. `docs/stability-baseline.md` defines the release scope and the evidence required before a revision is treated as stable. `docs/glaze-ui-conformance.md` records the website's targeted Glaze UI version and conformance state.
+`VERSION` is the canonical machine-readable version source. `docs/stability-baseline.md` defines the release scope and the evidence required before a revision is treated as stable. `docs/glaze-ui-conformance.md` records the website's targeted Glaze UI version and conformance state. `docs/wardveil-security-and-observability.md` defines the website-specific Wardveil Security and observability boundary.
 
 ## Role
 
@@ -51,7 +51,7 @@ Issue #5 remains open for the remaining third-party platform-mark review, the fi
 - `index.html` — homepage, software overview, platform information, roadmap, public story, social links, and primary search/social metadata;
 - `repositories.html` — dedicated canonical directory of the current GoreeCloud GitHub repository portfolio;
 - `privacy.html` — public website privacy statement;
-- `security.html` — public security-reporting policy;
+- `security.html` — public Wardveil Security responsible-reporting policy;
 - `404.html` — custom noindex not-found experience;
 - `.well-known/security.txt` — standardized public security-reporting contact;
 - `site.webmanifest` — browser application identity;
@@ -62,7 +62,7 @@ Issue #5 remains open for the remaining third-party platform-mark review, the fi
 - `js/theme-init.js` — early local appearance initialization;
 - `js/main.js` — appearance, navigation, section-state, repository discovery, and footer-year progressive behavior.
 
-Repository-only CI validators, GitHub metadata, release records, publication-review material, tests, development documentation, and version metadata remain outside the public artifact.
+Repository-only CI validators, GitHub metadata, release records, publication-review material, tests, development documentation, observability contracts, and version metadata remain outside the public artifact.
 
 ## Cloudflare Pages deployment
 
@@ -88,7 +88,7 @@ The website is a GoreeCloud reference implementation of **Glaze UI 1.0**. **Glaz
 
 The canonical shared design-system source is `GoreeCloud/glaze-ui`. The website records its target and conformance state in `docs/glaze-ui-conformance.md` rather than silently assuming compatibility.
 
-The 5.14.0 release preserves the site's established visual identity and corrects theme drift in repository and platform components. Those surfaces now use the canonical Glaze UI semantic tokens instead of dark-only fallback values, keeping light mode consistently light while preserving the separately intentional dark theme. The shared foundation includes:
+The 5.15.0 release preserves the site's established visual identity and the 5.14.0 theme-surface correction while applying Wardveil Security to the public security-reporting experience through existing Glaze UI semantics. The shared foundation includes:
 
 - semantic `--glaze-*` design tokens for canvas, surfaces, text, semantic colors, spacing, radii, target sizes, blur, shadows, focus, motion, and content widths;
 - the Canvas, Solid, Raised, Glaze, and Overlay surface hierarchy;
@@ -108,11 +108,25 @@ The application-specific website palette and composition remain intentional Gore
 
 The automated checks are regression controls, not a claim of complete WCAG conformance. Material interface changes still warrant manual keyboard review, **screen-reader testing**, zoom/reflow inspection, color-contrast review, touch-device review, and explicit visual acceptance.
 
+## Wardveil Security and observability
+
+**Wardveil Security by GoreeCloud** is the platform security identity used by the public security-reporting experience. Wardveil is a security identity and presentation layer; it does not replace the underlying source validation, Cloudflare Pages configuration, security headers, policies, or application-specific controls that establish technical state.
+
+The dedicated public reporting address is **security@goreecloud.com** and is published consistently in `security.html`, `SECURITY.md`, and `.well-known/security.txt`.
+
+The current website is an anonymous static site with no authentication, authorization, application database, backend API, state-changing forms, administrative interface, server-side session store, or application-owned request-processing service. Those event families are therefore not applicable to the current website runtime. A future dynamic capability cannot reuse that classification: it must add privacy-conscious structured operational and security logging, sensitive-data exclusions, retention/access controls, failure behavior, and validation before Stable classification.
+
+Current observability is source- and deployment-bound rather than visitor-tracking based. Exact-revision CI, isolated artifact validation, branch-preview verification, production verification, scheduled deployment checks, and the public security-reporting channel provide release and operational evidence without introducing client analytics or telemetry.
+
+The website deliberately does **not** add browser error reporting, analytics, session replay, fingerprinting, or a remote telemetry exporter. Provider-side logging capability is not treated as enabled or sufficient unless separately verified and documented.
+
+The public website does not use the phrase **Protected by Wardveil** as a blanket assurance. Any future protection-status use must be tied to an evidenced scope under the governing Wardveil standard.
+
 ## Privacy and browser boundary
 
-Glaze UI alignment and repository-directory publication do not introduce remote UI dependencies. The public website continues to use local/system typography and local artwork. It contains no analytics, trackers, ad technology, remote font delivery, remote icon delivery, runtime browser API client, form backend, account system, database, service worker, or browser storage beyond the explicit local appearance preference.
+Glaze UI alignment, Wardveil presentation, observability governance, and repository-directory publication do not introduce remote UI dependencies. The public website continues to use local/system typography and local artwork. It contains no analytics, trackers, ad technology, remote font delivery, remote icon delivery, runtime browser API client, form backend, account system, database, service worker, or browser storage beyond the explicit local appearance preference.
 
-The implementation and public privacy statement are validated together so a browser capability cannot be added silently without updating the documented boundary.
+The implementation, public privacy statement, and Wardveil/observability contract are validated together so browser data collection, runtime networking, or dynamic security-sensitive behavior cannot be added silently without updating the documented boundary.
 
 ## Repository tooling
 
@@ -132,7 +146,8 @@ Core commands and gates include:
 - `python scripts/validate_public_surface.py` — validate links, canonical state, sitemap, crawler policy, and cross-page integrity;
 - `python scripts/validate_deployment_contract.py` — enforce the static Cloudflare Pages architecture and headers;
 - `python scripts/validate_privacy_policy.py` — keep public privacy guidance synchronized with implementation;
-- `python scripts/validate_security_policy.py` — validate public security-reporting behavior and `security.txt` freshness;
+- `python scripts/validate_security_policy.py` — validate Wardveil public security-reporting behavior and `security.txt` freshness;
+- `python scripts/validate_wardveil_observability.py` — fail closed on Wardveil identity drift, security-contact drift, observability-contract removal, prohibited browser telemetry, or runtime exporter introduction;
 - `python scripts/verify_remote_deployment.py` — compare deployed public bytes and live headers with the exact reviewed candidate.
 
 Run the complete offline regression suite with:
@@ -164,4 +179,4 @@ Passing CI does not itself authorize DNS changes, Cloudflare project-setting cha
 
 ## Security reporting
 
-Do not publish vulnerability details, credentials, tokens, private hostnames, private IP addresses, or other sensitive operational information in public issue or pull-request content. Use the public security-reporting guidance at the GoreeCloud website security page.
+Do not publish vulnerability details, credentials, tokens, private hostnames, private IP addresses, or other sensitive operational information in public issue or pull-request content. Use the public Wardveil Security reporting guidance at the GoreeCloud website security page or email **security@goreecloud.com**.
