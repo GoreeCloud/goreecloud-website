@@ -2,9 +2,9 @@
 
 ## Purpose
 
-This directory contains repository-only operational, governance, release, security-observability, portfolio-integrity, and publication-review records for the GoreeCloud public website.
+This directory contains repository-only operational, governance, release, security-observability, portfolio-integrity, runtime-status-integrity, and publication-review records for the GoreeCloud public website.
 
-These files support release readiness, validation evidence, source-publication review, stability tracking, Wardveil Security boundaries, observability governance, repository-portfolio integrity, and long-term maintenance. They are not browser-facing website content and **must remain outside the generated `dist/` artifact**.
+These files support release readiness, validation evidence, source-publication review, stability tracking, Wardveil Security boundaries, observability governance, repository-portfolio integrity, public runtime-status integrity, and long-term maintenance. They are not browser-facing website content and **must remain outside the generated `dist/` artifact**.
 
 The public website itself remains defined by the exact `PUBLIC_FILES` allowlist in `scripts/build_public_site.py`.
 
@@ -52,6 +52,24 @@ Authority boundary:
 - public source availability must not be treated as proof of production acceptance or migration completion;
 - the browser must not fetch this record or GitHub inventory at runtime;
 - is validated by `scripts/validate_repository_portfolio.py` and `tests/test_repository_portfolio.py`.
+
+### `public-runtime-status.json`
+
+**Role:** Machine-readable authority for reviewed public runtime-maturity and migration claims.
+
+Use this record to prevent the public website from treating repository visibility, source validation, release-candidate publication, or deployability as proof that a production service has been accepted or replaced.
+
+The v5.17.0 reviewed scope records the public-safe state of GoreeCloud Memos, GoreeCloud Notify, GoreeCloud Search, and GoreeCloud Monitoring because each has a material production/replacement claim on the website.
+
+Authority boundary:
+
+- complements rather than replaces each application's authoritative project specification and production/release evidence;
+- records only public-safe maturity state and transition language needed by this website;
+- must be deliberately revalidated when an authoritative product cutover, rollback, or acceptance state changes;
+- must not contain private addresses, credentials, tokens, topology, protected runtime evidence, or private source contents;
+- repository visibility and runtime maturity remain separate properties;
+- the browser must not fetch this record at runtime;
+- is validated by `scripts/validate_public_runtime_status.py` and the project-portfolio regression suite.
 
 ### `public-asset-inventory.md`
 
@@ -136,7 +154,7 @@ Before issue #5 is resolved, review whether a completed record is appropriate fo
 
 ## Authority relationships
 
-In shorthand: **governance = mandatory-baseline applicability; Wardveil/observability = website security-identity and telemetry-free operational-evidence contract; repository portfolio = source-controlled repository names/visibility/grouping; inventory = publication/rights working record; stability = current stable-version contract; checklist = reusable procedure; evidence template = historical candidate record**.
+In shorthand: **governance = mandatory-baseline applicability; Wardveil/observability = website security-identity and telemetry-free operational-evidence contract; repository portfolio = source-controlled repository names/visibility/grouping; runtime status = reviewed public maturity/migration claims; inventory = publication/rights working record; stability = current stable-version contract; checklist = reusable procedure; evidence template = historical candidate record**.
 
 The repository uses these records together without treating them as interchangeable:
 
@@ -147,18 +165,20 @@ The repository uses these records together without treating them as interchangea
 5. `scripts/validate_wardveil_observability.py` fails closed on Wardveil/reporting drift, observability-contract removal, prohibited browser telemetry, or a browser runtime exporter.
 6. `docs/repository-portfolio.json` controls the repository names, visibility states, grouping, and portfolio counts presented by the public directory and homepage summary.
 7. `scripts/validate_repository_portfolio.py` and `tests/test_repository_portfolio.py` fail closed on portfolio count/visibility/link/static-rendering drift.
-8. `docs/public-asset-inventory.md` controls the working deployable-artwork rights/provenance review.
-9. `VERSION` and `docs/stability-baseline.md` identify the current stable release contract.
-10. `docs/release-readiness-checklist.md` controls the reusable manual release procedure.
-11. `docs/release-evidence-template.md` defines candidate-specific historical evidence structure.
-12. `scripts/create_release_evidence.py` safely instantiates a working candidate record but has no authority to validate or accept it.
-13. `scripts/validate_release_evidence.py` validates evidence-record structure and selected privacy/safety invariants but not substantive release acceptance.
-14. GitHub Actions and repository validators provide machine-generated validation evidence for the exact candidate they run against.
-15. Issue #5 remains the open source-publication/creative-rights/visibility decision gate.
-16. Issue #6 records the completed Cloudflare `dist/` isolated-publication cutover and is historical implementation context rather than a pending gate.
-17. **Explicit human authorization remains required** for merge, repository visibility, DNS/routing, Cloudflare configuration changes, and production release actions.
+8. `docs/public-runtime-status.json` controls the reviewed website-facing maturity and migration claims without replacing product-specific authoritative records.
+9. `scripts/validate_public_runtime_status.py` and project-portfolio regression coverage fail closed on reversed production state, premature replacement claims, or loss of accepted migration boundaries.
+10. `docs/public-asset-inventory.md` controls the working deployable-artwork rights/provenance review.
+11. `VERSION` and `docs/stability-baseline.md` identify the current stable release contract.
+12. `docs/release-readiness-checklist.md` controls the reusable manual release procedure.
+13. `docs/release-evidence-template.md` defines candidate-specific historical evidence structure.
+14. `scripts/create_release_evidence.py` safely instantiates a working candidate record but has no authority to validate or accept it.
+15. `scripts/validate_release_evidence.py` validates evidence-record structure and selected privacy/safety invariants but not substantive release acceptance.
+16. GitHub Actions and repository validators provide machine-generated validation evidence for the exact candidate they run against.
+17. Issue #5 remains the open source-publication/creative-rights/visibility decision gate.
+18. Issue #6 records the completed Cloudflare `dist/` isolated-publication cutover and is historical implementation context rather than a pending gate.
+19. **Explicit human authorization remains required** for merge, repository visibility, DNS/routing, Cloudflare configuration changes, and production release actions.
 
-A successful CI run, checksum, Git blob ID, preview deployment, generated record, structurally valid evidence record, or completed evidence record must not be presented as proving a different property or authorizing a different action.
+A successful CI run, checksum, Git blob ID, preview deployment, generated record, structurally valid evidence record, completed evidence record, repository visibility state, or release-candidate tag must not be presented as proving a different property or authorizing a different action.
 
 ## Privacy and publication boundary
 
