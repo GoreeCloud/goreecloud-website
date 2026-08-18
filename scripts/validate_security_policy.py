@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate GoreeCloud public security-reporting metadata and policy surfaces."""
+"""Validate GoreeCloud public security-reporting metadata and Wardveil policy surfaces."""
 
 from __future__ import annotations
 
@@ -18,7 +18,8 @@ SECURITY_MD = ROOT / "SECURITY.md"
 SITEMAP = ROOT / "sitemap.xml"
 POLICY_URL = "https://www.goreecloud.com/security.html"
 CANONICAL_SECURITY_TXT = "https://www.goreecloud.com/.well-known/security.txt"
-PRIMARY_CONTACT = "mailto:goreecloud@gmail.com"
+PRIMARY_CONTACT = "mailto:security@goreecloud.com"
+WARDVEIL_IDENTITY = "Wardveil Security by GoreeCloud"
 EXPIRY_RENEWAL_BUFFER = timedelta(days=30)
 MAX_EXPIRY_HORIZON = timedelta(days=365)
 PRIVATE_PATTERNS = (
@@ -30,14 +31,18 @@ PRIVATE_PATTERNS = (
 SENSITIVE_TERMS = ("goreecloud-vps-01", ".netbird.selfhosted")
 REQUIRED_COPY = (
     "Responsible security reporting",
-    "goreecloud@gmail.com",
+    WARDVEIL_IDENTITY,
+    "security identity and presentation layer",
+    "security@goreecloud.com",
     "/.well-known/security.txt",
     "does not currently offer a bug bounty",
     "does not authorize testing of private family infrastructure",
 )
 REQUIRED_REPOSITORY_POLICY_COPY = (
     "Do **not** open a public GitHub issue",
-    "goreecloud@gmail.com",
+    WARDVEIL_IDENTITY,
+    "security identity and presentation layer",
+    "security@goreecloud.com",
     POLICY_URL,
     CANONICAL_SECURITY_TXT,
     "does not authorize testing of private family infrastructure",
@@ -60,6 +65,7 @@ class PolicyParser(HTMLParser):
         self.robots: str | None = None
         self.lang: str | None = None
         self.h1_count = 0
+        self.security_identity: str | None = None
 
     def handle_starttag(self, tag: str, attrs_list: list[tuple[str, str | None]]) -> None:
         attrs = {key: value or "" for key, value in attrs_list}
@@ -73,6 +79,8 @@ class PolicyParser(HTMLParser):
             self.canonical = attrs.get("href")
         if tag == "meta" and attrs.get("name") == "robots":
             self.robots = attrs.get("content")
+        if tag == "meta" and attrs.get("name") == "goreecloud-security-identity":
+            self.security_identity = attrs.get("content")
         if tag == "script" and not attrs.get("src"):
             self.inline_scripts += 1
         if tag == "style":
@@ -151,25 +159,18 @@ def validate_security_txt(errors: list[str], fields: dict[str, list[str]]) -> No
         if expires is None:
             errors.append("security.txt Expires must be an RFC3339 timestamp with an explicit timezone.")
         else:
-            now = datetime.now(timezone.utc)
-            remaining = expires - now
+            remaining = expires - datetime.now(timezone.utc)
             if remaining <= EXPIRY_RENEWAL_BUFFER:
-                errors.append(
-                    "security.txt Expires must stay more than 30 days in the future so CI provides a renewal window."
-                )
+                errors.append("security.txt Expires must stay more than 30 days in the future so CI provides a renewal window.")
             if remaining >= MAX_EXPIRY_HORIZON:
-                errors.append(
-                    "security.txt Expires must remain less than 365 days in the future to avoid stale disclosure metadata."
-                )
+                errors.append("security.txt Expires must remain less than 365 days in the future to avoid stale disclosure metadata.")
 
     preferred_languages = fields.get("preferred-languages", [])
     if len(preferred_languages) > 1:
         errors.append("security.txt Preferred-Languages must not appear more than once.")
     elif preferred_languages:
         languages = [value.strip().lower() for value in preferred_languages[0].split(",") if value.strip()]
-        if not languages:
-            errors.append("security.txt Preferred-Languages must list at least one language tag.")
-        if "en" not in languages:
+        if not languages or "en" not in languages:
             errors.append("security.txt Preferred-Languages must continue to include English ('en').")
 
     canonical_values = fields.get("canonical", [])
@@ -192,14 +193,9 @@ def validate_security_txt(errors: list[str], fields: dict[str, list[str]]) -> No
 def main() -> int:
     errors: list[str] = []
 
-    if not SECURITY_TXT.exists():
-        errors.append(".well-known/security.txt is missing.")
-    if not SECURITY_PAGE.exists():
-        errors.append("security.html is missing.")
-    if not SECURITY_MD.exists():
-        errors.append("SECURITY.md is missing.")
-    if not SITEMAP.exists():
-        errors.append("sitemap.xml is missing.")
+    for path in (SECURITY_TXT, SECURITY_PAGE, SECURITY_MD, SITEMAP):
+        if not path.exists():
+            errors.append(f"Required security-reporting file is missing: {path.relative_to(ROOT)}")
     if errors:
         return report(errors)
 
@@ -229,11 +225,14 @@ def main() -> int:
         errors.append(f"security.html canonical must be {POLICY_URL!r}, found {parser.canonical!r}.")
     if not parser.robots or "noindex" in parser.robots.lower():
         errors.append("security.html must remain indexable public guidance.")
+    if parser.security_identity != WARDVEIL_IDENTITY:
+        errors.append(
+            f"security.html must declare the canonical Wardveil identity metadata {WARDVEIL_IDENTITY!r}, found {parser.security_identity!r}."
+        )
 
-    duplicates = sorted(identifier for identifier, count in parser.id_counts.items() if count > 1)
-    for identifier in duplicates:
-        errors.append(f"Duplicate id in security.html: {identifier}")
-
+    for identifier, count in sorted(parser.id_counts.items()):
+        if count > 1:
+            errors.append(f"Duplicate id in security.html: {identifier}")
     if parser.inline_scripts:
         errors.append("security.html must not contain inline script blocks.")
     if parser.inline_styles:
@@ -258,12 +257,12 @@ def main() -> int:
             errors.append(f"security.html references missing local resource: {reference}")
 
     for marker in REQUIRED_COPY:
-        if marker.lower() not in html.lower():
+        if marker.casefold() not in html.casefold():
             errors.append(f"security.html required reporting guidance is missing: {marker}")
 
     repository_policy = SECURITY_MD.read_text(encoding="utf-8")
     for marker in REQUIRED_REPOSITORY_POLICY_COPY:
-        if marker.lower() not in repository_policy.lower():
+        if marker.casefold() not in repository_policy.casefold():
             errors.append(f"SECURITY.md required reporting guidance is missing: {marker}")
 
     for path in (SECURITY_TXT, SECURITY_PAGE, SECURITY_MD):
