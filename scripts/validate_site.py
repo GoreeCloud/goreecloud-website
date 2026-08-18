@@ -62,7 +62,7 @@ STALE_PUBLIC_COPY = (
     '<span class="badge growing">Quick Capture</span>',
 )
 REQUIRED_SECURITY_FIELDS = {
-    "Contact": "mailto:goreecloud@gmail.com",
+    "Contact": "mailto:security@goreecloud.com",
     "Preferred-Languages": "en",
     "Canonical": SECURITY_CANONICAL,
 }

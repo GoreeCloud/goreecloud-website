@@ -49,6 +49,9 @@ jobs:
       - name: Validate security reporting
         run: python scripts/validate_security_policy.py
 
+      - name: Validate Wardveil Security and observability
+        run: python scripts/validate_wardveil_observability.py
+
       - name: Validate privacy statement
         run: python scripts/validate_privacy_policy.py
 
