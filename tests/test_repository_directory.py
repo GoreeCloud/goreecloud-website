@@ -4,39 +4,26 @@
 from __future__ import annotations
 
 from html.parser import HTMLParser
+import json
 from pathlib import Path
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 PAGE = ROOT / "repositories.html"
+MANIFEST = ROOT / "docs" / "repository-portfolio.json"
+PORTFOLIO = json.loads(MANIFEST.read_text(encoding="utf-8"))
 EXPECTED_REPOSITORIES = {
-    "glaze-ui",
-    "goreecloud-manager",
-    "goreevault-server",
-    "goreecloud-research-library",
-    "goreecloud-notes",
-    "goreecloud-memos",
-    "goreecloud-bookmarks",
-    "goreecloud-bookmark-browser-extension",
-    "goreecloud-tasks",
-    "goreecloud-contacts",
-    "goreecloud-calendar",
-    "goreecloud-notify",
-    "goreecloud-monitor",
-    "goreecloud-search",
-    "goreecloud-rss",
-    "goreecloud-browser",
-    "goreecloud-redirector",
-    "goreecloud-source-resync",
-    "goreecloud-gallery",
-    "goreecloud-website",
+    repository["name"]
+    for group in PORTFOLIO["groups"]
+    for repository in group["repositories"]
 }
 PRIVATE_REPOSITORIES = {
-    "goreecloud-tasks",
-    "goreecloud-contacts",
-    "goreecloud-notify",
-    "goreecloud-website",
+    repository["name"]
+    for group in PORTFOLIO["groups"]
+    for repository in group["repositories"]
+    if repository["visibility"] == "private"
 }
+EXPECTED_COUNTS = PORTFOLIO["counts"]
 
 
 class DirectoryParser(HTMLParser):
@@ -111,10 +98,7 @@ class RepositoryDirectoryTests(unittest.TestCase):
         cls.parser.feed(PAGE.read_text(encoding="utf-8"))
 
     def test_directory_has_canonical_public_identity(self) -> None:
-        self.assertEqual(
-            self.parser.canonical,
-            "https://www.goreecloud.com/repositories.html",
-        )
+        self.assertEqual(self.parser.canonical, "https://www.goreecloud.com/repositories.html")
         self.assertTrue(self.parser.has_viewport)
         self.assertTrue(self.parser.has_color_scheme)
 
@@ -135,12 +119,12 @@ class RepositoryDirectoryTests(unittest.TestCase):
         self.assertEqual(self.parser.main_tabindex, "-1")
         self.assertIn("main", self.parser.ids)
 
-    def test_directory_matches_current_repository_inventory(self) -> None:
+    def test_directory_matches_manifest_repository_inventory(self) -> None:
         names = set(self.parser.repository_names)
         self.assertEqual(names, EXPECTED_REPOSITORIES)
-        self.assertEqual(len(self.parser.repository_names), 20)
-        self.assertEqual(self.parser.public_badges, 16)
-        self.assertEqual(self.parser.private_badges, 4)
+        self.assertEqual(len(self.parser.repository_names), EXPECTED_COUNTS["total"])
+        self.assertEqual(self.parser.public_badges, EXPECTED_COUNTS["public"])
+        self.assertEqual(self.parser.private_badges, EXPECTED_COUNTS["private"])
 
     def test_private_repositories_do_not_publish_source_links(self) -> None:
         self.assertTrue(PRIVATE_REPOSITORIES.isdisjoint(self.parser.public_links))
