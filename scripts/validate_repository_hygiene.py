@@ -7,8 +7,18 @@ import v523_base as base
 
 ORIGINAL_FETCH = base.fetch
 ONLYOFFICE_ZIP = "https://www.onlyoffice.com/images/templates/press-downloads/logo/files/logo_symbol.zip"
-STIRLING_OLD = "https://raw.githubusercontent.com/Stirling-Tools/Stirling-PDF/ec3de16c0862c01190bf45896bae87e9f0e10ca7/frontend/editor/public/modern-logo/logo192.png"
-STIRLING_OFFICIAL = "https://raw.githubusercontent.com/Stirling-Tools/Stirling-PDF/ec3de16c0862c01190bf45896bae87e9f0e10ca7/app/core/src/main/resources/static/modern-logo/logo192.png"
+STIRLING_OLD_KEY = "assets/services/stirling-pdf.png"
+STIRLING_ORG_ART = "https://github.com/Stirling-Tools.png?size=192"
+
+# The application repository references build-generated classic/modern logo files that are
+# not stored at those runtime paths. Use the project's own official GitHub-organization art
+# rather than a community icon or invented placeholder.
+base.ASSETS[STIRLING_OLD_KEY] = (
+    STIRLING_ORG_ART,
+    "Stirling Tools official GitHub organization",
+    "2026-08-19",
+    "GitHub organization avatar",
+)
 
 
 def fetch_official_artwork(url: str) -> bytes:
@@ -20,8 +30,6 @@ def fetch_official_artwork(url: str) -> bytes:
                 if not names:
                     raise RuntimeError("ONLYOFFICE official symbol archive did not contain an SVG asset")
                 return archive.read(sorted(names, key=lambda n: ("symbol" not in n.lower(), len(n), n.lower()))[0])
-        if url == STIRLING_OLD:
-            return ORIGINAL_FETCH(STIRLING_OFFICIAL)
         return ORIGINAL_FETCH(url)
     except Exception as exc:
         raise RuntimeError(f"Official artwork source failed: {url}: {exc}") from exc
