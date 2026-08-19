@@ -2,7 +2,7 @@
 
 ## Current release version
 
-The repository-defined release version is **5.20.0**.
+The repository-defined release version is **5.21.0**.
 
 `VERSION` is the canonical machine-readable version source. The version file and this stability record are repository metadata only; neither is part of the isolated Cloudflare `dist/` publication allowlist. A source revision carrying this version is not considered stable merely because version metadata exists; it must satisfy the full stability definition below.
 
@@ -26,28 +26,26 @@ A GoreeCloud website revision is considered stable only when all of the followin
 
 A passing branch preview alone is not a stable release. A merge alone is not a stable release. Stability requires the reviewed source, isolated artifact, and deployed production bytes to agree.
 
-## 5.20.0 scope
+## 5.21.0 scope
 
-Version 5.20.0 reconciles the public repository portfolio with the authenticated GoreeCloud GitHub inventory and strengthens browser metadata and request-efficiency controls while preserving the production-verified Glaze UI 1.1, privacy, security, runtime-status, and isolated-publication boundaries.
+Version 5.21.0 removes third-party artwork from the deployable website artifact and hardens the platform-identity boundary while preserving the production-verified v5.20 repository portfolio, metadata, Glaze UI 1.1, privacy, security, runtime-status, and isolated-publication contracts.
 
 The release:
 
-- records **30 current repositories: 23 public and 7 private**, while preserving 11 functional groups;
-- adds the public `goreecloud-keyboard` repository to the productivity/input group without implying production acceptance;
-- adds the private `goreecloud-changelogs` repository to the operations group with its production migration and acceptance boundary stated explicitly;
-- advances the repository manifest review date to August 19, 2026 and validates that the review date is valid and not future-dated;
-- removes the hard-coded 28-repository validator assumption and makes rendered count/overview checks derive from the repository manifest, including rejection of conflicting stale counts;
-- links the local `site.webmanifest`, SVG favicon, PNG fallback, and Apple touch icon consistently from all five human-facing public pages;
-- completes Open Graph and Twitter metadata for the repository directory and validates its canonical social URL/image identity;
-- adds local manifest shortcuts for repositories, privacy, and security without introducing a service worker or remote dependency;
-- reduces the Privacy and Security pages from nine stylesheet requests to the three shared Glaze UI/style layers they actually use;
-- replaces the homepage-only request ceiling with page-specific stylesheet and script ceilings for every human-facing page;
-- preserves the existing HTML, CSS, JavaScript, image, and 512 KiB total artifact budgets without increasing any ceiling;
+- removes all ten `assets/platform/*.svg` paths from `PUBLIC_ASSET_FILES`, leaving only the GoreeCloud favicon, application icon, and social preview as deployable artwork;
+- replaces visible Proxmox, Debian, Docker, NetBird, AdGuard Home, Caddy, Beszel, and Uptime Kuma logos with neutral Glaze UI letter marks while preserving descriptive names and official outbound project links;
+- simplifies GoreeCloud Monitor and Search platform marks to the same single-frame Glaze UI mark pattern;
+- retains historical/reference third-party SVG files only in the private repository and outside `dist/`;
+- adds `scripts/validate_public_assets.py` and `tests/test_public_asset_boundary.py` so third-party artwork cannot silently re-enter the deployed allowlist or homepage platform surface;
+- adds the creative-asset validator to the exact-head CI workflow before governance/deployment acceptance;
+- updates `docs/public-asset-inventory.md` so the remaining issue #5 gate is the final human reachable-history/contextual-disclosure review and explicit repository publication decision, not deployable third-party logo provenance;
+- reduces public file count and artifact bytes without raising any HTML, CSS, JavaScript, image, request, or total-artifact ceiling;
+- preserves the authenticated **30 repository / 23 public / 7 private / 11 group** portfolio authority from v5.20.0;
 - preserves the exact Glaze UI 1.1.0 conformance pin at `5c8320de4f770614a3e2bcf9de2a27f7fcfd920c`;
-- preserves the v5.18.0 local repository discovery controls and their local-only, ephemeral, no-network/no-storage behavior;
-- preserves the v5.17.0 Memos, Notify/ntfy, Search, and Monitoring/Uptime Kuma runtime-status boundaries;
+- preserves the Memos, Notify/ntfy, Search, and Monitoring/Uptime Kuma runtime-status boundaries;
 - preserves Wardveil Security reporting, `security@goreecloud.com`, the self-only browser-origin model, `connect-src 'none'`, and telemetry-free operation;
 - preserves the exact allowlisted Cloudflare `dist/` publication model and exact branch-preview/production deployment verification requirement.
+
 ## Glaze UI 1.1 stable-release boundary
 
 Glaze UI is a design contract and visual-identity requirement. The website now targets Glaze UI 1.1.0 using the exact canonical source revision recorded above rather than assuming compatibility with an unversioned latest design-system state.
@@ -93,7 +91,7 @@ The browser must not fetch either repository metadata record or GitHub inventory
 
 ## Wardveil Security, privacy, and observability boundary
 
-Wardveil Security by GoreeCloud remains the platform security identity and presentation layer; it does not replace technical security controls or evidence. The v5.20.0 portfolio and metadata release does not add authentication, authorization, a backend API, application storage, visitor analytics, browser error export, session replay, fingerprinting, remote telemetry, search telemetry, or query persistence.
+Wardveil Security by GoreeCloud remains the platform security identity and presentation layer; it does not replace technical security controls or evidence. The v5.21.0 platform-identity release does not add authentication, authorization, a backend API, application storage, visitor analytics, browser error export, session replay, fingerprinting, remote telemetry, search telemetry, or query persistence.
 
 Current observability remains source- and deployment-bound through exact-revision CI, isolated artifact validation, exact preview and production verification, scheduled remote checks, and responsible security reporting. The site's privacy-first static architecture remains unchanged.
 
@@ -107,4 +105,4 @@ A future dynamic revision must not inherit the current static-site `not applicab
 
 Stable-version metadata does **not** authorize a repository visibility change, DNS change, Cloudflare project-setting change, application production cutover, network migration, backup-platform cutover, or creative-rights/publication decision. Those remain separate controlled actions.
 
-The open creative-rights and source-publication review remains authoritative for repository visibility decisions. Third-party platform-mark review is not bypassed by a successful stable release.
+The open creative-rights and source-publication review remains authoritative for repository visibility decisions. The public artifact no longer deploys third-party logo artwork, but the final human reachable-history/contextual-disclosure review and explicit publication decision are not bypassed by a successful stable release.

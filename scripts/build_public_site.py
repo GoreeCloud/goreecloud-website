@@ -31,24 +31,13 @@ PUBLIC_ROOT_FILES = (
     ".well-known/security.txt",
 )
 
-# Only artwork intentionally required by the current public experience.
-# Family-service cards use GoreeCloud Glaze UI monograms instead of deploying
-# third-party service-logo artwork. The remaining third-party graphics are the
-# explicitly reviewed platform marks shown in the platform-foundation section.
+# Only GoreeCloud-owned identity/presentation artwork is deployable.
+# Third-party technologies are identified with neutral Glaze UI letter marks and
+# descriptive names/links rather than redistributing project logo artwork.
 PUBLIC_ASSET_FILES = (
     "assets/favicon.svg",
     "assets/goreecloud-icon.png",
     "assets/social-preview.png",
-    "assets/platform/adguard-home.svg",
-    "assets/platform/beszel.svg",
-    "assets/platform/caddy.svg",
-    "assets/platform/debian.svg",
-    "assets/platform/docker.svg",
-    "assets/platform/netbird.svg",
-    "assets/platform/ntfy.svg",
-    "assets/platform/proxmox.svg",
-    "assets/platform/searxng.svg",
-    "assets/platform/uptime-kuma.svg",
 )
 
 # Glaze UI and page-specific presentation layers.

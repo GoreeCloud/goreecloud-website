@@ -23,16 +23,8 @@ SOCIAL_PROFILES = {
     "https://github.com/GoreeCloud",
 }
 
-EXPECTED_PLATFORM_IMAGE_SOURCES = {
-    "assets/platform/proxmox.svg",
-    "assets/platform/debian.svg",
-    "assets/platform/docker.svg",
-    "assets/platform/netbird.svg",
-    "assets/platform/adguard-home.svg",
-    "assets/platform/caddy.svg",
-    "assets/platform/beszel.svg",
-    "assets/platform/uptime-kuma.svg",
-}
+EXPECTED_PLATFORM_MARKS = {"PX", "DE", "DK", "NB", "AG", "CA", "GN", "BZ", "UK", "GM", "GS"}
+FORBIDDEN_PLATFORM_ASSET_PREFIXES = ("assets/platform/", "assets/services/")
 
 
 class HomepageParser(HTMLParser):
@@ -48,8 +40,10 @@ class HomepageParser(HTMLParser):
         self._footer_nav_depth = 0
         self._platform_link_depth = 0
         self._in_title = False
+        self._capture_platform_mark = False
         self.title_parts: list[str] = []
         self.platform_images: list[dict[str, str]] = []
+        self.platform_marks: list[str] = []
 
     @property
     def title(self) -> str:
@@ -87,14 +81,22 @@ class HomepageParser(HTMLParser):
 
         if tag == "img" and self._platform_link_depth:
             self.platform_images.append(attrs)
+        if tag in {"a", "span"} and "platform-native-mark" in classes:
+            self._capture_platform_mark = True
 
     def handle_data(self, data: str) -> None:
         if self._in_title:
             self.title_parts.append(data)
+        if self._capture_platform_mark:
+            value = data.strip()
+            if value:
+                self.platform_marks.append(value)
 
     def handle_endtag(self, tag: str) -> None:
         if tag == "title":
             self._in_title = False
+        if self._capture_platform_mark and tag in {"a", "span"}:
+            self._capture_platform_mark = False
         if self._footer_nav_depth:
             self._footer_nav_depth -= 1
         if self._platform_link_depth:
@@ -202,23 +204,23 @@ def main() -> int:
         if not {"me", "noopener", "noreferrer"}.issubset(rel):
             errors.append(f"Official social profile must use rel=me noopener noreferrer: {href}")
 
-    platform_sources = {image.get("src", "") for image in parser.platform_images}
-    if platform_sources != EXPECTED_PLATFORM_IMAGE_SOURCES:
-        missing = sorted(EXPECTED_PLATFORM_IMAGE_SOURCES - platform_sources)
-        unexpected = sorted(platform_sources - EXPECTED_PLATFORM_IMAGE_SOURCES)
-        if missing:
-            errors.append(f"Expected platform logo images are missing: {', '.join(missing)}")
-        if unexpected:
-            errors.append(f"Unexpected platform logo images are present: {', '.join(unexpected)}")
-    if len(parser.platform_images) != len(platform_sources):
-        errors.append("Platform logo images must not be duplicated.")
+    if parser.platform_images:
+        sources = sorted({image.get("src", "(missing src)") for image in parser.platform_images})
+        errors.append(f"Platform identity must use neutral Glaze UI marks instead of logo images; found: {', '.join(sources)}")
+        for source in sources:
+            if source.startswith(FORBIDDEN_PLATFORM_ASSET_PREFIXES):
+                errors.append(f"Third-party platform/service artwork must not be browser-loaded: {source}")
 
-    for image in parser.platform_images:
-        src = image.get("src", "(missing src)")
-        if image.get("loading") != "lazy":
-            errors.append(f"Below-fold platform image must use loading=\"lazy\": {src}")
-        if image.get("decoding") != "async":
-            errors.append(f"Below-fold platform image must use decoding=\"async\": {src}")
+    platform_marks = set(parser.platform_marks)
+    if platform_marks != EXPECTED_PLATFORM_MARKS:
+        missing = sorted(EXPECTED_PLATFORM_MARKS - platform_marks)
+        unexpected = sorted(platform_marks - EXPECTED_PLATFORM_MARKS)
+        if missing:
+            errors.append(f"Expected neutral platform marks are missing: {', '.join(missing)}")
+        if unexpected:
+            errors.append(f"Unexpected neutral platform marks are present: {', '.join(unexpected)}")
+    if len(parser.platform_marks) != len(platform_marks):
+        errors.append("Neutral platform marks must not be duplicated.")
 
     return report(errors)
 
