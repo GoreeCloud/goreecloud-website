@@ -45,16 +45,44 @@ jobs:
               text = text.replace(call, '', 1)
 
           old_loop = '''    for page, canonical in INDEXABLE_PAGES.items():
-                  parser = parsed_pages.get(page.resolve())
+              parser = parsed_pages.get(page.resolve())
           '''
           new_loop = '''    for page, canonical in INDEXABLE_PAGES.items():
-                  if page.name not in {"index.html", "repositories.html"}:
-                      continue
-                  parser = parsed_pages.get(page.resolve())
+              if page.name not in {"index.html", "repositories.html"}:
+                  continue
+              parser = parsed_pages.get(page.resolve())
           '''
           if old_loop not in text:
               raise SystemExit('Expected social-metadata validation loop was not found')
           text = text.replace(old_loop, new_loop, 1)
+
+          for line in (
+              '  <meta property="og:locale" content="en_US">\n',
+              '  <meta property="og:image:type" content="image/png">\n',
+              '  <meta property="og:image:width" content="1200">\n',
+              '  <meta property="og:image:height" content="630">\n',
+              '  <meta name="twitter:site" content="@GoreeCloud">\n',
+              '            "og:locale": "en_US",\n',
+              '            "og:image:type": "image/png",\n',
+              '            "og:image:width": "1200",\n',
+              '            "og:image:height": "630",\n',
+              '            "twitter:site": "@GoreeCloud",\n',
+          ):
+              text = text.replace(line, '')
+
+          compact_replacements = {
+              'GoreeCloud-maintained Android keyboard project based on CleverKeys.': 'Android keyboard project based on CleverKeys.',
+              'Develop private on-device text input with swipe typing, dictionaries, clipboard productivity, and GoreeCloud-specific workflows.': 'Private on-device typing, swipe input, dictionaries, clipboard tools, and GoreeCloud workflows.',
+              'Android input method and productivity client under active development.': 'Android input method in active development.',
+              'Native GoreeCloud historical change-ledger application in active development.': 'Native historical change ledger in active development.',
+              'Build searchable, append-only GoreeCloud change history across web, API, import/export, and future mobile workflows.': 'Searchable, append-only GoreeCloud history across web, API, import/export, and mobile workflows.',
+              'Historical change-management platform; production migration and acceptance remain pending.': 'Change-management platform; production migration remains pending.',
+              'Private development repository • migration pending': 'Private repository • migration pending',
+          }
+          for old, new in compact_replacements.items():
+              if old not in text:
+                  raise SystemExit(f'Expected compactable repository text was not found: {old}')
+              text = text.replace(old, new)
 
           text = text.replace(
               'completes Open Graph/Twitter metadata across every indexable page',
