@@ -1,6 +1,6 @@
 # GoreeCloud Public Asset Inventory
 
-This inventory records every deployable website artwork file. It is not a license grant. Official artwork is required when it exists, and identity artwork must be source-traceable before deployment. The source-code license does not automatically license GoreeCloud branding or third-party marks. Third-party trademarks and artwork remain the property of their respective owners; use is referential and does not imply sponsorship, endorsement, or affiliation. Final human reachable-history/contextual-disclosure review remains required for source-publication decisions, and Issue #5 remains open until that separate review is resolved.
+This inventory records every deployable website artwork file. It is not a license grant. Official artwork is required when it exists, and identity artwork must be source-traceable before deployment. The source-code license does not automatically license GoreeCloud branding or third-party marks. Third-party trademarks and artwork remain the property of their respective owners; use is referential and does not imply sponsorship, endorsement, or affiliation. Final human reachable-history/contextual-disclosure review remains required for source-publication decisions, and Issue #5 remains open until that separate review is resolved. Passing validation does not replace the explicit repository visibility/publication decision.
 
 | Deployable asset | Source authority | Source revision/path | Reviewed Git blob |
 | --- | --- | --- | --- |
@@ -36,4 +36,4 @@ This inventory records every deployable website artwork file. It is not a licens
 | `assets/social/youtube.ico` | YouTube official website | 2026-08-19 · /favicon.ico | `f4d966476fe7f5e38deea428fb54ea2bb253c99c` |
 | `assets/social-preview.png` | GoreeCloud website | Existing reviewed social preview | `64aaf437835b31a8473292487cf57366bb58c4fa` |
 
-The current deployable asset boundary is intentionally explicit and fail-closed. Historical repository presence does not authorize artwork use; current deployment requires a matching source record and reviewed bytes.
+The current deployable asset boundary is intentionally explicit and fail-closed. Historical repository presence does not authorize artwork use; current deployment requires a matching source record and reviewed bytes. Repository presence does not make a file deployable: the exact public allowlist remains the publication authority. When approved official artwork does not exist, the website uses text-only presentation rather than an invented icon, initial, monogram, or generic substitute.
