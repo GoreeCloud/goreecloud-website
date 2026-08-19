@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Validate the GoreeCloud public site's Glaze UI 1.0 design contract.
+"""Validate the GoreeCloud public site's Glaze UI 1.1 design contract.
 
-This is a structural regression gate for the shared GoreeCloud design system. It
-checks that every human-facing page participates in the same theme, branding,
-responsive, accessibility, privacy, and progressive-enhancement foundation while
-also proving the repository records an explicit Glaze UI version/conformance state.
-It does not replace visual review in real browsers or assistive technologies.
+This structural regression gate checks that every human-facing page participates
+in the same branding, responsive, accessibility, privacy, resilience, and
+progressive-enhancement foundation. It also binds the website to one exact
+Glaze UI version and canonical source revision. Automated checks do not replace
+visual review in real browsers or assistive technologies.
 """
 
 from __future__ import annotations
@@ -27,7 +27,8 @@ POLISH = ROOT / "css" / "glaze-polish.css"
 THEME_INIT = ROOT / "js" / "theme-init.js"
 MAIN_JS = ROOT / "js" / "main.js"
 CONFORMANCE = ROOT / "docs" / "glaze-ui-conformance.md"
-TARGET_GLAZE_UI_VERSION = "1.0.0"
+TARGET_GLAZE_UI_VERSION = "1.1.0"
+TARGET_GLAZE_UI_REVISION = "5c8320de4f770614a3e2bcf9de2a27f7fcfd920c"
 GLAZE_COMPONENT_CLASSES = {
     "button",
     "glaze-chip",
@@ -177,6 +178,33 @@ def validate_semantic_tokens(errors: list[str]) -> None:
     if glaze and glaze.count("--glaze-motion-") < 4:
         fail(errors, "css/glaze.css must retain all four Glaze UI motion-duration roles.")
 
+    require_markers(
+        POLISH,
+        (
+            "Glaze UI 1.1",
+            "--glaze-on-accent:#fff",
+            "--glaze-info:",
+            "--glaze-scrim:",
+            "--glaze-state-hover:.08",
+            "--glaze-state-pressed:.12",
+            "--glaze-state-focus:.14",
+            "--glaze-state-selected:.12",
+            "--glaze-icon-sm:16px",
+            "--glaze-icon-md:20px",
+            "--glaze-icon-lg:24px",
+            "--glaze-icon-xl:32px",
+            "--glaze-control-padding-compact:12px",
+            "--glaze-control-padding-comfortable:16px",
+            "--glaze-gutter-compact:16px",
+            "--glaze-gutter-medium:24px",
+            "--glaze-gutter-expanded:32px",
+            "--glaze-gutter-wide:40px",
+            ".button.primary {color:var(--glaze-on-accent);}",
+            ".glaze-scrim {background:var(--glaze-scrim);}",
+        ),
+        errors,
+    )
+
 
 def validate_surface_and_adaptive_contract(errors: list[str]) -> None:
     require_markers(
@@ -194,6 +222,14 @@ def validate_surface_and_adaptive_contract(errors: list[str]) -> None:
             ".glaze-adaptive-hide-medium",
             ".glaze-adaptive-hide-expanded",
             ".glaze-adaptive-hide-wide",
+        ),
+        errors,
+    )
+    require_markers(
+        POLISH,
+        (
+            "env(safe-area-inset-left)",
+            "env(safe-area-inset-right)",
         ),
         errors,
     )
@@ -235,6 +271,11 @@ def validate_conformance_record(errors: list[str]) -> None:
         (
             f"Target Glaze UI version: **{TARGET_GLAZE_UI_VERSION}**",
             "Canonical design-system repository: `GoreeCloud/glaze-ui`",
+            f"Canonical reference revision reviewed for this alignment: `{TARGET_GLAZE_UI_REVISION}`",
+            "on-accent",
+            "semantic scrim",
+            "state-layer",
+            "safe-area",
             "Canvas, Solid, Raised, Glaze, and Overlay",
             "Compact: through 599 CSS pixels",
             "Medium: 600 through 1023 CSS pixels",

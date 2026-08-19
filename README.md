@@ -4,7 +4,7 @@ Public static website for GoreeCloud.
 
 ## Version
 
-Current website package: **v5.18.0 — local repository discovery and adaptive directory experience**
+Current website package: **v5.19.0 — Glaze UI 1.1 exact-version conformance and safe-area semantics**
 
 `VERSION` is the canonical machine-readable version source. `docs/stability-baseline.md` defines the release scope and the evidence required before a revision is treated as stable. `docs/glaze-ui-conformance.md` records the website's targeted Glaze UI version and conformance state. `docs/wardveil-security-and-observability.md` defines the website-specific Wardveil Security and observability boundary. `docs/repository-portfolio.json` is the repository-only machine-readable authority for the current public/private GitHub portfolio counts and grouping. `docs/public-runtime-status.json` is the separate repository-only authority for reviewed public maturity and migration claims that must not be inferred from repository visibility.
 
@@ -88,17 +88,18 @@ The isolated `dist/` Cloudflare Pages cutover is complete for production and bra
 
 The canonical public website is `https://www.goreecloud.com/`. The apex domain redirects permanently to the `www` hostname.
 
-## Glaze UI 1.0 and visual identity
+## Glaze UI 1.1 and visual identity
 
-The website is a GoreeCloud reference implementation of **Glaze UI 1.0**. **Glaze UI is treated as a design contract**, not a decorative stylesheet.
+The website is a GoreeCloud reference implementation of **Glaze UI 1.1**. **Glaze UI is treated as a design contract**, not a decorative stylesheet.
 
-The canonical shared design-system source is `GoreeCloud/glaze-ui`. The website records its target and conformance state in `docs/glaze-ui-conformance.md` rather than silently assuming compatibility.
+The canonical shared design-system source is `GoreeCloud/glaze-ui`. The website pins its target to **Glaze UI 1.1.0** at canonical revision `5c8320de4f770614a3e2bcf9de2a27f7fcfd920c` in `docs/glaze-ui-conformance.md` rather than silently assuming compatibility with an unversioned latest design-system state.
 
-The 5.18.0 candidate preserves the site's established visual identity, 5.17.0 runtime-status integrity, 5.16.0 static repository authority, 5.15.0 Wardveil integration, and earlier theme-surface corrections. The repository discovery controls use existing semantic tokens and the Glaze UI search/input/button interaction vocabulary rather than adding an external component framework. The discovery surface transforms across Compact and Medium layouts, uses 48-pixel comfortable control targets, provides explicit focus treatment and selected states, removes nonessential motion under reduced-motion preferences, has reduced-transparency/increased-contrast/forced-colors fallbacks, and restores the complete repository directory for print.
+The 5.19.0 candidate preserves the site's established visual identity, 5.18.0 local repository discovery, 5.17.0 runtime-status integrity, 5.16.0 static repository authority, 5.15.0 Wardveil integration, and earlier theme-surface corrections. The 1.1 adoption is a compatible semantic expansion, not a visual redesign.
 
 The shared foundation includes:
 
 - semantic `--glaze-*` design tokens for canvas, surfaces, text, semantic colors, spacing, radii, target sizes, blur, shadows, focus, motion, and content widths;
+- Glaze UI 1.1 on-accent, info, semantic scrim, shared state-layer, icon-size, control-density, adaptive-gutter, and safe-area semantics;
 - the Canvas, Solid, Raised, Glaze, and Overlay surface hierarchy;
 - 44-pixel minimum and 48-pixel comfortable interactive target sizing;
 - Instant 90 ms, Fast 160 ms, Standard 220 ms, and Emphasized 320 ms motion semantics;
@@ -107,14 +108,17 @@ The shared foundation includes:
 - System, Light, and Dark appearance modes;
 - local-only explicit-theme persistence;
 - selective translucency, softened depth, rounded geometry, purposeful gradients, and restrained elevation;
-- semantic success, warning, and danger presentation;
+- semantic info, success, warning, and danger presentation roles;
+- safe-area-aware persistent site chrome;
 - visible keyboard focus and no-JavaScript navigation resilience;
 - reduced-motion, reduced-transparency, increased-contrast, forced-colors, and print behavior;
 - solid-surface fallback when backdrop filtering is unavailable.
 
+The repository discovery controls use existing semantic tokens and the Glaze UI search/input/button interaction vocabulary rather than adding an external component framework. The discovery surface transforms across Compact and Medium layouts, uses 48-pixel comfortable control targets, provides explicit focus treatment and selected states, removes nonessential motion under reduced-motion preferences, has reduced-transparency/increased-contrast/forced-colors fallbacks, and restores the complete repository directory for print.
+
 The application-specific website palette and composition remain intentional GoreeCloud personality. Glaze UI family resemblance does not require every GoreeCloud interface to use identical layouts or colors.
 
-The automated checks are regression controls, not a claim of complete WCAG conformance. Material interface changes still warrant manual keyboard review, **screen-reader testing**, zoom/reflow inspection, color-contrast review, touch-device review, and explicit visual acceptance.
+The automated checks are regression controls, not a claim of complete WCAG conformance. Material interface changes still warrant manual keyboard review, **screen-reader testing**, zoom/reflow inspection, color-contrast review, touch-device review, safe-area/device review, and explicit visual acceptance.
 
 ## Wardveil Security and observability
 
@@ -150,7 +154,7 @@ Core commands and gates include:
 - `python scripts/validate_repository_history.py` — perform the repository-history preflight across reachable history;
 - `python scripts/validate_license.py` — validate Apache-2.0 source terms and NOTICE/README boundaries;
 - `python scripts/validate_accessibility.py` — enforce structural accessibility invariants across human-facing pages;
-- `python scripts/validate_glaze_ui.py` — enforce the website Glaze UI 1.0 contract and conformance record;
+- `python scripts/validate_glaze_ui.py` — enforce the website Glaze UI 1.1 contract and exact conformance record;
 - `python scripts/validate_browser_origin_integrity.py` — keep browser-loaded resources origin-local and reject prohibited runtime clients;
 - `python scripts/validate_performance_budget.py` — keep the static public artifact within explicit payload and request ceilings;
 - `python scripts/validate_public_surface.py` — validate links, canonical state, sitemap, crawler policy, and cross-page integrity;
