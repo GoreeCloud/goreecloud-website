@@ -1,0 +1,1 @@
+Temporary repository-only synchronize trigger for the registered v5.21 migration path. Remove before final release validation.
