@@ -1,0 +1,52 @@
+name: Apply v5.21 native platform-mark migration
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'agent/v5-21-native-platform-marks'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out exact pull request head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13.14"
+
+      - name: Apply guarded source migration
+        run: python scripts/apply_v521_native_platform_marks.py
+
+      - name: Run focused v5.21 validation
+        run: |
+          python scripts/validate_public_assets.py
+          python scripts/validate_public_surface.py
+          python scripts/validate_accessibility.py
+          python scripts/validate_glaze_ui.py
+          python scripts/validate_browser_origin_integrity.py
+          python scripts/validate_performance_budget.py
+          python scripts/build_public_site.py
+          python scripts/validate_build_artifact.py
+          python -m unittest discover -s tests -p "test_*.py"
+
+      - name: Commit release source and self-remove helper
+        run: |
+          git config user.name "GoreeCloud Release Automation"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm scripts/apply_v521_native_platform_marks.py .github/workflows/v521-native-platform-mark-patch.yml
+          git add -A
+          git commit -m "Minimize public artwork and unify platform marks"
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
