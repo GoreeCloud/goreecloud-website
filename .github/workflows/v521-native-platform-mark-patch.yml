@@ -30,10 +30,11 @@ jobs:
       - name: Apply guarded source migration
         run: python scripts/apply_v521_native_platform_marks.py
 
-      - name: Normalize generated asset-boundary marker
+      - name: Normalize v5.21 asset-boundary regression markers
         run: |
           python - <<'PY'
           from pathlib import Path
+
           old = "historical commits may still contain prior third-party artwork blobs"
           new = "Historical commits may still contain prior third-party artwork blobs"
           for relative in ("scripts/validate_public_assets.py", "tests/test_public_assets.py"):
@@ -42,6 +43,30 @@ jobs:
               if text.count(old) != 1:
                   raise SystemExit(f"Expected one generated marker in {relative}; found {text.count(old)}")
               path.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+          test_path = Path("tests/test_public_asset_inventory.py")
+          text = test_path.read_text(encoding="utf-8")
+          old_required = '''        required = (
+            "not a license grant",
+            "provenance and rights verification still required",
+            "source-code license must not be assumed to relicense third-party marks",
+            "integrity fingerprint only",
+            "does not establish copyright ownership",
+            "issue #5 remains open",
+        )'''
+          new_required = '''        required = (
+            "not a license grant",
+            "third-party deployable logo artwork: none",
+            "current source tree",
+            "historical commits may still contain prior third-party artwork blobs",
+            "integrity fingerprint only",
+            "does not establish copyright ownership",
+            "issue #5 remains open",
+            "explicit repository visibility/publication decision",
+        )'''
+          if text.count(old_required) != 1:
+              raise SystemExit(f"Expected one legacy publication-boundary marker block; found {text.count(old_required)}")
+          test_path.write_text(text.replace(old_required, new_required, 1), encoding="utf-8")
           PY
 
       - name: Run focused v5.21 validation
