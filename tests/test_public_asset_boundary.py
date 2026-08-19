@@ -26,6 +26,10 @@ class PublicAssetBoundaryTests(unittest.TestCase):
         self.assertFalse(any(path.startswith("assets/platform/") for path in PUBLIC_ASSET_FILES))
         self.assertFalse(any(path.startswith("assets/services/") for path in PUBLIC_ASSET_FILES))
 
+    def test_retired_third_party_asset_directories_are_absent_from_current_tree(self) -> None:
+        self.assertFalse((ROOT / "assets" / "platform").exists())
+        self.assertFalse((ROOT / "assets" / "services").exists())
+
     def test_homepage_does_not_reference_third_party_artwork(self) -> None:
         index = (ROOT / "index.html").read_text(encoding="utf-8")
         self.assertNotIn("assets/platform/", index)
