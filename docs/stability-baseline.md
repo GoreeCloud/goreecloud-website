@@ -2,7 +2,7 @@
 
 ## Current release version
 
-The repository-defined release version is **5.22.0**.
+The repository-defined release version is **5.23.0**.
 
 `VERSION` is the canonical machine-readable version source. The version file and this stability record are repository metadata only; neither is part of the isolated Cloudflare `dist/` publication allowlist. A source revision carrying this version is not considered stable merely because version metadata exists; it must satisfy the full stability definition below.
 
@@ -26,9 +26,9 @@ A GoreeCloud website revision is considered stable only when all of the followin
 
 A passing branch preview alone is not a stable release. A merge alone is not a stable release. Stability requires the reviewed source, isolated artifact, and deployed production bytes to agree.
 
-## 5.22.0 scope
+## 5.23.0 scope
 
-Version 5.22.0 removes obsolete third-party artwork from the current repository tree and hardens the source-publication boundary while preserving the production-verified v5.21 public artifact, Glaze UI 1.1, privacy, security, repository/runtime-status, and isolated-publication contracts.
+Version 5.23.0 removes obsolete third-party artwork from the current repository tree and hardens the source-publication boundary while preserving the production-verified v5.21 public artifact, Glaze UI 1.1, privacy, security, repository/runtime-status, and isolated-publication contracts.
 
 The release:
 
@@ -91,7 +91,7 @@ The browser must not fetch either repository metadata record or GitHub inventory
 
 ## Wardveil Security, privacy, and observability boundary
 
-Wardveil Security by GoreeCloud remains the platform security identity and presentation layer; it does not replace technical security controls or evidence. The v5.22.0 current-tree publication cleanup does not add authentication, authorization, a backend API, application storage, visitor analytics, browser error export, session replay, fingerprinting, remote telemetry, search telemetry, or query persistence.
+Wardveil Security by GoreeCloud remains the platform security identity and presentation layer; it does not replace technical security controls or evidence. The v5.23.0 current-tree publication cleanup does not add authentication, authorization, a backend API, application storage, visitor analytics, browser error export, session replay, fingerprinting, remote telemetry, search telemetry, or query persistence.
 
 Current observability remains source- and deployment-bound through exact-revision CI, isolated artifact validation, exact preview and production verification, scheduled remote checks, and responsible security reporting. The site's privacy-first static architecture remains unchanged.
 
@@ -106,3 +106,8 @@ A future dynamic revision must not inherit the current static-site `not applicab
 Stable-version metadata does **not** authorize a repository visibility change, DNS change, Cloudflare project-setting change, application production cutover, network migration, backup-platform cutover, or creative-rights/publication decision. Those remain separate controlled actions.
 
 The open creative-rights and source-publication review remains authoritative for repository visibility decisions. The public artifact no longer deploys third-party logo artwork, but the final human reachable-history/contextual-disclosure review and explicit publication decision are not bypassed by a successful stable release.
+
+
+## v5.23 official visual identity
+
+The website uses official project, service, platform, and social-media artwork when a canonical identity exists. GoreeCloud website branding is sourced from `GoreeCloud/goreecloud-logo` and `official/goreecloud-logo.svg`. Placeholder initials and generic monograms are not production identity. If an approved official artwork asset does not exist, the public surface remains text-only rather than inventing a replacement. All deployed identity assets are local static copies with source authority and integrity recorded in `docs/visual-identity-sources.json`.
