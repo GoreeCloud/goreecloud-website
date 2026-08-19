@@ -6,6 +6,7 @@ import zipfile
 import v523_base as base
 
 ORIGINAL_FETCH = base.fetch
+ORIGINAL_WRITE_INVENTORY = base.write_inventory
 ONLYOFFICE_ZIP = "https://www.onlyoffice.com/images/templates/press-downloads/logo/files/logo_symbol.zip"
 STIRLING_OLD_KEY = "assets/services/stirling-pdf.png"
 STIRLING_ORG_ART = "https://github.com/Stirling-Tools.png?size=192"
@@ -35,5 +36,11 @@ def fetch_official_artwork(url: str) -> bytes:
         raise RuntimeError(f"Official artwork source failed: {url}: {exc}") from exc
 
 
+def write_deployable_inventory(records):
+    """The public asset table lists files only; text-only fallback records stay in the identity manifest."""
+    return ORIGINAL_WRITE_INVENTORY([record for record in records if record.get("asset_path")])
+
+
 base.fetch = fetch_official_artwork
+base.write_inventory = write_deployable_inventory
 raise SystemExit(base.main())
