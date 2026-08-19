@@ -19,6 +19,23 @@ jobs:
           persist-credentials: true
           fetch-depth: 0
 
+      - name: Correct reviewed helper assumption
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('scripts/agent_v5_20_patch.py')
+          text = path.read_text(encoding='utf-8')
+          old = '''replace_once(
+              "README.md",
+              "The v5.19.0 Glaze UI alignment does not add authentication, authorization, a backend API, application storage, visitor analytics, browser error export, session replay, fingerprinting, remote telemetry, search telemetry, or query persistence.",
+              "The v5.20.0 portfolio and metadata release does not add authentication, authorization, a backend API, application storage, visitor analytics, browser error export, session replay, fingerprinting, remote telemetry, search telemetry, or query persistence.",
+          )
+          '''
+          if old not in text:
+              raise SystemExit('Expected README-only helper block was not found')
+          path.write_text(text.replace(old, '', 1), encoding='utf-8')
+          PY
+
       - name: Apply exact source patch
         run: python scripts/agent_v5_20_patch.py
 
