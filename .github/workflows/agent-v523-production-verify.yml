@@ -1,0 +1,52 @@
+name: Verify v5.23 production deployment
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  verify-production:
+    if: github.head_ref == 'agent/v523-production-verify'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out exact verification revision
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.13.14'
+
+      - name: Confirm public artifact remains exact
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/validate_repository_hygiene.py
+          python scripts/validate_public_assets.py
+          python scripts/build_public_site.py
+          python scripts/validate_build_artifact.py
+
+      - name: Verify current production deployment for v5.23 acceptance
+        shell: bash
+        run: |
+          set -euo pipefail
+          attempts=6
+          for attempt in 1 2 3 4 5 6; do
+            if python scripts/verify_remote_deployment.py --target production; then
+              exit 0
+            fi
+            if [ "$attempt" -lt "$attempts" ]; then
+              echo "Production deployment not ready or not yet candidate-identical (attempt $attempt/$attempts); retrying in 10 seconds."
+              sleep 10
+            fi
+          done
+          echo "Production verification failed after $attempts attempts."
+          exit 1
