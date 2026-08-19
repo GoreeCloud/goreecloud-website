@@ -1,6 +1,7 @@
 {
   "schema_version": 1,
   "as_of": "2026-08-19",
+  "review_method": "Authenticated GitHub repository inventory reconciliation",
   "counts": {
     "total": 30,
     "public": 23,
