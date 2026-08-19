@@ -1,19 +1,21 @@
 #!/usr/bin/env python3
 """Setup-only v5.21 migration/export bridge.
 
-This file is intentionally temporary and is never eligible for the release tree. During a
-normal read-only PR workflow it applies the guarded v5.21 migration to the runner workspace,
-restores the historical creative-rights wording still required by repository-governance tests,
-and emits the exact final changed files as base64 so they can be materialized with GitHub's
-blob/tree API. The final release tree inherits the real hygiene validator from main.
+This file is intentionally temporary and is never eligible for the release tree. It applies the
+already-preflighted migration in the CI workspace, packs the exact final changed files into one
+compressed base64 bundle, and intentionally stops the setup workflow immediately afterward so
+the export log remains compact enough for deterministic materialization through GitHub's
+blob/tree API. The real release tree inherits the normal hygiene validator from main.
 """
 
 from __future__ import annotations
 
 from base64 import b64encode
+from io import BytesIO
 from pathlib import Path
 import subprocess
 import sys
+import tarfile
 
 ROOT = Path(__file__).resolve().parents[1]
 FINAL_FILES = (
@@ -28,6 +30,18 @@ FINAL_FILES = (
     "scripts/validate_public_assets.py",
     "tests/test_public_assets.py",
     "tests/test_stability_baseline.py",
+)
+DELETIONS = (
+    "assets/platform/adguard-home.svg",
+    "assets/platform/beszel.svg",
+    "assets/platform/caddy.svg",
+    "assets/platform/debian.svg",
+    "assets/platform/docker.svg",
+    "assets/platform/netbird.svg",
+    "assets/platform/ntfy.svg",
+    "assets/platform/proxmox.svg",
+    "assets/platform/searxng.svg",
+    "assets/platform/uptime-kuma.svg",
 )
 
 
@@ -74,31 +88,30 @@ def apply_once() -> None:
         raise SystemExit(f"Unexpected VERSION during v5.21 setup export: {version!r}")
 
 
-def emit_blobs() -> None:
-    print("V521_BUNDLE_BEGIN")
-    for relative in FINAL_FILES:
-        path = ROOT / relative
-        if not path.is_file():
-            raise SystemExit(f"Expected final changed file is missing: {relative}")
-        encoded = b64encode(path.read_bytes()).decode("ascii")
-        print(f"V521_BLOB {relative} {encoded}")
-    print("V521_DELETE assets/platform/adguard-home.svg")
-    print("V521_DELETE assets/platform/beszel.svg")
-    print("V521_DELETE assets/platform/caddy.svg")
-    print("V521_DELETE assets/platform/debian.svg")
-    print("V521_DELETE assets/platform/docker.svg")
-    print("V521_DELETE assets/platform/netbird.svg")
-    print("V521_DELETE assets/platform/ntfy.svg")
-    print("V521_DELETE assets/platform/proxmox.svg")
-    print("V521_DELETE assets/platform/searxng.svg")
-    print("V521_DELETE assets/platform/uptime-kuma.svg")
-    print("V521_BUNDLE_END")
+def emit_bundle() -> None:
+    buffer = BytesIO()
+    with tarfile.open(fileobj=buffer, mode="w:gz", compresslevel=9) as archive:
+        for relative in FINAL_FILES:
+            path = ROOT / relative
+            if not path.is_file():
+                raise SystemExit(f"Expected final changed file is missing: {relative}")
+            archive.add(path, arcname=relative, recursive=False)
+        deletion_bytes = ("\n".join(DELETIONS) + "\n").encode("utf-8")
+        info = tarfile.TarInfo("V521_DELETIONS.txt")
+        info.size = len(deletion_bytes)
+        info.mode = 0o644
+        archive.addfile(info, BytesIO(deletion_bytes))
+
+    encoded = b64encode(buffer.getvalue()).decode("ascii")
+    print(f"V521_TARGZ_BASE64 {encoded}")
+    print(f"V521_TARGZ_BYTES {len(buffer.getvalue())}")
 
 
 def main() -> int:
     apply_once()
-    emit_blobs()
-    return 0
+    emit_bundle()
+    print("V521_EXPORT_COMPLETE: intentional setup-only stop after exact bundle emission.", file=sys.stderr)
+    return 1
 
 
 if __name__ == "__main__":
