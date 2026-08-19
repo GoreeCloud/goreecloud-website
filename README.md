@@ -50,7 +50,7 @@ The website source code, repository automation, validation scripts, and technica
 
 `NOTICE` records the separate creative-rights boundary. The source license does not grant unrestricted reuse of GoreeCloud trade names, logos, branding, editorial identity, or third-party marks.
 
-`docs/public-asset-inventory.md` is the working deployable-artwork inventory and is **not a license grant**. It records publication and provenance evidence for the exact public asset set, but provenance and rights verification still requires the applicable human and legal review.
+`docs/public-asset-inventory.md` is the working deployable-artwork inventory and is **not a license grant**. It records the exact GoreeCloud-owned artwork permitted into `dist`; repository-history/contextual review and any repository publication decision remain separate human-controlled gates.
 
 Issue #5 remains open for the final human reachable-history/contextual-disclosure review and the explicit repository visibility/publication decision. The v5.21.0 public artifact no longer contains third-party logo artwork, but passing CI still does not authorize a repository visibility change or a creative-rights/publication decision.
 
