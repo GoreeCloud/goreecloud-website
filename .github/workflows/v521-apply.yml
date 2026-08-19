@@ -28,7 +28,9 @@ jobs:
           python-version: "3.13.14"
 
       - name: Apply exact v5.21 migration
-        run: python scripts/apply_v521.py
+        run: |
+          python scripts/apply_v521.py
+          python scripts/apply_v521_test_fix.py
 
       - name: Validate migrated source before commit
         run: |
@@ -45,6 +47,7 @@ jobs:
       - name: Remove one-time migration tooling
         run: |
           rm scripts/apply_v521.py
+          rm scripts/apply_v521_test_fix.py
           rm .github/workflows/v521-apply.yml
 
       - name: Commit migrated source
