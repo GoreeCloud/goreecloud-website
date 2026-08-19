@@ -7,13 +7,11 @@ import v523_base as base
 
 ORIGINAL_FETCH = base.fetch
 ORIGINAL_WRITE_INVENTORY = base.write_inventory
+ORIGINAL_RUN_CHECKS = base.run_checks
 ONLYOFFICE_ZIP = "https://www.onlyoffice.com/images/templates/press-downloads/logo/files/logo_symbol.zip"
 STIRLING_OLD_KEY = "assets/services/stirling-pdf.png"
 STIRLING_ORG_ART = "https://github.com/Stirling-Tools.png?size=192"
 
-# The application repository references build-generated classic/modern logo files that are
-# not stored at those runtime paths. Use the project's own official GitHub-organization art
-# rather than a community icon or invented placeholder.
 base.ASSETS[STIRLING_OLD_KEY] = (
     STIRLING_ORG_ART,
     "Stirling Tools official GitHub organization",
@@ -37,10 +35,21 @@ def fetch_official_artwork(url: str) -> bytes:
 
 
 def write_deployable_inventory(records):
-    """The public asset table lists files only; text-only fallback records stay in the identity manifest."""
     return ORIGINAL_WRITE_INVENTORY([record for record in records if record.get("asset_path")])
+
+
+def run_checks_with_canonical_logo() -> None:
+    validator = base.ROOT / "scripts" / "validate_glaze_ui.py"
+    text = validator.read_text(encoding="utf-8")
+    old = 'attrs.get("src", "").endswith("assets/goreecloud-icon.png")'
+    new = 'attrs.get("src", "").endswith("assets/goreecloud-logo.svg")'
+    if text.count(old) != 1:
+        raise RuntimeError(f"Expected one legacy Glaze brand-icon contract; found {text.count(old)}")
+    validator.write_text(text.replace(old, new, 1), encoding="utf-8")
+    ORIGINAL_RUN_CHECKS()
 
 
 base.fetch = fetch_official_artwork
 base.write_inventory = write_deployable_inventory
+base.run_checks = run_checks_with_canonical_logo
 raise SystemExit(base.main())
