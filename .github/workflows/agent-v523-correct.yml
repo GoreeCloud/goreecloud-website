@@ -1,0 +1,116 @@
+name: Correct v5.23 release documentation and identity metadata
+
+on:
+  push:
+    branches:
+      - agent/v5-23-official-artwork-release
+
+permissions:
+  contents: write
+
+jobs:
+  correct:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out exact branch revision
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.13.14'
+
+      - name: Correct v5.23 semantics and canonical SVG metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          root = Path('.')
+
+          readme = root / 'README.md'
+          text = readme.read_text(encoding='utf-8')
+          replacements = {
+            'Current website package: **v5.23.0 — current-tree third-party artwork removal and publication-surface hardening**':
+              'Current website package: **v5.23.0 — official visual identity, canonical GoreeCloud branding, and artwork provenance hardening**',
+            'The v5.23.0 release removes the 18 now-unused third-party SVG files under `assets/platform/` and `assets/services/` from the current repository tree. v5.21.0 had already removed those files from the deployable `dist/` allowlist and replaced visible project logos with neutral Glaze UI letter marks; v5.23.0 now makes current source match that public-artwork boundary and fails closed if either third-party artwork directory reappears. Prior reachable Git history may still contain historical copies, so issue #5 remains a separate human history/context/publication gate. The browser experience and deployable artifact remain otherwise unchanged.':
+              'Version 5.22.0 removed the previous third-party artwork set from the current tree. Version 5.23.0 deliberately replaces the resulting letter and monogram placeholders with current official project, service, platform, and social-media artwork when an authoritative identity exists. The website now uses the canonical `GoreeCloud/goreecloud-logo` `official/goreecloud-logo.svg` for GoreeCloud itself, stores referential third-party artwork as local static files with recorded source authority and integrity, and uses text-only presentation when no approved canonical artwork is available. Issue #5 remains a separate human reachable-history/context/publication and repository-visibility gate; CI does not decide that gate.',
+            '`docs/public-asset-inventory.md` is the working deployable-artwork inventory and is **not a license grant**. It records the exact GoreeCloud-owned artwork permitted into `dist`; repository-history/contextual review and any repository publication decision remain separate human-controlled gates.':
+              '`docs/public-asset-inventory.md` is the working deployable-artwork inventory and is **not a license grant**. It records each deployable identity asset, its source authority, source revision or review date, and reviewed Git blob. GoreeCloud-owned branding and referential third-party marks retain their separate rights boundaries; repository-history/contextual review and any repository publication decision remain separate human-controlled gates.',
+            'Issue #5 remains open for the final human reachable-history/contextual-disclosure review and the explicit repository visibility/publication decision. The v5.23.0 current tree and public artifact no longer contain third-party logo artwork, but prior reachable history may still contain historical copies; passing CI still does not authorize a repository visibility change or a creative-rights/publication decision.':
+              'Issue #5 remains separate from this release for the final human reachable-history/contextual-disclosure review and explicit repository visibility/publication decision. Version 5.23.0 intentionally includes source-traceable referential third-party identity artwork in the current tree and public artifact where official artwork exists. Passing CI validates the recorded asset boundary and bytes; it does not grant trademark rights, authorize repository publication, or decide the creative-rights review.',
+            'The 5.23.0 candidate preserves the site\'s established visual identity and exact Glaze UI 1.1 contract, plus the 5.20.0 repository/metadata hardening, 5.18.0 local repository discovery, 5.17.0 runtime-status integrity, 5.16.0 static repository authority, 5.15.0 Wardveil integration, and earlier theme-surface corrections. The 1.1 adoption is a compatible semantic expansion, not a visual redesign.':
+              'The 5.23.0 candidate preserves the exact Glaze UI 1.1 interaction and design-system contract while correcting product artwork to authoritative identities. It also preserves the 5.20.0 repository/metadata hardening, 5.18.0 local repository discovery, 5.17.0 runtime-status integrity, 5.16.0 static repository authority, 5.15.0 Wardveil integration, and earlier theme-surface corrections.',
+            '- `python scripts/validate_public_assets.py` — reject third-party artwork from the deployable allowlist, homepage platform surface, and current-tree platform/service asset directories;':
+              '- `python scripts/validate_public_assets.py` — verify the official-identity manifest, source authority, exact asset integrity, canonical GoreeCloud logo usage, placeholder removal, and text-only fallback boundary;'
+          }
+          for old, new in replacements.items():
+              if old not in text:
+                  raise SystemExit(f'README expected text missing: {old[:80]}')
+              text = text.replace(old, new, 1)
+          text = text.replace('locally hosted GoreeCloud identity and presentation artwork;', 'locally hosted identity and presentation artwork with recorded source provenance;')
+          readme.write_text(text, encoding='utf-8')
+
+          stability = root / 'docs/stability-baseline.md'
+          text = stability.read_text(encoding='utf-8')
+          scope = '''## 5.23.0 scope
+
+Version 5.23.0 is the official visual-identity correction release. It reverses the temporary neutral-letter presentation introduced during the v5.21/v5.22 artwork-removal work and establishes a fail-closed rule: official application, service, platform, and social-media artwork is used when an authoritative identity exists; otherwise the surface remains text-only rather than inventing a placeholder.
+
+The release:
+
+- makes `GoreeCloud/goreecloud-logo` revision `c766a4299196f8c80ed3f6de70ee8b74eb5818d9` and `official/goreecloud-logo.svg` the canonical GoreeCloud website artwork source;
+- replaces service, platform, roadmap, and social-media letter/monogram placeholders with local static copies of official artwork from recorded first-party sources where available;
+- keeps GoreeCloud products and other entries without approved canonical artwork text-only rather than creating initials, generic icons, or unofficial substitutes;
+- records source authority, source revision or review date, source path/URL, SHA-256 integrity, and deployable asset path in `docs/visual-identity-sources.json`;
+- updates `docs/public-asset-inventory.md` to bind deployable artwork to reviewed source provenance and Git blobs without treating that inventory as a license grant;
+- hardens `scripts/validate_public_assets.py` so provenance drift, byte-integrity drift, obsolete placeholders, unreferenced deployable identities, or non-text fallbacks fail closed;
+- uses the canonical GoreeCloud SVG for website favicon, Apple-touch/install identity, header/footer branding, and manifest identity rather than maintaining an invented parallel site icon;
+- keeps all identity artwork local to the static artifact, with no runtime icon CDN, remote font, analytics, tracking, telemetry, service worker, or new browser network client;
+- preserves the existing 96 KiB HTML, 64 KiB CSS, 24 KiB JavaScript, and 512 KiB total-public-artifact ceilings rather than raising a budget to accommodate the artwork;
+- preserves the authenticated **30 repository / 23 public / 7 private / 11 group** portfolio authority;
+- preserves the exact Glaze UI 1.1.0 conformance pin at `5c8320de4f770614a3e2bcf9de2a27f7fcfd920c`;
+- preserves the Memos, Notify/ntfy, Search, and Monitoring/Uptime Kuma runtime-status boundaries;
+- preserves Wardveil Security reporting, `security@goreecloud.com`, the self-only browser-origin model, `connect-src 'none'`, and telemetry-free operation;
+- makes no DNS, Caddy, NetBird, firewall, Cloudflare Pages project-setting, application-production-state, or backend-runtime change;
+- leaves issue #5 as a separate human creative-rights, reachable-history/context, and repository-publication decision rather than treating green CI as authorization.
+
+'''
+          text, count = re.subn(r'## 5\.23\.0 scope\n.*?(?=## Glaze UI 1\.1 stable-release boundary)', scope, text, count=1, flags=re.S)
+          if count != 1:
+              raise SystemExit('Could not replace v5.23 stability scope')
+          text = text.replace('The v5.23.0 current-tree publication cleanup does not add authentication, authorization, a backend API, application storage, visitor analytics, browser error export, session replay, fingerprinting, remote telemetry, search telemetry, or query persistence.', 'The v5.23.0 visual-identity correction does not add authentication, authorization, a backend API, application storage, visitor analytics, browser error export, session replay, fingerprinting, remote telemetry, search telemetry, or query persistence.')
+          text = text.replace('The public artifact no longer deploys third-party logo artwork, but the final human reachable-history/contextual-disclosure review and explicit publication decision are not bypassed by a successful stable release.', 'The public artifact now deploys only explicitly recorded, source-traceable identity artwork when official artwork exists. The final human reachable-history/contextual-disclosure review and explicit repository-publication decision remain separate and are not bypassed by a successful stable release.')
+          stability.write_text(text, encoding='utf-8')
+
+          for name in ('index.html', 'repositories.html', 'privacy.html', 'security.html', '404.html'):
+              path = root / name
+              text = path.read_text(encoding='utf-8')
+              for prefix in ('assets/', '/assets/'):
+                  text = text.replace(f'  <link rel="icon" href="{prefix}goreecloud-logo.svg" type="image/png">\n', '')
+                  text = text.replace(f'  <link rel="icon" type="image/png" href="{prefix}goreecloud-logo.svg">\n', '')
+                  text = text.replace(f'<link rel="apple-touch-icon" href="{prefix}goreecloud-logo.svg">', f'<link rel="apple-touch-icon" href="{prefix}goreecloud-logo.svg" type="image/svg+xml">')
+              path.write_text(text, encoding='utf-8')
+          PY
+
+          rm -f .github/workflows/agent-v523-correct.yml
+
+          python scripts/validate_repository_hygiene.py
+          python scripts/validate_public_assets.py
+          python scripts/validate_public_surface.py
+          python scripts/validate_glaze_ui.py
+          python scripts/validate_performance_budget.py
+          python -m unittest discover -s tests -p 'test_*.py'
+          python scripts/validate_site.py
+
+          git config user.name 'GoreeCloud'
+          git config user.email '295260680+GoreeCloud@users.noreply.github.com'
+          git add -A
+          git diff --cached --quiet && { echo 'No corrections were produced.' >&2; exit 1; }
+          git commit -m 'Correct v5.23 release semantics and SVG identity metadata'
+          git push origin HEAD:refs/heads/agent/v5-23-official-artwork-release
