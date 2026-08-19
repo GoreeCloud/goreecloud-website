@@ -4,7 +4,7 @@ Public static website for GoreeCloud.
 
 ## Version
 
-Current website package: **v5.22.0 — current-tree third-party artwork removal and publication-surface hardening**
+Current website package: **v5.23.0 — official visual identity, canonical GoreeCloud branding, and artwork provenance hardening**
 
 `VERSION` is the canonical machine-readable version source. `docs/stability-baseline.md` defines the release scope and the evidence required before a revision is treated as stable. `docs/glaze-ui-conformance.md` records the website's targeted Glaze UI version and conformance state. `docs/wardveil-security-and-observability.md` defines the website-specific Wardveil Security and observability boundary. `docs/repository-portfolio.json` is the repository-only machine-readable authority for the current public/private GitHub portfolio counts and grouping. `docs/public-runtime-status.json` is the separate repository-only authority for reviewed public maturity and migration claims that must not be inferred from repository visibility.
 
@@ -16,7 +16,7 @@ The browser surface is intentionally small, static, and privacy-preserving:
 
 - static HTML;
 - locally hosted CSS and JavaScript;
-- locally hosted GoreeCloud identity and presentation artwork;
+- locally hosted identity and presentation artwork with recorded source provenance;
 - no browser analytics, advertising, behavioral tracking, or fingerprinting;
 - no third-party browser-loaded render resources or fonts;
 - no third-party JavaScript framework;
@@ -38,7 +38,7 @@ The public homepage intentionally presents a representative software overview in
 
 `docs/repository-portfolio.json`, `scripts/validate_repository_portfolio.py`, and `tests/test_repository_portfolio.py` fail closed when declared counts, public/private visibility, required public links, private-link boundaries, homepage summary, exhaustive directory content, local-only discovery behavior, adaptive Glaze UI presentation, or print/no-JavaScript resilience drift from the reviewed portfolio.
 
-The v5.22.0 release removes the 18 now-unused third-party SVG files under `assets/platform/` and `assets/services/` from the current repository tree. v5.21.0 had already removed those files from the deployable `dist/` allowlist and replaced visible project logos with neutral Glaze UI letter marks; v5.22.0 now makes current source match that public-artwork boundary and fails closed if either third-party artwork directory reappears. Prior reachable Git history may still contain historical copies, so issue #5 remains a separate human history/context/publication gate. The browser experience and deployable artifact remain otherwise unchanged.
+Version 5.22.0 removed the previous third-party artwork set from the current tree. Version 5.23.0 deliberately replaces the resulting letter and monogram placeholders with current official project, service, platform, and social-media artwork when an authoritative identity exists. The website now uses the canonical `GoreeCloud/goreecloud-logo` `official/goreecloud-logo.svg` for GoreeCloud itself, stores referential third-party artwork as local static files with recorded source authority and integrity, and uses text-only presentation when no approved canonical artwork is available. Issue #5 remains open and separate as a human reachable-history/context/publication and repository-visibility gate; CI does not decide that gate.
 
 Public source availability does not imply production acceptance. GoreeCloud Network remains under controlled fork-to-native development while the existing NetBird environment remains the current private-network production platform. GoreeCloud Backup remains under active development while current accepted recovery systems remain authoritative. **GoreeCloud Memos v0.1.2 is accepted Stable production. GoreeCloud Search is the current GoreeCloud-facing private-search layer. GoreeCloud Notify is a release candidate and ntfy remains the current production notification service until controlled production acceptance and cutover. Uptime Kuma remains the current production availability monitor**, but it is explicitly transitional while **GoreeCloud Monitoring** completes validation and an authorized cutover.
 
@@ -50,9 +50,9 @@ The website source code, repository automation, validation scripts, and technica
 
 `NOTICE` records the separate creative-rights boundary. The source license does not grant unrestricted reuse of GoreeCloud trade names, logos, branding, editorial identity, or third-party marks.
 
-`docs/public-asset-inventory.md` is the working deployable-artwork inventory and is **not a license grant**. It records the exact GoreeCloud-owned artwork permitted into `dist`; repository-history/contextual review and any repository publication decision remain separate human-controlled gates.
+`docs/public-asset-inventory.md` is the working deployable-artwork inventory and is **not a license grant**. It records each deployable identity asset, its source authority, source revision or review date, and reviewed Git blob. GoreeCloud-owned branding and referential third-party marks retain their separate rights boundaries; repository-history/contextual review and any repository publication decision remain separate human-controlled gates.
 
-Issue #5 remains open for the final human reachable-history/contextual-disclosure review and the explicit repository visibility/publication decision. The v5.22.0 current tree and public artifact no longer contain third-party logo artwork, but prior reachable history may still contain historical copies; passing CI still does not authorize a repository visibility change or a creative-rights/publication decision.
+Issue #5 remains open and separate from this release for the final human reachable-history/contextual-disclosure review and explicit repository visibility/publication decision. Version 5.23.0 intentionally includes source-traceable referential third-party identity artwork in the current tree and public artifact where official artwork exists. Passing CI validates the recorded asset boundary and bytes; it does not grant trademark rights, authorize repository publication, or decide the creative-rights review.
 
 ## Public site structure
 
@@ -96,7 +96,7 @@ The website is a GoreeCloud reference implementation of **Glaze UI 1.1**. **Glaz
 
 The canonical shared design-system source is `GoreeCloud/glaze-ui`. The website pins its target to **Glaze UI 1.1.0** at canonical revision `5c8320de4f770614a3e2bcf9de2a27f7fcfd920c` in `docs/glaze-ui-conformance.md` rather than silently assuming compatibility with an unversioned latest design-system state.
 
-The 5.22.0 candidate preserves the site's established visual identity and exact Glaze UI 1.1 contract, plus the 5.20.0 repository/metadata hardening, 5.18.0 local repository discovery, 5.17.0 runtime-status integrity, 5.16.0 static repository authority, 5.15.0 Wardveil integration, and earlier theme-surface corrections. The 1.1 adoption is a compatible semantic expansion, not a visual redesign.
+The 5.23.0 candidate preserves the exact Glaze UI 1.1 interaction and design-system contract while correcting product artwork to authoritative identities. It also preserves the 5.20.0 repository/metadata hardening, 5.18.0 local repository discovery, 5.17.0 runtime-status integrity, 5.16.0 static repository authority, 5.15.0 Wardveil integration, and earlier theme-surface corrections.
 
 The shared foundation includes:
 
@@ -155,7 +155,7 @@ Core commands and gates include:
 - `python scripts/validate_repository_hygiene.py` — reject current-tree sensitive file types, credential signatures, symlinks, and unsafe artifacts;
 - `python scripts/validate_repository_history.py` — perform the repository-history preflight across reachable history;
 - `python scripts/validate_license.py` — validate Apache-2.0 source terms and NOTICE/README boundaries;
-- `python scripts/validate_public_assets.py` — reject third-party artwork from the deployable allowlist, homepage platform surface, and current-tree platform/service asset directories;
+- `python scripts/validate_public_assets.py` — verify the official-identity manifest, source authority, exact asset integrity, canonical GoreeCloud logo usage, placeholder removal, and text-only fallback boundary;
 - `python scripts/validate_accessibility.py` — enforce structural accessibility invariants across human-facing pages;
 - `python scripts/validate_glaze_ui.py` — enforce the website Glaze UI 1.1 contract and exact conformance record;
 - `python scripts/validate_browser_origin_integrity.py` — keep browser-loaded resources origin-local and reject prohibited runtime clients;
@@ -199,3 +199,7 @@ Passing CI does not itself authorize DNS changes, Cloudflare project-setting cha
 ## Security reporting
 
 Do not publish vulnerability details, credentials, tokens, private hostnames, private IP addresses, or other sensitive operational information in public issue or pull-request content. Use the public Wardveil Security reporting guidance at the GoreeCloud website security page or email **security@goreecloud.com**.
+
+## v5.23 official visual identity
+
+The website uses official project, service, platform, and social-media artwork when a canonical identity exists. GoreeCloud website branding is sourced from `GoreeCloud/goreecloud-logo` and `official/goreecloud-logo.svg`. Placeholder initials and generic monograms are not production identity. If an approved official artwork asset does not exist, the public surface remains text-only rather than inventing a replacement. All deployed identity assets are local static copies with source authority and integrity recorded in `docs/visual-identity-sources.json`.

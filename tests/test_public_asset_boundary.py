@@ -1,41 +1,21 @@
 #!/usr/bin/env python3
-"""Regression tests for the GoreeCloud public creative-asset boundary."""
-
-from __future__ import annotations
-
 from pathlib import Path
-import sys
-import unittest
-
-ROOT = Path(__file__).resolve().parents[1]
-SCRIPTS = ROOT / "scripts"
-if str(SCRIPTS) not in sys.path:
-    sys.path.insert(0, str(SCRIPTS))
-
-from build_public_site import PUBLIC_ASSET_FILES  # noqa: E402
-
-
-class PublicAssetBoundaryTests(unittest.TestCase):
-    def test_only_goreecloud_owned_artwork_is_deployable(self) -> None:
-        self.assertEqual(
-            tuple(PUBLIC_ASSET_FILES),
-            ("assets/favicon.svg", "assets/goreecloud-icon.png", "assets/social-preview.png"),
-        )
-
-    def test_third_party_asset_directories_are_not_deployable(self) -> None:
-        self.assertFalse(any(path.startswith("assets/platform/") for path in PUBLIC_ASSET_FILES))
-        self.assertFalse(any(path.startswith("assets/services/") for path in PUBLIC_ASSET_FILES))
-
-    def test_retired_third_party_asset_directories_are_absent_from_current_tree(self) -> None:
-        self.assertFalse((ROOT / "assets" / "platform").exists())
-        self.assertFalse((ROOT / "assets" / "services").exists())
-
-    def test_homepage_does_not_reference_third_party_artwork(self) -> None:
-        index = (ROOT / "index.html").read_text(encoding="utf-8")
-        self.assertNotIn("assets/platform/", index)
-        self.assertNotIn("assets/services/", index)
-        self.assertIn("neutral Glaze UI letter marks instead of third-party logo artwork", index)
-
-
-if __name__ == "__main__":
-    unittest.main()
+import json, unittest
+ROOT=Path(__file__).resolve().parents[1]
+class OfficialArtworkTests(unittest.TestCase):
+  @classmethod
+  def setUpClass(cls):
+    cls.index=(ROOT/'index.html').read_text(encoding='utf-8')
+    cls.manifest=json.loads((ROOT/'docs/visual-identity-sources.json').read_text(encoding='utf-8'))
+  def test_placeholders_are_removed(self):
+    for marker in ('class="service-icon"','platform-native-mark','social-letter','neutral Glaze UI letter marks instead of third-party logo artwork'):
+      self.assertNotIn(marker,self.index)
+  def test_canonical_goreecloud_logo_is_visible(self):
+    self.assertGreaterEqual(self.index.count('assets/goreecloud-logo.svg'),3)
+  def test_only_text_fallback_when_artwork_missing(self):
+    for r in self.manifest['assets']:
+      if r.get('official_artwork_exists') is False: self.assertEqual(r.get('fallback'),'text-only')
+  def test_social_cards_use_local_official_identity_files(self):
+    for name in ('instagram','pinterest','threads','tiktok','youtube','x','reddit','github'):
+      self.assertIn(f'assets/social/{name}.ico',self.index)
+if __name__=='__main__': unittest.main()

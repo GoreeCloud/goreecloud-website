@@ -2,7 +2,7 @@
 
 ## Current release version
 
-The repository-defined release version is **5.22.0**.
+The repository-defined release version is **5.23.0**.
 
 `VERSION` is the canonical machine-readable version source. The version file and this stability record are repository metadata only; neither is part of the isolated Cloudflare `dist/` publication allowlist. A source revision carrying this version is not considered stable merely because version metadata exists; it must satisfy the full stability definition below.
 
@@ -26,25 +26,27 @@ A GoreeCloud website revision is considered stable only when all of the followin
 
 A passing branch preview alone is not a stable release. A merge alone is not a stable release. Stability requires the reviewed source, isolated artifact, and deployed production bytes to agree.
 
-## 5.22.0 scope
+## 5.23.0 scope
 
-Version 5.22.0 removes obsolete third-party artwork from the current repository tree and hardens the source-publication boundary while preserving the production-verified v5.21 public artifact, Glaze UI 1.1, privacy, security, repository/runtime-status, and isolated-publication contracts.
+Version 5.23.0 is the official visual-identity correction release. It reverses the temporary neutral-letter presentation introduced during the v5.21/v5.22 artwork-removal work and establishes a fail-closed rule: official application, service, platform, and social-media artwork is used when an authoritative identity exists; otherwise the surface remains text-only rather than inventing a placeholder.
 
 The release:
 
-- deletes the ten unused `assets/platform/*.svg` files and eight unused `assets/services/*.svg` files from the current source tree;
-- preserves the v5.21.0 neutral Glaze UI letter-mark presentation and official descriptive outbound project links;
-- leaves `PUBLIC_ASSET_FILES` unchanged at exactly the three GoreeCloud-owned favicon/icon/social-preview assets;
-- strengthens `scripts/validate_public_assets.py` so `assets/platform/` and `assets/services/` must remain absent from the current tree as well as absent from the deployable allowlist and homepage render surface;
-- strengthens `tests/test_public_asset_boundary.py` with current-tree directory-absence regression coverage;
-- updates `docs/public-asset-inventory.md` to distinguish the clean current tree from prior reachable Git history, which remains subject to final human contextual review;
-- keeps issue #5 open because deleting current-tree files does not rewrite reachable history and does not authorize a repository visibility change;
-- leaves the browser-facing `dist/` artifact byte-equivalent to v5.21.0 because the deleted SVGs were already non-deployable;
+- makes `GoreeCloud/goreecloud-logo` revision `c766a4299196f8c80ed3f6de70ee8b74eb5818d9` and `official/goreecloud-logo.svg` the canonical GoreeCloud website artwork source;
+- replaces service, platform, roadmap, and social-media letter/monogram placeholders with local static copies of official artwork from recorded first-party sources where available;
+- keeps GoreeCloud products and other entries without approved canonical artwork text-only rather than creating initials, generic icons, or unofficial substitutes;
+- records source authority, source revision or review date, source path or URL, SHA-256 integrity, and deployable asset path in `docs/visual-identity-sources.json`;
+- updates `docs/public-asset-inventory.md` to bind deployable artwork to reviewed source provenance and Git blobs without treating that inventory as a license grant;
+- hardens `scripts/validate_public_assets.py` so provenance drift, byte-integrity drift, obsolete placeholders, unreferenced deployable identities, or non-text fallbacks fail closed;
+- uses the canonical GoreeCloud SVG for website favicon, Apple-touch/install identity, header/footer branding, and manifest identity rather than maintaining an invented parallel site icon;
+- keeps all identity artwork local to the static artifact, with no runtime icon CDN, remote font, analytics, tracking, telemetry, service worker, or new browser network client;
+- preserves the existing 96 KiB HTML, 64 KiB CSS, 24 KiB JavaScript, and 512 KiB total-public-artifact ceilings rather than raising a budget to accommodate the artwork;
 - preserves the authenticated **30 repository / 23 public / 7 private / 11 group** portfolio authority;
 - preserves the exact Glaze UI 1.1.0 conformance pin at `5c8320de4f770614a3e2bcf9de2a27f7fcfd920c`;
 - preserves the Memos, Notify/ntfy, Search, and Monitoring/Uptime Kuma runtime-status boundaries;
 - preserves Wardveil Security reporting, `security@goreecloud.com`, the self-only browser-origin model, `connect-src 'none'`, and telemetry-free operation;
-- preserves the exact allowlisted Cloudflare `dist/` publication model and exact branch-preview/production deployment verification requirement.
+- makes no DNS, Caddy, NetBird, firewall, Cloudflare Pages project-setting, application-production-state, or backend-runtime change;
+- leaves issue #5 as a separate human creative-rights, reachable-history/context, and repository-publication decision rather than treating green CI as authorization.
 
 ## Glaze UI 1.1 stable-release boundary
 
@@ -91,7 +93,7 @@ The browser must not fetch either repository metadata record or GitHub inventory
 
 ## Wardveil Security, privacy, and observability boundary
 
-Wardveil Security by GoreeCloud remains the platform security identity and presentation layer; it does not replace technical security controls or evidence. The v5.22.0 current-tree publication cleanup does not add authentication, authorization, a backend API, application storage, visitor analytics, browser error export, session replay, fingerprinting, remote telemetry, search telemetry, or query persistence.
+Wardveil Security by GoreeCloud remains the platform security identity and presentation layer; it does not replace technical security controls or evidence. The v5.23.0 visual-identity correction does not add authentication, authorization, a backend API, application storage, visitor analytics, browser error export, session replay, fingerprinting, remote telemetry, search telemetry, or query persistence.
 
 Current observability remains source- and deployment-bound through exact-revision CI, isolated artifact validation, exact preview and production verification, scheduled remote checks, and responsible security reporting. The site's privacy-first static architecture remains unchanged.
 
@@ -105,4 +107,8 @@ A future dynamic revision must not inherit the current static-site `not applicab
 
 Stable-version metadata does **not** authorize a repository visibility change, DNS change, Cloudflare project-setting change, application production cutover, network migration, backup-platform cutover, or creative-rights/publication decision. Those remain separate controlled actions.
 
-The open creative-rights and source-publication review remains authoritative for repository visibility decisions. The public artifact no longer deploys third-party logo artwork, but the final human reachable-history/contextual-disclosure review and explicit publication decision are not bypassed by a successful stable release.
+The open creative-rights and source-publication review remains authoritative for repository visibility decisions. The public artifact now deploys only explicitly recorded, source-traceable identity artwork when official artwork exists. The final human reachable-history/contextual-disclosure review and explicit repository-publication decision remain separate and are not bypassed by a successful stable release.
+
+## v5.23 official visual identity
+
+The website uses official project, service, platform, and social-media artwork when a canonical identity exists. GoreeCloud website branding is sourced from `GoreeCloud/goreecloud-logo` and `official/goreecloud-logo.svg`. Placeholder initials and generic monograms are not production identity. If an approved official artwork asset does not exist, the public surface remains text-only rather than inventing a replacement. All deployed identity assets are local static copies with source authority and integrity recorded in `docs/visual-identity-sources.json`.

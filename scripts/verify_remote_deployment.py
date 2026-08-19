@@ -62,7 +62,7 @@ PUBLIC_CHECKS = {
     ),
     "/css/style.css": (200, ":root", "text/css"),
     "/js/main.js": (200, "document", "javascript"),
-    "/assets/goreecloud-icon.png": (200, None, "image/png"),
+    "/assets/goreecloud-logo.svg": (200, None, "image/svg+xml"),
 }
 
 REPOSITORY_ONLY_PATHS = (

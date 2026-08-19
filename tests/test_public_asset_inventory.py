@@ -17,7 +17,7 @@ if str(SCRIPTS) not in sys.path:
 from build_public_site import PUBLIC_ASSET_FILES, PUBLIC_FILES  # noqa: E402
 
 INVENTORY = ROOT / "docs" / "public-asset-inventory.md"
-ASSET_PATH_RE = re.compile(r"`(assets/[A-Za-z0-9_./-]+\.(?:svg|png|jpg|jpeg|webp|gif))`")
+ASSET_PATH_RE = re.compile(r"`(assets/[A-Za-z0-9_./-]+\.(?:svg|png|jpg|jpeg|webp|gif|ico))`")
 BLOB_ID_RE = re.compile(r"[0-9a-f]{40,64}")
 
 
@@ -125,8 +125,8 @@ class PublicAssetInventoryTests(unittest.TestCase):
         text = normalize_markdown_text(INVENTORY.read_text(encoding="utf-8"))
         required = (
             "not a license grant",
-            "third-party artwork removed from the public artifact",
-            "repository presence does not make those files deployable",
+            "official artwork is required when it exists",
+            "identity artwork must be source-traceable before deployment",
             "does not automatically license goreecloud branding or third-party marks",
             "final human reachable-history/contextual-disclosure review",
             "issue #5 remains open",

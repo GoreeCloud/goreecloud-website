@@ -15,11 +15,13 @@ THEME_INIT = ROOT / "js" / "theme-init.js"
 HEADERS = ROOT / "_headers"
 PUBLIC_PAGES = (
     ROOT / "index.html",
+    ROOT / "repositories.html",
     ROOT / "privacy.html",
     ROOT / "security.html",
     ROOT / "404.html",
 )
 EXPECTED_THEME = "#07111f"
+CANONICAL_LOGO = "/assets/goreecloud-logo.svg"
 
 
 class IdentityParser(HTMLParser):
@@ -78,8 +80,8 @@ def main() -> int:
         errors.append("site.webmanifest must include a non-empty description.")
 
     icons = manifest.get("icons")
-    if not isinstance(icons, list) or len(icons) < 2:
-        errors.append("site.webmanifest must contain the GoreeCloud SVG and PNG identity icons.")
+    if not isinstance(icons, list) or not icons:
+        errors.append("site.webmanifest must contain the canonical GoreeCloud SVG identity icon.")
         icons = []
 
     icon_by_src = {
@@ -87,9 +89,9 @@ def main() -> int:
         for icon in icons
         if isinstance(icon, dict) and isinstance(icon.get("src"), str)
     }
-    svg_icon = icon_by_src.get("/assets/favicon.svg")
+    svg_icon = icon_by_src.get(CANONICAL_LOGO)
     if not svg_icon:
-        errors.append("site.webmanifest must include /assets/favicon.svg.")
+        errors.append(f"site.webmanifest must include {CANONICAL_LOGO}.")
     else:
         if svg_icon.get("sizes") != "any":
             errors.append("The scalable manifest SVG icon must use sizes='any'.")
@@ -98,14 +100,11 @@ def main() -> int:
         if svg_icon.get("purpose") != "any":
             errors.append("The scalable manifest SVG icon must use purpose='any'.")
 
-    png_icon = icon_by_src.get("/assets/goreecloud-icon.png")
-    if not png_icon:
-        errors.append("site.webmanifest must include /assets/goreecloud-icon.png.")
-    else:
-        if png_icon.get("type") != "image/png":
-            errors.append("The GoreeCloud PNG manifest icon must use type='image/png'.")
-        if png_icon.get("purpose") != "any":
-            errors.append("The GoreeCloud PNG manifest icon must use purpose='any'.")
+    if set(icon_by_src) != {CANONICAL_LOGO}:
+        errors.append(
+            "site.webmanifest identity icon set must use only the canonical GoreeCloud SVG; "
+            f"found {sorted(icon_by_src)!r}."
+        )
 
     for src in icon_by_src:
         parsed = urlparse(src)
@@ -143,7 +142,7 @@ def main() -> int:
         relative = page.relative_to(ROOT)
         is_error_page = page.name == "404.html"
         theme_init_src = "/js/theme-init.js" if is_error_page else "js/theme-init.js"
-        apple_icon_href = "/assets/goreecloud-icon.png" if is_error_page else "assets/goreecloud-icon.png"
+        apple_icon_href = CANONICAL_LOGO if is_error_page else CANONICAL_LOGO.lstrip("/")
 
         if parser.meta_names.get("application-name") != "GoreeCloud":
             errors.append(f"{relative} must publish application-name=GoreeCloud.")
@@ -157,7 +156,9 @@ def main() -> int:
             if "apple-touch-icon" in link.get("rel", "").split()
         ]
         if not apple_icons or apple_icons[0].get("href") != apple_icon_href:
-            errors.append(f"{relative} must publish the local GoreeCloud apple-touch-icon at {apple_icon_href}.")
+            errors.append(f"{relative} must publish the canonical GoreeCloud apple-touch-icon at {apple_icon_href}.")
+        elif apple_icons[0].get("type") != "image/svg+xml":
+            errors.append(f"{relative} canonical GoreeCloud apple-touch-icon must declare image/svg+xml.")
 
         if parser.main_attrs is None:
             errors.append(f"{relative} must contain <main id='main'>.")

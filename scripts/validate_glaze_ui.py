@@ -75,7 +75,7 @@ class PageParser(HTMLParser):
             self.scripts.append(attrs["src"].lstrip("/"))
         if tag == "a" and "brand" in classes:
             self.has_brand = True
-        if tag == "img" and "brand-logo" in classes and attrs.get("src", "").endswith("assets/goreecloud-icon.png"):
+        if tag == "img" and "brand-logo" in classes and attrs.get("src", "").endswith("assets/goreecloud-logo.svg"):
             self.has_brand_icon = True
         if tag == "a" and "skip-link" in classes and attrs.get("href") == "#main":
             self.has_skip_link = True

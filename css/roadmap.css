@@ -187,3 +187,5 @@
     font-size: .66rem;
   }
 }
+
+.roadmap-art img { max-width: 30px; max-height: 30px; object-fit: contain; }

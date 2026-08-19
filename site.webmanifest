@@ -12,14 +12,9 @@
   "background_color": "#07111f",
   "icons": [
     {
-      "src": "/assets/favicon.svg",
+      "src": "/assets/goreecloud-logo.svg",
       "sizes": "any",
       "type": "image/svg+xml",
-      "purpose": "any"
-    },
-    {
-      "src": "/assets/goreecloud-icon.png",
-      "type": "image/png",
       "purpose": "any"
     }
   ],
