@@ -19,21 +19,52 @@ jobs:
           persist-credentials: true
           fetch-depth: 0
 
-      - name: Correct reviewed helper assumption
+      - name: Correct reviewed helper assumptions
         run: |
           python - <<'PY'
           from pathlib import Path
           path = Path('scripts/agent_v5_20_patch.py')
           text = path.read_text(encoding='utf-8')
-          old = '''replace_once(
+
+          old_readme_block = '''replace_once(
               "README.md",
               "The v5.19.0 Glaze UI alignment does not add authentication, authorization, a backend API, application storage, visitor analytics, browser error export, session replay, fingerprinting, remote telemetry, search telemetry, or query persistence.",
               "The v5.20.0 portfolio and metadata release does not add authentication, authorization, a backend API, application storage, visitor analytics, browser error export, session replay, fingerprinting, remote telemetry, search telemetry, or query persistence.",
           )
           '''
-          if old not in text:
+          if old_readme_block not in text:
               raise SystemExit('Expected README-only helper block was not found')
-          path.write_text(text.replace(old, '', 1), encoding='utf-8')
+          text = text.replace(old_readme_block, '', 1)
+
+          for call in (
+              'insert_before_once("privacy.html", "</head>", privacy_social)\n',
+              'insert_before_once("security.html", "</head>", security_social)\n',
+          ):
+              if call not in text:
+                  raise SystemExit(f'Expected optional social metadata call was not found: {call.strip()}')
+              text = text.replace(call, '', 1)
+
+          old_loop = '''    for page, canonical in INDEXABLE_PAGES.items():
+                  parser = parsed_pages.get(page.resolve())
+          '''
+          new_loop = '''    for page, canonical in INDEXABLE_PAGES.items():
+                  if page.name not in {"index.html", "repositories.html"}:
+                      continue
+                  parser = parsed_pages.get(page.resolve())
+          '''
+          if old_loop not in text:
+              raise SystemExit('Expected social-metadata validation loop was not found')
+          text = text.replace(old_loop, new_loop, 1)
+
+          text = text.replace(
+              'completes Open Graph/Twitter metadata across every indexable page',
+              'completes Open Graph/Twitter metadata for the public repository directory',
+          )
+          text = text.replace(
+              '- completes page-specific Open Graph and Twitter metadata across every indexable page and validates canonical social URL/image identity;',
+              '- completes Open Graph and Twitter metadata for the repository directory and validates its canonical social URL/image identity;',
+          )
+          path.write_text(text, encoding='utf-8')
           PY
 
       - name: Apply exact source patch
