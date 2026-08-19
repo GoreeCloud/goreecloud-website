@@ -168,8 +168,7 @@ def main() -> int:
     errors: list[str] = []
 
     required_allowlisted_runtime = {
-        "assets/favicon.svg",
-        "assets/goreecloud-icon.png",
+        "assets/goreecloud-logo.svg",
         "css/glaze.css",
         "css/glaze-polish.css",
         "js/theme-init.js",
