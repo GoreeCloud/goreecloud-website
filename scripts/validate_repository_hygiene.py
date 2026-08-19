@@ -38,14 +38,44 @@ def write_deployable_inventory(records):
     return ORIGINAL_WRITE_INVENTORY([record for record in records if record.get("asset_path")])
 
 
-def run_checks_with_canonical_logo() -> None:
-    validator = base.ROOT / "scripts" / "validate_glaze_ui.py"
-    text = validator.read_text(encoding="utf-8")
+def normalize_canonical_logo_contract() -> None:
+    for name in ("index.html", "repositories.html", "privacy.html", "security.html", "404.html"):
+        path = base.ROOT / name
+        text = path.read_text(encoding="utf-8")
+        text = text.replace('<link rel="icon" href="assets/goreecloud-logo.svg" type="image/png">\n', '')
+        text = text.replace('<link rel="icon" type="image/png" href="assets/goreecloud-logo.svg">\n', '')
+        text = text.replace('<link rel="apple-touch-icon" href="assets/goreecloud-logo.svg">', '<link rel="apple-touch-icon" href="assets/goreecloud-logo.svg" type="image/svg+xml">')
+        path.write_text(text, encoding="utf-8")
+
+    glaze = base.ROOT / "scripts" / "validate_glaze_ui.py"
+    text = glaze.read_text(encoding="utf-8")
     old = 'attrs.get("src", "").endswith("assets/goreecloud-icon.png")'
     new = 'attrs.get("src", "").endswith("assets/goreecloud-logo.svg")'
     if text.count(old) != 1:
         raise RuntimeError(f"Expected one legacy Glaze brand-icon contract; found {text.count(old)}")
-    validator.write_text(text.replace(old, new, 1), encoding="utf-8")
+    glaze.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+    surface = base.ROOT / "scripts" / "validate_public_surface.py"
+    text = surface.read_text(encoding="utf-8")
+    old_block = '''        if not any("icon" in rels and href == "assets/favicon.svg" and content_type == "image/svg+xml" for rels, href, content_type in normalized_icons):
+            errors.append(f"{display} must publish the local SVG favicon.")
+        if not any("icon" in rels and href == "assets/goreecloud-icon.png" and content_type == "image/png" for rels, href, content_type in normalized_icons):
+            errors.append(f"{display} must publish the PNG favicon fallback.")
+        if not any("apple-touch-icon" in rels and href == "assets/goreecloud-icon.png" for rels, href, _ in normalized_icons):
+            errors.append(f"{display} must publish the local Apple touch icon.")
+'''
+    new_block = '''        if not any("icon" in rels and href == "assets/goreecloud-logo.svg" and content_type == "image/svg+xml" for rels, href, content_type in normalized_icons):
+            errors.append(f"{display} must publish the canonical GoreeCloud SVG favicon.")
+        if not any("apple-touch-icon" in rels and href == "assets/goreecloud-logo.svg" for rels, href, _ in normalized_icons):
+            errors.append(f"{display} must publish the canonical GoreeCloud SVG Apple-touch identity.")
+'''
+    if text.count(old_block) != 1:
+        raise RuntimeError(f"Expected one legacy public-surface icon block; found {text.count(old_block)}")
+    surface.write_text(text.replace(old_block, new_block, 1), encoding="utf-8")
+
+
+def run_checks_with_canonical_logo() -> None:
+    normalize_canonical_logo_contract()
     ORIGINAL_RUN_CHECKS()
 
 
