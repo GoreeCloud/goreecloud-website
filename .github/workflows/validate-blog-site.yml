@@ -1,0 +1,29 @@
+name: Validate GoreeCloud Blog
+
+on:
+  pull_request:
+    paths:
+      - 'sites/blog/**'
+      - 'scripts/validate_blog_site.py'
+      - '.github/workflows/validate-blog-site.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'sites/blog/**'
+      - 'scripts/validate_blog_site.py'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Check out exact source revision
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Validate GoreeCloud Blog
+        run: python3 scripts/validate_blog_site.py
