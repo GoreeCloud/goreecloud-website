@@ -16,7 +16,7 @@ import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-EXPORT_ROOT = ROOT / ".v521-export"
+EXPORT_ROOT = ROOT / "v521-export"
 FINAL_FILES = (
     ".github/workflows/validate.yml",
     "README.md",
