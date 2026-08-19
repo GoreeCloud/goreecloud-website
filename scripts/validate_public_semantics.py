@@ -12,6 +12,7 @@ INDEX = ROOT / "index.html"
 CANONICAL_URL = "https://www.goreecloud.com/"
 SOCIAL_PREVIEW_URL = "https://www.goreecloud.com/assets/social-preview.png"
 EXPECTED_TITLE = "GoreeCloud — Privacy-First Personal & Family Cloud"
+CANONICAL_LOGO = "assets/goreecloud-logo.svg"
 
 SOCIAL_PROFILES = {
     "https://instagram.com/goreecloud",
@@ -23,8 +24,15 @@ SOCIAL_PROFILES = {
     "https://github.com/GoreeCloud",
 }
 
-EXPECTED_PLATFORM_MARKS = {"PX", "DE", "DK", "NB", "AG", "CA", "GN", "BZ", "UK", "GM", "GS"}
-FORBIDDEN_PLATFORM_ASSET_PREFIXES = ("assets/platform/", "assets/services/")
+EXPECTED_PLATFORM_ARTWORK = {
+    "assets/platform/proxmox.svg",
+    "assets/platform/debian.svg",
+    "assets/platform/docker.png",
+    "assets/platform/netbird.svg",
+    "assets/platform/adguard-home.svg",
+    "assets/platform/caddy.svg",
+    "assets/platform/uptime-kuma.svg",
+}
 
 
 class HomepageParser(HTMLParser):
@@ -40,10 +48,9 @@ class HomepageParser(HTMLParser):
         self._footer_nav_depth = 0
         self._platform_link_depth = 0
         self._in_title = False
-        self._capture_platform_mark = False
         self.title_parts: list[str] = []
         self.platform_images: list[dict[str, str]] = []
-        self.platform_marks: list[str] = []
+        self.placeholder_platform_marks: list[str] = []
 
     @property
     def title(self) -> str:
@@ -82,21 +89,15 @@ class HomepageParser(HTMLParser):
         if tag == "img" and self._platform_link_depth:
             self.platform_images.append(attrs)
         if tag in {"a", "span"} and "platform-native-mark" in classes:
-            self._capture_platform_mark = True
+            self.placeholder_platform_marks.append(attrs.get("class", ""))
 
     def handle_data(self, data: str) -> None:
         if self._in_title:
             self.title_parts.append(data)
-        if self._capture_platform_mark:
-            value = data.strip()
-            if value:
-                self.platform_marks.append(value)
 
     def handle_endtag(self, tag: str) -> None:
         if tag == "title":
             self._in_title = False
-        if self._capture_platform_mark and tag in {"a", "span"}:
-            self._capture_platform_mark = False
         if self._footer_nav_depth:
             self._footer_nav_depth -= 1
         if self._platform_link_depth:
@@ -126,10 +127,7 @@ def main() -> int:
     if parser.meta_names.get("author") != "GoreeCloud":
         errors.append("Homepage must identify GoreeCloud with meta name=\"author\".")
 
-    canonical_links = [
-        link for link in parser.links
-        if "canonical" in link.get("rel", "").split()
-    ]
+    canonical_links = [link for link in parser.links if "canonical" in link.get("rel", "").split()]
     if len(canonical_links) != 1 or canonical_links[0].get("href") != CANONICAL_URL:
         errors.append(f"Homepage must publish exactly one canonical link to {CANONICAL_URL}.")
 
@@ -172,12 +170,11 @@ def main() -> int:
     if parser.meta_names.get("twitter:image:alt") != og_image_alt:
         errors.append("Homepage twitter:image:alt must stay aligned with og:image:alt.")
 
-    apple_icons = [
-        link for link in parser.links
-        if "apple-touch-icon" in link.get("rel", "").split()
-    ]
-    if not apple_icons or apple_icons[0].get("href") != "assets/goreecloud-icon.png":
-        errors.append("Homepage must publish the local GoreeCloud icon as an apple-touch-icon.")
+    apple_icons = [link for link in parser.links if "apple-touch-icon" in link.get("rel", "").split()]
+    if not apple_icons or apple_icons[0].get("href") != CANONICAL_LOGO:
+        errors.append("Homepage must publish the canonical GoreeCloud SVG as its apple-touch-icon.")
+    elif apple_icons[0].get("type") != "image/svg+xml":
+        errors.append("Homepage canonical apple-touch-icon must declare image/svg+xml.")
 
     if parser.footer_nav_attrs is None:
         errors.append("Homepage footer links must be a semantic navigation landmark.")
@@ -204,23 +201,18 @@ def main() -> int:
         if not {"me", "noopener", "noreferrer"}.issubset(rel):
             errors.append(f"Official social profile must use rel=me noopener noreferrer: {href}")
 
-    if parser.platform_images:
-        sources = sorted({image.get("src", "(missing src)") for image in parser.platform_images})
-        errors.append(f"Platform identity must use neutral Glaze UI marks instead of logo images; found: {', '.join(sources)}")
-        for source in sources:
-            if source.startswith(FORBIDDEN_PLATFORM_ASSET_PREFIXES):
-                errors.append(f"Third-party platform/service artwork must not be browser-loaded: {source}")
-
-    platform_marks = set(parser.platform_marks)
-    if platform_marks != EXPECTED_PLATFORM_MARKS:
-        missing = sorted(EXPECTED_PLATFORM_MARKS - platform_marks)
-        unexpected = sorted(platform_marks - EXPECTED_PLATFORM_MARKS)
+    platform_sources = [image.get("src", "") for image in parser.platform_images]
+    if set(platform_sources) != EXPECTED_PLATFORM_ARTWORK:
+        missing = sorted(EXPECTED_PLATFORM_ARTWORK - set(platform_sources))
+        unexpected = sorted(set(platform_sources) - EXPECTED_PLATFORM_ARTWORK)
         if missing:
-            errors.append(f"Expected neutral platform marks are missing: {', '.join(missing)}")
+            errors.append(f"Expected official platform artwork is missing: {', '.join(missing)}")
         if unexpected:
-            errors.append(f"Unexpected neutral platform marks are present: {', '.join(unexpected)}")
-    if len(parser.platform_marks) != len(platform_marks):
-        errors.append("Neutral platform marks must not be duplicated.")
+            errors.append(f"Unexpected platform artwork is present: {', '.join(unexpected)}")
+    if len(platform_sources) != len(set(platform_sources)):
+        errors.append("Official platform artwork references must not be duplicated.")
+    if parser.placeholder_platform_marks:
+        errors.append("Neutral letter/monogram platform placeholders must not return when official artwork is available.")
 
     return report(errors)
 
@@ -231,7 +223,7 @@ def report(errors: list[str]) -> int:
         for error in errors:
             print(f"  - {error}")
         return 1
-    print("Public semantics validation passed.")
+    print("Public semantics validation passed: canonical GoreeCloud identity, official platform artwork, social links, and policy discoverability are intact.")
     return 0
 
 
