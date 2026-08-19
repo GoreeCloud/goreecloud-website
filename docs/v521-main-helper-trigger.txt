@@ -1,1 +1,1 @@
-Temporary synchronization trigger for the default-branch guarded v5.21 branch migrator. The migrator removes this file in the release-source commit.
+Temporary synchronization trigger for the registered v5.21 migration job. The migration removes this file in the release-source commit.
