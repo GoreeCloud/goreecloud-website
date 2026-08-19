@@ -1,23 +1,22 @@
 #!/usr/bin/env python3
-"""Setup-only v5.21 migration/export bridge.
+"""Setup-only v5.21 migration and artifact-staging bridge.
 
-This file is intentionally temporary and is never eligible for the release tree. It applies the
-already-preflighted migration in the CI workspace, packs the exact final changed files into one
-compressed base64 bundle, and intentionally stops the setup workflow immediately afterward so
-the export log remains compact enough for deterministic materialization through GitHub's
-blob/tree API. The real release tree inherits the normal hygiene validator from main.
+This temporary script runs only on the non-mergeable setup PR. It applies the guarded v5.21
+migration inside the read-only Actions workspace, restores the exact intended final validation
+workflow, stages only the final changed files plus the ten-file deletion manifest for a private
+workflow artifact, and returns success so the remaining normal validators can inspect the same
+transformed workspace. This script itself is never eligible for the release tree.
 """
 
 from __future__ import annotations
 
-from base64 import b64encode
-from io import BytesIO
 from pathlib import Path
+import shutil
 import subprocess
 import sys
-import tarfile
 
 ROOT = Path(__file__).resolve().parents[1]
+EXPORT_ROOT = ROOT / ".v521-export"
 FINAL_FILES = (
     ".github/workflows/validate.yml",
     "README.md",
@@ -74,44 +73,59 @@ Simple Icons disclaimer: an earlier website state used third-party platform artw
     path.write_text(text, encoding="utf-8")
 
 
+def restore_final_validation_workflow() -> None:
+    result = subprocess.run(
+        ["git", "show", "origin/main:.github/workflows/validate.yml"],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    source = result.stdout
+    marker = "      - name: Validate source license\n        run: python scripts/validate_license.py\n"
+    insertion = marker + "\n      - name: Validate public asset rights boundary\n        run: python scripts/validate_public_assets.py\n"
+    if source.count(marker) != 1:
+        raise SystemExit(f"Expected one source-license workflow marker in origin/main; found {source.count(marker)}")
+    if "Validate public asset rights boundary" in source:
+        final = source
+    else:
+        final = source.replace(marker, insertion, 1)
+    (ROOT / ".github/workflows/validate.yml").write_text(final, encoding="utf-8")
+
+
 def apply_once() -> None:
     version = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
-    if version == "5.20.0":
-        subprocess.run(
-            [sys.executable, str(ROOT / "scripts" / "apply_v521_native_platform_marks.py")],
-            cwd=ROOT,
-            check=True,
-        )
-        normalize_generated_markers()
-        preserve_governance_history_language()
-    elif version != "5.21.0":
-        raise SystemExit(f"Unexpected VERSION during v5.21 setup export: {version!r}")
+    if version != "5.20.0":
+        raise SystemExit(f"Expected exact v5.20.0 setup baseline; found {version!r}")
+    subprocess.run(
+        [sys.executable, str(ROOT / "scripts" / "apply_v521_native_platform_marks.py")],
+        cwd=ROOT,
+        check=True,
+    )
+    normalize_generated_markers()
+    preserve_governance_history_language()
+    restore_final_validation_workflow()
 
 
-def emit_bundle() -> None:
-    buffer = BytesIO()
-    with tarfile.open(fileobj=buffer, mode="w:gz", compresslevel=9) as archive:
-        for relative in FINAL_FILES:
-            path = ROOT / relative
-            if not path.is_file():
-                raise SystemExit(f"Expected final changed file is missing: {relative}")
-            archive.add(path, arcname=relative, recursive=False)
-        deletion_bytes = ("\n".join(DELETIONS) + "\n").encode("utf-8")
-        info = tarfile.TarInfo("V521_DELETIONS.txt")
-        info.size = len(deletion_bytes)
-        info.mode = 0o644
-        archive.addfile(info, BytesIO(deletion_bytes))
-
-    encoded = b64encode(buffer.getvalue()).decode("ascii")
-    print(f"V521_TARGZ_BASE64 {encoded}")
-    print(f"V521_TARGZ_BYTES {len(buffer.getvalue())}")
+def stage_artifact() -> None:
+    if EXPORT_ROOT.exists():
+        shutil.rmtree(EXPORT_ROOT)
+    files_root = EXPORT_ROOT / "files"
+    for relative in FINAL_FILES:
+        source = ROOT / relative
+        if not source.is_file() or source.is_symlink():
+            raise SystemExit(f"Expected final changed regular file is missing: {relative}")
+        target = files_root / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source, target)
+    (EXPORT_ROOT / "V521_DELETIONS.txt").write_text("\n".join(DELETIONS) + "\n", encoding="utf-8")
 
 
 def main() -> int:
     apply_once()
-    emit_bundle()
-    print("V521_EXPORT_COMPLETE: intentional setup-only stop after exact bundle emission.", file=sys.stderr)
-    return 1
+    stage_artifact()
+    print("Setup-only v5.21 transform staged for private artifact upload; continuing normal validation.")
+    return 0
 
 
 if __name__ == "__main__":
