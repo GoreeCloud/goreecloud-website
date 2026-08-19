@@ -2,7 +2,7 @@
 
 ## Current release version
 
-The repository-defined release version is **5.21.0**.
+The repository-defined release version is **5.22.0**.
 
 `VERSION` is the canonical machine-readable version source. The version file and this stability record are repository metadata only; neither is part of the isolated Cloudflare `dist/` publication allowlist. A source revision carrying this version is not considered stable merely because version metadata exists; it must satisfy the full stability definition below.
 
@@ -26,21 +26,21 @@ A GoreeCloud website revision is considered stable only when all of the followin
 
 A passing branch preview alone is not a stable release. A merge alone is not a stable release. Stability requires the reviewed source, isolated artifact, and deployed production bytes to agree.
 
-## 5.21.0 scope
+## 5.22.0 scope
 
-Version 5.21.0 removes third-party artwork from the deployable website artifact and hardens the platform-identity boundary while preserving the production-verified v5.20 repository portfolio, metadata, Glaze UI 1.1, privacy, security, runtime-status, and isolated-publication contracts.
+Version 5.22.0 removes obsolete third-party artwork from the current repository tree and hardens the source-publication boundary while preserving the production-verified v5.21 public artifact, Glaze UI 1.1, privacy, security, repository/runtime-status, and isolated-publication contracts.
 
 The release:
 
-- removes all ten `assets/platform/*.svg` paths from `PUBLIC_ASSET_FILES`, leaving only the GoreeCloud favicon, application icon, and social preview as deployable artwork;
-- replaces visible Proxmox, Debian, Docker, NetBird, AdGuard Home, Caddy, Beszel, and Uptime Kuma logos with neutral Glaze UI letter marks while preserving descriptive names and official outbound project links;
-- simplifies GoreeCloud Monitor and Search platform marks to the same single-frame Glaze UI mark pattern;
-- retains historical/reference third-party SVG files only in the private repository and outside `dist/`;
-- adds `scripts/validate_public_assets.py` and `tests/test_public_asset_boundary.py` so third-party artwork cannot silently re-enter the deployed allowlist or homepage platform surface;
-- adds the creative-asset validator to the exact-head CI workflow before governance/deployment acceptance;
-- updates `docs/public-asset-inventory.md` so the remaining issue #5 gate is the final human reachable-history/contextual-disclosure review and explicit repository publication decision, not deployable third-party logo provenance;
-- reduces public file count and artifact bytes without raising any HTML, CSS, JavaScript, image, request, or total-artifact ceiling;
-- preserves the authenticated **30 repository / 23 public / 7 private / 11 group** portfolio authority from v5.20.0;
+- deletes the ten unused `assets/platform/*.svg` files and eight unused `assets/services/*.svg` files from the current source tree;
+- preserves the v5.21.0 neutral Glaze UI letter-mark presentation and official descriptive outbound project links;
+- leaves `PUBLIC_ASSET_FILES` unchanged at exactly the three GoreeCloud-owned favicon/icon/social-preview assets;
+- strengthens `scripts/validate_public_assets.py` so `assets/platform/` and `assets/services/` must remain absent from the current tree as well as absent from the deployable allowlist and homepage render surface;
+- strengthens `tests/test_public_asset_boundary.py` with current-tree directory-absence regression coverage;
+- updates `docs/public-asset-inventory.md` to distinguish the clean current tree from prior reachable Git history, which remains subject to final human contextual review;
+- keeps issue #5 open because deleting current-tree files does not rewrite reachable history and does not authorize a repository visibility change;
+- leaves the browser-facing `dist/` artifact byte-equivalent to v5.21.0 because the deleted SVGs were already non-deployable;
+- preserves the authenticated **30 repository / 23 public / 7 private / 11 group** portfolio authority;
 - preserves the exact Glaze UI 1.1.0 conformance pin at `5c8320de4f770614a3e2bcf9de2a27f7fcfd920c`;
 - preserves the Memos, Notify/ntfy, Search, and Monitoring/Uptime Kuma runtime-status boundaries;
 - preserves Wardveil Security reporting, `security@goreecloud.com`, the self-only browser-origin model, `connect-src 'none'`, and telemetry-free operation;
@@ -91,7 +91,7 @@ The browser must not fetch either repository metadata record or GitHub inventory
 
 ## Wardveil Security, privacy, and observability boundary
 
-Wardveil Security by GoreeCloud remains the platform security identity and presentation layer; it does not replace technical security controls or evidence. The v5.21.0 platform-identity release does not add authentication, authorization, a backend API, application storage, visitor analytics, browser error export, session replay, fingerprinting, remote telemetry, search telemetry, or query persistence.
+Wardveil Security by GoreeCloud remains the platform security identity and presentation layer; it does not replace technical security controls or evidence. The v5.22.0 current-tree publication cleanup does not add authentication, authorization, a backend API, application storage, visitor analytics, browser error export, session replay, fingerprinting, remote telemetry, search telemetry, or query persistence.
 
 Current observability remains source- and deployment-bound through exact-revision CI, isolated artifact validation, exact preview and production verification, scheduled remote checks, and responsible security reporting. The site's privacy-first static architecture remains unchanged.
 

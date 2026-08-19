@@ -20,6 +20,7 @@ EXPECTED_ASSETS = (
     "assets/social-preview.png",
 )
 FORBIDDEN_PREFIXES = ("assets/platform/", "assets/services/")
+FORBIDDEN_CURRENT_TREE_DIRS = (ROOT / "assets" / "platform", ROOT / "assets" / "services")
 EXPECTED_PLATFORM_MARKS = {"PX", "DE", "DK", "NB", "AG", "CA", "GN", "BZ", "UK", "GM", "GS"}
 
 
@@ -74,6 +75,10 @@ def main() -> int:
         if path.startswith(FORBIDDEN_PREFIXES):
             errors.append(f"Third-party artwork must not be deployable: {path}")
 
+    for directory in FORBIDDEN_CURRENT_TREE_DIRS:
+        if directory.exists():
+            errors.append(f"Retired third-party artwork directory must be absent from the current tree: {directory.relative_to(ROOT)}")
+
     index = (ROOT / "index.html").read_text(encoding="utf-8")
     parser = PlatformParser()
     parser.feed(index)
@@ -84,8 +89,8 @@ def main() -> int:
 
     inventory = (ROOT / "docs/public-asset-inventory.md").read_text(encoding="utf-8")
     for marker in (
-        "third-party artwork removed from the public artifact",
-        "No path under `assets/platform/` or `assets/services/` is included",
+        "third-party artwork removed from the public artifact and current source tree",
+        "No current-tree path under `assets/platform/` or `assets/services/` remains",
         "final human reachable-history/contextual-disclosure review",
     ):
         if marker not in inventory:
@@ -96,7 +101,7 @@ def main() -> int:
         for error in errors:
             print(f"  - {error}")
         return 1
-    print("Public creative-asset validation passed: only GoreeCloud-owned artwork is deployable.")
+    print("Public creative-asset validation passed: only GoreeCloud-owned artwork remains deployable and retired third-party artwork is absent from the current tree.")
     return 0
 
 
