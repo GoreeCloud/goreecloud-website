@@ -55,7 +55,7 @@ class StabilityBaselineTests(unittest.TestCase):
             "repository visibility change",
             "DNS change",
             "creative-rights/publication decision",
-            "Third-party platform-mark review",
+            "final human reachable-history/contextual-disclosure review",
         ):
             self.assertIn(marker, self.baseline)
 

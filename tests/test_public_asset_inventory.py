@@ -125,10 +125,10 @@ class PublicAssetInventoryTests(unittest.TestCase):
         text = normalize_markdown_text(INVENTORY.read_text(encoding="utf-8"))
         required = (
             "not a license grant",
-            "provenance and rights verification still required",
-            "source-code license must not be assumed to relicense third-party marks",
-            "integrity fingerprint only",
-            "does not establish copyright ownership",
+            "third-party artwork removed from the public artifact",
+            "repository presence does not make those files deployable",
+            "does not automatically license goreecloud branding or third-party marks",
+            "final human reachable-history/contextual-disclosure review",
             "issue #5 remains open",
         )
         for marker in required:
