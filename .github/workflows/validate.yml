@@ -38,16 +38,16 @@ jobs:
         run: python scripts/validate_repository_hygiene.py
 
       - name: Upload exact transformed v5.21 source
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2 line
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0 Node 24 release line
         with:
           name: v521-transformed-source
-          path: .v521-export/
+          path: v521-export/
           if-no-files-found: error
           retention-days: 1
           compression-level: 9
 
       - name: Remove setup export staging
-        run: rm -rf .v521-export
+        run: rm -rf v521-export
 
       - name: Validate reachable repository history
         run: python scripts/validate_repository_history.py
