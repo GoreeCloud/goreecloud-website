@@ -34,6 +34,22 @@ class RepositoryPortfolioTests(unittest.TestCase):
         errors = portfolio.validate_manifest(mutated)
         self.assertTrue(any("count 'total'" in error for error in errors))
 
+    def test_repository_discovery_controls_remain_local_and_ephemeral(self) -> None:
+        main_js = (ROOT / "js" / "main.js").read_text(encoding="utf-8")
+        repository_css = (ROOT / "css" / "repositories.css").read_text(encoding="utf-8")
+        self.assertEqual(portfolio.validate_discovery_enhancement(main_js, repository_css), [])
+
+        mutated = main_js + "\n// simulated regression\nfetch('/repository-search?q=test');\n"
+        errors = portfolio.validate_discovery_enhancement(mutated, repository_css)
+        self.assertTrue(any("local, ephemeral, and network-independent" in error for error in errors))
+
+    def test_repository_discovery_keeps_adaptive_and_print_fallbacks(self) -> None:
+        main_js = (ROOT / "js" / "main.js").read_text(encoding="utf-8")
+        repository_css = (ROOT / "css" / "repositories.css").read_text(encoding="utf-8")
+        mutated = repository_css.replace("@media print", "@media screen")
+        errors = portfolio.validate_discovery_enhancement(main_js, mutated)
+        self.assertTrue(any("@media print" in error for error in errors))
+
 
 if __name__ == "__main__":
     unittest.main()
