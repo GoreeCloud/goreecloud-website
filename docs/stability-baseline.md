@@ -2,9 +2,9 @@
 
 ## Current release version
 
-The repository-defined release version is **5.18.0**.
+The repository-defined release version is **5.19.0**.
 
-`VERSION` is the canonical machine-readable version source. The version file and this stability record are repository metadata only; neither is part of the isolated Cloudflare `dist/` publication allowlist. A source revision carrying this version is not considered stable merely because the version metadata exists; it must satisfy the full stability definition below.
+`VERSION` is the canonical machine-readable version source. The version file and this stability record are repository metadata only; neither is part of the isolated Cloudflare `dist/` publication allowlist. A source revision carrying this version is not considered stable merely because version metadata exists; it must satisfy the full stability definition below.
 
 ## Stability definition
 
@@ -26,37 +26,47 @@ A GoreeCloud website revision is considered stable only when all of the followin
 
 A passing branch preview alone is not a stable release. A merge alone is not a stable release. Stability requires the reviewed source, isolated artifact, and deployed production bytes to agree.
 
-## 5.18.0 scope
+## 5.19.0 scope
 
-Version 5.18.0 turns the 28-repository directory into a more usable first-party discovery surface without changing its static authority, privacy model, inventory, repository visibility, or runtime-status boundaries. The release is a Glaze UI interaction and progressive-enhancement pass over the production-verified 5.17.0 runtime-status baseline.
+Version 5.19.0 advances the public website from the Glaze UI 1.0 consumer contract to the compatible **Glaze UI 1.1** contract while preserving the production-verified v5.18.0 repository-directory experience, static authority, privacy model, runtime-status boundaries, and isolated publication architecture.
 
 The release:
 
-- preserves all **28 repositories: 22 public and 6 private** and the existing 11 functional groups as source-controlled static HTML;
-- adds first-party repository text search over repository names, descriptions, purposes, roles, and functional-group context;
-- adds a functional-group selector derived from the rendered directory rather than from a second browser-side inventory;
-- adds All/Public/Private visibility controls with explicit selected-state semantics;
-- adds a local result-count status message, a clear no-results state, and a reset control that restores all repositories and focus to the search field;
-- keeps the discovery controls entirely progressive: if JavaScript is unavailable, no incomplete search UI is shown and the complete static directory remains readable and navigable;
-- keeps repository discovery entirely local and ephemeral: filter state is not written to localStorage, sessionStorage, the URL, browser history, or a network request;
-- uses existing Glaze UI semantic tokens, 48-pixel comfortable control targets, rounded search/select/button geometry, visible focus treatment, light/dark theme inheritance, and restrained selected-state emphasis;
-- transforms the discovery layout for Medium and Compact adaptive ranges rather than merely shrinking the desktop composition;
-- removes nonessential control motion under reduced-motion preferences and provides reduced-transparency, increased-contrast, and forced-colors fallbacks;
-- ensures print restores the complete repository directory even when the interactive browser view is currently filtered;
-- extends `scripts/validate_repository_portfolio.py` so discovery privacy, accessibility semantics, adaptive behavior, and print/no-JavaScript resilience fail closed with the portfolio itself;
-- expands `tests/test_repository_portfolio.py` with explicit local/network-independence and print-fallback regression tests;
-- preserves the 5.17.0 runtime-status authority and all Memos, Notify/ntfy, Search, and Monitoring/Uptime Kuma maturity boundaries;
-- preserves the 5.16.0 static homepage and repository-portfolio authority and no-runtime-GitHub-fetch boundary;
-- preserves the 5.15.0 Wardveil Security reporting path, dedicated `security@goreecloud.com` contact, telemetry-free observability contract, security headers, and privacy boundary;
-- preserves isolated Cloudflare `dist/` publication, exact preview/production verification, and the existing performance budgets.
+- pins website conformance to Glaze UI **1.1.0** and canonical design-system revision `5c8320de4f770614a3e2bcf9de2a27f7fcfd920c`;
+- adds the applicable Glaze UI 1.1 on-accent, info, semantic scrim, shared state-layer, icon-size, control-density, adaptive-gutter, and safe-area semantics;
+- applies the on-accent role to primary actions without changing the accepted GoreeCloud button composition;
+- adds horizontal safe-area inset handling to persistent site chrome so display cutouts do not require device-specific assumptions;
+- keeps modal scrim behavior defined for contract compatibility while recording modal dialogs and destructive workflows as not applicable to the current anonymous static site;
+- preserves the Canvas, Solid, Raised, Glaze, and Overlay surface hierarchy;
+- preserves Compact, Medium, Expanded, and Wide adaptive ranges and the established motion vocabulary;
+- preserves 44-pixel minimum and 48-pixel comfortable actionable target semantics;
+- preserves reduced-motion, reduced-transparency, increased-contrast, forced-colors, no-backdrop-filter, print, and no-JavaScript resilience behavior;
+- preserves local/system typography, local artwork, local-only appearance persistence, and the no-third-party-runtime-dependency privacy boundary;
+- keeps the aggregate CSS performance ceiling unchanged by compacting the Glaze polish layer as the 1.1 semantic mapping is added;
+- updates the fail-closed Glaze validator and regression tests so reverting the target version, exact canonical revision, 1.1 semantic mapping, or safe-area contract causes validation failure;
+- preserves the v5.18.0 local repository discovery experience and all 28 repository facts, 22 public / 6 private visibility counts, and 11 functional groups;
+- preserves the v5.17.0 runtime-status authority and Memos, Notify/ntfy, Search, and Monitoring/Uptime Kuma maturity boundaries;
+- preserves the v5.16.0 static homepage and repository-portfolio authority and no-runtime-GitHub-fetch boundary;
+- preserves the v5.15.0 Wardveil Security reporting path, dedicated `security@goreecloud.com` contact, telemetry-free observability contract, security headers, and privacy boundary;
+- preserves isolated Cloudflare `dist/` publication, exact preview/production verification, and all existing performance budgets.
+
+## Glaze UI 1.1 stable-release boundary
+
+Glaze UI is a design contract and visual-identity requirement. The website now targets Glaze UI 1.1.0 using the exact canonical source revision recorded above rather than assuming compatibility with an unversioned latest design-system state.
+
+The 1.1 adoption is intentionally compatible. It preserves the Glaze UI 1.0 foundation while expanding the website's semantic vocabulary for richer reusable state, density, icon, gutter, safe-area, and overlay behavior. Existing product-specific colors, layouts, imagery, composition, and information architecture remain valid GoreeCloud personality.
+
+The website maps the new semantic roles through `css/glaze-polish.css` and records the mapping in `docs/glaze-ui-conformance.md`. Existing website-specific interaction feedback remains an approved product mapping to the shared state-layer contract rather than being replaced by generic reference-component styling.
+
+Automated conformance checks are necessary regression evidence, but they do not replace visual acceptance, manual keyboard review, screen-reader testing, zoom/reflow inspection, color-contrast review, touch-device review, or safe-area/device review when a material interface change warrants those checks. The ordinary-viewport visual composition is preserved by this release.
+
+The stable boundary explicitly preserves the existing **semantic tokens**, **adaptive ranges**, static homepage delivery, GoreeCloud Monitor transition language, privacy controls, and isolated publication model from earlier stable releases.
 
 ## Repository discovery progressive-enhancement boundary
 
 The repository directory remains authoritative static HTML. JavaScript does not generate repository facts, repository cards, portfolio counts, visibility states, canonical GitHub URLs, production-status claims, or functional-group membership.
 
-The v5.18.0 enhancement operates only over already-rendered repository cards. It may hide and reveal cards and groups in response to local search/group/visibility input, but it cannot add repositories or change their source-controlled facts. Result counts are derived from the rendered cards, so the browser enhancement does not become a competing inventory authority.
-
-Search and filter values are intentionally ephemeral. They are not persisted to browser storage, encoded into query parameters or fragments, written to browser history, or transmitted to a server. The current static site's `connect-src 'none'` browser boundary remains unchanged.
+The v5.18.0 enhancement remains in force: it operates only over already-rendered repository cards and may hide or reveal cards and groups in response to local search/group/visibility input. Search and filter values are ephemeral and are not persisted to browser storage, encoded into query parameters or fragments, written to browser history, or transmitted to a server. The current static site's `connect-src 'none'` browser boundary remains unchanged.
 
 If JavaScript fails or is disabled, the directory continues to expose every repository. If CSS translucency is unavailable or disabled, discovery controls remain readable on solid surfaces. If reduced motion, increased contrast, or forced colors are requested, the control states remain understandable. Print output deliberately ignores active browser filtering and restores the full directory.
 
@@ -75,25 +85,17 @@ A repository becoming public, a CI run becoming green, a release candidate being
 
 The runtime-status validator is intentionally narrow. It protects reviewed public claims but does not become a competing authoritative application specification. When an application's authoritative project record changes after a real accepted cutover or rollback, this website authority must be deliberately revalidated and updated in the same release that changes the public claim.
 
-## Glaze UI stable-release boundary
-
-Glaze UI is a design contract and a visual identity requirement. Automated conformance checks are necessary regression evidence, but they do not replace visual acceptance, manual keyboard review, screen-reader testing, zoom/reflow inspection, color-contrast review, or touch-device review when a material interface change warrants those checks.
-
-Version 5.18.0 does not change the canonical Glaze UI version. It applies the existing Glaze UI 1.0 search-field, text-input, select, button, semantic-token, target-size, selected-state, adaptive-layout, focus, motion, contrast, forced-colors, translucency-fallback, and print/resilience semantics to the repository directory. The complete static directory remains the no-JavaScript content authority.
-
-The stable boundary explicitly preserves the existing **semantic tokens**, **adaptive ranges**, static homepage delivery, GoreeCloud Monitor transition language, privacy controls, and isolated publication model from earlier stable releases.
-
 ## Repository portfolio authority and privacy boundary
 
 `docs/repository-portfolio.json` remains the repository-only machine-readable authority for repository names, visibility states, group membership, and derived totals. The separate `docs/public-runtime-status.json` controls reviewed public maturity claims. These records are complementary and must not be collapsed into one property: **repository visibility does not determine runtime maturity**.
 
 Both records must remain outside the public artifact and must not contain credentials, private source contents, private hostnames, private IP addresses, internal topology, administrative endpoints, or sensitive implementation data. Private repository cards may identify an intentionally public product role but must not expose direct private repository links.
 
-The browser must not fetch either repository metadata record or GitHub inventory at runtime. Repository counts, grouping, and runtime-status claims are source-controlled release facts validated before publication rather than collected from visitors or fetched dynamically. The v5.18.0 discovery enhancement filters only the already-rendered static cards and does not introduce another data source.
+The browser must not fetch either repository metadata record or GitHub inventory at runtime. Repository counts, grouping, and runtime-status claims are source-controlled release facts validated before publication rather than collected from visitors or fetched dynamically.
 
 ## Wardveil Security, privacy, and observability boundary
 
-Wardveil Security by GoreeCloud remains the platform security identity and presentation layer; it does not replace technical security controls or evidence. The v5.18.0 directory enhancement does not add authentication, authorization, a backend API, application storage, visitor analytics, browser error export, session replay, fingerprinting, remote telemetry, search telemetry, or query persistence.
+Wardveil Security by GoreeCloud remains the platform security identity and presentation layer; it does not replace technical security controls or evidence. The v5.19.0 Glaze UI alignment does not add authentication, authorization, a backend API, application storage, visitor analytics, browser error export, session replay, fingerprinting, remote telemetry, search telemetry, or query persistence.
 
 Current observability remains source- and deployment-bound through exact-revision CI, isolated artifact validation, exact preview and production verification, scheduled remote checks, and responsible security reporting. The site's privacy-first static architecture remains unchanged.
 
