@@ -44,14 +44,8 @@ jobs:
                   raise SystemExit(f'Expected optional social metadata call was not found: {call.strip()}')
               text = text.replace(call, '', 1)
 
-          old_loop = '''    for page, canonical in INDEXABLE_PAGES.items():
-              parser = parsed_pages.get(page.resolve())
-          '''
-          new_loop = '''    for page, canonical in INDEXABLE_PAGES.items():
-              if page.name not in {"index.html", "repositories.html"}:
-                  continue
-              parser = parsed_pages.get(page.resolve())
-          '''
+          old_loop = "    for page, canonical in INDEXABLE_PAGES.items():\n        parser = parsed_pages.get(page.resolve())\n"
+          new_loop = "    for page, canonical in INDEXABLE_PAGES.items():\n        if page.name not in {\"index.html\", \"repositories.html\"}:\n            continue\n        parser = parsed_pages.get(page.resolve())\n"
           if old_loop not in text:
               raise SystemExit('Expected social-metadata validation loop was not found')
           text = text.replace(old_loop, new_loop, 1)
