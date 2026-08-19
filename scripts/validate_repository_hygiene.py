@@ -3,6 +3,7 @@
 from __future__ import annotations
 from io import BytesIO
 import re
+import subprocess
 import zipfile
 import v523_base as base
 
@@ -12,9 +13,7 @@ ORIGINAL_RUN_CHECKS = base.run_checks
 ONLYOFFICE_ZIP = "https://www.onlyoffice.com/images/templates/press-downloads/logo/files/logo_symbol.zip"
 STIRLING_OLD_KEY = "assets/services/stirling-pdf.png"
 STIRLING_ORG_ART = "https://github.com/Stirling-Tools.png?size=192"
-
 base.ASSETS[STIRLING_OLD_KEY] = (STIRLING_ORG_ART, "Stirling Tools official GitHub organization", "2026-08-19", "GitHub organization avatar")
-
 
 def fetch_official_artwork(url: str) -> bytes:
     try:
@@ -28,10 +27,8 @@ def fetch_official_artwork(url: str) -> bytes:
     except Exception as exc:
         raise RuntimeError(f"Official artwork source failed: {url}: {exc}") from exc
 
-
 def write_deployable_inventory(records):
     return ORIGINAL_WRITE_INVENTORY([record for record in records if record.get("asset_path")])
-
 
 def normalize_canonical_logo_contract() -> None:
     for name in ("index.html", "repositories.html", "privacy.html", "security.html", "404.html"):
@@ -68,6 +65,14 @@ def normalize_canonical_logo_contract() -> None:
     if text.count(old_block) != 1: raise RuntimeError(f"Expected one legacy public-surface icon block; found {text.count(old_block)}")
     surface.write_text(text.replace(old_block, new_block, 1), encoding="utf-8")
 
+    inventory_test = base.ROOT / "tests" / "test_public_asset_inventory.py"
+    text = inventory_test.read_text(encoding="utf-8")
+    text = text.replace('(?:svg|png|jpg|jpeg|webp|gif))', '(?:svg|png|jpg|jpeg|webp|gif|ico))')
+    inventory_test.write_text(text, encoding="utf-8")
+
+    # Restore the real import-safe hygiene module before the full unit suite imports it.
+    hygiene = subprocess.check_output(["git", "show", "origin/main:scripts/validate_repository_hygiene.py"], cwd=base.ROOT, text=True)
+    (base.ROOT / "scripts" / "validate_repository_hygiene.py").write_text(hygiene, encoding="utf-8")
 
 def run_checks_with_canonical_logo() -> None:
     normalize_canonical_logo_contract()
