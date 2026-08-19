@@ -2,7 +2,7 @@
 
 ## Current release version
 
-The repository-defined release version is **5.19.0**.
+The repository-defined release version is **5.20.0**.
 
 `VERSION` is the canonical machine-readable version source. The version file and this stability record are repository metadata only; neither is part of the isolated Cloudflare `dist/` publication allowlist. A source revision carrying this version is not considered stable merely because version metadata exists; it must satisfy the full stability definition below.
 
@@ -26,30 +26,28 @@ A GoreeCloud website revision is considered stable only when all of the followin
 
 A passing branch preview alone is not a stable release. A merge alone is not a stable release. Stability requires the reviewed source, isolated artifact, and deployed production bytes to agree.
 
-## 5.19.0 scope
+## 5.20.0 scope
 
-Version 5.19.0 advances the public website from the Glaze UI 1.0 consumer contract to the compatible **Glaze UI 1.1** contract while preserving the production-verified v5.18.0 repository-directory experience, static authority, privacy model, runtime-status boundaries, and isolated publication architecture.
+Version 5.20.0 reconciles the public repository portfolio with the authenticated GoreeCloud GitHub inventory and strengthens browser metadata and request-efficiency controls while preserving the production-verified Glaze UI 1.1, privacy, security, runtime-status, and isolated-publication boundaries.
 
 The release:
 
-- pins website conformance to Glaze UI **1.1.0** and canonical design-system revision `5c8320de4f770614a3e2bcf9de2a27f7fcfd920c`;
-- adds the applicable Glaze UI 1.1 on-accent, info, semantic scrim, shared state-layer, icon-size, control-density, adaptive-gutter, and safe-area semantics;
-- applies the on-accent role to primary actions without changing the accepted GoreeCloud button composition;
-- adds horizontal safe-area inset handling to persistent site chrome so display cutouts do not require device-specific assumptions;
-- keeps modal scrim behavior defined for contract compatibility while recording modal dialogs and destructive workflows as not applicable to the current anonymous static site;
-- preserves the Canvas, Solid, Raised, Glaze, and Overlay surface hierarchy;
-- preserves Compact, Medium, Expanded, and Wide adaptive ranges and the established motion vocabulary;
-- preserves 44-pixel minimum and 48-pixel comfortable actionable target semantics;
-- preserves reduced-motion, reduced-transparency, increased-contrast, forced-colors, no-backdrop-filter, print, and no-JavaScript resilience behavior;
-- preserves local/system typography, local artwork, local-only appearance persistence, and the no-third-party-runtime-dependency privacy boundary;
-- keeps the aggregate CSS performance ceiling unchanged by compacting the Glaze polish layer as the 1.1 semantic mapping is added;
-- updates the fail-closed Glaze validator and regression tests so reverting the target version, exact canonical revision, 1.1 semantic mapping, or safe-area contract causes validation failure;
-- preserves the v5.18.0 local repository discovery experience and all 28 repository facts, 22 public / 6 private visibility counts, and 11 functional groups;
-- preserves the v5.17.0 runtime-status authority and Memos, Notify/ntfy, Search, and Monitoring/Uptime Kuma maturity boundaries;
-- preserves the v5.16.0 static homepage and repository-portfolio authority and no-runtime-GitHub-fetch boundary;
-- preserves the v5.15.0 Wardveil Security reporting path, dedicated `security@goreecloud.com` contact, telemetry-free observability contract, security headers, and privacy boundary;
-- preserves isolated Cloudflare `dist/` publication, exact preview/production verification, and all existing performance budgets.
-
+- records **30 current repositories: 23 public and 7 private**, while preserving 11 functional groups;
+- adds the public `goreecloud-keyboard` repository to the productivity/input group without implying production acceptance;
+- adds the private `goreecloud-changelogs` repository to the operations group with its production migration and acceptance boundary stated explicitly;
+- advances the repository manifest review date to August 19, 2026 and validates that the review date is valid and not future-dated;
+- removes the hard-coded 28-repository validator assumption and makes rendered count/overview checks derive from the repository manifest, including rejection of conflicting stale counts;
+- links the local `site.webmanifest`, SVG favicon, PNG fallback, and Apple touch icon consistently from all five human-facing public pages;
+- completes Open Graph and Twitter metadata for the repository directory and validates its canonical social URL/image identity;
+- adds local manifest shortcuts for repositories, privacy, and security without introducing a service worker or remote dependency;
+- reduces the Privacy and Security pages from nine stylesheet requests to the three shared Glaze UI/style layers they actually use;
+- replaces the homepage-only request ceiling with page-specific stylesheet and script ceilings for every human-facing page;
+- preserves the existing HTML, CSS, JavaScript, image, and 512 KiB total artifact budgets without increasing any ceiling;
+- preserves the exact Glaze UI 1.1.0 conformance pin at `5c8320de4f770614a3e2bcf9de2a27f7fcfd920c`;
+- preserves the v5.18.0 local repository discovery controls and their local-only, ephemeral, no-network/no-storage behavior;
+- preserves the v5.17.0 Memos, Notify/ntfy, Search, and Monitoring/Uptime Kuma runtime-status boundaries;
+- preserves Wardveil Security reporting, `security@goreecloud.com`, the self-only browser-origin model, `connect-src 'none'`, and telemetry-free operation;
+- preserves the exact allowlisted Cloudflare `dist/` publication model and exact branch-preview/production deployment verification requirement.
 ## Glaze UI 1.1 stable-release boundary
 
 Glaze UI is a design contract and visual-identity requirement. The website now targets Glaze UI 1.1.0 using the exact canonical source revision recorded above rather than assuming compatibility with an unversioned latest design-system state.
@@ -95,7 +93,7 @@ The browser must not fetch either repository metadata record or GitHub inventory
 
 ## Wardveil Security, privacy, and observability boundary
 
-Wardveil Security by GoreeCloud remains the platform security identity and presentation layer; it does not replace technical security controls or evidence. The v5.19.0 Glaze UI alignment does not add authentication, authorization, a backend API, application storage, visitor analytics, browser error export, session replay, fingerprinting, remote telemetry, search telemetry, or query persistence.
+Wardveil Security by GoreeCloud remains the platform security identity and presentation layer; it does not replace technical security controls or evidence. The v5.20.0 portfolio and metadata release does not add authentication, authorization, a backend API, application storage, visitor analytics, browser error export, session replay, fingerprinting, remote telemetry, search telemetry, or query persistence.
 
 Current observability remains source- and deployment-bound through exact-revision CI, isolated artifact validation, exact preview and production verification, scheduled remote checks, and responsible security reporting. The site's privacy-first static architecture remains unchanged.
 

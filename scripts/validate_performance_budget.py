@@ -21,8 +21,20 @@ SVG_TOTAL_BUDGET = 128 * KIB
 RASTER_FILE_BUDGET = 256 * KIB
 RASTER_TOTAL_BUDGET = 256 * KIB
 PUBLIC_ARTIFACT_BUDGET = 512 * KIB
-MAX_HOMEPAGE_STYLESHEETS = 10
-MAX_HOMEPAGE_SCRIPTS = 3
+MAX_STYLESHEETS_BY_PAGE = {
+    "index.html": 10,
+    "repositories.html": 4,
+    "privacy.html": 3,
+    "security.html": 3,
+    "404.html": 4,
+}
+MAX_SCRIPTS_BY_PAGE = {
+    "index.html": 2,
+    "repositories.html": 2,
+    "privacy.html": 1,
+    "security.html": 1,
+    "404.html": 1,
+}
 
 PUBLIC_HTML = tuple(
     ROOT / relative
@@ -117,16 +129,17 @@ def main() -> int:
                 f"Image must declare width and height to reserve layout space in {path.relative_to(ROOT)}: {src}"
             )
 
-        if path.name == "index.html":
-            if parser.stylesheet_count > MAX_HOMEPAGE_STYLESHEETS:
-                errors.append(
-                    f"Homepage stylesheet request count exceeds {MAX_HOMEPAGE_STYLESHEETS}: "
-                    f"found {parser.stylesheet_count}."
-                )
-            if parser.script_count > MAX_HOMEPAGE_SCRIPTS:
-                errors.append(
-                    f"Homepage script request count exceeds {MAX_HOMEPAGE_SCRIPTS}: found {parser.script_count}."
-                )
+        stylesheet_limit = MAX_STYLESHEETS_BY_PAGE[path.name]
+        script_limit = MAX_SCRIPTS_BY_PAGE[path.name]
+        if parser.stylesheet_count > stylesheet_limit:
+            errors.append(
+                f"{path.name} stylesheet request count exceeds {stylesheet_limit}: "
+                f"found {parser.stylesheet_count}."
+            )
+        if parser.script_count > script_limit:
+            errors.append(
+                f"{path.name} script request count exceeds {script_limit}: found {parser.script_count}."
+            )
 
     if errors:
         print("Performance budget validation failed:")

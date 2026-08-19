@@ -4,7 +4,7 @@ Public static website for GoreeCloud.
 
 ## Version
 
-Current website package: **v5.19.0 — Glaze UI 1.1 exact-version conformance and safe-area semantics**
+Current website package: **v5.20.0 — repository portfolio reconciliation, metadata hardening, and ancillary-page request optimization**
 
 `VERSION` is the canonical machine-readable version source. `docs/stability-baseline.md` defines the release scope and the evidence required before a revision is treated as stable. `docs/glaze-ui-conformance.md` records the website's targeted Glaze UI version and conformance state. `docs/wardveil-security-and-observability.md` defines the website-specific Wardveil Security and observability boundary. `docs/repository-portfolio.json` is the repository-only machine-readable authority for the current public/private GitHub portfolio counts and grouping. `docs/public-runtime-status.json` is the separate repository-only authority for reviewed public maturity and migration claims that must not be inferred from repository visibility.
 
@@ -28,15 +28,17 @@ The authoritative repository directory and homepage repository summary are stati
 
 ## Current software repository portfolio
 
-The authenticated GoreeCloud repository inventory currently contains **28 repositories: 22 public and 6 private**. The dedicated `repositories.html` page groups those repositories into **11 functional groups** and records a concise public description, purpose, role, visibility, and production boundary for each.
+The authenticated GoreeCloud repository inventory currently contains **30 repositories: 23 public and 7 private**. The dedicated `repositories.html` page groups those repositories into **11 functional groups** and records a concise public description, purpose, role, visibility, and production boundary for each.
 
-Public repositories link directly to their GitHub source. GoreeCloud Tasks, GoreeCloud Contacts, GoreeCloud Notify, GoreeCloud Wardveil Security, GoreeCloud Privacy Shield, and the `goreecloud-website` deployment-source repository remain private and are identified without publishing private source contents.
+Public repositories link directly to their GitHub source. GoreeCloud Tasks, GoreeCloud Contacts, GoreeCloud Notify, GoreeCloud Changelogs, GoreeCloud Wardveil Security, GoreeCloud Privacy Shield, and the `goreecloud-website` deployment-source repository remain private and are identified without publishing private source contents.
 
-The portfolio includes Glaze UI; GoreeCloud Manager; GoreeCloud Identity; GoreeVault Server; Wardveil Security; Privacy Shield; GoreeCloud Backup; GoreeCloud Network, its dashboard source and Android client; GoreeCloud DNS; GoreeCloud Research Library; GoreeCloud Notes; GoreeCloud Memos; GoreeCloud Bookmarks and its browser extension; GoreeCloud Tasks; GoreeCloud Contacts; GoreeCloud Calendar; GoreeCloud Notify; GoreeCloud Monitor; GoreeCloud Search; GoreeCloud Feed; GoreeCloud Browser; GoreeCloud Redirector; GoreeCloud Source Resync; GoreeCloud Gallery; and this website.
+The portfolio includes Glaze UI; GoreeCloud Manager; GoreeCloud Identity; GoreeVault Server; Wardveil Security; Privacy Shield; GoreeCloud Backup; GoreeCloud Network, its dashboard source and Android client; GoreeCloud DNS; GoreeCloud Research Library; GoreeCloud Notes; GoreeCloud Memos; GoreeCloud Bookmarks and its browser extension; GoreeCloud Tasks; GoreeCloud Contacts; GoreeCloud Calendar; GoreeCloud Notify; GoreeCloud Monitor; GoreeCloud Search; GoreeCloud Feed; GoreeCloud Browser; GoreeCloud Redirector; GoreeCloud Source Resync; GoreeCloud Gallery; GoreeCloud Keyboard; GoreeCloud Changelogs; and this website.
 
 The public homepage intentionally presents a representative software overview instead of duplicating the exhaustive repository directory. On the directory page, first-party progressive enhancement adds text search, functional-group selection, public/private visibility controls, reset behavior, and an assistive-technology status message over the already-rendered static cards. The controls derive their options and counts from the rendered directory rather than creating a competing inventory source.
 
 `docs/repository-portfolio.json`, `scripts/validate_repository_portfolio.py`, and `tests/test_repository_portfolio.py` fail closed when declared counts, public/private visibility, required public links, private-link boundaries, homepage summary, exhaustive directory content, local-only discovery behavior, adaptive Glaze UI presentation, or print/no-JavaScript resilience drift from the reviewed portfolio.
+
+The v5.20.0 release also links the already-deployed local web manifest and dual SVG/PNG favicon identity from every human-facing page, completes Open Graph/Twitter metadata for the public repository directory, and enforces page-specific stylesheet/script request ceilings. Privacy and security pages now load only the shared styles they actually use. These are static presentation and delivery improvements; they do not add browser telemetry, a service worker, a backend, or new network requests.
 
 Public source availability does not imply production acceptance. GoreeCloud Network remains under controlled fork-to-native development while the existing NetBird environment remains the current private-network production platform. GoreeCloud Backup remains under active development while current accepted recovery systems remain authoritative. **GoreeCloud Memos v0.1.2 is accepted Stable production. GoreeCloud Search is the current GoreeCloud-facing private-search layer. GoreeCloud Notify is a release candidate and ntfy remains the current production notification service until controlled production acceptance and cutover. Uptime Kuma remains the current production availability monitor**, but it is explicitly transitional while **GoreeCloud Monitoring** completes validation and an authorized cutover.
 
@@ -94,7 +96,7 @@ The website is a GoreeCloud reference implementation of **Glaze UI 1.1**. **Glaz
 
 The canonical shared design-system source is `GoreeCloud/glaze-ui`. The website pins its target to **Glaze UI 1.1.0** at canonical revision `5c8320de4f770614a3e2bcf9de2a27f7fcfd920c` in `docs/glaze-ui-conformance.md` rather than silently assuming compatibility with an unversioned latest design-system state.
 
-The 5.19.0 candidate preserves the site's established visual identity, 5.18.0 local repository discovery, 5.17.0 runtime-status integrity, 5.16.0 static repository authority, 5.15.0 Wardveil integration, and earlier theme-surface corrections. The 1.1 adoption is a compatible semantic expansion, not a visual redesign.
+The 5.20.0 candidate preserves the site's established visual identity and exact Glaze UI 1.1 contract, plus the 5.18.0 local repository discovery, 5.17.0 runtime-status integrity, 5.16.0 static repository authority, 5.15.0 Wardveil integration, and earlier theme-surface corrections. The 1.1 adoption is a compatible semantic expansion, not a visual redesign.
 
 The shared foundation includes:
 
