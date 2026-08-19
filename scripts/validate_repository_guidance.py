@@ -194,12 +194,17 @@ def main() -> int:
         ASSET_INVENTORY,
         (
             "not a license grant",
-            "third-party artwork removed from the public artifact",
-            "Reviewed Git blob ID",
-            "repository presence does not make those files deployable",
+            "Official artwork is required when it exists",
+            "Source authority",
+            "Source revision/path",
+            "Reviewed Git blob",
+            "Historical repository presence does not authorize artwork use",
+            "repository presence does not make a file deployable",
             "does not automatically license GoreeCloud branding or third-party marks",
+            "third-party trademarks and artwork remain the property of their respective owners",
             "final human reachable-history/contextual-disclosure review",
             "explicit repository visibility/publication decision",
+            "text-only presentation rather than an invented icon",
             "issue #5 remains open",
         ),
         errors,
@@ -290,7 +295,7 @@ def report(errors: list[str]) -> int:
         for error in errors:
             print(f"  - {error}")
         return 1
-    print("Repository guidance validation passed.")
+    print("Repository guidance validation passed: official-artwork provenance, publication boundaries, and public/private contribution guidance are synchronized.")
     return 0
 
 

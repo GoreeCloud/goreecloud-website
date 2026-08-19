@@ -204,12 +204,10 @@ def validate_page_metadata(errors: list[str], parsed_pages: dict[Path, PublicPag
             (frozenset(rels), href.lstrip("/"), content_type)
             for rels, href, content_type in parser.icon_links
         }
-        if not any("icon" in rels and href == "assets/favicon.svg" and content_type == "image/svg+xml" for rels, href, content_type in normalized_icons):
-            errors.append(f"{display} must publish the local SVG favicon.")
-        if not any("icon" in rels and href == "assets/goreecloud-icon.png" and content_type == "image/png" for rels, href, content_type in normalized_icons):
-            errors.append(f"{display} must publish the PNG favicon fallback.")
-        if not any("apple-touch-icon" in rels and href == "assets/goreecloud-icon.png" for rels, href, _ in normalized_icons):
-            errors.append(f"{display} must publish the local Apple touch icon.")
+        if not any("icon" in rels and href == "assets/goreecloud-logo.svg" and content_type == "image/svg+xml" for rels, href, content_type in normalized_icons):
+            errors.append(f"{display} must publish the canonical GoreeCloud SVG favicon.")
+        if not any("apple-touch-icon" in rels and href == "assets/goreecloud-logo.svg" for rels, href, _ in normalized_icons):
+            errors.append(f"{display} must publish the canonical GoreeCloud SVG Apple-touch identity.")
 
     for page, canonical in INDEXABLE_PAGES.items():
         if page.name not in {"index.html", "repositories.html"}:
