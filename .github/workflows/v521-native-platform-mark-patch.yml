@@ -30,6 +30,20 @@ jobs:
       - name: Apply guarded source migration
         run: python scripts/apply_v521_native_platform_marks.py
 
+      - name: Normalize generated asset-boundary marker
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          old = "historical commits may still contain prior third-party artwork blobs"
+          new = "Historical commits may still contain prior third-party artwork blobs"
+          for relative in ("scripts/validate_public_assets.py", "tests/test_public_assets.py"):
+              path = Path(relative)
+              text = path.read_text(encoding="utf-8")
+              if text.count(old) != 1:
+                  raise SystemExit(f"Expected one generated marker in {relative}; found {text.count(old)}")
+              path.write_text(text.replace(old, new, 1), encoding="utf-8")
+          PY
+
       - name: Run focused v5.21 validation
         run: |
           python scripts/validate_public_assets.py
