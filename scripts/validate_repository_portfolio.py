@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 from collections import Counter
+from datetime import date
 import json
 from pathlib import Path
 import re
@@ -23,6 +24,17 @@ def validate_manifest(data: dict) -> list[str]:
     counts = data.get("counts")
     if data.get("schema_version") != 1:
         errors.append("Repository portfolio manifest must use schema_version 1.")
+
+    as_of = data.get("as_of")
+    try:
+        reviewed_date = date.fromisoformat(as_of) if isinstance(as_of, str) else None
+    except ValueError:
+        reviewed_date = None
+    if reviewed_date is None:
+        errors.append("Repository portfolio manifest must contain a valid YYYY-MM-DD as_of date.")
+    elif reviewed_date > date.today():
+        errors.append(f"Repository portfolio manifest as_of date must not be in the future: {as_of}.")
+
     if not isinstance(groups, list) or not groups:
         errors.append("Repository portfolio manifest must contain at least one group.")
         return errors
@@ -148,6 +160,26 @@ def validate_discovery_enhancement(main_js: str, repository_css: str) -> list[st
     return errors
 
 
+def validate_summary_counts(text: str, counts: dict, context: str) -> list[str]:
+    """Reject both missing and stale rendered portfolio summary counts."""
+    errors: list[str] = []
+    contracts = (
+        ("total", "current repositories"),
+        ("public", "public repositories"),
+        ("private", "private repositories"),
+    )
+    for key, label in contracts:
+        pattern = re.compile(rf"<strong>(\d+)</strong><span>{re.escape(label)}</span>")
+        values = [int(value) for value in pattern.findall(text)]
+        expected = counts[key]
+        if expected not in values:
+            errors.append(f"{context} repository summary is missing current {label}: {expected}.")
+        stale = sorted(value for value in set(values) if value != expected)
+        for value in stale:
+            errors.append(f"{context} repository summary contains stale {label}: {value}; expected {expected}.")
+    return errors
+
+
 def validate(root: Path = ROOT) -> list[str]:
     errors: list[str] = []
     manifest_path = root / "docs" / "repository-portfolio.json"
@@ -171,17 +203,8 @@ def validate(root: Path = ROOT) -> list[str]:
     repository_css = repository_css_path.read_text(encoding="utf-8")
     counts = data["counts"]
 
-    summary_markers = (
-        (counts["total"], "current repositories"),
-        (counts["public"], "public repositories"),
-        (counts["private"], "private repositories"),
-    )
-    for count, label in summary_markers:
-        marker = f"<strong>{count}</strong><span>{label}</span>"
-        if marker not in directory:
-            errors.append(f"Repository directory summary is missing current {label}: {count}.")
-        if marker not in homepage:
-            errors.append(f"Homepage repository summary is missing current {label}: {count}.")
+    errors.extend(validate_summary_counts(directory, counts, "Repository directory"))
+    errors.extend(validate_summary_counts(homepage, counts, "Homepage"))
 
     group_marker = f"<strong>{counts['functional_groups']}</strong><span>functional groups</span>"
     if group_marker not in homepage:
@@ -196,8 +219,35 @@ def validate(root: Path = ROOT) -> list[str]:
         errors.append("Homepage must load repository presentation directly for its static repository summary.")
     if 'href="repositories.html">Repositories</a>' not in homepage:
         errors.append("Homepage navigation must include a static repository-directory link.")
-    if "all 28 current repositories" not in homepage:
-        errors.append("Homepage software overview must identify the current 28-repository directory.")
+
+    expected_overview_phrase = f"all {counts['total']} current repositories"
+    if expected_overview_phrase not in homepage:
+        errors.append(
+            "Homepage software overview must identify the current repository directory: "
+            f"{expected_overview_phrase}."
+        )
+
+    overview_counts = [int(value) for value in re.findall(r"all (\d+) current repositories", homepage)]
+    for value in sorted(set(overview_counts)):
+        if value != counts["total"]:
+            errors.append(
+                f"Homepage software overview contains stale repository total {value}; expected {counts['total']}."
+            )
+
+    maintained_counts = [
+        int(value)
+        for value in re.findall(r"GoreeCloud currently maintains (\d+) repositories", homepage)
+    ]
+    if counts["total"] not in maintained_counts:
+        errors.append(
+            "Homepage repository teaser must state the manifest-derived current total: "
+            f"{counts['total']}."
+        )
+    for value in sorted(set(maintained_counts)):
+        if value != counts["total"]:
+            errors.append(
+                f"Homepage repository teaser contains stale repository total {value}; expected {counts['total']}."
+            )
 
     prohibited_runtime_inventory = (
         "repositorySection.innerHTML",
@@ -244,16 +294,6 @@ def validate(root: Path = ROOT) -> list[str]:
                 errors.append(f"Public repository {name} must link to its canonical GitHub URL.")
         elif public_url in card_body:
             errors.append(f"Private repository {name} must not publish a direct repository link.")
-
-    stale_counts = (
-        "<strong>20</strong><span>current repositories</span>",
-        "<strong>16</strong><span>public repositories</span>",
-        "<strong>4</strong><span>private repositories</span>",
-        "all 20 current repositories",
-    )
-    for marker in stale_counts:
-        if marker in directory or marker in homepage or marker in main_js:
-            errors.append(f"Stale repository portfolio count must not remain public: {marker}")
 
     errors.extend(validate_discovery_enhancement(main_js, repository_css))
     return errors

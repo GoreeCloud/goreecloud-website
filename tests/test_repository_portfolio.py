@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+from datetime import date, timedelta
 import json
 from pathlib import Path
 import sys
@@ -49,6 +50,19 @@ class RepositoryPortfolioTests(unittest.TestCase):
         mutated = repository_css.replace("@media print", "@media screen")
         errors = portfolio.validate_discovery_enhancement(main_js, mutated)
         self.assertTrue(any("@media print" in error for error in errors))
+
+    def test_manifest_review_date_must_be_valid_and_not_future(self) -> None:
+        data = json.loads((ROOT / "docs" / "repository-portfolio.json").read_text(encoding="utf-8"))
+        mutated = copy.deepcopy(data)
+        mutated["as_of"] = (date.today() + timedelta(days=1)).isoformat()
+        errors = portfolio.validate_manifest(mutated)
+        self.assertTrue(any("must not be in the future" in error for error in errors))
+
+    def test_rendered_summary_rejects_stale_counts(self) -> None:
+        counts = json.loads((ROOT / "docs" / "repository-portfolio.json").read_text(encoding="utf-8"))["counts"]
+        stale = '<strong>28</strong><span>current repositories</span>'
+        errors = portfolio.validate_summary_counts(stale, counts, "Test")
+        self.assertTrue(any("stale current repositories" in error for error in errors))
 
 
 if __name__ == "__main__":

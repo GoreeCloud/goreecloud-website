@@ -130,7 +130,7 @@ class ProjectPortfolioContractTests(unittest.TestCase):
     def test_complete_repository_directory_is_discoverable(self) -> None:
         self.assertIn('href="repositories.html"', INDEX)
         self.assertIn("complete repository directory", INDEX)
-        self.assertIn("all 28 current repositories", INDEX)
+        self.assertIn("all 30 current repositories", INDEX)
         self.assertIn("representative", INDEX)
 
     def test_javascript_does_not_mutate_project_or_repository_portfolios(self) -> None:

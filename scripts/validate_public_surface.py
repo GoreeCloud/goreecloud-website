@@ -33,6 +33,7 @@ INDEXABLE_PAGES = {
 SITEMAP = ROOT / "sitemap.xml"
 ROBOTS = ROOT / "robots.txt"
 CANONICAL_SITEMAP_URL = "https://www.goreecloud.com/sitemap.xml"
+SOCIAL_IMAGE_URL = "https://www.goreecloud.com/assets/social-preview.png"
 SITEMAP_NAMESPACE = "{http://www.sitemaps.org/schemas/sitemap/0.9}"
 
 
@@ -43,16 +44,33 @@ class PublicPageParser(HTMLParser):
         self.references: list[tuple[str, str, str]] = []
         self.canonical: str | None = None
         self.robots: str | None = None
+        self.meta_names: dict[str, str] = {}
+        self.meta_properties: dict[str, str] = {}
+        self.manifest_href: str | None = None
+        self.icon_links: list[tuple[set[str], str, str]] = []
 
     def handle_starttag(self, tag: str, attrs_list: list[tuple[str, str | None]]) -> None:
         attrs = {key: value or "" for key, value in attrs_list}
         if attrs.get("id"):
             self.ids[attrs["id"]] += 1
 
-        if tag == "link" and "canonical" in attrs.get("rel", "").split():
-            self.canonical = attrs.get("href")
-        if tag == "meta" and attrs.get("name", "").lower() == "robots":
-            self.robots = attrs.get("content")
+        if tag == "link":
+            rels = set(attrs.get("rel", "").lower().split())
+            if "canonical" in rels:
+                self.canonical = attrs.get("href")
+            if "manifest" in rels:
+                self.manifest_href = attrs.get("href")
+            if rels.intersection({"icon", "apple-touch-icon"}):
+                self.icon_links.append((rels, attrs.get("href", ""), attrs.get("type", "")))
+        if tag == "meta":
+            name = attrs.get("name", "").lower()
+            prop = attrs.get("property", "").lower()
+            if name:
+                self.meta_names[name] = attrs.get("content", "")
+            if prop:
+                self.meta_properties[prop] = attrs.get("content", "")
+            if name == "robots":
+                self.robots = attrs.get("content")
 
         for attr_name in ("href", "src"):
             value = attrs.get(attr_name)
@@ -172,6 +190,57 @@ def validate_indexing(errors: list[str], parsed_pages: dict[Path, PublicPagePars
             errors.append("404.html must not publish a canonical URL for a missing resource.")
 
 
+
+def validate_page_metadata(errors: list[str], parsed_pages: dict[Path, PublicPageParser]) -> None:
+    for page in PUBLIC_PAGES:
+        parser = parsed_pages.get(page.resolve())
+        if parser is None:
+            continue
+        display = page.relative_to(ROOT)
+        manifest_href = (parser.manifest_href or "").lstrip("/")
+        if manifest_href != "site.webmanifest":
+            errors.append(f"{display} must link to the local site.webmanifest.")
+        normalized_icons = {
+            (frozenset(rels), href.lstrip("/"), content_type)
+            for rels, href, content_type in parser.icon_links
+        }
+        if not any("icon" in rels and href == "assets/favicon.svg" and content_type == "image/svg+xml" for rels, href, content_type in normalized_icons):
+            errors.append(f"{display} must publish the local SVG favicon.")
+        if not any("icon" in rels and href == "assets/goreecloud-icon.png" and content_type == "image/png" for rels, href, content_type in normalized_icons):
+            errors.append(f"{display} must publish the PNG favicon fallback.")
+        if not any("apple-touch-icon" in rels and href == "assets/goreecloud-icon.png" for rels, href, _ in normalized_icons):
+            errors.append(f"{display} must publish the local Apple touch icon.")
+
+    for page, canonical in INDEXABLE_PAGES.items():
+        if page.name not in {"index.html", "repositories.html"}:
+            continue
+        parser = parsed_pages.get(page.resolve())
+        if parser is None:
+            continue
+        display = page.relative_to(ROOT)
+        expected_properties = {
+            "og:type": "website",
+            "og:site_name": "GoreeCloud",
+            "og:url": canonical,
+            "og:image": SOCIAL_IMAGE_URL,
+        }
+        for key, expected in expected_properties.items():
+            if parser.meta_properties.get(key) != expected:
+                errors.append(f"{display} metadata {key} must be {expected!r}.")
+        for key in ("og:title", "og:description", "og:image:alt"):
+            if not parser.meta_properties.get(key, "").strip():
+                errors.append(f"{display} must publish non-empty {key} metadata.")
+        expected_names = {
+            "twitter:card": "summary_large_image",
+            "twitter:image": SOCIAL_IMAGE_URL,
+        }
+        for key, expected in expected_names.items():
+            if parser.meta_names.get(key) != expected:
+                errors.append(f"{display} metadata {key} must be {expected!r}.")
+        for key in ("twitter:title", "twitter:description", "twitter:image:alt"):
+            if not parser.meta_names.get(key, "").strip():
+                errors.append(f"{display} must publish non-empty {key} metadata.")
+
 def validate_sitemap(errors: list[str]) -> None:
     if not SITEMAP.exists():
         errors.append("sitemap.xml is missing.")
@@ -263,6 +332,7 @@ def main() -> int:
     parsed_pages = parse_pages(errors)
     validate_references(errors, parsed_pages)
     validate_indexing(errors, parsed_pages)
+    validate_page_metadata(errors, parsed_pages)
     validate_sitemap(errors)
     validate_robots(errors)
     return report(errors)

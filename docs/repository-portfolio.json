@@ -1,10 +1,11 @@
 {
   "schema_version": 1,
-  "as_of": "2026-08-18",
+  "as_of": "2026-08-19",
+  "review_method": "Authenticated GitHub repository inventory reconciliation",
   "counts": {
-    "total": 28,
-    "public": 22,
-    "private": 6,
+    "total": 30,
+    "public": 23,
+    "private": 7,
     "functional_groups": 11
   },
   "groups": [
@@ -62,17 +63,19 @@
     },
     {
       "id": "productivity-personal-information",
-      "label": "Productivity and personal information",
+      "label": "Productivity, input, and personal information",
       "repositories": [
         {"name": "goreecloud-tasks", "visibility": "private"},
         {"name": "goreecloud-contacts", "visibility": "private"},
-        {"name": "goreecloud-calendar", "visibility": "public"}
+        {"name": "goreecloud-calendar", "visibility": "public"},
+        {"name": "goreecloud-keyboard", "visibility": "public"}
       ]
     },
     {
       "id": "notifications-monitoring",
-      "label": "Notifications and monitoring",
+      "label": "Operations, notifications, and monitoring",
       "repositories": [
+        {"name": "goreecloud-changelogs", "visibility": "private"},
         {"name": "goreecloud-notify", "visibility": "private"},
         {"name": "goreecloud-monitor", "visibility": "public"}
       ]
