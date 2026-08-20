@@ -347,6 +347,16 @@
       "id": "local-ai",
       "official_artwork_exists": false,
       "reason": "No approved canonical artwork was found in the authoritative GoreeCloud repository during the v5.23 review."
+    },
+    {
+      "asset_path": "assets/platform/beszel.svg",
+      "bytes": 1405,
+      "official_artwork_exists": true,
+      "sha256": "5ff54970100e1ffca4c169987e588997ebbde754b3c0a8824a8b52317b7c420a",
+      "source_authority": "selfhst/icons \u2014 Beszel artwork referenced by the Beszel maintainer",
+      "source_path": "svg/beszel.svg",
+      "source_ref": "948e3aa28d3110ee23957473a85431650e10e778",
+      "source_url": "https://raw.githubusercontent.com/selfhst/icons/948e3aa28d3110ee23957473a85431650e10e778/svg/beszel.svg"
     }
   ],
   "policy": "Official icon, logo, or artwork is required when it exists; text-only is the only allowed fallback when approved official artwork does not exist.",

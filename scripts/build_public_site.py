@@ -38,6 +38,7 @@ PUBLIC_ROOT_FILES = (
 PUBLIC_ASSET_FILES = (
     "assets/goreecloud-logo.svg",
     "assets/platform/adguard-home.svg",
+    "assets/platform/beszel.svg",
     "assets/platform/caddy.svg",
     "assets/platform/debian.svg",
     "assets/platform/docker.png",
