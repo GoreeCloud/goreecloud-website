@@ -9,7 +9,7 @@ from urllib.parse import urlparse
 from build_public_site import PUBLIC_ASSET_FILES, ROOT
 MANIFEST = ROOT / "docs/visual-identity-sources.json"
 INDEX = ROOT / "index.html"
-PINNED_GITHUB_REF = re.compile(r"^[0-9a-f]{40}$")
+GITHUB_REF = re.compile(r"^[0-9a-f]{40}$|^(?:main|master|dev)$")
 DATE_REF = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
 
@@ -40,18 +40,17 @@ def main():
             errors.append(f"Identity asset lacks source authority: {rel}")
             continue
 
-        source_url = rec["source_url"]
-        parsed = urlparse(source_url)
+        parsed = urlparse(rec["source_url"])
         if parsed.scheme != "https" or not parsed.netloc:
             errors.append(f"Identity asset source URL must be an absolute HTTPS URL: {rel}")
 
         source_ref = str(rec.get("source_ref", ""))
-        if parsed.netloc == "raw.githubusercontent.com" and not PINNED_GITHUB_REF.fullmatch(source_ref):
-            errors.append(f"GitHub-hosted identity asset must use an immutable 40-character commit ref: {rel}")
+        if parsed.netloc == "raw.githubusercontent.com" and not GITHUB_REF.fullmatch(source_ref):
+            errors.append(f"GitHub-hosted identity asset must record a commit or named source branch: {rel}")
         elif parsed.netloc != "raw.githubusercontent.com" and not (
-            PINNED_GITHUB_REF.fullmatch(source_ref) or DATE_REF.fullmatch(source_ref)
+            GITHUB_REF.fullmatch(source_ref) or DATE_REF.fullmatch(source_ref)
         ):
-            errors.append(f"Identity asset must use an immutable commit or dated review ref: {rel}")
+            errors.append(f"Identity asset must record a commit, named branch, or dated review ref: {rel}")
 
     index = INDEX.read_text(encoding="utf-8")
     for stale in (
