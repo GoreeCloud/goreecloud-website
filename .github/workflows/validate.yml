@@ -138,6 +138,22 @@ jobs:
           echo "Branch preview verification failed after $attempts attempts."
           exit 1
 
+      - name: Verify current production deployment for homepage foundations acceptance
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        run: |
+          attempts=6
+          for attempt in 1 2 3 4 5 6; do
+            if python scripts/verify_remote_deployment.py --target production; then
+              exit 0
+            fi
+            if [ "$attempt" -lt "$attempts" ]; then
+              echo "Production deployment not ready or not yet candidate-identical (attempt $attempt/$attempts); retrying in 10 seconds."
+              sleep 10
+            fi
+          done
+          echo "Production deployment verification failed after $attempts attempts."
+          exit 1
+
       - name: Verify production deployment after main update
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
