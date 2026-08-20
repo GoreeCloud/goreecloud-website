@@ -1,3 +1,6 @@
+const artworkBase='https://raw.githubusercontent.com/GoreeCloud/glaze-ui/main/branding';
+const fallbackIcon='/assets/goreecloud-logo.svg';
+
 const entries=[
 {name:'GoreeCloud Manager',repo:'goreecloud-manager',category:'Platform & Administration',model:'Native',kind:'Application',status:'In development',role:'Central administration, operations, service health, protection status, and management console.',visibility:'Public'},
 {name:'GoreeCloud Monitor',repo:'goreecloud-monitor',category:'Platform & Administration',model:'Native',kind:'Application',status:'Active development',role:'Infrastructure and service monitoring, observability, health visibility, and operational monitoring.',visibility:'Public'},
@@ -21,9 +24,9 @@ const entries=[
 {name:'GoreeVault',repo:'goreevault-server',category:'Personal Data & Security',model:'Maintained fork',kind:'Application',status:'Active development',role:'Passwords, credentials, secrets, secure records, and sensitive-information management.',visibility:'Public'},
 {name:'GoreeCloud Keyboard',repo:'goreecloud-keyboard',category:'Device Software',model:'Maintained fork',kind:'Application',status:'Active development',role:'System keyboard with swipe typing, clipboard tools, GoreeCloud terminology, autocomplete, and learned suggestions.',visibility:'Public'},
 {name:'GoreeCloud Website',repo:'goreecloud-website',category:'Public Experience',model:'Native',kind:'Application',status:'Active deployment',role:'Public GoreeCloud identity, platform information, project communication, and public presentation.',visibility:'Private'},
-{name:'Glaze UI',repo:'glaze-ui',category:'Shared Foundations',model:'Design language',kind:'Foundation',status:'1.3.0 Stable',role:'Official GoreeCloud visual and interaction system for shared semantics, components, accessibility, and product consistency.',visibility:'Public',icon:'/assets/glaze-ui-mark.svg',url:'https://design.goreecloud.com/'},
-{name:'GoreeCloud Privacy Shield',repo:'goreecloud-privacy-shield',category:'Shared Foundations',model:'Privacy identity',kind:'Foundation',status:'Platform foundation',role:'Privacy identity and privacy-protection component, currently centered on GoreeCloud Browser and applicable privacy surfaces.',visibility:'Private',icon:'/assets/privacy-shield-icon.svg',url:'https://privacy.goreecloud.com/'},
-{name:'Wardveil Security',repo:'goreecloud-wardveil-security',category:'Shared Foundations',model:'Security identity',kind:'Foundation',status:'Platform foundation',role:'Official GoreeCloud platform-wide security and protection identity for security-related interfaces and controls.',visibility:'Private',icon:'/assets/wardveil-security-icon.svg',url:'https://security.goreecloud.com/'}
+{name:'Glaze UI',repo:'glaze-ui',category:'Shared Foundations',model:'Design language',kind:'Foundation',status:'1.3.0 Stable',role:'Official GoreeCloud visual and interaction system for shared semantics, components, accessibility, and product consistency.',visibility:'Public',icon:`${artworkBase}/icons/glaze-ui/glaze-ui-symbol.svg`,url:'https://design.goreecloud.com/'},
+{name:'GoreeCloud Privacy Shield',repo:'goreecloud-privacy-shield',category:'Shared Foundations',model:'Privacy identity',kind:'Foundation',status:'Platform foundation',role:'Privacy identity and privacy-protection component, currently centered on GoreeCloud Browser and applicable privacy surfaces.',visibility:'Private',icon:`${artworkBase}/identities/privacy-shield/symbol.svg`,url:'https://privacy.goreecloud.com/'},
+{name:'Wardveil Security',repo:'goreecloud-wardveil-security',category:'Shared Foundations',model:'Security identity',kind:'Foundation',status:'Platform foundation',role:'Official GoreeCloud platform-wide security and protection identity for security-related interfaces and controls.',visibility:'Private',icon:`${artworkBase}/identities/wardveil-security/emblem.svg`,url:'https://security.goreecloud.com/'}
 ];
 
 const grid=document.querySelector('#projects');
@@ -61,6 +64,11 @@ function matchesFilter(entry){
   return entry.category===filter;
 }
 
+function artworkFor(entry){
+  if(entry.icon)return entry.icon;
+  return `${artworkBase}/applications/${entry.repo}/symbol.svg`;
+}
+
 function render(){
   const query=search.value.trim().toLowerCase();
   const list=entries.filter(entry=>matchesFilter(entry)&&(!query||`${entry.name} ${entry.repo} ${entry.category} ${entry.model} ${entry.kind} ${entry.status} ${entry.role}`.toLowerCase().includes(query)));
@@ -73,27 +81,56 @@ function card(entry){
   article.className='card';
   article.dataset.kind=entry.kind.toLowerCase();
 
-  const head=document.createElement('div');head.className='card-head';
-  const iconWrap=document.createElement('div');iconWrap.className='project-icon';
-  const icon=document.createElement('img');icon.src=entry.icon||'/assets/goreecloud-logo.svg';icon.alt='';icon.width=48;icon.height=48;iconWrap.append(icon);
-  const kind=document.createElement('span');kind.className='kind';kind.textContent=entry.kind;
+  const head=document.createElement('div');
+  head.className='card-head';
+  const iconWrap=document.createElement('div');
+  iconWrap.className='project-icon';
+  const icon=document.createElement('img');
+  icon.src=artworkFor(entry);
+  icon.alt='';
+  icon.width=48;
+  icon.height=48;
+  icon.loading='lazy';
+  icon.decoding='async';
+  icon.addEventListener('error',()=>{icon.src=fallbackIcon;},{once:true});
+  iconWrap.append(icon);
+  const kind=document.createElement('span');
+  kind.className='kind';
+  kind.textContent=entry.kind;
   head.append(iconWrap,kind);
 
-  const meta=document.createElement('div');meta.className='card-meta';
-  const category=document.createElement('span');category.className='badge';category.textContent=entry.category;
-  const status=document.createElement('span');status.className='status';status.textContent=entry.status;
+  const meta=document.createElement('div');
+  meta.className='card-meta';
+  const category=document.createElement('span');
+  category.className='badge';
+  category.textContent=entry.category;
+  const status=document.createElement('span');
+  status.className='status';
+  status.textContent=entry.status;
   meta.append(category,status);
 
-  const title=document.createElement('h3');title.textContent=entry.name;
-  const role=document.createElement('p');role.className='role';role.textContent=entry.role;
-  const model=document.createElement('p');model.className='model';model.textContent=entry.model;
+  const title=document.createElement('h3');
+  title.textContent=entry.name;
+  const role=document.createElement('p');
+  role.className='role';
+  role.textContent=entry.role;
+  const model=document.createElement('p');
+  model.className='model';
+  model.textContent=entry.model;
 
   const footer=document.createElement('footer');
-  const visibility=document.createElement('span');visibility.className='visibility';visibility.textContent=`${entry.visibility} source`;
+  const visibility=document.createElement('span');
+  visibility.className='visibility';
+  visibility.textContent=`${entry.visibility} source`;
   footer.append(visibility);
   const destination=entry.url||(entry.visibility==='Public'?`https://github.com/GoreeCloud/${entry.repo}`:null);
   if(destination){
-    const link=document.createElement('a');link.href=destination;link.target='_blank';link.rel='noopener noreferrer';link.textContent=entry.kind==='Foundation'?'View foundation':'Open repository';footer.append(link);
+    const link=document.createElement('a');
+    link.href=destination;
+    link.target='_blank';
+    link.rel='noopener noreferrer';
+    link.textContent=entry.kind==='Foundation'?'View foundation':'Open repository';
+    footer.append(link);
   }
 
   article.append(head,meta,title,role,model,footer);
@@ -104,11 +141,16 @@ function applyTheme(choice){
   document.documentElement.dataset.theme=choice;
   themeButtons.forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.themeChoice===choice)));
 }
+
 let saved='system';
 try{saved=localStorage.getItem('goreecloud-projects-theme')||'system';}catch(_){ }
 if(!['system','light','dark'].includes(saved))saved='system';
 applyTheme(saved);
-themeButtons.forEach(button=>button.addEventListener('click',()=>{const choice=button.dataset.themeChoice;applyTheme(choice);try{localStorage.setItem('goreecloud-projects-theme',choice);}catch(_){}}));
+themeButtons.forEach(button=>button.addEventListener('click',()=>{
+  const choice=button.dataset.themeChoice;
+  applyTheme(choice);
+  try{localStorage.setItem('goreecloud-projects-theme',choice);}catch(_){ }
+}));
 
 search.addEventListener('input',render);
 render();
