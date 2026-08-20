@@ -2,29 +2,33 @@
 
 ## Purpose
 
-Replace the temporary Glaze UI placeholder mark with a dedicated identity system suitable for the GoreeCloud design foundation.
+Replace generic project-card artwork with purpose-built GoreeCloud identity assets while keeping Glaze UI as the canonical owner of the visual system.
 
-## Design Direction
+## Canonical Source
 
-The new Glaze UI symbol represents:
+Official Glaze UI, Privacy Shield, Wardveil Security, and GoreeCloud application identity artwork is maintained in:
 
-- layered interface components
-- clarity and transparency
-- polished interaction design
-- reusable design foundations
+- `GoreeCloud/glaze-ui`
 
-## Initial Asset
+The website must not become the source of truth for Glaze UI identity artwork.
 
-- `assets/branding/glaze-ui/glaze-ui-symbol.svg`
+## Website Consumption Model
 
-## Planned Expansion
+The Projects site consumes canonical SVG assets from the public `glaze-ui` repository. Application cards derive their symbol URL from the repository slug, while shared foundations use their dedicated canonical paths.
 
-- light and dark variants
-- monochrome variant
-- application icon exports
-- foundation identity artwork
-- application-specific icon registry
+Current canonical namespaces:
 
-## Adoption Goals
+- `branding/icons/glaze-ui/`
+- `branding/identities/privacy-shield/`
+- `branding/identities/wardveil-security/`
+- `branding/applications/<repository>/`
 
-The project portfolio should use purpose-built icons instead of the generic GoreeCloud logo fallback for every application card.
+The site keeps only its own GoreeCloud website fallback logo locally.
+
+## Reliability
+
+Project artwork loading includes a local fallback to `goreecloud-logo.svg` if a canonical asset cannot be loaded. The Projects site Content Security Policy explicitly permits image delivery from `raw.githubusercontent.com` while keeping other resource classes restricted.
+
+## Adoption Goal
+
+Every Projects card should display a distinct official identity asset instead of reusing the generic GoreeCloud mark. Canonical artwork changes should be made in `GoreeCloud/glaze-ui`, then consumed automatically by the Projects site from the Glaze UI main branch.
