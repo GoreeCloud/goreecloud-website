@@ -1,0 +1,31 @@
+name: Validate projects website
+
+on:
+  pull_request:
+    paths:
+      - 'sites/projects/**'
+      - '.github/workflows/validate-projects-site.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'sites/projects/**'
+      - '.github/workflows/validate-projects-site.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Check out exact source revision
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Compile validator
+        run: python3 -m py_compile sites/projects/validate.py
+      - name: Validate projects website
+        run: python3 sites/projects/validate.py
+      - name: Check JavaScript syntax
+        run: node --check sites/projects/assets/app.js
