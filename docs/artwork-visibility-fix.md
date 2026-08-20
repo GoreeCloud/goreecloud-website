@@ -1,0 +1,3 @@
+# Homepage artwork visibility correction
+
+This change restores visible artwork to homepage cards that previously rendered without an artwork container and improves framing for official wide/padded marks. GoreeCloud-native cards without a separate approved application icon use the canonical GoreeCloud suite mark rather than an invented placeholder. Beszel uses reviewed project artwork sourced from selfhst/icons as referenced by the Beszel maintainer. The correction preserves the existing official-artwork provenance, static-site, privacy, Glaze UI, Wardveil Security, and isolated-publication boundaries.
