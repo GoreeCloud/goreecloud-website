@@ -31,9 +31,10 @@ PUBLIC_ROOT_FILES = (
     ".well-known/security.txt",
 )
 
-# Only GoreeCloud-owned identity/presentation artwork is deployable.
-# Third-party technologies are identified with neutral Glaze UI letter marks and
-# descriptive names/links rather than redistributing project logo artwork.
+# Only reviewed identity and presentation artwork is deployable. GoreeCloud-owned
+# assets and referential third-party marks must be explicitly allowlisted and backed
+# by docs/visual-identity-sources.json provenance plus integrity validation. Source
+# presence alone never makes artwork public.
 PUBLIC_ASSET_FILES = (
     "assets/goreecloud-logo.svg",
     "assets/platform/adguard-home.svg",
