@@ -28,7 +28,6 @@ PUBLIC_PROJECTS = {
     "GoreeCloud Source Resync": "https://github.com/GoreeCloud/goreecloud-source-resync",
     "GoreeCloud Notes": "https://github.com/GoreeCloud/goreecloud-notes",
     "GoreeCloud Memos": "https://github.com/GoreeCloud/goreecloud-memos",
-    "GoreeCloud Research Library": "https://github.com/GoreeCloud/goreecloud-research-library",
     "GoreeCloud Bookmarks": "https://github.com/GoreeCloud/goreecloud-bookmarks",
     "GoreeCloud Bookmarks Browser Extension": "https://github.com/GoreeCloud/goreecloud-bookmark-browser-extension",
     "GoreeCloud Feed": "https://github.com/GoreeCloud/goreecloud-rss",
@@ -55,7 +54,6 @@ EXPECTED_PROJECT_SLUGS = {
     "goreecloud-source-resync",
     "goreecloud-notes",
     "goreecloud-memos",
-    "goreecloud-research-library",
     "goreecloud-bookmarks",
     "goreecloud-bookmark-browser-extension",
     "goreecloud-feed",
@@ -130,7 +128,7 @@ class ProjectPortfolioContractTests(unittest.TestCase):
     def test_complete_repository_directory_is_discoverable(self) -> None:
         self.assertIn('href="repositories.html"', INDEX)
         self.assertIn("complete repository directory", INDEX)
-        self.assertIn("all 30 current repositories", INDEX)
+        self.assertIn("all 29 current repositories", INDEX)
         self.assertIn("representative", INDEX)
 
     def test_javascript_does_not_mutate_project_or_repository_portfolios(self) -> None:
