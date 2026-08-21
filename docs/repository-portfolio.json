@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
-  "as_of": "2026-08-19",
+  "as_of": "2026-08-21",
   "review_method": "Authenticated GitHub repository inventory reconciliation",
   "counts": {
-    "total": 30,
-    "public": 23,
+    "total": 29,
+    "public": 22,
     "private": 7,
     "functional_groups": 11
   },
@@ -48,7 +48,6 @@
       "id": "research-knowledge",
       "label": "Research and knowledge",
       "repositories": [
-        {"name": "goreecloud-research-library", "visibility": "public"},
         {"name": "goreecloud-notes", "visibility": "public"},
         {"name": "goreecloud-memos", "visibility": "public"}
       ]
