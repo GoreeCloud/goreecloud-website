@@ -8,7 +8,7 @@ if missing:
     raise SystemExit(f'Missing blog site files: {missing}')
 index = (SITE/'index.html').read_text()
 headers = (SITE/'_headers').read_text()
-for marker in ['GoreeCloud Blog','Building a personal cloud in public.','Homelab','Glaze UI']:
+for marker in ['GoreeCloud Blog','Building an owned cloud, one layer at a time.','GoreeCloud is becoming a software ecosystem','Everkeep','Glaze UI','Homelab']:
     if marker not in index:
         raise SystemExit(f'Missing required blog marker: {marker}')
 for forbidden in ['google-analytics','googletagmanager','fonts.googleapis.com','http://']:
