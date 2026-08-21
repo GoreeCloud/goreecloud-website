@@ -37,7 +37,6 @@ REQUIRED_SCRIPTS = {
     "js/main.js",
 }
 REQUIRED_PUBLIC_MARKERS = {
-    "Research Library canonical repository": "https://github.com/GoreeCloud/goreecloud-research-library",
     "native GoreeCloud Notes repository": "https://github.com/GoreeCloud/goreecloud-notes",
     "GoreeCloud Memos canonical repository": "https://github.com/GoreeCloud/goreecloud-memos",
     "GoreeCloud Memos product": "<strong>GoreeCloud Memos</strong>",
@@ -62,6 +61,7 @@ STALE_PUBLIC_COPY = (
     "transitional services remain protected until migration gates are satisfied",
     "https://github.com/GoreeCloud/linkding",
     "https://github.com/GoreeCloud/memos",
+    "https://github.com/GoreeCloud/goreecloud-research-library",
     '<span class="badge growing">Quick Capture</span>',
     '<span class="badge growing">Stabilizing</span>',
     "has replaced ntfy",
