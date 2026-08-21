@@ -61,7 +61,6 @@ STALE_PUBLIC_COPY = (
     "transitional services remain protected until migration gates are satisfied",
     "https://github.com/GoreeCloud/linkding",
     "https://github.com/GoreeCloud/memos",
-    "https://github.com/GoreeCloud/goreecloud-research-library",
     '<span class="badge growing">Quick Capture</span>',
     '<span class="badge growing">Stabilizing</span>',
     "has replaced ntfy",
