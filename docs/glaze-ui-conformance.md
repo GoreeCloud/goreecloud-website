@@ -85,6 +85,16 @@ Product-specific responsive behavior may continue to use narrower component brea
 
 The 1.1 mapping also records Compact, Medium, Expanded, and Wide gutter roles. Persistent site chrome accounts for `safe-area-inset-left` and `safe-area-inset-right` so display cutouts do not require hard-coded device assumptions.
 
+### Desktop composition refinement
+
+The homepage now treats Expanded and Wide desktop ranges as purpose-built desktop compositions rather than merely centering the smaller-layout presentation inside a larger viewport.
+
+At Expanded widths, the content canvas grows to a 1280 CSS-pixel maximum with 32-pixel semantic desktop gutters. The hero uses a wider two-column composition, its visual surface receives more physical presence, and section spacing increases so the layout uses the available desktop workspace without becoming edge-to-edge.
+
+At Wide widths, the content canvas grows to a 1480 CSS-pixel maximum with 40-pixel semantic gutters. The hero typography and visual surface scale up without becoming full-width; service, development, and social collections use four balanced columns; and platform cards retain readable four-column density.
+
+This desktop refinement does not remove Compact or Medium behavior and does not infer a TV interface from width. It is specifically a pointer/keyboard-friendly public website composition for representative 1280 × 900 and 1600 × 1000 desktop acceptance ranges. Manual visual acceptance should confirm that the wider composition improves density and hierarchy without creating overly long reading lines, clipped navigation, inaccessible focus order, or excessive card width.
+
 ## Motion contract
 
 The website retains the Glaze UI motion vocabulary:
@@ -125,6 +135,8 @@ Glaze UI alignment introduces no analytics, advertising, trackers, fingerprintin
 `scripts/validate_glaze_ui.py` enforces this record together with the public page foundation. A stable website release must retain the exact target Glaze UI version and reference revision, applicable 1.1 semantic mapping, surface hierarchy, standardized motion, adaptive ranges, safe-area behavior, accessibility/resilience fallbacks, privacy-preserving dependency model, and GoreeCloud identity.
 
 Passing automated Glaze UI validation does not replace visual acceptance. For this compatible 5.19.0 alignment, existing visual acceptance is carried forward because the ordinary-viewport public composition and product identity are intentionally preserved while the implementation contract is strengthened underneath it.
+
+The desktop composition refinement is an additional candidate-level layout improvement and requires representative Expanded and Wide manual browser review before it should be described as newly accepted production visual evidence.
 
 ## Exceptions
 
