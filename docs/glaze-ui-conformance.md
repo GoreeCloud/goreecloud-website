@@ -13,6 +13,8 @@
 
 This record documents how the GoreeCloud public website targets the active Glaze UI 1.1 design-system contract. It is repository metadata only and must remain outside the isolated Cloudflare `dist/` artifact.
 
+Glaze UI 1.4.0 is now the current canonical Stable design-system baseline, with Glaze UI 1.3.0 retained as a supported older Stable target. That platform promotion does not automatically migrate this website: the website remains intentionally pinned to its reviewed 1.1.0 consumer contract until a separate controlled application-level migration, validation, and visual-acceptance process is completed.
+
 The website is a reference implementation with its own public-site personality. Alignment means using the shared Glaze UI semantics without replacing the website's established colors, content hierarchy, or recognizable composition with a generic reference-demo appearance.
 
 ## Glaze UI 1.1 adoption
