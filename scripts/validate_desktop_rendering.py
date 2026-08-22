@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import argparse
 import base64
+import binascii
 from contextlib import suppress
 from hashlib import sha256
 import json
@@ -258,6 +259,7 @@ const root = getComputedStyle(document.documentElement);
 return {
   innerWidth: window.innerWidth,
   innerHeight: window.innerHeight,
+  clientWidth: document.documentElement.clientWidth,
   scrollWidth: document.documentElement.scrollWidth,
   container: rect('.hero-grid'),
   heroCard: rect('.hero-card'),
@@ -311,20 +313,26 @@ def validate_viewport(
 
     label = f"{width}x{height}/{mode}"
     inner_width = int(metrics.get("innerWidth") or 0)
+    client_width = int(metrics.get("clientWidth") or 0)
     if inner_width < width - 16:
         errors.append(
             f"{label}: browser viewport width is unexpectedly small: {inner_width}px."
         )
+    if client_width <= 0 or client_width > inner_width:
+        errors.append(
+            f"{label}: browser client width is invalid: {client_width}px for "
+            f"innerWidth={inner_width}px."
+        )
 
-    if int(metrics.get("scrollWidth") or 0) > inner_width + 1:
+    if int(metrics.get("scrollWidth") or 0) > client_width + 1:
         errors.append(
             f"{label}: horizontal overflow detected: scrollWidth={metrics.get('scrollWidth')} "
-            f"innerWidth={inner_width}."
+            f"clientWidth={client_width}."
         )
 
     container = metrics.get("container") or {}
     actual_container = float(container.get("width") or 0)
-    expected_container = min(max(inner_width - (2 * gutter), 0), content_max)
+    expected_container = min(max(client_width - (2 * gutter), 0), content_max)
     if abs(actual_container - expected_container) > 2.5:
         errors.append(
             f"{label}: hero/container width is {actual_container:.1f}px; expected "
@@ -353,7 +361,7 @@ def validate_viewport(
         )
 
     nav = metrics.get("nav") or {}
-    if float(nav.get("right") or 0) > inner_width + 1:
+    if float(nav.get("right") or 0) > client_width + 1:
         errors.append(f"{label}: primary navigation extends beyond the viewport.")
 
     failed_images = metrics.get("failedImages") or []
@@ -385,7 +393,7 @@ def validate_viewport(
     try:
         screenshot = base64.b64decode(screenshot_value, validate=True)
         shot_width, shot_height = png_dimensions(screenshot)
-    except (ValueError, base64.binascii.Error) as error:
+    except (ValueError, binascii.Error) as error:
         errors.append(f"{label}: invalid screenshot evidence: {error}")
         return
 
@@ -401,7 +409,8 @@ def validate_viewport(
 
     print(
         f"Rendered {label}: viewport={inner_width}x{metrics.get('innerHeight')} "
-        f"container={actual_container:.1f}px hero={float(hero_card.get('width') or 0):.1f}x"
+        f"clientWidth={client_width}px container={actual_container:.1f}px "
+        f"hero={float(hero_card.get('width') or 0):.1f}x"
         f"{float(hero_card.get('height') or 0):.1f}px screenshot={shot_width}x{shot_height} "
         f"sha256={sha256(screenshot).hexdigest()[:16]}"
     )
