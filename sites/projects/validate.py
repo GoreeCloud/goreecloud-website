@@ -9,7 +9,7 @@ for name in required:
 html=(SITE/"index.html").read_text(encoding="utf-8")
 js=(SITE/"assets/app.js").read_text(encoding="utf-8")
 headers=(SITE/"_headers").read_text(encoding="utf-8")
-for needle in ["Suite applications","Shared foundations","Glaze UI 1.3","Privacy Shield","Wardveil Security","Everkeep","GoreeCloud Calendar","GoreeCloud Keyboard","GoreeCloud Mail","GoreeCloud Music","GoreeCloud Photos","GoreeCloud Vault Server","GoreeCloud Suite","GoreeCloud Firefox Extensions","GoreeCloud Autobiography","GoreeCloud Waypoint"]:
+for needle in ["Suite applications","Shared foundations","Glaze UI 1.4","Privacy Shield","Wardveil Security","Everkeep","GoreeCloud Calendar","GoreeCloud Keyboard","GoreeCloud Mail","GoreeCloud Music","GoreeCloud Photos","GoreeCloud Vault Server","GoreeCloud Suite","GoreeCloud Firefox Extensions","GoreeCloud Autobiography","GoreeCloud Waypoint"]:
     if needle not in html+js: raise SystemExit(f"current portfolio marker missing: {needle}")
 if js.count("kind:'Application'") != 28: raise SystemExit("Projects catalog must contain exactly 28 Suite applications")
 if js.count("kind:'Foundation'") != 6: raise SystemExit("Projects catalog must contain exactly 6 shared foundations")
