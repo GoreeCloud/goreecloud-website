@@ -107,6 +107,16 @@ For both 1280 × 900 and 1600 × 1000, the preflight renders System, Light, and 
 
 The preserved full-page evidence is intended to make desktop composition review practical and repeatable. It has already exposed objective layout issues that viewport-only checks did not reveal, including an obsolete seven-account social placement rule and an unbalanced final two-card Wide development row; those issues were corrected in the desktop candidate. The rendered preflight and preserved evidence strengthen the candidate gate but do not replace human judgment. Manual visual acceptance remains required for hierarchy, aesthetic balance, reading comfort, keyboard-navigation feel, zoom/reflow behavior, and the subjective quality of System/Light/Dark presentation before the desktop refinement is treated as newly accepted production visual evidence.
 
+### Deployed keyboard and zoom-equivalent reflow gate
+
+`scripts/validate_desktop_interaction.py` adds an additional exact-deployment browser gate for objective keyboard and reflow behavior. It reuses the same dependency-free Chrome/ChromeDriver harness and sends real W3C WebDriver Tab and Enter key actions rather than using JavaScript to fake focus changes.
+
+At both representative 1280 × 900 and 1600 × 1000 desktop windows, the interaction gate verifies that the skip link is the first keyboard focus target, becomes visibly rendered when focused, activates the `#main` destination, and that repeated Tab traversal reaches a healthy set of visible, non-zero-size brand, navigation, and primary-action targets without an immediate focus trap.
+
+The same gate then renders 320- and 400-CSS-pixel-wide viewports. These widths are used as deterministic 400%-zoom-equivalent reflow representations of the 1280- and 1600-pixel desktop acceptance widths. The validator requires no horizontal document overflow, a single-column hero, contained hero/contact surfaces and action controls, a visible compact-navigation toggle, an initially collapsed navigation region, successful keyboard activation of that toggle, correct `aria-expanded` state, and keyboard focus movement into the revealed primary navigation.
+
+This automation materially reduces the objective keyboard and zoom/reflow risk that remains after ordinary desktop screenshots. It is still a regression gate, not a formal WCAG-conformance claim and not a substitute for human evaluation. Manual acceptance remains appropriate for subjective focus feel, reading comfort at zoom, screen-reader behavior, visual hierarchy, and the qualitative System/Light/Dark experience.
+
 ## Motion contract
 
 The website retains the Glaze UI motion vocabulary:
@@ -136,7 +146,7 @@ The website retains:
 - no-JavaScript primary-content and navigation resilience;
 - local/system typography and local artwork.
 
-Automated checks remain regression controls rather than a formal WCAG-conformance claim. Manual keyboard, screen-reader, zoom/reflow, contrast, touch-device, safe-area/device, and visual acceptance review remain appropriate for material interface changes.
+Automated checks remain regression controls rather than a formal WCAG-conformance claim. The exact deployed candidate now receives structural checks, rendered desktop checks, real-keyboard traversal smoke coverage, and 400%-zoom-equivalent reflow coverage. Manual keyboard, screen-reader, zoom/reflow, contrast, touch-device, safe-area/device, and visual acceptance review remain appropriate for material interface changes.
 
 ## Privacy contract
 
