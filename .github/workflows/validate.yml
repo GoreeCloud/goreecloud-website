@@ -142,6 +142,10 @@ jobs:
         if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
         run: python scripts/validate_desktop_rendering.py --target branch-preview
 
+      - name: Validate pull request desktop keyboard and reflow
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        run: python scripts/validate_desktop_interaction.py --target branch-preview
+
       - name: Capture pull request desktop review evidence
         id: capture_branch_preview
         if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
@@ -166,6 +170,10 @@ jobs:
       - name: Validate production desktop rendering after main update
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: python scripts/validate_desktop_rendering.py --target production
+
+      - name: Validate production desktop keyboard and reflow after main update
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: python scripts/validate_desktop_interaction.py --target production
 
       - name: Capture production desktop review evidence
         id: capture_production
