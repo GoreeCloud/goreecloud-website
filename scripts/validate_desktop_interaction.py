@@ -58,24 +58,24 @@ def press_key(driver: Driver, key: str) -> None:
 def active_element(driver: Driver) -> dict[str, Any]:
     return driver.execute(
         r"""
-+const element = document.activeElement;
-+if (!element) return {};
-+const rect = element.getBoundingClientRect();
-+return {
-+  tag: element.tagName.toLowerCase(),
-+  id: element.id || '',
-+  className: typeof element.className === 'string' ? element.className : '',
-+  href: element.getAttribute('href') || '',
-+  ariaExpanded: element.getAttribute('aria-expanded'),
-+  width: rect.width,
-+  height: rect.height,
-+  top: rect.top,
-+  bottom: rect.bottom,
-+  display: getComputedStyle(element).display,
-+  visibility: getComputedStyle(element).visibility,
-+  hash: location.hash
-+};
-+""".replace("\n+", "\n")
+const element = document.activeElement;
+if (!element) return {};
+const rect = element.getBoundingClientRect();
+return {
+  tag: element.tagName.toLowerCase(),
+  id: element.id || '',
+  className: typeof element.className === 'string' ? element.className : '',
+  href: element.getAttribute('href') || '',
+  ariaExpanded: element.getAttribute('aria-expanded'),
+  width: rect.width,
+  height: rect.height,
+  top: rect.top,
+  bottom: rect.bottom,
+  display: getComputedStyle(element).display,
+  visibility: getComputedStyle(element).visibility,
+  hash: location.hash
+};
+"""
     )
 
 
@@ -158,20 +158,18 @@ def validate_desktop_keyboard(
 
     if not any("brand" in str(item.get("className") or "") for item in snapshots):
         errors.append(f"{label}: keyboard traversal did not reach the GoreeCloud brand link.")
-    if not any(
-        item.get("tag") == "a" and str(item.get("href") or "").startswith("#")
-        and "site-nav" in str(
-            driver.execute(
-                "return document.activeElement && document.activeElement.closest('#site-nav') ? 'site-nav' : '';"
-            )
-        )
-        for item in snapshots[-1:]
-    ):
-        # The active element after 18 tabs may have moved past the navigation, so inspect
-        # the sampled identities for the known primary-navigation destinations instead.
-        nav_hrefs = {"#services", "#platform", "#development", "#roadmap", "#about", "#follow", "#contact"}
-        if not any(str(item.get("href") or "") in nav_hrefs for item in snapshots):
-            errors.append(f"{label}: keyboard traversal did not reach primary navigation links.")
+
+    nav_hrefs = {
+        "#services",
+        "#platform",
+        "#development",
+        "#roadmap",
+        "#about",
+        "#follow",
+        "#contact",
+    }
+    if not any(str(item.get("href") or "") in nav_hrefs for item in snapshots):
+        errors.append(f"{label}: keyboard traversal did not reach primary navigation links.")
     if not any("button" in str(item.get("className") or "").split() for item in snapshots):
         errors.append(f"{label}: keyboard traversal did not reach a hero action button/link.")
 
@@ -184,34 +182,34 @@ def validate_desktop_keyboard(
 def reflow_metrics(driver: Driver) -> dict[str, Any]:
     return driver.execute(
         r"""
-+const rect = selector => {
-+  const element = document.querySelector(selector);
-+  if (!element) return null;
-+  const value = element.getBoundingClientRect();
-+  return {left:value.left, right:value.right, width:value.width, height:value.height};
-+};
-+const gridColumns = selector => {
-+  const element = document.querySelector(selector);
-+  if (!element) return 0;
-+  const value = getComputedStyle(element).gridTemplateColumns.trim();
-+  return value ? value.split(/\s+/).filter(Boolean).length : 0;
-+};
-+const navToggle = document.querySelector('.nav-toggle');
-+const siteNav = document.querySelector('.site-nav');
-+return {
-+  innerWidth: window.innerWidth,
-+  clientWidth: document.documentElement.clientWidth,
-+  scrollWidth: document.documentElement.scrollWidth,
-+  heroColumns: gridColumns('.hero-grid'),
-+  heroCard: rect('.hero-card'),
-+  contactCard: rect('.contact-card'),
-+  navToggleDisplay: navToggle ? getComputedStyle(navToggle).display : null,
-+  navToggleRect: rect('.nav-toggle'),
-+  siteNavDisplay: siteNav ? getComputedStyle(siteNav).display : null,
-+  siteNavExpanded: navToggle ? navToggle.getAttribute('aria-expanded') : null,
-+  widestButton: Math.max(0, ...Array.from(document.querySelectorAll('.button')).map(element => element.getBoundingClientRect().width))
-+};
-+""".replace("\n+", "\n")
+const rect = selector => {
+  const element = document.querySelector(selector);
+  if (!element) return null;
+  const value = element.getBoundingClientRect();
+  return {left:value.left, right:value.right, width:value.width, height:value.height};
+};
+const gridColumns = selector => {
+  const element = document.querySelector(selector);
+  if (!element) return 0;
+  const value = getComputedStyle(element).gridTemplateColumns.trim();
+  return value ? value.split(/\s+/).filter(Boolean).length : 0;
+};
+const navToggle = document.querySelector('.nav-toggle');
+const siteNav = document.querySelector('.site-nav');
+return {
+  innerWidth: window.innerWidth,
+  clientWidth: document.documentElement.clientWidth,
+  scrollWidth: document.documentElement.scrollWidth,
+  heroColumns: gridColumns('.hero-grid'),
+  heroCard: rect('.hero-card'),
+  contactCard: rect('.contact-card'),
+  navToggleDisplay: navToggle ? getComputedStyle(navToggle).display : null,
+  navToggleRect: rect('.nav-toggle'),
+  siteNavDisplay: siteNav ? getComputedStyle(siteNav).display : null,
+  siteNavExpanded: navToggle ? navToggle.getAttribute('aria-expanded') : null,
+  widestButton: Math.max(0, ...Array.from(document.querySelectorAll('.button')).map(element => element.getBoundingClientRect().width))
+};
+"""
     )
 
 
@@ -258,9 +256,9 @@ def validate_reflow(
             f"{label}: an action button is wider than the reflow viewport ({metrics.get('widestButton')}px)."
         )
 
-    # Use real Tab/Enter actions to open the compact navigation and confirm focus
-    # proceeds into the revealed navigation rather than becoming trapped.
-    driver.execute("window.scrollTo(0, 0); if (document.activeElement) document.activeElement.blur(); return true;")
+    driver.execute(
+        "window.scrollTo(0, 0); if (document.activeElement) document.activeElement.blur(); return true;"
+    )
     toggle_found = False
     for _ in range(8):
         press_key(driver, TAB)
