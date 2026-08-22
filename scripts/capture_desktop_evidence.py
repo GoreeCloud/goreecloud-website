@@ -19,6 +19,7 @@ from hashlib import sha256
 from pathlib import Path
 import shutil
 import sys
+import time
 from typing import Any
 
 from validate_desktop_rendering import (
@@ -35,6 +36,7 @@ from verify_remote_deployment import target_url, validate_fixed_url
 
 ROOT = Path(__file__).resolve().parents[1]
 EVIDENCE_ROOT = ROOT / "artifacts" / "desktop-rendering"
+THEME_SETTLE_SECONDS = 0.4
 
 
 def capture(
@@ -52,6 +54,10 @@ def capture(
     )
     driver.command("POST", "/url", {"url": base_url})
     apply_appearance(driver, mode)
+    # Theme-sensitive controls intentionally animate between appearance modes. Wait until
+    # those reviewed Glaze UI transitions settle so preserved evidence reflects the steady
+    # state rather than an intermediate frame between Light and Dark values.
+    time.sleep(THEME_SETTLE_SECONDS)
     metrics = collect_metrics(driver)
 
     screenshot_value = driver.command("GET", "/screenshot")
@@ -128,6 +134,7 @@ def main() -> int:
         "schemaVersion": 1,
         "target": args.target,
         "baseUrl": base_url,
+        "themeSettleSeconds": THEME_SETTLE_SECONDS,
         "screenshots": screenshots,
     }
     manifest_path = output_dir / "manifest.json"
@@ -138,7 +145,7 @@ def main() -> int:
 
     print(
         f"Captured {len(screenshots)} desktop review screenshots for {args.target} "
-        f"in {output_dir.relative_to(ROOT)}."
+        f"in {output_dir.relative_to(ROOT)} after {THEME_SETTLE_SECONDS:.1f}s theme settling."
     )
     return 0
 
