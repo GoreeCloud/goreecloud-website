@@ -8,6 +8,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 POLISH_PATH = ROOT / "css" / "glaze-polish.css"
+SOCIAL_PATH = ROOT / "css" / "social.css"
 CONFORMANCE_PATH = ROOT / "docs" / "glaze-ui-conformance.md"
 RENDER_VALIDATOR_PATH = ROOT / "scripts" / "validate_desktop_rendering.py"
 CAPTURE_EVIDENCE_PATH = ROOT / "scripts" / "capture_desktop_evidence.py"
@@ -18,6 +19,7 @@ class DesktopLayoutContractTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.polish = POLISH_PATH.read_text(encoding="utf-8")
+        cls.social = SOCIAL_PATH.read_text(encoding="utf-8")
         cls.conformance = CONFORMANCE_PATH.read_text(encoding="utf-8")
         cls.render_validator = RENDER_VALIDATOR_PATH.read_text(encoding="utf-8")
         cls.capture_evidence = CAPTURE_EVIDENCE_PATH.read_text(encoding="utf-8")
@@ -39,9 +41,17 @@ class DesktopLayoutContractTests(unittest.TestCase):
             "--glaze-content-max:1480px",
             "var(--glaze-gutter-wide)",
             "grid-template-columns:repeat(4,minmax(0,1fr))",
+            ".development-grid>:nth-last-child(2):nth-child(4n+1){grid-column:2}",
             ".platform-card{flex-basis:calc((100% - 3rem)/4)}",
         ):
             self.assertIn(marker, self.polish)
+
+    def test_eight_account_social_grid_flows_naturally(self) -> None:
+        self.assertIn("Eight public accounts flow naturally", self.social)
+        self.assertNotIn(".social-card.github-card", self.social)
+        self.assertIn("grid-template-columns: repeat(3, 1fr);", self.social)
+        self.assertIn("grid-template-columns: repeat(2, 1fr);", self.social)
+        self.assertIn("grid-template-columns: 1fr;", self.social)
 
     def test_real_browser_rendering_preflight_is_connected(self) -> None:
         for marker in (
