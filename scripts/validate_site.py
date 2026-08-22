@@ -37,7 +37,6 @@ REQUIRED_SCRIPTS = {
     "js/main.js",
 }
 REQUIRED_PUBLIC_MARKERS = {
-    "Research Library canonical repository": "https://github.com/GoreeCloud/goreecloud-research-library",
     "native GoreeCloud Notes repository": "https://github.com/GoreeCloud/goreecloud-notes",
     "GoreeCloud Memos canonical repository": "https://github.com/GoreeCloud/goreecloud-memos",
     "GoreeCloud Memos product": "<strong>GoreeCloud Memos</strong>",
