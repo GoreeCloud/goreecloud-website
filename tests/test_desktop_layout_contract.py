@@ -10,6 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 POLISH_PATH = ROOT / "css" / "glaze-polish.css"
 CONFORMANCE_PATH = ROOT / "docs" / "glaze-ui-conformance.md"
 RENDER_VALIDATOR_PATH = ROOT / "scripts" / "validate_desktop_rendering.py"
+CAPTURE_EVIDENCE_PATH = ROOT / "scripts" / "capture_desktop_evidence.py"
 WORKFLOW_PATH = ROOT / ".github" / "workflows" / "validate.yml"
 
 
@@ -19,6 +20,7 @@ class DesktopLayoutContractTests(unittest.TestCase):
         cls.polish = POLISH_PATH.read_text(encoding="utf-8")
         cls.conformance = CONFORMANCE_PATH.read_text(encoding="utf-8")
         cls.render_validator = RENDER_VALIDATOR_PATH.read_text(encoding="utf-8")
+        cls.capture_evidence = CAPTURE_EVIDENCE_PATH.read_text(encoding="utf-8")
         cls.workflow = WORKFLOW_PATH.read_text(encoding="utf-8")
 
     def test_expanded_desktop_contract_is_explicit(self) -> None:
@@ -58,6 +60,25 @@ class DesktopLayoutContractTests(unittest.TestCase):
             "python scripts/validate_desktop_rendering.py --target production",
         ):
             self.assertIn(command, self.workflow)
+
+    def test_reviewable_render_evidence_is_preserved(self) -> None:
+        for marker in (
+            'choices=("branch-preview", "production")',
+            'EVIDENCE_ROOT = ROOT / "artifacts" / "desktop-rendering"',
+            'filename = f"{width}x{height}-{mode}.png"',
+            '"manifest.json"',
+            '"sha256": digest',
+        ):
+            self.assertIn(marker, self.capture_evidence)
+
+        for marker in (
+            "python scripts/capture_desktop_evidence.py --target branch-preview",
+            "python scripts/capture_desktop_evidence.py --target production",
+            "actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1",
+            "name: desktop-rendering-${{ github.run_id }}",
+            "retention-days: 14",
+        ):
+            self.assertIn(marker, self.workflow)
 
     def test_desktop_contract_preserves_acceptance_boundary(self) -> None:
         for marker in (
