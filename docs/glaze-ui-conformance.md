@@ -97,6 +97,14 @@ At Wide widths, the content canvas grows to a 1480 CSS-pixel maximum with 40-pix
 
 This desktop refinement does not remove Compact or Medium behavior and does not infer a TV interface from width. It is specifically a pointer/keyboard-friendly public website composition for representative 1280 × 900 and 1600 × 1000 desktop acceptance ranges. Manual visual acceptance should confirm that the wider composition improves density and hierarchy without creating overly long reading lines, clipped navigation, inaccessible focus order, or excessive card width.
 
+### Rendered desktop preflight
+
+`scripts/validate_desktop_rendering.py` adds a real-browser preflight on the exact deployed Cloudflare Pages candidate after byte-for-byte deployment verification succeeds. It uses the Chrome and ChromeDriver toolchain supplied by the explicitly pinned `ubuntu-24.04` GitHub Actions runner and does not add a runtime browser library, npm package, remote rendering service, analytics dependency, or public artifact file.
+
+For both 1280 × 900 and 1600 × 1000, the preflight renders System, Light, and Dark appearance modes and checks the semantic desktop gutter/container relationship, hero minimum geometry, horizontal overflow, primary-navigation containment, image loading, and Wide four-column collection density. It also exercises reduced-motion and increased-contrast media fallbacks and requires each representative browser render to produce a valid nontrivial PNG screenshot payload. The screenshot bytes remain ephemeral CI evidence and are not published as public website assets.
+
+The rendered preflight strengthens the candidate gate but does not replace human judgment. Manual visual acceptance remains required for hierarchy, aesthetic balance, reading comfort, keyboard-navigation feel, zoom/reflow behavior, and the subjective quality of System/Light/Dark presentation before the desktop refinement is treated as newly accepted production visual evidence.
+
 ## Motion contract
 
 The website retains the Glaze UI motion vocabulary:
