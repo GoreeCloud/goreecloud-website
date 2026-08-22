@@ -65,8 +65,11 @@ class DesktopLayoutContractTests(unittest.TestCase):
         for marker in (
             'choices=("branch-preview", "production")',
             'EVIDENCE_ROOT = ROOT / "artifacts" / "desktop-rendering"',
+            "THEME_SETTLE_SECONDS = 0.4",
+            "time.sleep(THEME_SETTLE_SECONDS)",
             'filename = f"{width}x{height}-{mode}.png"',
             '"manifest.json"',
+            '"themeSettleSeconds": THEME_SETTLE_SECONDS',
             '"sha256": digest',
         ):
             self.assertIn(marker, self.capture_evidence)
