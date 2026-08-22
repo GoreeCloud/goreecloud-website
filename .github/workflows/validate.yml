@@ -142,6 +142,11 @@ jobs:
         if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
         run: python scripts/validate_desktop_rendering.py --target branch-preview
 
+      - name: Capture pull request desktop review evidence
+        id: capture_branch_preview
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        run: python scripts/capture_desktop_evidence.py --target branch-preview
+
       - name: Verify production deployment after main update
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
@@ -161,3 +166,17 @@ jobs:
       - name: Validate production desktop rendering after main update
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: python scripts/validate_desktop_rendering.py --target production
+
+      - name: Capture production desktop review evidence
+        id: capture_production
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: python scripts/capture_desktop_evidence.py --target production
+
+      - name: Upload desktop review evidence
+        if: always() && (steps.capture_branch_preview.outcome != 'skipped' || steps.capture_production.outcome != 'skipped')
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: desktop-rendering-${{ github.run_id }}
+          path: artifacts/desktop-rendering/
+          if-no-files-found: warn
+          retention-days: 14
