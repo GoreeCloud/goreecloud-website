@@ -66,10 +66,17 @@ class DesktopLayoutContractTests(unittest.TestCase):
             'choices=("branch-preview", "production")',
             'EVIDENCE_ROOT = ROOT / "artifacts" / "desktop-rendering"',
             "THEME_SETTLE_SECONDS = 0.4",
+            "FULL_PAGE_MIN_WIDTH = 1440",
+            'FULL_PAGE_MODES = {"light", "dark"}',
             "time.sleep(THEME_SETTLE_SECONDS)",
             'filename = f"{width}x{height}-{mode}.png"',
+            'filename = f"{width}x{height}-{mode}-full.png"',
+            '"cmd": "Page.captureScreenshot"',
+            '"captureBeyondViewport": True',
             '"manifest.json"',
+            '"schemaVersion": 2',
             '"themeSettleSeconds": THEME_SETTLE_SECONDS',
+            '"fullPageScreenshots": full_page_screenshots',
             '"sha256": digest',
         ):
             self.assertIn(marker, self.capture_evidence)
