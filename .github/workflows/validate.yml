@@ -138,6 +138,10 @@ jobs:
           echo "Branch preview verification failed after $attempts attempts."
           exit 1
 
+      - name: Validate pull request desktop rendering
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        run: python scripts/validate_desktop_rendering.py --target branch-preview
+
       - name: Verify production deployment after main update
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
@@ -153,3 +157,7 @@ jobs:
           done
           echo "Production deployment verification failed after $attempts attempts."
           exit 1
+
+      - name: Validate production desktop rendering after main update
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: python scripts/validate_desktop_rendering.py --target production
