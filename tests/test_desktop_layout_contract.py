@@ -11,6 +11,7 @@ POLISH_PATH = ROOT / "css" / "glaze-polish.css"
 SOCIAL_PATH = ROOT / "css" / "social.css"
 CONFORMANCE_PATH = ROOT / "docs" / "glaze-ui-conformance.md"
 RENDER_VALIDATOR_PATH = ROOT / "scripts" / "validate_desktop_rendering.py"
+INTERACTION_VALIDATOR_PATH = ROOT / "scripts" / "validate_desktop_interaction.py"
 CAPTURE_EVIDENCE_PATH = ROOT / "scripts" / "capture_desktop_evidence.py"
 WORKFLOW_PATH = ROOT / ".github" / "workflows" / "validate.yml"
 
@@ -22,6 +23,7 @@ class DesktopLayoutContractTests(unittest.TestCase):
         cls.social = SOCIAL_PATH.read_text(encoding="utf-8")
         cls.conformance = CONFORMANCE_PATH.read_text(encoding="utf-8")
         cls.render_validator = RENDER_VALIDATOR_PATH.read_text(encoding="utf-8")
+        cls.interaction_validator = INTERACTION_VALIDATOR_PATH.read_text(encoding="utf-8")
         cls.capture_evidence = CAPTURE_EVIDENCE_PATH.read_text(encoding="utf-8")
         cls.workflow = WORKFLOW_PATH.read_text(encoding="utf-8")
 
@@ -68,6 +70,27 @@ class DesktopLayoutContractTests(unittest.TestCase):
         for command in (
             "python scripts/validate_desktop_rendering.py --target branch-preview",
             "python scripts/validate_desktop_rendering.py --target production",
+        ):
+            self.assertIn(command, self.workflow)
+
+    def test_keyboard_and_zoom_equivalent_reflow_gate_is_connected(self) -> None:
+        for marker in (
+            'choices=("branch-preview", "production")',
+            'TAB = "\\ue004"',
+            'ENTER = "\\ue007"',
+            '"/actions"',
+            '(320, 900, "1280px at 400% zoom")',
+            '(400, 1000, "1600px at 400% zoom")',
+            '"skip-link"',
+            '"nav-toggle"',
+            'horizontal overflow detected',
+            'keyboard focus did not move into the revealed primary navigation',
+        ):
+            self.assertIn(marker, self.interaction_validator)
+
+        for command in (
+            "python scripts/validate_desktop_interaction.py --target branch-preview",
+            "python scripts/validate_desktop_interaction.py --target production",
         ):
             self.assertIn(command, self.workflow)
 
