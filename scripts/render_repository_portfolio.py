@@ -19,8 +19,7 @@ SUMMARY_PATTERNS = {
 }
 
 DIRECTORY_GROUP_BLOCK = re.compile(
-    r'(?P<indent>\s*)<div class="repo-group">.*?'
-    r'<div class="repo-footnote glaze-callout">.*?</div>\s*',
+    r'(?P<indent>\s*)<div class="repo-group">.*?(?=\n      </div>\n    </section>)',
     re.DOTALL,
 )
 DIRECTORY_SUMMARY = re.compile(
