@@ -191,52 +191,28 @@ if (sectionEntries.length) {
 }
 
 const year = document.getElementById('year');
-if (year) {
-  year.textContent = new Date().getFullYear();
-}
+if (year) year.textContent = new Date().getFullYear();
 
-// Keep the primary public landing page aligned with the current GoreeCloud product story
-// without coupling its static shell to any private runtime or remote data source.
-const homepageHero = document.querySelector('#top .hero-copy');
-if (homepageHero) {
-  const labels = homepageHero.querySelector('.hero-labels');
+const hero = document.querySelector('#top .hero-copy');
+if (hero) {
+  const labels = hero.querySelector('.hero-labels');
   const eyebrow = labels?.querySelector('.eyebrow');
-  if (labels && eyebrow && !labels.querySelector('[data-foundation="everkeep"]')) {
-    const everkeep = document.createElement('span');
-    everkeep.className = 'glaze-chip';
-    everkeep.dataset.foundation = 'everkeep';
-    everkeep.textContent = 'Everkeep';
-    labels.insertBefore(everkeep, eyebrow);
+  if (labels && eyebrow) {
+    const chip = document.createElement('span');
+    chip.className = 'glaze-chip';
+    chip.textContent = 'Everkeep';
+    labels.insertBefore(chip, eyebrow);
     eyebrow.textContent = 'Design • Privacy • Security • Resilience';
   }
-
-  const lede = homepageHero.querySelector('.hero-lede');
-  if (lede) {
-    lede.textContent = 'GoreeCloud is a privacy-first, self-hosted personal and family cloud designed to keep files, memories, media, records, credentials, knowledge, and application data under the control of the people they belong to. The expanding GoreeCloud Suite now includes focused first-party work across Drive, Sync, Location, Launcher, Video, communication, productivity, networking, administration, and device software.';
+  const lede = hero.querySelector('.hero-lede');
+  if (lede) lede.textContent = 'GoreeCloud is a privacy-first, self-hosted personal and family cloud for keeping files, memories, media, records, credentials, knowledge, and application data under their rightful owners’ control. The expanding Suite now includes focused work across Drive, Sync, Location, Launcher, Video, communication, productivity, networking, administration, and device software.';
+  const points = hero.querySelector('.hero-points');
+  if (points) {
+    const note = document.createElement('p');
+    note.className = 'status-note current-platform-update';
+    note.textContent = 'Glaze UI, Wardveil Security, Privacy Shield, and Everkeep are integral GoreeCloud platform systems representing substantive design, security, privacy, resilience, recovery, and preservation capabilities—not decorative branding.';
+    points.before(note);
   }
-
-  const points = homepageHero.querySelector('.hero-points');
-  if (points && !homepageHero.querySelector('.current-platform-update')) {
-    const update = document.createElement('p');
-    update.className = 'status-note current-platform-update';
-    update.textContent = 'Current platform update: Glaze UI, Wardveil Security, Privacy Shield, and Everkeep are integral GoreeCloud platform systems. Their names represent implemented design, security, privacy, resilience, recovery, and preservation capabilities rather than decorative branding.';
-    points.insertAdjacentElement('beforebegin', update);
-  }
-}
-
-const servicesHeadingCopy = document.querySelector('#services .section-heading p:last-child');
-if (servicesHeadingCopy) {
-  servicesHeadingCopy.textContent = 'GoreeCloud combines focused first-party Suite applications, GoreeCloud-maintained open-source forks, and selected supporting open-source services. Newer first-party directions include Drive, Sync, Location, Launcher, and Video, while public descriptions remain intentionally high level and private service addresses, topology, and administrative interfaces stay unpublished.';
-}
-
-const developmentHeadingCopy = document.querySelector('#development .section-heading p:last-child');
-if (developmentHeadingCopy) {
-  developmentHeadingCopy.textContent = 'I use mature open-source software where it already solves the problem well, maintain GoreeCloud-specific forks when customization is justified, and build original applications when GoreeCloud needs a purpose-built product. Current development now spans storage and synchronization, location, video, communications, productivity, networking, identity, administration, browser software, and device experiences.';
-}
-
-const developmentStatus = document.querySelector('#development .status-note');
-if (developmentStatus) {
-  developmentStatus.innerHTML = 'Open source first. Fork when justified. Build original software when GoreeCloud itself requires a distinct product. The <a href="repositories.html">complete repository directory</a> documents source boundaries and projects that may remain pre-production despite public source availability.';
 }
 
 const repositoryDirectory = document.querySelector('.repo-directory-section');
