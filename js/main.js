@@ -191,8 +191,28 @@ if (sectionEntries.length) {
 }
 
 const year = document.getElementById('year');
-if (year) {
-  year.textContent = new Date().getFullYear();
+if (year) year.textContent = new Date().getFullYear();
+
+const hero = document.querySelector('#top .hero-copy');
+if (hero) {
+  const labels = hero.querySelector('.hero-labels');
+  const eyebrow = labels?.querySelector('.eyebrow');
+  if (labels && eyebrow) {
+    const chip = document.createElement('span');
+    chip.className = 'glaze-chip';
+    chip.textContent = 'Everkeep';
+    labels.insertBefore(chip, eyebrow);
+    eyebrow.textContent = 'Design • Privacy • Security • Resilience';
+  }
+  const lede = hero.querySelector('.hero-lede');
+  if (lede) lede.textContent = 'GoreeCloud is a privacy-first, self-hosted personal and family cloud for keeping files, memories, media, records, credentials, knowledge, and application data under their rightful owners’ control. The expanding Suite now includes focused work across Drive, Sync, Location, Launcher, Video, communication, productivity, networking, administration, and device software.';
+  const points = hero.querySelector('.hero-points');
+  if (points) {
+    const note = document.createElement('p');
+    note.className = 'status-note current-platform-update';
+    note.textContent = 'Glaze UI, Wardveil Security, Privacy Shield, and Everkeep are integral GoreeCloud platform systems representing substantive design, security, privacy, resilience, recovery, and preservation capabilities—not decorative branding.';
+    points.before(note);
+  }
 }
 
 const repositoryDirectory = document.querySelector('.repo-directory-section');
