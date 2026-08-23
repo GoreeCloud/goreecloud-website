@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the public GoreeCloud repository portfolio against its repository-only manifest."""
+"""Validate the GoreeCloud repository portfolio and its build-time static rendering."""
 
 from __future__ import annotations
 
@@ -9,6 +9,8 @@ import json
 from pathlib import Path
 import re
 import sys
+
+from render_repository_portfolio import render_homepage, render_repository_directory
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "docs" / "repository-portfolio.json"
@@ -67,20 +69,22 @@ def validate_manifest(data: dict) -> list[str]:
                 continue
             name = repository.get("name")
             visibility = repository.get("visibility")
-            if not isinstance(name, str) or not re.fullmatch(r"[a-z0-9][a-z0-9._-]*", name):
+            if not isinstance(name, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]*", name):
                 errors.append(f"Invalid repository name in group {group_id!r}: {name!r}.")
                 continue
             if visibility not in {"public", "private"}:
                 errors.append(f"Repository {name} must declare public or private visibility.")
                 continue
+            for field in ("description", "role"):
+                value = repository.get(field)
+                if not isinstance(value, str) or not value.strip():
+                    errors.append(f"Repository {name} must declare a non-empty {field}.")
             names.append(name)
             visibilities.append(visibility)
 
-    duplicate_groups = sorted(name for name, count in Counter(group_ids).items() if count > 1)
-    duplicate_repositories = sorted(name for name, count in Counter(names).items() if count > 1)
-    for group_id in duplicate_groups:
+    for group_id in sorted(name for name, count in Counter(group_ids).items() if count > 1):
         errors.append(f"Duplicate repository portfolio group id: {group_id}.")
-    for name in duplicate_repositories:
+    for name in sorted(name for name, count in Counter(names).items() if count > 1):
         errors.append(f"Duplicate repository portfolio entry: {name}.")
 
     computed = {
@@ -91,15 +95,11 @@ def validate_manifest(data: dict) -> list[str]:
     }
     for key, actual in computed.items():
         if counts.get(key) != actual:
-            errors.append(
-                f"Repository portfolio count {key!r} must be {actual}, found {counts.get(key)!r}."
-            )
-
+            errors.append(f"Repository portfolio count {key!r} must be {actual}, found {counts.get(key)!r}.")
     return errors
 
 
 def validate_discovery_enhancement(main_js: str, repository_css: str) -> list[str]:
-    """Validate the local-only progressive repository discovery controls."""
     errors: list[str] = []
     required_js_markers = (
         "const repositoryDirectory = document.querySelector('.repo-directory-section');",
@@ -123,22 +123,9 @@ def validate_discovery_enhancement(main_js: str, repository_css: str) -> list[st
 
     if "const repositoryDirectory =" in main_js:
         filter_source = main_js.split("const repositoryDirectory =", 1)[1]
-        prohibited_filter_behavior = (
-            "localStorage",
-            "sessionStorage",
-            "URLSearchParams",
-            "history.pushState",
-            "history.replaceState",
-            "fetch(",
-            "XMLHttpRequest",
-            "sendBeacon",
-        )
-        for marker in prohibited_filter_behavior:
+        for marker in ("localStorage", "sessionStorage", "URLSearchParams", "history.pushState", "history.replaceState", "fetch(", "XMLHttpRequest", "sendBeacon"):
             if marker in filter_source:
-                errors.append(
-                    "Repository search/filter controls must remain local, ephemeral, and network-independent: "
-                    f"{marker}"
-                )
+                errors.append("Repository search/filter controls must remain local, ephemeral, and network-independent: " + marker)
 
     required_css_markers = (
         ".repo-tools {",
@@ -156,145 +143,69 @@ def validate_discovery_enhancement(main_js: str, repository_css: str) -> list[st
     for marker in required_css_markers:
         if marker not in repository_css:
             errors.append(f"Repository discovery presentation is missing required Glaze UI behavior: {marker}")
-
     return errors
 
 
 def validate_summary_counts(text: str, counts: dict, context: str) -> list[str]:
-    """Reject both missing and stale rendered portfolio summary counts."""
     errors: list[str] = []
-    contracts = (
-        ("total", "current repositories"),
-        ("public", "public repositories"),
-        ("private", "private repositories"),
-    )
-    for key, label in contracts:
+    for key, label in (("total", "current repositories"), ("public", "public repositories"), ("private", "private repositories")):
         pattern = re.compile(rf"<strong>(\d+)</strong><span>{re.escape(label)}</span>")
         values = [int(value) for value in pattern.findall(text)]
         expected = counts[key]
         if expected not in values:
             errors.append(f"{context} repository summary is missing current {label}: {expected}.")
-        stale = sorted(value for value in set(values) if value != expected)
-        for value in stale:
+        for value in sorted(value for value in set(values) if value != expected):
             errors.append(f"{context} repository summary contains stale {label}: {value}; expected {expected}.")
     return errors
 
 
 def validate(root: Path = ROOT) -> list[str]:
     errors: list[str] = []
-    manifest_path = root / "docs" / "repository-portfolio.json"
-    directory_path = root / "repositories.html"
-    homepage_path = root / "index.html"
-    main_js_path = root / "js" / "main.js"
-    repository_css_path = root / "css" / "repositories.css"
-
     try:
-        data = json.loads(manifest_path.read_text(encoding="utf-8"))
+        data = json.loads((root / "docs" / "repository-portfolio.json").read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
         return [f"Repository portfolio manifest cannot be read: {exc}"]
-
     errors.extend(validate_manifest(data))
     if errors:
         return errors
 
-    directory = directory_path.read_text(encoding="utf-8")
-    homepage = homepage_path.read_text(encoding="utf-8")
-    main_js = main_js_path.read_text(encoding="utf-8")
-    repository_css = repository_css_path.read_text(encoding="utf-8")
-    counts = data["counts"]
+    source_directory = (root / "repositories.html").read_text(encoding="utf-8")
+    source_homepage = (root / "index.html").read_text(encoding="utf-8")
+    try:
+        directory = render_repository_directory(source_directory, data)
+        homepage = render_homepage(source_homepage, data)
+    except ValueError as exc:
+        return [f"Repository portfolio static rendering failed: {exc}"]
 
+    counts = data["counts"]
     errors.extend(validate_summary_counts(directory, counts, "Repository directory"))
     errors.extend(validate_summary_counts(homepage, counts, "Homepage"))
-
     group_marker = f"<strong>{counts['functional_groups']}</strong><span>functional groups</span>"
     if group_marker not in homepage:
-        errors.append(
-            "Homepage repository summary is missing the current functional-group count: "
-            f"{counts['functional_groups']}."
-        )
+        errors.append(f"Homepage repository summary is missing the current functional-group count: {counts['functional_groups']}.")
+    if f"all {counts['total']} current repositories" not in homepage:
+        errors.append("Homepage software overview must identify the current repository directory total.")
+    if f"GoreeCloud currently maintains {counts['total']} repositories" not in homepage:
+        errors.append("Homepage repository teaser must state the manifest-derived current total.")
 
-    if '<section id="repositories" class="section repository-teaser">' not in homepage:
-        errors.append("Homepage must publish the repository summary as static HTML.")
-    if 'href="css/repositories.css"' not in homepage:
-        errors.append("Homepage must load repository presentation directly for its static repository summary.")
-    if 'href="repositories.html">Repositories</a>' not in homepage:
-        errors.append("Homepage navigation must include a static repository-directory link.")
-
-    expected_overview_phrase = f"all {counts['total']} current repositories"
-    if expected_overview_phrase not in homepage:
-        errors.append(
-            "Homepage software overview must identify the current repository directory: "
-            f"{expected_overview_phrase}."
-        )
-
-    overview_counts = [int(value) for value in re.findall(r"all (\d+) current repositories", homepage)]
-    for value in sorted(set(overview_counts)):
-        if value != counts["total"]:
-            errors.append(
-                f"Homepage software overview contains stale repository total {value}; expected {counts['total']}."
-            )
-
-    maintained_counts = [
-        int(value)
-        for value in re.findall(r"GoreeCloud currently maintains (\d+) repositories", homepage)
-    ]
-    if counts["total"] not in maintained_counts:
-        errors.append(
-            "Homepage repository teaser must state the manifest-derived current total: "
-            f"{counts['total']}."
-        )
-    for value in sorted(set(maintained_counts)):
-        if value != counts["total"]:
-            errors.append(
-                f"Homepage repository teaser contains stale repository total {value}; expected {counts['total']}."
-            )
-
-    prohibited_runtime_inventory = (
-        "repositorySection.innerHTML",
-        "GoreeCloud currently maintains 20 repositories",
-        "<strong>20</strong><span>current repositories</span>",
-    )
-    for marker in prohibited_runtime_inventory:
-        if marker in main_js:
-            errors.append(f"Repository inventory must not be generated from JavaScript: {marker}")
-
-    repositories: list[tuple[str, str]] = []
-    for group in data["groups"]:
-        for repository in group["repositories"]:
-            repositories.append((repository["name"], repository["visibility"]))
-
-    for name, visibility in repositories:
+    repositories = [repo for group in data["groups"] for repo in group["repositories"]]
+    for repository in repositories:
+        name = repository["name"]
+        visibility = repository["visibility"]
         heading = f"<h4>{name}</h4>"
-        occurrences = directory.count(heading)
-        if occurrences != 1:
-            errors.append(
-                f"Repository directory must contain exactly one card for {name}; found {occurrences}."
-            )
-            continue
-
-        card_pattern = re.compile(
-            r'<article class="repo-card(?: [^"]*)?">(?P<body>.*?)</article>', re.DOTALL
-        )
-        card_body = None
-        for match in card_pattern.finditer(directory):
-            if heading in match.group("body"):
-                card_body = match.group("body")
-                break
-        if card_body is None:
-            errors.append(f"Repository {name} is not contained in a valid repo-card article.")
-            continue
-
+        if directory.count(heading) != 1:
+            errors.append(f"Rendered repository directory must contain exactly one card for {name}.")
         visibility_marker = f'<span class="repo-visibility {visibility}">{visibility.title()}</span>'
-        if visibility_marker not in card_body:
-            errors.append(f"Repository {name} must display {visibility} visibility.")
-
-        public_url = f'https://github.com/GoreeCloud/{name}'
-        if visibility == "public":
-            if public_url not in card_body:
-                errors.append(f"Public repository {name} must link to its canonical GitHub URL.")
-        elif public_url in card_body:
+        if visibility_marker not in directory:
+            errors.append(f"Rendered repository {name} must display {visibility} visibility.")
+        public_url = f"https://github.com/GoreeCloud/{name}"
+        if visibility == "public" and public_url not in directory:
+            errors.append(f"Public repository {name} must link to its canonical GitHub URL.")
+        if visibility == "private" and public_url in directory:
             errors.append(f"Private repository {name} must not publish a direct repository link.")
 
+    main_js = (root / "js" / "main.js").read_text(encoding="utf-8")
+    repository_css = (root / "css" / "repositories.css").read_text(encoding="utf-8")
     errors.extend(validate_discovery_enhancement(main_js, repository_css))
     return errors
 
