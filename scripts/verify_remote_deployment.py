@@ -3,8 +3,8 @@
 
 The verifier supports only GoreeCloud-controlled production and Cloudflare Pages
 preview hosts. It validates redirects before following them, compares every
-fetchable allowlisted public file byte-for-byte with the local candidate, checks
-security headers and indexing behavior, verifies repository isolation, and
+fetchable allowlisted public file byte-for-byte with the reviewed build output,
+checks security headers and indexing behavior, verifies repository isolation, and
 validates the published RFC 9116 security.txt contract.
 """
 
@@ -23,7 +23,8 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import urljoin, urlparse
 from urllib.request import HTTPRedirectHandler, HTTPSHandler, Request, build_opener
 
-from build_public_site import PUBLIC_FILES, ROOT
+from build_public_site import GENERATED_HTML, PUBLIC_FILES, ROOT
+from render_repository_portfolio import load_manifest, render_public_file
 
 PRODUCTION_URL = "https://www.goreecloud.com"
 PAGES_DOMAIN = "goreecloud-website.pages.dev"
@@ -80,7 +81,9 @@ EXPECTED_SECURITY_CANONICAL = "https://www.goreecloud.com/.well-known/security.t
 EXPECTED_SECURITY_POLICY = "https://www.goreecloud.com/security.html"
 
 # Cloudflare consumes _headers as deployment configuration instead of serving it
-# as a public resource. Every other public allowlist entry must be byte-identical.
+# as a public resource. Every other public allowlist entry must be byte-identical
+# to the reviewed build output. Generated HTML is rendered from the manifest before
+# comparison so deployment verification measures the actual dist contract.
 NON_FETCHABLE_PUBLIC_FILES = frozenset({"_headers"})
 REMOTE_INTEGRITY_FILES = tuple(
     relative
@@ -252,14 +255,9 @@ def fetch(url: str) -> Response:
 def content_type_matches(actual: str, expected: str) -> bool:
     media_type = actual.split(";", 1)[0].strip().lower()
     if expected == "xml":
-        return media_type in {"application/xml", "text/xml"} or media_type.endswith(
-            "+xml"
-        )
+        return media_type in {"application/xml", "text/xml"} or media_type.endswith("+xml")
     if expected == "json":
-        return media_type in {
-            "application/json",
-            "application/manifest+json",
-        } or media_type.endswith("+json")
+        return media_type in {"application/json", "application/manifest+json"} or media_type.endswith("+json")
     if expected == "javascript":
         return media_type in {"application/javascript", "text/javascript"}
     return media_type == expected
@@ -295,14 +293,27 @@ def remote_path_for_public_file(relative: str) -> str:
     return "/" if relative == "index.html" else f"/{relative}"
 
 
+def candidate_bytes(relative: str) -> bytes:
+    """Return the exact reviewed bytes that the public build publishes for one file."""
+
+    source = ROOT / relative
+    if source.is_symlink() or not source.is_file():
+        raise ValueError(f"Candidate integrity source is unavailable or unsafe: {relative}")
+    if relative in GENERATED_HTML:
+        manifest = load_manifest(ROOT)
+        rendered = render_public_file(relative, source.read_text(encoding="utf-8"), manifest)
+        return rendered.encode("utf-8")
+    return source.read_bytes()
+
+
 def verify_candidate_content_integrity(base_url: str, errors: list[str]) -> None:
     for relative in REMOTE_INTEGRITY_FILES:
-        source = ROOT / relative
-        if source.is_symlink() or not source.is_file():
-            errors.append(f"Candidate integrity source is unavailable or unsafe: {relative}")
+        try:
+            expected = candidate_bytes(relative)
+        except (OSError, ValueError) as error:
+            errors.append(str(error))
             continue
 
-        expected = source.read_bytes()
         path = remote_path_for_public_file(relative)
         try:
             response = fetch(build_url(base_url, path))
@@ -394,10 +405,7 @@ def verify_indexing_header(target: str, base_url: str, errors: list[str]) -> Non
 
     tokens = {
         token.strip()
-        for token in response.headers.get("x-robots-tag", "")
-        .lower()
-        .replace(";", ",")
-        .split(",")
+        for token in response.headers.get("x-robots-tag", "").lower().replace(";", ",").split(",")
         if token.strip()
     }
 
@@ -541,6 +549,8 @@ def check_configuration() -> int:
         errors.append(
             "Remote integrity file set has drifted from the reviewed public artifact allowlist."
         )
+    if not GENERATED_HTML.issubset(set(REMOTE_INTEGRITY_FILES)):
+        errors.append("Generated HTML must remain within the remotely verified public file set.")
 
     if errors:
         print("Remote deployment verifier configuration failed:")

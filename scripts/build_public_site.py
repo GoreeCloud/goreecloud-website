@@ -13,10 +13,11 @@ from pathlib import Path
 import shutil
 import sys
 
+from render_repository_portfolio import load_manifest, render_public_file
+
 ROOT = Path(__file__).resolve().parents[1]
 DIST = ROOT / "dist"
 
-# Root-level browser and crawler surface.
 PUBLIC_ROOT_FILES = (
     "404.html",
     "_headers",
@@ -31,10 +32,6 @@ PUBLIC_ROOT_FILES = (
     ".well-known/security.txt",
 )
 
-# Only reviewed identity and presentation artwork is deployable. GoreeCloud-owned
-# assets and referential third-party marks must be explicitly allowlisted and backed
-# by docs/visual-identity-sources.json provenance plus integrity validation. Source
-# presence alone never makes artwork public.
 PUBLIC_ASSET_FILES = (
     "assets/goreecloud-logo.svg",
     "assets/platform/adguard-home.svg",
@@ -69,7 +66,6 @@ PUBLIC_ASSET_FILES = (
     "assets/social-preview.png",
 )
 
-# Glaze UI and page-specific presentation layers.
 PUBLIC_STYLE_FILES = (
     "css/development.css",
     "css/error.css",
@@ -84,7 +80,6 @@ PUBLIC_STYLE_FILES = (
     "css/style.css",
 )
 
-# Small, self-hosted progressive-enhancement surface.
 PUBLIC_SCRIPT_FILES = (
     "js/main.js",
     "js/theme-init.js",
@@ -96,6 +91,8 @@ PUBLIC_FILES = (
     *PUBLIC_STYLE_FILES,
     *PUBLIC_SCRIPT_FILES,
 )
+
+GENERATED_HTML = {"index.html", "repositories.html"}
 
 
 def fail(message: str) -> int:
@@ -121,6 +118,8 @@ def main() -> int:
                 return fail(f"allowlisted public source is not a regular file: {source.relative_to(ROOT)}")
             reject_symlink(source)
 
+        manifest = load_manifest(ROOT)
+
         if DIST.exists():
             if DIST.is_symlink():
                 return fail("dist must not be a symlink")
@@ -131,7 +130,11 @@ def main() -> int:
             source = ROOT / relative
             destination = DIST / relative
             destination.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(source, destination)
+            if relative in GENERATED_HTML:
+                rendered = render_public_file(relative, source.read_text(encoding="utf-8"), manifest)
+                destination.write_text(rendered, encoding="utf-8")
+            else:
+                shutil.copy2(source, destination)
 
     except (OSError, ValueError) as exc:
         return fail(str(exc))
