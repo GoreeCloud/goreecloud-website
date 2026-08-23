@@ -1,28 +1,26 @@
 #!/usr/bin/env python3
-"""Regression coverage for the public GoreeCloud repository directory."""
+"""Regression coverage for the manifest-rendered public GoreeCloud repository directory."""
 
 from __future__ import annotations
 
 from html.parser import HTMLParser
 import json
 from pathlib import Path
+import sys
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
+SCRIPTS = ROOT / "scripts"
+if str(SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(SCRIPTS))
+
+from render_repository_portfolio import render_repository_directory
+
 PAGE = ROOT / "repositories.html"
 MANIFEST = ROOT / "docs" / "repository-portfolio.json"
 PORTFOLIO = json.loads(MANIFEST.read_text(encoding="utf-8"))
-EXPECTED_REPOSITORIES = {
-    repository["name"]
-    for group in PORTFOLIO["groups"]
-    for repository in group["repositories"]
-}
-PRIVATE_REPOSITORIES = {
-    repository["name"]
-    for group in PORTFOLIO["groups"]
-    for repository in group["repositories"]
-    if repository["visibility"] == "private"
-}
+EXPECTED_REPOSITORIES = {repository["name"] for group in PORTFOLIO["groups"] for repository in group["repositories"]}
+PRIVATE_REPOSITORIES = {repository["name"] for group in PORTFOLIO["groups"] for repository in group["repositories"] if repository["visibility"] == "private"}
 EXPECTED_COUNTS = PORTFOLIO["counts"]
 
 
@@ -66,10 +64,8 @@ class DirectoryParser(HTMLParser):
             self.has_main = True
             self.main_tabindex = attrs.get("tabindex", "")
         if tag == "span" and "repo-visibility" in classes:
-            if "public" in classes:
-                self.public_badges += 1
-            if "private" in classes:
-                self.private_badges += 1
+            self.public_badges += int("public" in classes)
+            self.private_badges += int("private" in classes)
         if tag == "a" and attrs.get("href", "").startswith("https://github.com/GoreeCloud/"):
             self.public_links.add(attrs["href"].rstrip("/").split("/")[-1])
         if tag == "h4":
@@ -94,8 +90,9 @@ class DirectoryParser(HTMLParser):
 class RepositoryDirectoryTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
+        rendered = render_repository_directory(PAGE.read_text(encoding="utf-8"), PORTFOLIO)
         cls.parser = DirectoryParser()
-        cls.parser.feed(PAGE.read_text(encoding="utf-8"))
+        cls.parser.feed(rendered)
 
     def test_directory_has_canonical_public_identity(self) -> None:
         self.assertEqual(self.parser.canonical, "https://www.goreecloud.com/repositories.html")
@@ -103,12 +100,7 @@ class RepositoryDirectoryTests(unittest.TestCase):
         self.assertTrue(self.parser.has_color_scheme)
 
     def test_directory_uses_shared_glaze_and_local_runtime(self) -> None:
-        for stylesheet in (
-            "css/style.css",
-            "css/glaze.css",
-            "css/glaze-polish.css",
-            "css/repositories.css",
-        ):
+        for stylesheet in ("css/style.css", "css/glaze.css", "css/glaze-polish.css", "css/repositories.css"):
             self.assertIn(stylesheet, self.parser.stylesheets)
         self.assertIn("js/theme-init.js", self.parser.scripts)
         self.assertIn("js/main.js", self.parser.scripts)
@@ -120,18 +112,14 @@ class RepositoryDirectoryTests(unittest.TestCase):
         self.assertIn("main", self.parser.ids)
 
     def test_directory_matches_manifest_repository_inventory(self) -> None:
-        names = set(self.parser.repository_names)
-        self.assertEqual(names, EXPECTED_REPOSITORIES)
+        self.assertEqual(set(self.parser.repository_names), EXPECTED_REPOSITORIES)
         self.assertEqual(len(self.parser.repository_names), EXPECTED_COUNTS["total"])
         self.assertEqual(self.parser.public_badges, EXPECTED_COUNTS["public"])
         self.assertEqual(self.parser.private_badges, EXPECTED_COUNTS["private"])
 
     def test_private_repositories_do_not_publish_source_links(self) -> None:
         self.assertTrue(PRIVATE_REPOSITORIES.isdisjoint(self.parser.public_links))
-        self.assertEqual(
-            self.parser.public_links.intersection(EXPECTED_REPOSITORIES),
-            EXPECTED_REPOSITORIES - PRIVATE_REPOSITORIES,
-        )
+        self.assertEqual(self.parser.public_links.intersection(EXPECTED_REPOSITORIES), EXPECTED_REPOSITORIES - PRIVATE_REPOSITORIES)
 
 
 if __name__ == "__main__":
