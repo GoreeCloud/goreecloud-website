@@ -9,12 +9,15 @@ for name in required:
 html=(SITE/"index.html").read_text(encoding="utf-8")
 js=(SITE/"assets/app.js").read_text(encoding="utf-8")
 headers=(SITE/"_headers").read_text(encoding="utf-8")
-for needle in ["Suite applications","Shared foundations","Glaze UI 1.4","Privacy Shield","Wardveil Security","Everkeep","GoreeCloud Calendar","GoreeCloud Keyboard","GoreeCloud Mail","GoreeCloud Music","GoreeCloud Photos","GoreeCloud Vault Server","GoreeCloud Suite","GoreeCloud Firefox Extensions","GoreeCloud Autobiography","GoreeCloud Waypoint","GoreeCloud Drive","GoreeCloud Sync","GoreeCloud Location","GoreeCloud Launcher","GoreeCloud Video"]:
+for needle in ["Suite applications","Shared foundations","Glaze UI 1.4","Privacy Shield","Wardveil Security","Everkeep","GoreeCloud Calendar","GoreeCloud Keyboard","GoreeCloud Mail","GoreeCloud Music","GoreeCloud Photos","GoreeCloud Vault Server","GoreeCloud Suite","GoreeCloud Firefox Extensions","GoreeCloud Autobiography","GoreeCloud Waypoint","GoreeCloud Drive","GoreeCloud Sync","GoreeCloud Location","GoreeCloud Launcher","GoreeCloud Video","Milestone 1 · persistent node CRUD","RC #09 validation","native client foundation merged","50.2-rc.2 source","Fold identity approved"]:
     if needle not in html+js: raise SystemExit(f"current portfolio marker missing: {needle}")
 if js.count("kind:'Application'") != 33: raise SystemExit("Projects catalog must contain exactly 33 Suite applications")
 if js.count("kind:'Foundation'") != 6: raise SystemExit("Projects catalog must contain exactly 6 shared foundations")
 for icon in ["/assets/goreecloud-logo.svg","/assets/glaze-ui-mark.svg","/assets/privacy-shield-icon.svg","/assets/wardveil-security-icon.svg"]:
     if icon not in html+js: raise SystemExit(f"approved identity artwork is not used: {icon}")
+fold=(SITE/"assets/glaze-ui-mark.svg").read_text(encoding="utf-8")
+if "Official Glaze UI Fold mark" not in fold or 'viewBox="0 0 512 512"' not in fold:
+    raise SystemExit("Projects Glaze UI artwork must use the approved Fold identity")
 for src in re.findall(r'src=["\']([^"\']+)',html):
     if src.startswith("http:") or src.startswith("https:"): raise SystemExit(f"remote browser resource prohibited: {src}")
 for directive in ["Content-Security-Policy:","Permissions-Policy:","X-Content-Type-Options: nosniff"]:
