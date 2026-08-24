@@ -210,10 +210,12 @@ if (hero) {
   if (points) {
     const note = document.createElement('p');
     note.className = 'status-note current-platform-update';
-    note.textContent = 'Glaze UI, Wardveil Security, Privacy Shield, and Everkeep are integral GoreeCloud platform systems representing substantive design, security, privacy, resilience, recovery, and preservation capabilities—not decorative branding.';
+    note.textContent = 'Glaze UI, Wardveil Security, Privacy Shield, and Everkeep are integral GoreeCloud platform systems—not decorative labels. Glaze UI uses the current Stable contract, while privacy, security, resilience, and preservation claims are limited to what current implementation and evidence can support.';
     points.before(note);
   }
 }
+
+import('/js/public-info.js');
 
 const repositoryDirectory = document.querySelector('.repo-directory-section');
 if (repositoryDirectory) {
