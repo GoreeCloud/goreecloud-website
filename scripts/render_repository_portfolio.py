@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render repository-portfolio public HTML from the reviewed manifest at build time."""
+"""Render repository-portfolio public HTML from reviewed build-time public facts."""
 
 from __future__ import annotations
 
@@ -29,6 +29,33 @@ DIRECTORY_SUMMARY = re.compile(
 HOMEPAGE_TEASER = re.compile(
     r'<p>GoreeCloud currently maintains \d+ repositories spanning.*?</p>',
     re.DOTALL,
+)
+
+MEMOS_SERVICE_SOURCE = (
+    'A lightweight GoreeCloud quick-note capture application for fast, focused notes when a full '
+    'knowledge workspace is unnecessary. GoreeCloud Memos v0.1.2 is the accepted Stable production service.'
+)
+MEMOS_SERVICE_PUBLIC = (
+    'A lightweight GoreeCloud quick-note capture application for fast, focused notes when a full '
+    'knowledge workspace is unnecessary. GoreeCloud Memos v0.1.3 is the accepted Stable production '
+    'web/server release while newer client acceptance work continues separately.'
+)
+MEMOS_PROJECT_SOURCE = (
+    'Maintained lightweight quick-note capture application for fast, focused note entry when a full '
+    'knowledge workspace is unnecessary. GoreeCloud Memos v0.1.2 is the accepted Stable production service.'
+)
+MEMOS_PROJECT_PUBLIC = (
+    'Maintained lightweight quick-note capture application for fast, focused note entry. GoreeCloud '
+    'Memos v0.1.3 is the accepted Stable production web/server release; newer native-client acceptance '
+    'remains separate.'
+)
+FOOTER_PLATFORM_SOURCE = (
+    '<p class="footer-glaze"><strong>Glaze UI</strong> design • <strong>Privacy Shield</strong> privacy • '
+    '<strong>Wardveil Security</strong> security.</p>'
+)
+FOOTER_PLATFORM_PUBLIC = (
+    '<p class="footer-glaze"><strong>Glaze UI</strong> design • <strong>Privacy Shield</strong> privacy • '
+    '<strong>Wardveil Security</strong> security • <strong>Everkeep</strong> resilience &amp; preservation.</p>'
 )
 
 
@@ -111,9 +138,47 @@ def render_repository_directory(source: str, manifest: dict) -> str:
     return source
 
 
+def _replace_once(rendered: str, old: str, new: str, marker: str) -> str:
+    if rendered.count(old) != 1:
+        raise ValueError(f"homepage public-fact marker could not be resolved exactly once: {marker}")
+    return rendered.replace(old, new, 1)
+
+
 def render_homepage(source: str, manifest: dict) -> str:
     counts = manifest["counts"]
     rendered = source
+
+    rendered = _replace_once(
+        rendered,
+        MEMOS_SERVICE_SOURCE,
+        MEMOS_SERVICE_PUBLIC,
+        "Memos service status",
+    )
+    rendered = _replace_once(
+        rendered,
+        '<span class="badge active">Available Now</span>\n          </article>\n\n          <article class="service-card" data-service="element">',
+        '<span class="badge active">Stable 0.1.3</span>\n          </article>\n\n          <article class="service-card" data-service="element">',
+        "Memos service badge",
+    )
+    rendered = _replace_once(
+        rendered,
+        MEMOS_PROJECT_SOURCE,
+        MEMOS_PROJECT_PUBLIC,
+        "Memos project status",
+    )
+    rendered = _replace_once(
+        rendered,
+        '<small>Stable production v0.1.2</small>',
+        '<small>Stable production web/server v0.1.3</small>',
+        "Memos project lifecycle",
+    )
+    rendered = _replace_once(
+        rendered,
+        FOOTER_PLATFORM_SOURCE,
+        FOOTER_PLATFORM_PUBLIC,
+        "platform footer",
+    )
+
     rendered = re.sub(
         r"all \d+ current repositories",
         f'all {counts["total"]} current repositories',
