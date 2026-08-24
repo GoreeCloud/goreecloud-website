@@ -8,7 +8,19 @@ if missing:
     raise SystemExit(f'Missing blog site files: {missing}')
 index = (SITE/'index.html').read_text()
 headers = (SITE/'_headers').read_text()
-for marker in ['GoreeCloud Blog','Building an owned cloud, one layer at a time.','GoreeCloud is becoming a software ecosystem','Everkeep','Glaze UI','Homelab']:
+for marker in [
+    'GoreeCloud Blog',
+    'Building an owned cloud, one layer at a time.',
+    'GoreeCloud is becoming a software ecosystem',
+    'Everkeep',
+    'Glaze UI',
+    'Homelab',
+    'Fold, Drive Milestone 1, and three release-candidate lines move forward',
+    'Glaze UI Fold becomes the official visual identity',
+    'Drive reaches its first persistent storage milestone',
+    'Search, Notify, and Terminal keep candidate status explicit',
+    'August 24, 2026',
+]:
     if marker not in index:
         raise SystemExit(f'Missing required blog marker: {marker}')
 for forbidden in ['google-analytics','googletagmanager','fonts.googleapis.com','http://']:
