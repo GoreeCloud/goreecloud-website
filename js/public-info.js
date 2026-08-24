@@ -1,0 +1,6 @@
+const s=document.querySelector('[data-service="memos"]');
+if(s){const p=s.querySelector('p:not(.service-kicker)'),b=s.querySelector('.badge');if(p)p.textContent='A lightweight GoreeCloud quick-note capture application for fast, focused notes when a full knowledge workspace is unnecessary. GoreeCloud Memos v0.1.3 is the accepted Stable production web/server release while newer client acceptance work continues separately.';if(b)b.textContent='Stable 0.1.3';}
+const p=document.querySelector('[data-project="goreecloud-memos"]');
+if(p){const d=p.querySelector('span'),t=p.querySelector('small');if(d)d.textContent='Maintained lightweight quick-note capture application for fast, focused note entry. GoreeCloud Memos v0.1.3 is the accepted Stable production web/server release; newer native-client acceptance remains separate.';if(t)t.textContent='Stable production web/server v0.1.3';}
+const f=document.querySelector('.footer-glaze');
+if(f)f.innerHTML='<strong>Glaze UI</strong> design • <strong>Privacy Shield</strong> privacy • <strong>Wardveil Security</strong> security • <strong>Everkeep</strong> resilience &amp; preservation.';
