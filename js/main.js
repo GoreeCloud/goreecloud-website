@@ -210,9 +210,30 @@ if (hero) {
   if (points) {
     const note = document.createElement('p');
     note.className = 'status-note current-platform-update';
-    note.textContent = 'Glaze UI, Wardveil Security, Privacy Shield, and Everkeep are integral GoreeCloud platform systems representing substantive design, security, privacy, resilience, recovery, and preservation capabilities—not decorative branding.';
+    note.textContent = 'Glaze UI, Wardveil Security, Privacy Shield, and Everkeep are integral GoreeCloud platform systems—not decorative labels. Glaze UI uses the current Stable contract, while privacy, security, resilience, and preservation claims are limited to what current implementation and evidence can support.';
     points.before(note);
   }
+}
+
+const memosService = document.querySelector('[data-service="memos"]');
+if (memosService) {
+  const description = memosService.querySelector('p:not(.service-kicker)');
+  const badge = memosService.querySelector('.badge');
+  if (description) description.textContent = 'A lightweight GoreeCloud quick-note capture application for fast, focused notes when a full knowledge workspace is unnecessary. GoreeCloud Memos v0.1.3 is the accepted Stable production web/server release while newer client acceptance work continues separately.';
+  if (badge) badge.textContent = 'Stable 0.1.3';
+}
+
+const memosProject = document.querySelector('[data-project="goreecloud-memos"]');
+if (memosProject) {
+  const description = memosProject.querySelector('span');
+  const status = memosProject.querySelector('small');
+  if (description) description.textContent = 'Maintained lightweight quick-note capture application for fast, focused note entry when a full knowledge workspace is unnecessary. GoreeCloud Memos v0.1.3 is the accepted Stable production web/server release; newer native-client acceptance remains separate.';
+  if (status) status.textContent = 'Stable production web/server v0.1.3';
+}
+
+const footerPlatformSummary = document.querySelector('.footer-glaze');
+if (footerPlatformSummary) {
+  footerPlatformSummary.innerHTML = '<strong>Glaze UI</strong> design • <strong>Privacy Shield</strong> privacy • <strong>Wardveil Security</strong> security • <strong>Everkeep</strong> resilience &amp; preservation.';
 }
 
 const repositoryDirectory = document.querySelector('.repo-directory-section');
