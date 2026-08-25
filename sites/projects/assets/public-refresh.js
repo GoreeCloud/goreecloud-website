@@ -22,6 +22,9 @@ function ensureAugust25Entries(){
 }
 ensureAugust25Entries();
 
+if(typeof appCount!=='undefined'&&appCount)appCount.textContent=entries.filter(entry=>entry.kind==='Application').length;
+if(typeof foundationCount!=='undefined'&&foundationCount)foundationCount.textContent=entries.filter(entry=>entry.kind==='Foundation').length;
+
 function applyCurrentDirection(){
   document.querySelectorAll('#projects .card').forEach(card=>{
     const name=card.querySelector('h3')?.textContent?.trim();
