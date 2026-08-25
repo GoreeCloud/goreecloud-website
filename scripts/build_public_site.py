@@ -17,6 +17,7 @@ from render_repository_portfolio import load_manifest, render_public_file
 
 ROOT = Path(__file__).resolve().parents[1]
 DIST = ROOT / "dist"
+SERVICE_SECTION_FRAGMENT = ROOT / "fragments" / "services-section.html"
 
 PUBLIC_ROOT_FILES = (
     "404.html",
@@ -43,18 +44,7 @@ PUBLIC_ASSET_FILES = (
     "assets/platform/uptime-kuma.svg",
     "assets/roadmap/frigate.svg",
     "assets/roadmap/home-assistant.png",
-    "assets/services/actual-budget.png",
-    "assets/services/audiobookshelf.svg",
-    "assets/services/element.svg",
-    "assets/services/immich.svg",
-    "assets/services/jellyfin.svg",
-    "assets/services/matrix.svg",
-    "assets/services/navidrome.png",
-    "assets/services/nextcloud.svg",
-    "assets/services/onlyoffice.ico",
-    "assets/services/paperless-ngx.svg",
-    "assets/services/stirling-pdf.png",
-    "assets/services/vaultwarden.svg",
+    "assets/services/goreecloud-memos.svg",
     "assets/social/github.ico",
     "assets/social/instagram.ico",
     "assets/social/pinterest.ico",
@@ -82,6 +72,7 @@ PUBLIC_STYLE_FILES = (
 
 PUBLIC_SCRIPT_FILES = (
     "js/main.js",
+    "js/public-info.js",
     "js/theme-init.js",
 )
 
@@ -105,6 +96,17 @@ def reject_symlink(path: Path) -> None:
         raise ValueError(f"Deployable source must not be a symlink: {path.relative_to(ROOT)}")
 
 
+def render_services_section(html: str) -> str:
+    start = '    <section id="services" class="section">'
+    next_section = '    <section id="how-it-works" class="section how-section">'
+    if html.count(start) != 1 or html.count(next_section) != 1:
+        raise ValueError("index.html service-section anchors are missing or ambiguous")
+    fragment = SERVICE_SECTION_FRAGMENT.read_text(encoding="utf-8").rstrip()
+    before, remainder = html.split(start, 1)
+    _, after = remainder.split(next_section, 1)
+    return f"{before}{fragment}\n\n{next_section}{after}"
+
+
 def main() -> int:
     try:
         if len(PUBLIC_FILES) != len(set(PUBLIC_FILES)):
@@ -117,6 +119,10 @@ def main() -> int:
             if not source.is_file():
                 return fail(f"allowlisted public source is not a regular file: {source.relative_to(ROOT)}")
             reject_symlink(source)
+
+        if not SERVICE_SECTION_FRAGMENT.exists() or not SERVICE_SECTION_FRAGMENT.is_file():
+            return fail("authoritative service-directory fragment is missing")
+        reject_symlink(SERVICE_SECTION_FRAGMENT)
 
         manifest = load_manifest(ROOT)
 
@@ -131,7 +137,10 @@ def main() -> int:
             destination = DIST / relative
             destination.parent.mkdir(parents=True, exist_ok=True)
             if relative in GENERATED_HTML:
-                rendered = render_public_file(relative, source.read_text(encoding="utf-8"), manifest)
+                source_text = source.read_text(encoding="utf-8")
+                if relative == "index.html":
+                    source_text = render_services_section(source_text)
+                rendered = render_public_file(relative, source_text, manifest)
                 destination.write_text(rendered, encoding="utf-8")
             else:
                 shutil.copy2(source, destination)
