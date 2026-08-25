@@ -1,67 +1,6 @@
 const projectMemos=document.querySelector('[data-project="goreecloud-memos"]');
 if(projectMemos){const d=projectMemos.querySelector('span'),t=projectMemos.querySelector('small');if(d)d.textContent='Quick-note capture remains available through the accepted v0.1.3 web/server release while GoreeCloud applies the platform-wide native-application mandate and keeps newer client acceptance separate.';if(t)t.textContent='Stable production web/server v0.1.3 · native rebuild required';}
 
-const serviceIntro=document.querySelector('#services .section-heading p:last-child');
-if(serviceIntro)serviceIntro.textContent='This directory presents GoreeCloud products rather than the complete upstream applications used for migration, compatibility, testing, or reference. Every GoreeCloud Suite application is required to become an original GoreeCloud-owned native implementation. Narrowly scoped mature technical dependencies may remain where they materially improve security, standards, protocol, codec, runtime, rendering, or interoperability outcomes.';
-
-const pendingArt='assets/services/goreecloud-artwork-pending.svg';
-const serviceDirectory=[
-  {key:'drive',name:'GoreeCloud Drive',kicker:'Files & Storage',description:'The first-party GoreeCloud file-management application for owned files, folders, sharing, storage access, organization, and user-scoped data boundaries. Synchronization and secure transfer are provided by GoreeCloud Sync as a separate first-party capability.',status:'Native Development'},
-  {key:'sync',name:'GoreeCloud Sync',kicker:'Sync & Transfer',description:'The first-party synchronization and secure-transfer application for controlled file replication, device synchronization, movement, and portability across GoreeCloud-managed storage and supported clients.',status:'Native Development'},
-  {key:'photos',name:'GoreeCloud Photos',kicker:'Photos & Memories',description:'The first-party photo and personal-video preservation application for organization, memories, search, private sharing, camera media, and long-term ownership. Upstream photo applications are transition or reference sources rather than the GoreeCloud product identity.',status:'Native Development'},
-  {key:'video',name:'GoreeCloud Video',kicker:'Video & Media',description:'The first-party video-streaming application for movies, television, home videos, profiles, discovery, and playback. Jellyfin-derived material is retained only where needed for transition, compatibility, migration, recovery, or engineering reference while the native GoreeCloud product advances.',status:'Native Development'},
-  {key:'music',name:'GoreeCloud Music',kicker:'Music',description:'The first-party self-hosted music application for owned libraries, scanning, metadata, artwork, playback, multi-user access, and the GoreeCloud Resonance capability family.',status:'Native Development'},
-  {key:'documents',name:'GoreeCloud Documents',kicker:'Documents & Records',description:'The first-party document and records direction for ingestion, organization, search, preservation, OCR-related workflows, and durable ownership of important documents without making Paperless-ngx the permanent product architecture.',status:'Planned Native'},
-  {key:'vault-server',name:'GoreeCloud Vault Server',kicker:'Passwords & Secrets',description:'The first-party server direction for passwords, credentials, secure records, recovery information, and other sensitive data. Existing Vaultwarden-derived material is transitional continuity and compatibility material, not the final product identity.',status:'Native Development'},
-  {key:'notes',name:'GoreeCloud Notes',kicker:'Notes & Knowledge',description:'The larger native GoreeCloud note-taking, knowledge-management, and personal-productivity application for deeper organization, retrieval, durable knowledge, and cross-application workflows.',status:'Native Development'},
-  {key:'memos',name:'GoreeCloud Memos',kicker:'Quick Capture',description:'A lightweight GoreeCloud quick-note capture application for fast, focused notes when a full knowledge workspace is unnecessary. GoreeCloud Memos v0.1.3 is the accepted Stable production web/server release while newer client acceptance remains separate.',status:'Stable 0.1.3',art:'assets/services/goreecloud-memos.svg',active:true},
-  {key:'messenger',name:'GoreeCloud Messenger',kicker:'Messaging & Calling',description:'The original GoreeCloud communication application for GoreeCloud Data messaging, supported E2EE, usernames, groups, attachments, voice/video architecture, and optional SMS, MMS, or RCS adapters where the client platform legitimately supports them.',status:'Native Development'},
-  {key:'tasks',name:'GoreeCloud Tasks',kicker:'Tasks & Projects',description:'Native multi-user task and project management for personal, family, collaborative, and GoreeCloud operational work with private-by-default data boundaries.',status:'Native Development'},
-  {key:'contacts',name:'GoreeCloud Contacts',kicker:'Contacts & Address Book',description:'Native contacts management built around CardDAV interoperability, controlled writes, individual data boundaries, portable address-book data, and first-party GoreeCloud workflows.',status:'Native Development'},
-  {key:'ai',name:'GoreeCloud AI',kicker:'Local AI & Research',description:'The first-party GoreeCloud AI application around Ollama, with an established source foundation for native conversation and a broader Workspace, knowledge, RAG, research, file, tool, and orchestration direction. This remains a development milestone rather than a production claim.',status:'Initial Source Foundation'}
-];
-
-const serviceGrid=document.querySelector('#services .service-grid');
-if(serviceGrid){
-  const cards=serviceDirectory.map((service)=>{
-    const card=document.createElement('article');
-    card.className='service-card';
-    card.dataset.service=service.key;
-
-    const art=document.createElement('div');
-    art.className='service-art';
-    const image=document.createElement('img');
-    image.src=service.art||pendingArt;
-    image.width=52;
-    image.height=52;
-    image.alt='';
-    art.append(image);
-    if(!service.art){
-      art.setAttribute('aria-label',`Official ${service.name} artwork pending`);
-      art.title=`Official ${service.name} artwork pending`;
-    }else{
-      art.setAttribute('aria-hidden','true');
-    }
-
-    const kicker=document.createElement('p');
-    kicker.className='service-kicker';
-    kicker.textContent=service.kicker;
-    const title=document.createElement('h3');
-    title.textContent=service.name;
-    const description=document.createElement('p');
-    description.textContent=service.description;
-    const badge=document.createElement('span');
-    badge.className=`badge ${service.active?'active':'growing'}`;
-    badge.textContent=service.status;
-    card.append(art,kicker,title,description,badge);
-    return card;
-  });
-  serviceGrid.replaceChildren(...cards);
-
-  const note=serviceGrid.nextElementSibling;
-  if(note?.classList.contains('status-note'))note.textContent='The public directory uses current GoreeCloud application identities and current GoreeCloud status—not upstream product names or upstream maturity. A neutral GoreeCloud artwork marker means the application does not yet have approved canonical product artwork; upstream logos are not substituted for missing first-party identity.';
-}
-
 const platformIntro=document.querySelector('#platform .section-heading p:last-child');
 if(platformIntro)platformIntro.textContent='The current VPS foundation and planned local Proxmox environment use separate open-source technologies for virtualization, Linux, containers, private networking, DNS, HTTPS, monitoring, notifications, backup, private search, and local AI. These supporting foundations remain independently replaceable. At the application layer, GoreeCloud requires original native implementations, with complete upstream products limited to controlled transitional or reference roles.';
 
