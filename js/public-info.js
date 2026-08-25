@@ -62,6 +62,30 @@ if(platformGrid&&!platformGrid.querySelector('[data-platform="mesh"]')){
   platformGrid.append(card);
 }
 
+const heroLabels=document.querySelector('#top .hero-labels');
+if(heroLabels){
+  const platformLabels=[
+    ['Glaze UI','https://design.goreecloud.com/'],
+    ['Privacy Shield','https://privacy.goreecloud.com/'],
+    ['Wardveil Security','https://security.goreecloud.com/'],
+    ['Everkeep',null],
+    ['GoreeCloud Mesh',null],
+    ['GoreeCloud Identity',null]
+  ];
+  heroLabels.replaceChildren();
+  for(const [label,href] of platformLabels){
+    const chip=document.createElement(href?'a':'span');
+    chip.className='glaze-chip';
+    chip.textContent=label;
+    if(href)chip.href=href;
+    heroLabels.append(chip);
+  }
+  const eyebrow=document.createElement('span');
+  eyebrow.className='eyebrow';
+  eyebrow.textContent='Design • Privacy • Security • Resilience • Coordination • Identity';
+  heroLabels.append(eyebrow);
+}
+
 const heroNote=document.querySelector('.current-platform-update');
 if(heroNote){
   heroNote.textContent='Glaze UI, Wardveil Security, Privacy Shield, Everkeep, and GoreeCloud Mesh are integral GoreeCloud platform systems—not decorative labels. Glaze UI defines interface behavior, Wardveil and Privacy Shield preserve evidence-backed security and privacy state, Everkeep governs resilience and preservation, and Mesh coordinates relationships without replacing the authority of specialized systems.';
