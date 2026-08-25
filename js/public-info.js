@@ -1,105 +1,95 @@
 const projectMemos=document.querySelector('[data-project="goreecloud-memos"]');
 if(projectMemos){const d=projectMemos.querySelector('span'),t=projectMemos.querySelector('small');if(d)d.textContent='Quick-note capture remains available through the accepted v0.1.3 web/server release while GoreeCloud applies the platform-wide native-application mandate and keeps newer client acceptance separate.';if(t)t.textContent='Stable production web/server v0.1.3 · native rebuild required';}
 
-const serviceIntro=document.querySelector('#services .section-heading p:last-child');
-if(serviceIntro)serviceIntro.textContent='This directory presents GoreeCloud products rather than the complete upstream applications used for migration, compatibility, testing, or reference. Every GoreeCloud Suite application is required to become an original GoreeCloud-owned native implementation. Narrowly scoped mature technical dependencies may remain where they materially improve security, standards, protocol, codec, runtime, rendering, or interoperability outcomes.';
+const suiteHeading=document.querySelector('#services .section-heading');
+if(suiteHeading){
+  const eyebrow=suiteHeading.querySelector('.eyebrow');
+  const title=suiteHeading.querySelector('h2');
+  const intro=suiteHeading.querySelector('p:last-child');
+  if(eyebrow)eyebrow.textContent='GoreeCloud Suite';
+  if(title)title.textContent='Focused applications. One private cloud ecosystem.';
+  if(intro)intro.textContent='GoreeCloud Suite is the user-facing and administrative application ecosystem built around focused responsibilities instead of one oversized cloud product. Every application is required to reach an original GoreeCloud-owned native product layer, with mature technical dependencies retained only where they materially improve security, standards, compatibility, or interoperability.';
+}
 
-const pendingArt='assets/services/goreecloud-artwork-pending.svg';
-const serviceDirectory=[
-  {key:'drive',name:'GoreeCloud Drive',kicker:'Files & Storage',description:'The first-party GoreeCloud file-management application for owned files, folders, sharing, storage access, organization, and user-scoped data boundaries. Synchronization and secure transfer are provided by GoreeCloud Sync as a separate first-party capability.',status:'Native Development'},
-  {key:'sync',name:'GoreeCloud Sync',kicker:'Sync & Transfer',description:'The first-party synchronization and secure-transfer application for controlled file replication, device synchronization, movement, and portability across GoreeCloud-managed storage and supported clients.',status:'Native Development'},
-  {key:'photos',name:'GoreeCloud Photos',kicker:'Photos & Memories',description:'The first-party photo and personal-video preservation application for organization, memories, search, private sharing, camera media, and long-term ownership. Upstream photo applications are transition or reference sources rather than the GoreeCloud product identity.',status:'Native Development'},
-  {key:'video',name:'GoreeCloud Video',kicker:'Video & Media',description:'The first-party video-streaming application for movies, television, home videos, profiles, discovery, and playback. Jellyfin-derived material is retained only where needed for transition, compatibility, migration, recovery, or engineering reference while the native GoreeCloud product advances.',status:'Native Development'},
-  {key:'music',name:'GoreeCloud Music',kicker:'Music',description:'The first-party self-hosted music application for owned libraries, scanning, metadata, artwork, playback, multi-user access, and the GoreeCloud Resonance capability family.',status:'Native Development'},
-  {key:'documents',name:'GoreeCloud Documents',kicker:'Documents & Records',description:'The first-party document and records direction for ingestion, organization, search, preservation, OCR-related workflows, and durable ownership of important documents without making Paperless-ngx the permanent product architecture.',status:'Planned Native'},
-  {key:'vault-server',name:'GoreeCloud Vault Server',kicker:'Passwords & Secrets',description:'The first-party server direction for passwords, credentials, secure records, recovery information, and other sensitive data. Existing Vaultwarden-derived material is transitional continuity and compatibility material, not the final product identity.',status:'Native Development'},
-  {key:'notes',name:'GoreeCloud Notes',kicker:'Notes & Knowledge',description:'The larger native GoreeCloud note-taking, knowledge-management, and personal-productivity application for deeper organization, retrieval, durable knowledge, and cross-application workflows.',status:'Native Development'},
-  {key:'memos',name:'GoreeCloud Memos',kicker:'Quick Capture',description:'A lightweight GoreeCloud quick-note capture application for fast, focused notes when a full knowledge workspace is unnecessary. GoreeCloud Memos v0.1.3 is the accepted Stable production web/server release while newer client acceptance remains separate.',status:'Stable 0.1.3',art:'assets/services/goreecloud-memos.svg',active:true},
-  {key:'messenger',name:'GoreeCloud Messenger',kicker:'Messaging & Calling',description:'The original GoreeCloud communication application for GoreeCloud Data messaging, supported E2EE, usernames, groups, attachments, voice/video architecture, and optional SMS, MMS, or RCS adapters where the client platform legitimately supports them.',status:'Native Development'},
-  {key:'tasks',name:'GoreeCloud Tasks',kicker:'Tasks & Projects',description:'Native multi-user task and project management for personal, family, collaborative, and GoreeCloud operational work with private-by-default data boundaries.',status:'Native Development'},
-  {key:'contacts',name:'GoreeCloud Contacts',kicker:'Contacts & Address Book',description:'Native contacts management built around CardDAV interoperability, controlled writes, individual data boundaries, portable address-book data, and first-party GoreeCloud workflows.',status:'Native Development'},
-  {key:'ai',name:'GoreeCloud AI',kicker:'Local AI & Research',description:'The first-party GoreeCloud AI application around Ollama, with an established source foundation for native conversation and a broader Workspace, knowledge, RAG, research, file, tool, and orchestration direction. This remains a development milestone rather than a production claim.',status:'Initial Source Foundation'}
+const suiteDirectory=[
+  {key:'manager',name:'GoreeCloud Manager',kicker:'Administration',description:'A unified operations console for understanding and administering GoreeCloud without collapsing specialized systems into one monolith.',role:'Central administration, service health, operational visibility, protection state, and controlled management workflows.',status:'In Development'},
+  {key:'monitor',name:'GoreeCloud Monitor',kicker:'Monitoring',description:'First-party monitoring and observability for GoreeCloud applications, services, endpoints, infrastructure, and operational health.',role:'Availability, health, incident, certificate, heartbeat, and infrastructure monitoring with evidence-backed status.',status:'Active Development'},
+  {key:'notify',name:'GoreeCloud Notify',kicker:'Notifications',description:'The GoreeCloud-owned notification layer for dependable system, application, monitoring, and user-facing delivery.',role:'Central notification routing, alert delivery, client notification experiences, and operational messaging.',status:'Release Candidate 0.2.0'},
+  {key:'backup',name:'GoreeCloud Backup',kicker:'Backup & Recovery',description:'A focused backup and restore application operating beneath the broader Everkeep resilience and preservation model.',role:'Backup repositories, snapshots, verification, restoration, recovery workflows, and recovery assurance.',status:'Active Development'},
+  {key:'identity',name:'GoreeCloud Identity',kicker:'Identity & Access',description:'The centralized identity layer for signing in to GoreeCloud applications with consistent account and authentication boundaries.',role:'Authentication, single sign-on, identity-provider services, accounts, sessions, and application identity integration.',status:'Native Architecture & Rebuild'},
+  {key:'network',name:'GoreeCloud Network',kicker:'Private Networking',description:'A first-party private-network experience for connecting approved people, devices, servers, and services securely.',role:'Secure connectivity, enrollment, access policy, peer visibility, network identity, and Conduit capabilities.',status:'Active Development'},
+  {key:'dns',name:'GoreeCloud DNS',kicker:'DNS & Resolution',description:'A GoreeCloud-owned DNS platform that brings filtering, recursive resolution, policy, and private naming into one focused application.',role:'DNS filtering, recursive and authoritative resolution, encrypted DNS, caching, private names, policy, and Beacon capabilities.',status:'Active Development'},
+  {key:'search',name:'GoreeCloud Search',kicker:'Search & Research',description:'Private web search and research designed as the current-information provider for GoreeCloud Browser and GoreeCloud AI.',role:'Private search, discovery, research retrieval, category routing, Browser integration, and AI research access.',status:'Transitional Production · Native Rebuild'},
+  {key:'browser',name:'GoreeCloud Browser',kicker:'Web Browser',description:'A privacy-first browser experience that integrates GoreeCloud search, privacy controls, downloads, recovery, and platform identity.',role:'Web browsing, privacy-safe navigation, search integration, downloads, reader workflows, tabs, and browser-level protections.',status:'Active Development'},
+  {key:'drive',name:'GoreeCloud Drive',kicker:'Files & Storage',description:'Private multi-user cloud storage focused on owned files and folders rather than recreating an entire all-in-one productivity suite.',role:'File and folder management, storage access, sharing, version history, collaboration boundaries, and durable file ownership.',status:'Milestone 1 Merged'},
+  {key:'sync',name:'GoreeCloud Sync',kicker:'Sync & Transfer',description:'A dedicated synchronization and secure-transfer platform for moving and replicating data between approved devices and GoreeCloud storage.',role:'Device synchronization, secure transfer, nearby and remote movement, resume, portability, and controlled replication.',status:'Milestone 1 Merged'},
+  {key:'documents',name:'GoreeCloud Documents',kicker:'Documents & Records',description:'A native document-management application for important records and searchable document workflows while keeping file storage in GoreeCloud Drive.',role:'Document ingestion, organization, OCR-oriented processing, metadata, search, preservation, and records workflows.',status:'Product Definition Established'},
+  {key:'notes',name:'GoreeCloud Notes',kicker:'Notes & Knowledge',description:'A full knowledge workspace for structured notes, attachments, revision history, retrieval, and durable personal knowledge.',role:'Long-form notes, knowledge management, rich editing, indexed search, attachments, recovery, and portable note data.',status:'Active Development'},
+  {key:'memos',name:'GoreeCloud Memos',kicker:'Quick Capture',description:'A lightweight quick-capture experience for short notes, reminders, lists, snippets, and ideas when a full knowledge workspace is unnecessary.',role:'Fast memo capture and lightweight personal note workflows complementary to GoreeCloud Notes.',status:'Stable Web/Server 0.1.3'},
+  {key:'tasks',name:'GoreeCloud Tasks',kicker:'Tasks & Projects',description:'Private task and project management for personal, family, collaborative, and GoreeCloud operational work.',role:'Tasks, projects, priorities, due dates, planning, Waypoint capabilities, and Calendar interoperability.',status:'In Development'},
+  {key:'calendar',name:'GoreeCloud Calendar',kicker:'Calendar & Scheduling',description:'A first-party calendar built around standards-compatible scheduling and deliberate interoperability with GoreeCloud Tasks.',role:'Events, scheduling, agendas, reminders, CalDAV interoperability, shared calendars, and task-calendar coordination.',status:'Active Development'},
+  {key:'contacts',name:'GoreeCloud Contacts',kicker:'Contacts',description:'A private address-book application built around portable contacts and standards-based synchronization rather than platform lock-in.',role:'Contact management, CardDAV interoperability, controlled writes, individual data boundaries, and portable address books.',status:'Active Development'},
+  {key:'feed',name:'GoreeCloud Feed',kicker:'Feeds & Reading',description:'A private feed-reading experience for following websites and publications without turning reading activity into an advertising profile.',role:'Feed aggregation, subscriptions, article reading, synchronization, organization, and native client access.',status:'Web Stable 0.1.0 · Clients Developing'},
+  {key:'bookmarks',name:'GoreeCloud Bookmarks',kicker:'Bookmarks & Web Knowledge',description:'A durable home for saved links and web knowledge, integrated with GoreeCloud Browser while preserving independent ownership.',role:'Bookmark capture, organization, tagging, retrieval, preservation, authenticated browser capture, and web-knowledge workflows.',status:'Active Native Rebuild'},
+  {key:'changelogs',name:'GoreeCloud Changelogs',kicker:'Change History',description:'A first-party application for browsing the material change history of GoreeCloud projects in a consistent, searchable experience.',role:'Historical change-ledger presentation, project change discovery, API access, and public or authorized history workflows.',status:'Active Development'},
+  {key:'mail',name:'GoreeCloud Mail',kicker:'Email',description:'A provider-independent first-party email client that keeps GoreeCloud out of the business of operating an email server.',role:'Mailbox access, message reading and composition, search, folders, provider adapters, and Courier capabilities across supported clients.',status:'Active Development'},
+  {key:'messenger',name:'GoreeCloud Messenger',kicker:'Messaging & Calling',description:'Private first-party communication for GoreeCloud users with a native data-messaging foundation and room for standards-compatible adapters.',role:'Direct and group messaging, delivery/read state, attachments, encryption boundaries, identity, and future voice/video communication.',status:'Active Development'},
+  {key:'music',name:'GoreeCloud Music',kicker:'Music',description:'A self-hosted music experience for owned libraries with first-party browsing and playback rather than dependence on a commercial catalog.',role:'Library scanning, metadata, album artwork, multi-user access, streaming, playback, and Resonance capabilities.',status:'Active Development'},
+  {key:'video',name:'GoreeCloud Video',kicker:'Video',description:'A private video library and playback application for owned movies, television, home videos, and family media.',role:'Video libraries, metadata, playback, profiles, family access, streaming, client experiences, and controlled compatibility during migration.',status:'Active Development · Milestone 1'},
+  {key:'gallery',name:'GoreeCloud Gallery',kicker:'Local Gallery',description:'An offline-focused device gallery for browsing and organizing local images without requiring a cloud connection.',role:'Local image browsing, albums, viewing, organization, device-first media access, and offline gallery workflows.',status:'Active Development'},
+  {key:'photos',name:'GoreeCloud Photos',kicker:'Photos & Memories',description:'The first-party home for family photos and personal videos, designed around ownership, memories, search, and long-term preservation.',role:'Photo/video ingestion, organization, memories, search, metadata, private sharing, camera media, and Keepsake capabilities.',status:'Active Development'},
+  {key:'location',name:'GoreeCloud Location',kicker:'Location',description:'A private multi-user location platform for families that keeps location history under GoreeCloud control.',role:'Device tracking, location history, places, trips, geofencing, maps, sharing, and native location collection.',status:'Active Development'},
+  {key:'vault',name:'GoreeVault',kicker:'Passwords & Secure Records',description:'The GoreeCloud password and secure-record experience for credentials, recovery information, and other sensitive data.',role:'Passwords, credentials, secrets, secure records, recovery information, client compatibility, and protected sensitive-data workflows.',status:'Active Development'},
+  {key:'keyboard',name:'GoreeCloud Keyboard',kicker:'System Keyboard',description:'A privacy-focused system keyboard powered by first-party Quill capabilities for everyday typing and writing assistance.',role:'Text input, editing, dictionaries, personalization, clipboard workflows, intelligent assistance, and Quill integration.',status:'Active Development'},
+  {key:'terminal',name:'GoreeCloud Terminal',kicker:'Terminal',description:'A GoreeCloud Linux terminal experience for local shells, SSH administration, and workstation workflows.',role:'Local terminal sessions, SSH access, command-line administration, shell workflows, and GoreeCloud workstation integration.',status:'Release Candidate 50.2-rc.2'},
+  {key:'launcher',name:'GoreeCloud Launcher',kicker:'Android Home',description:'A first-party Android HOME experience designed around Glaze UI, accessibility, organization, and GoreeCloud application access.',role:'Application discovery, search, favorites, dock, workspace placement, folders, shortcuts, widgets, and launcher lifecycle integration.',status:'Active Development'},
+  {key:'ai',name:'GoreeCloud AI',kicker:'Local AI & Research',description:'The native GoreeCloud AI experience around Ollama, designed for private conversations, knowledge, research, files, tools, and future agent workflows.',role:'Conversation, Workspaces, knowledge and RAG, GoreeCloud Search research, files, tools, orchestration, and local-model interaction.',status:'Initial Native Foundation'}
 ];
+
+function suiteStatusClass(status){
+  const value=status.toLowerCase();
+  if(value.includes('stable')||value.includes('production'))return 'active';
+  if(value.includes('definition')||value.includes('architecture'))return 'planned';
+  return 'growing';
+}
 
 const serviceGrid=document.querySelector('#services .service-grid');
 if(serviceGrid){
-  const cards=serviceDirectory.map((service)=>{
-    const card=document.createElement('article');
-    card.className='service-card';
-    card.dataset.service=service.key;
-
-    const art=document.createElement('div');
-    art.className='service-art';
-    const image=document.createElement('img');
-    image.src=service.art||pendingArt;
-    image.width=52;
-    image.height=52;
-    image.alt='';
-    art.append(image);
-    if(!service.art){
-      art.setAttribute('aria-label',`Official ${service.name} artwork pending`);
-      art.title=`Official ${service.name} artwork pending`;
-    }else{
-      art.setAttribute('aria-hidden','true');
-    }
-
-    const kicker=document.createElement('p');
-    kicker.className='service-kicker';
-    kicker.textContent=service.kicker;
-    const title=document.createElement('h3');
-    title.textContent=service.name;
-    const description=document.createElement('p');
-    description.textContent=service.description;
-    const badge=document.createElement('span');
-    badge.className=`badge ${service.active?'active':'growing'}`;
-    badge.textContent=service.status;
-    card.append(art,kicker,title,description,badge);
-    return card;
+  const cards=suiteDirectory.map((app)=>{
+    const card=document.createElement('article');card.className='service-card suite-card';card.dataset.service=app.key;
+    const art=document.createElement('div');art.className='service-art';art.setAttribute('aria-hidden','true');
+    const icon=document.createElementNS('http://www.w3.org/2000/svg','svg');icon.setAttribute('viewBox','0 0 64 64');icon.setAttribute('width','52');icon.setAttribute('height','52');icon.classList.add('suite-icon');
+    const use=document.createElementNS('http://www.w3.org/2000/svg','use');use.setAttribute('href',`assets/suite-icons.svg#${app.key}`);icon.append(use);art.append(icon);
+    const kicker=document.createElement('p');kicker.className='service-kicker';kicker.textContent=app.kicker;
+    const title=document.createElement('h3');title.textContent=app.name;
+    const description=document.createElement('p');description.className='service-description';description.textContent=app.description;
+    const role=document.createElement('p');role.className='service-role';role.innerHTML=`<strong>Role:</strong> ${app.role}`;
+    const badge=document.createElement('span');badge.className=`badge ${suiteStatusClass(app.status)}`;badge.textContent=app.status;
+    card.append(art,kicker,title,description,role,badge);return card;
   });
   serviceGrid.replaceChildren(...cards);
-
   const note=serviceGrid.nextElementSibling;
-  if(note?.classList.contains('status-note'))note.textContent='The public directory uses current GoreeCloud application identities and current GoreeCloud status—not upstream product names or upstream maturity. A neutral GoreeCloud artwork marker means the application does not yet have approved canonical product artwork; upstream logos are not substituted for missing first-party identity.';
+  if(note?.classList.contains('status-note'))note.textContent='Status labels describe the current GoreeCloud application state, not upstream project maturity. Shared platform foundations such as Glaze UI, Wardveil Security, Privacy Shield, Everkeep, and GoreeCloud Mesh remain integral platform systems and are intentionally not counted as ordinary Suite application cards.';
 }
 
 const platformIntro=document.querySelector('#platform .section-heading p:last-child');
 if(platformIntro)platformIntro.textContent='The current VPS foundation and planned local Proxmox environment use separate open-source technologies for virtualization, Linux, containers, private networking, DNS, HTTPS, monitoring, notifications, backup, private search, and local AI. These supporting foundations remain independently replaceable. At the application layer, GoreeCloud requires original native implementations, with complete upstream products limited to controlled transitional or reference roles.';
-
 for(const card of document.querySelectorAll('#platform .platform-card')){
   const title=card.querySelector('h3')?.textContent?.trim();
   if(title==='GoreeCloud Search'){
-    const description=card.querySelector('.platform-description');
-    const role=card.querySelector('.platform-role');
+    const description=card.querySelector('.platform-description');const role=card.querySelector('.platform-role');
     if(description)description.textContent='GoreeCloud Search is being rebuilt as the first-party private search and Internet-research provider for GoreeCloud, including the research boundary used by GoreeCloud AI. Native Search now includes a fail-closed category request and readiness contract with accessible category controls. The SearXNG-derived production line remains transitional continuity and reference material, not the approved long-term application architecture.';
     if(role)role.innerHTML='<strong>Role:</strong> Private search, discovery, Browser integration, and the current-information research provider for GoreeCloud AI while native request, category, and readiness boundaries advance through controlled validation.';
   }
 }
-
 const platformGrid=document.querySelector('#platform .platform-grid');
-if(platformGrid&&!platformGrid.querySelector('[data-platform="mesh"]')){
-  const card=document.createElement('article');
-  card.className='platform-card';
-  card.dataset.platform='mesh';
-  card.innerHTML='<div class="platform-card-head"><span class="platform-state planned">Active Development</span></div><p class="platform-kicker">Coordination &amp; Governance</p><h3>GoreeCloud Mesh</h3><p class="platform-description">Mesh now implements fail-closed scoped authorization for private mutating APIs, producer-bound evidence validity, and durable Everkeep recovery-evidence persistence. These capabilities coordinate platform relationships without allowing Mesh to manufacture stronger privacy, security, conformance, or recovery state.</p><p class="platform-role"><strong>Role:</strong> Service and capability registration, explicit relationships, policy decisions, lifecycle events, dependency context, and evidence-aware coordination while specialized systems retain authority.</p>';
-  platformGrid.append(card);
-}
+if(platformGrid&&!platformGrid.querySelector('[data-platform="mesh"]')){const card=document.createElement('article');card.className='platform-card';card.dataset.platform='mesh';card.innerHTML='<div class="platform-card-head"><span class="platform-state planned">Active Development</span></div><p class="platform-kicker">Coordination &amp; Governance</p><h3>GoreeCloud Mesh</h3><p class="platform-description">Mesh implements fail-closed scoped authorization for private mutating APIs, producer-bound evidence validity, and durable Everkeep recovery-evidence persistence while keeping specialized systems authoritative for their own state.</p><p class="platform-role"><strong>Role:</strong> Service and capability registration, explicit relationships, policy decisions, lifecycle events, dependency context, and evidence-aware coordination.</p>';platformGrid.append(card);}
 
 const heroLabels=document.querySelector('#top .hero-labels');
-if(heroLabels){
-  const platformLabels=[['Glaze UI','https://design.goreecloud.com/'],['Privacy Shield','https://privacy.goreecloud.com/'],['Wardveil Security','https://security.goreecloud.com/'],['Everkeep',null],['GoreeCloud Mesh',null],['GoreeCloud Identity',null]];
-  heroLabels.replaceChildren();
-  for(const [label,href] of platformLabels){const chip=document.createElement(href?'a':'span');chip.className='glaze-chip';chip.textContent=label;if(href)chip.href=href;heroLabels.append(chip);}
-  const eyebrow=document.createElement('span');eyebrow.className='eyebrow';eyebrow.textContent='Design • Privacy • Security • Resilience • Coordination • Identity';heroLabels.append(eyebrow);
-}
-
+if(heroLabels){const platformLabels=[['Glaze UI','https://design.goreecloud.com/'],['Privacy Shield','https://privacy.goreecloud.com/'],['Wardveil Security','https://security.goreecloud.com/'],['Everkeep',null],['GoreeCloud Mesh',null],['GoreeCloud Identity',null]];heroLabels.replaceChildren();for(const [label,href] of platformLabels){const chip=document.createElement(href?'a':'span');chip.className='glaze-chip';chip.textContent=label;if(href)chip.href=href;heroLabels.append(chip);}const eyebrow=document.createElement('span');eyebrow.className='eyebrow';eyebrow.textContent='Design • Privacy • Security • Resilience • Coordination • Identity';heroLabels.append(eyebrow);}
 const heroNote=document.querySelector('.current-platform-update');
-if(heroNote){
-  heroNote.textContent='Glaze UI, Wardveil Security, Privacy Shield, Everkeep, and GoreeCloud Mesh are integral GoreeCloud platform systems—not decorative labels. Glaze UI defines interface behavior, Wardveil and Privacy Shield preserve evidence-backed security and privacy state, Everkeep governs resilience and preservation, and Mesh coordinates relationships without replacing the authority of specialized systems.';
-  if(!document.querySelector('.native-application-update')){const mandate=document.createElement('p');mandate.className='status-note native-application-update';mandate.textContent='Native application direction · August 24, 2026: maintained forks and adopted complete application codebases are transitional migration, compatibility, testing, historical, or reference sources only. Narrow mature technical dependencies may remain where replacing them would materially increase security, standards, protocol, codec, rendering, runtime, or interoperability risk.';heroNote.after(mandate);const current=document.createElement('p');current.className='status-note current-platform-update-2026-08-25';current.textContent='August 25, 2026 implementation pulse: GoreeCloud AI now has a first-party source repository for its Ollama front end; GoreeCloud Search has a native fail-closed category contract; and Mesh now enforces scoped private API authorization while persisting producer-bound Everkeep recovery evidence. These are source and contract milestones, not automatic Stable or production acceptance.';mandate.after(current);}
-}
-
-const footer=document.querySelector('.footer-glaze');
-if(footer)footer.innerHTML='<strong>Glaze UI</strong> design • <strong>Privacy Shield</strong> privacy • <strong>Wardveil Security</strong> security • <strong>Everkeep</strong> resilience &amp; preservation • <strong>Mesh</strong> coordination.';
+if(heroNote){heroNote.textContent='Glaze UI, Wardveil Security, Privacy Shield, Everkeep, and GoreeCloud Mesh are integral GoreeCloud platform systems—not decorative labels. Glaze UI defines interface behavior, Wardveil and Privacy Shield preserve evidence-backed security and privacy state, Everkeep governs resilience and preservation, and Mesh coordinates relationships without replacing the authority of specialized systems.';if(!document.querySelector('.native-application-update')){const mandate=document.createElement('p');mandate.className='status-note native-application-update';mandate.textContent='Native application direction · August 24, 2026: maintained forks and adopted complete application codebases are transitional migration, compatibility, testing, historical, or reference sources only. Narrow mature technical dependencies may remain where replacing them would materially increase security, standards, protocol, codec, rendering, runtime, or interoperability risk.';heroNote.after(mandate);const current=document.createElement('p');current.className='status-note current-platform-update-2026-08-25';current.textContent='August 25, 2026 implementation pulse: GoreeCloud AI has a first-party source foundation; GoreeCloud Search has a native fail-closed category contract; and Mesh enforces scoped private API authorization while persisting producer-bound Everkeep recovery evidence. These are source and contract milestones, not automatic Stable or production acceptance.';mandate.after(current);}}
+const footer=document.querySelector('.footer-glaze');if(footer)footer.innerHTML='<strong>Glaze UI</strong> design • <strong>Privacy Shield</strong> privacy • <strong>Wardveil Security</strong> security • <strong>Everkeep</strong> resilience &amp; preservation • <strong>Mesh</strong> coordination.';
 
 const story=document.querySelector('#story .timeline');
 if(story&&!story.querySelector('[data-native-mandate]')){const article=document.createElement('article');article.dataset.nativeMandate='true';article.innerHTML='<time datetime="2026-08-24">August 24, 2026</time><div><h3>Native applications become the mandatory end state</h3><p>GoreeCloud formalizes original native-from-the-ground-up application development as the required product model. Existing upstream-derived applications become controlled transition and reference surfaces, while Glaze UI, Wardveil Security, Privacy Shield, and Everkeep become mandatory Stable-release gates.</p></div>';const final=story.querySelector('article:last-child');if(final)story.insertBefore(article,final);else story.append(article);}
@@ -107,8 +97,8 @@ if(story&&!story.querySelector('[data-ai-gitea-milestone]')){const article=docum
 if(story&&!story.querySelector('[data-implementation-pulse]')){const article=document.createElement('article');article.dataset.implementationPulse='true';article.innerHTML='<time datetime="2026-08-25">August 25, 2026</time><div><h3>AI source, Mesh durability, and native Search boundaries move from direction into code</h3><p>The first GoreeCloud AI source repository is established for the Ollama-facing native application. Mesh adds scoped private API authorization plus durable producer-bound Everkeep recovery evidence, while GoreeCloud Search adds a fail-closed native category request and readiness contract. Each remains subject to its separate validation, release, and production gates.</p></div>';story.append(article);}
 
 const projectUpdates={
-  'goreecloud-bookmarks':{description:'GoreeCloud Bookmarks now has an integrated original Go foundation with owner-scoped records, validated native service boundaries, PostgreSQL persistence/runtime work, fail-closed native repository mode selection, and a fail-closed native readiness boundary. The Linkwarden-derived application and existing Browser capture path remain transitional continuity surfaces until equivalent native capabilities and production evidence are complete.',status:'Native rebuild active · fail-closed native readiness boundary added'},
-  'goreecloud-search':{description:'Private web search and GoreeCloud-controlled research gateway. GoreeCloud Search is the required first-party current-information provider for GoreeCloud AI; native Search now includes a fail-closed category request/readiness contract and accessible native category controls. The current SearXNG-derived service remains transitional while the native replacement advances through controlled validation.',status:'Native rebuild active · native category contract implemented'},
+  'goreecloud-bookmarks':{description:'GoreeCloud Bookmarks has an integrated original Go foundation with owner-scoped records, validated native service boundaries, PostgreSQL persistence/runtime work, fail-closed native repository mode selection, and a fail-closed native readiness boundary. The Linkwarden-derived application and Browser capture path remain transitional continuity surfaces until equivalent native capabilities and production evidence are complete.',status:'Native rebuild active · fail-closed native readiness boundary added'},
+  'goreecloud-search':{description:'Private web search and GoreeCloud-controlled research gateway. GoreeCloud Search is the required first-party current-information provider for GoreeCloud AI; native Search includes a fail-closed category request/readiness contract and accessible category controls. The current SearXNG-derived service remains transitional while the native replacement advances through controlled validation.',status:'Native rebuild active · native category contract implemented'},
   'goreecloud-browser':{description:'Privacy-first browser project moving toward a fully GoreeCloud-owned native product layer while retaining mature browser-engine foundations only where technically justified. Existing Firefox-derived application architecture is transitional.',status:'Native rebuild target · transitional browser line active'},
   'goreecloud-video':{description:'Private video library and playback platform advancing as original GoreeCloud software. Jellyfin-derived material remains transitional compatibility, migration, recovery, and reference material while native server and client capabilities replace the upstream product layer.',status:'Native development · Jellyfin product identity retired'},
   'goreecloud-backup':{description:'Backup, restoration, verification, and recovery workflows under Everkeep are moving to an original GoreeCloud application architecture. Kopia-derived implementation remains transitional continuity/reference material until the native replacement satisfies recovery and production gates.',status:'Native rebuild required · transitional continuity'},
