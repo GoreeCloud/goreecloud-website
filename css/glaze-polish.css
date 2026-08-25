@@ -17,6 +17,7 @@
   --glaze-gutter-medium:24px;
   --glaze-gutter-expanded:32px;
   --glaze-gutter-wide:40px;
+  --glaze-font-sans:"Roboto","Noto Sans","Segoe UI",Arial,sans-serif;
 }
 :root[data-theme="light"] {
   --glaze-info:#315ed6;
@@ -28,25 +29,7 @@
     --glaze-scrim:rgba(8,18,34,.42);
   }
 }
-
-/* Cross-browser typography contract.
- * Inter is not bundled by the public site, so do not name it as an available face.
- * Prefer platform-native families with explicit, widely supported weight values so
- * Android Chromium and Gecko do not resolve/synthesize materially different text. */
-:root {
-  --glaze-font-sans:"Roboto","Noto Sans","Segoe UI",Arial,sans-serif;
-}
-body {
-  font-family:var(--glaze-font-sans);
-  font-weight:400;
-  font-synthesis:weight style;
-}
-h1,h2,h3,.brand,.button,.site-nav a,.glaze-chip,.eyebrow {
-  font-family:var(--glaze-font-sans);
-}
-h1,h2,h3 {font-weight:800;}
-.eyebrow,.glaze-chip {font-weight:800;}
-
+h1,h2,h3,.eyebrow,.glaze-chip{font-weight:800;}
 .site-header,.site-footer {
   padding-left:env(safe-area-inset-left);
   padding-right:env(safe-area-inset-right);
