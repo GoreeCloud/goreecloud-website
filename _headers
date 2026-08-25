@@ -13,8 +13,5 @@
 /
   Link: </css/style.css>; rel=preload; as=style, </css/glaze.css>; rel=preload; as=style
 
-/js/*
-  Cache-Control: no-cache, must-revalidate
-
 /.well-known/security.txt
   Cache-Control: public, max-age=3600
