@@ -232,8 +232,8 @@ def story_section() -> str:
     for datetime_value, label, title, description in milestones:
         rendered.append(
             '          <article class="story-milestone" role="listitem">\n'
-            '            <span class="story-rail" aria-hidden="true"><span class="story-dot"></span></span>\n'
             f'            <time datetime="{datetime_value}">{label}</time>\n'
+            '            <span class="story-rail" aria-hidden="true"><span class="story-dot"></span></span>\n'
             '            <div class="story-card">\n'
             f'              <h3>{title}</h3>\n'
             f'              <p>{description}</p>\n'
@@ -242,8 +242,8 @@ def story_section() -> str:
         )
     rendered.append(
         '          <article class="story-milestone story-milestone-current" role="listitem">\n'
-        '            <span class="story-rail" aria-hidden="true"><span class="story-dot"></span></span>\n'
         '            <span class="story-current-label">Ongoing</span>\n'
+        '            <span class="story-rail" aria-hidden="true"><span class="story-dot"></span></span>\n'
         '            <div class="story-card">\n'
         '              <h3>From homelab to documented personal cloud</h3>\n'
         '              <p>The project continues toward locally owned infrastructure with defined governance, recovery requirements, software standards, and long-term family continuity.</p>\n'
