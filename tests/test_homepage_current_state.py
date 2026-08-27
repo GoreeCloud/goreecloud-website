@@ -17,6 +17,7 @@ class HomepageCurrentStateTests(unittest.TestCase):
         rendered = render_public_file("index.html", source, load_manifest(ROOT))
         cls.homepage = normalize_homepage(rendered)
         cls.homepage_css = (ROOT / "css" / "homepage-v6.css").read_text(encoding="utf-8")
+        cls.websites_css = (ROOT / "css" / "websites.css").read_text(encoding="utf-8")
 
     def test_hero_is_focused_without_platform_system_duplication(self) -> None:
         hero = self.homepage.split("<h1>", 1)[0]
@@ -64,6 +65,12 @@ class HomepageCurrentStateTests(unittest.TestCase):
         self.assertIn('<a href="https://suite.goreecloud.com/">Suite</a>', self.homepage)
         self.assertIn('css/websites.css', self.homepage)
         self.assertIn('css/homepage-v6.css', self.homepage)
+
+    def test_website_cards_show_names_and_domains_only_once(self) -> None:
+        self.assertIn('.website-preview-domain,\n.website-preview-title', self.websites_css)
+        self.assertIn('display: none !important;', self.websites_css)
+        self.assertEqual(self.homepage.count('class="website-card-body"'), 10)
+        self.assertEqual(self.homepage.count('class="website-link"'), 10)
 
     def test_everkeep_has_a_dedicated_public_destination(self) -> None:
         self.assertIn('https://everkeep.goreecloud.com/', self.homepage)
