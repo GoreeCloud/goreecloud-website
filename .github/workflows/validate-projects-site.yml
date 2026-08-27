@@ -27,6 +27,7 @@ jobs:
         run: |
           python3 -m py_compile sites/projects/validate.py
           python3 -m py_compile sites/projects/verify_remote.py
+          python3 -m py_compile sites/projects/browser_smoke.py
       - name: Validate projects website
         run: python3 sites/projects/validate.py
       - name: Check JavaScript syntax
@@ -50,6 +51,11 @@ jobs:
           done
           echo "Projects branch-preview verification failed after $attempts attempts."
           exit 1
+      - name: Exercise pull request Projects branch preview in Chrome
+        if: github.event_name == 'pull_request'
+        env:
+          GITHUB_HEAD_REF: ${{ github.head_ref }}
+        run: python3 sites/projects/browser_smoke.py --target branch-preview
       - name: Verify Projects production after main update
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
@@ -65,3 +71,6 @@ jobs:
           done
           echo "Projects production verification failed after $attempts attempts."
           exit 1
+      - name: Exercise Projects production in Chrome
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: python3 sites/projects/browser_smoke.py --target production
