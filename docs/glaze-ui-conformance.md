@@ -1,131 +1,36 @@
-# GoreeCloud Website — Glaze UI Conformance
+# GoreeCloud Website — Glaze UI 1.5.0 Conformance
 
 ## Conformance record
 
-- Target Glaze UI version: **1.1.0**
-- Canonical design-system repository: `GoreeCloud/glaze-ui`
-- Canonical reference revision reviewed for this alignment: `5c8320de4f770614a3e2bcf9de2a27f7fcfd920c`
-- Website package introducing this recorded alignment: **5.19.0**
-- Conformance state: **Aligned — version-specific semantic mapping and automated structural contract enforced; existing visual identity preserved**
-- Visual acceptance: **Preserved** — the 1.1 adoption is a compatible semantic expansion. It retains the accepted website composition and product character while adding version-specific semantics and safe-area behavior.
+- Target Glaze UI version: **1.5.0**
+- Canonical design-system repository: `GoreeCloud/goreecloud-glaze-ui`
+- Canonical reference revision reviewed for this alignment: `2c5078410d022eba683c8e029bc3cafe773df0b7`
+- Conformance state: **Aligned — Stable 1.5 web contract vendored across all independently deployed GoreeCloud website surfaces in this repository**
 
-## Purpose
+## Scope
 
-This record documents how the GoreeCloud public website targets the active Glaze UI 1.1 design-system contract. It is repository metadata only and must remain outside the isolated Cloudflare `dist/` artifact.
+This record covers the Main, Projects, Roadmap, Blog, and Archive public surfaces. Each deployment carries a same-origin copy of the Stable 1.5 web bundle so design-system availability does not depend on another GoreeCloud domain at runtime.
 
-The website is a reference implementation with its own public-site personality. Alignment means using the shared Glaze UI semantics without replacing the website's established colors, content hierarchy, or recognizable composition with a generic reference-demo appearance.
+## Stable 1.5 web layers
 
-## Glaze UI 1.1 adoption
+The production bundle follows the Design Center order: core, controls, expressive components, form factors, accessibility, adaptive semantic color, motion, materials, layout/density, and interaction states. Candidate wearable and Glaze Motion promotion layers are excluded from this production adoption.
 
-Glaze UI 1.1 is a compatible expansion of the 1.0 foundation. The website adopts the applicable 1.1 additions while preserving the existing surface hierarchy, adaptive ranges, motion vocabulary, privacy boundary, accessibility fallbacks, and product personality.
+## Surface and interaction mapping
 
-The website-specific 1.1 mapping includes:
-
-- `on-accent` for primary action text;
-- `info` and semantic scrim roles for future information and overlay states;
-- shared hover, pressed, focus, and selected state-layer opacity semantics;
-- 16, 20, 24, and 32 CSS-pixel icon-size roles;
-- compact and comfortable control-padding roles while preserving the 44 CSS-pixel minimum target;
-- Compact, Medium, Expanded, and Wide gutter roles;
-- safe-area inset handling for persistent site chrome;
-- exact version and canonical-source revision evidence in this conformance record.
-
-The current public website has no modal dialog or destructive workflow, so the semantic scrim role is defined for compatibility but has no active modal consumer. Loading, destructive, and authenticated form states remain not applicable to the current anonymous static-site architecture.
-
-## Semantic token alignment
-
-`css/glaze.css` continues to define and consume the shared Glaze UI semantic roles for:
-
-- canvas and canvas accent;
-- solid, raised, glaze, and overlay surfaces;
-- primary and secondary accents;
-- semantic success, warning, and danger colors;
-- border/line treatment;
-- text and muted text;
-- spacing and corner radii;
-- minimum and comfortable target sizes;
-- blur and elevation shadows;
-- focus width and offset;
-- content and reading widths;
-- Instant, Fast, Standard, and Emphasized motion durations;
-- standard and emphasized easing.
-
-`css/glaze-polish.css` supplies the compatible 1.1 semantic extension for on-accent, info, scrim, state-layer, icon-size, density, adaptive-gutter, and safe-area behavior while retaining the existing website palette. Legacy website variables remain compatibility aliases where existing section styles consume them. New shared behavior should prefer the `--glaze-*` semantic roles.
-
-## Surface hierarchy
-
-The website recognizes the five Glaze UI surface levels: **Canvas, Solid, Raised, Glaze, and Overlay**.
-
-1. Canvas — atmospheric page background and restrained GoreeCloud gradients.
-2. Solid — readability-first opaque or near-opaque surfaces.
-3. Raised — solid surfaces with restrained elevation.
-4. Glaze — selectively translucent surfaces with blur and saturation.
-5. Overlay — strongest separation for attention-priority layers.
-
-The public website does not require every component to be translucent. Existing cards and navigation surfaces retain selective Glaze treatment, and all translucent surfaces retain readable solid fallbacks.
-
-## Interaction and state contract
-
-The website uses the shared Glaze UI target-size, focus, transition, motion, and state semantics for buttons, navigation controls, appearance controls, cards, chips, links, and status presentation. Relevant interactive controls preserve hover, pressed, focus-visible, current/selected, and disabled-safe behavior where applicable.
-
-Primary actions explicitly consume the 1.1 on-accent role. Existing product-specific navigation and control feedback remains a documented website mapping to the shared 1.1 state-layer semantics rather than being replaced by generic reference-component styling.
-
-The website does not currently contain authenticated forms, dialogs, destructive actions, loading workflows, or user-data editing. Those component states remain not applicable to the current anonymous static-site architecture.
-
-## Adaptive layout and safe-area contract
-
-The stylesheet exposes and validates the four Glaze UI adaptive ranges:
-
-- Compact: through 599 CSS pixels.
-- Medium: 600 through 1023 CSS pixels.
-- Expanded: 1024 through 1439 CSS pixels.
-- Wide: 1440 CSS pixels and above.
-
-Product-specific responsive behavior may continue to use narrower component breakpoints when that improves readability or navigation ergonomics, but the Glaze UI adaptive ranges remain the shared layout vocabulary and conformance boundary.
-
-The 1.1 mapping also records Compact, Medium, Expanded, and Wide gutter roles. Persistent site chrome accounts for `safe-area-inset-left` and `safe-area-inset-right` so display cutouts do not require hard-coded device assumptions.
-
-## Motion contract
-
-The website retains the Glaze UI motion vocabulary:
-
-- Instant: 90 ms.
-- Fast: 160 ms.
-- Standard: 220 ms.
-- Emphasized: 320 ms.
-
-Motion remains restrained and functional. Reduced-motion mode removes nonessential motion and disables smooth scrolling rather than merely speeding animation up.
+The sites use Glaze UI semantic canvas, Solid/Raised/Glaze/Overlay materials, adaptive color, 44px minimum targets, current focus semantics, restrained hover/press motion, current corner and spacing roles, and responsive Mobile/Tablet/Desktop/TV vocabulary while retaining each site's information architecture and product identity.
 
 ## Accessibility and resilience
 
-The website retains:
+Reduced-motion behavior removes nonessential animation and transitions. Focus-visible treatment remains explicit. Translucent header treatment has a solid fallback when backdrop filters are unavailable. Existing page-level no-JavaScript and theme behavior remains intact.
 
-- semantic page landmarks and keyboard skip links;
-- visible focus indicators;
-- practical 44–48 CSS-pixel target sizing;
-- responsive and touch-aware navigation;
-- safe-area-aware persistent chrome;
-- reduced-motion behavior;
-- reduced-transparency behavior;
-- unsupported-backdrop-filter solid fallbacks;
-- increased-contrast handling;
-- forced-colors handling;
-- print/readable-paper behavior;
-- no-JavaScript primary-content and navigation resilience;
-- local/system typography and local artwork.
+## Privacy boundary
 
-Automated checks remain regression controls rather than a formal WCAG-conformance claim. Manual keyboard, screen-reader, zoom/reflow, contrast, touch-device, safe-area/device, and visual acceptance review remain appropriate for material interface changes.
+The design-system bundle is vendored at build/source time and served same-origin. It adds no analytics, advertising, trackers, remote fonts, runtime UI framework, or cross-domain stylesheet dependency.
 
-## Privacy contract
+## Release boundary
 
-Glaze UI alignment introduces no analytics, advertising, trackers, fingerprinting, remote fonts, remote icon delivery, remote UI framework, runtime browser API client, service worker, or third-party rendering dependency. Explicit theme preference remains local to the browser.
-
-## Stable-release gate
-
-`scripts/validate_glaze_ui.py` enforces this record together with the public page foundation. A stable website release must retain the exact target Glaze UI version and reference revision, applicable 1.1 semantic mapping, surface hierarchy, standardized motion, adaptive ranges, safe-area behavior, accessibility/resilience fallbacks, privacy-preserving dependency model, and GoreeCloud identity.
-
-Passing automated Glaze UI validation does not replace visual acceptance. For this compatible 5.19.0 alignment, existing visual acceptance is carried forward because the ordinary-viewport public composition and product identity are intentionally preserved while the implementation contract is strengthened underneath it.
+Glaze UI 1.6 Candidate and wearable Candidate work are not production inputs. Public presentation cannot upgrade application, Privacy Shield, Wardveil Security, Everkeep, or Mesh evidence state.
 
 ## Exceptions
 
-No production Glaze UI exception is recorded for the current website package.
+No production Glaze UI exception is recorded for these website surfaces.
