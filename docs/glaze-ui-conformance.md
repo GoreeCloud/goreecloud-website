@@ -7,7 +7,10 @@
 - Canonical reference revision reviewed for this alignment: `e8f68770540d00499b5613a00310ac7002a674fd`
 - Alignment date: **2026-08-27**
 - Conformance state: **Current-Stable migration implemented — semantic, material, layout, state, accessibility, and structural regression gates are enforced**
-- Visual acceptance: **Pending user review** — the migration intentionally changes the public composition and must not be described as visually approved until the revised production surface is reviewed.
+- Visual acceptance: **Pending user review** — the migration intentionally changes the public composition and must not be described as visually approved until the revised branch preview is reviewed.
+- Verified branch preview: `https://agent-glaze-1-5-revamp-0827.goreecloud-website.pages.dev`
+- Verified candidate revision: `cd75aa2f624f555c1e17f7fcfc604eda20220b5b`
+- Verification workflow: `Validate public website` run **#503**
 
 ## Purpose
 
@@ -128,7 +131,7 @@ Glaze UI 1.5 alignment introduces no analytics, advertising, trackers, fingerpri
 
 `scripts/validate_glaze_ui.py` enforces this record together with the public page foundation. The validator binds the website to Glaze UI 1.5.0, the canonical `GoreeCloud/goreecloud-glaze-ui` repository, the reviewed reference revision, material/layout/state markers, adaptive ranges, motion semantics, accessibility/resilience fallbacks, privacy-preserving dependency boundaries, and GoreeCloud identity.
 
-Passing automated validation does not substitute for visual acceptance. The migration may be structurally current-Stable while visual acceptance remains pending explicit review.
+Passing automated validation and exact branch-preview verification do not substitute for visual acceptance. The candidate may be structurally current-Stable while visual acceptance remains pending explicit review. Production release classification also requires the post-merge exact production deployment verification defined by the website stability contract.
 
 ## Exceptions
 
