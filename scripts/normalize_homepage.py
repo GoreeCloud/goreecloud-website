@@ -29,6 +29,8 @@ ROADMAP_AI_CARD = re.compile(
     re.DOTALL,
 )
 
+WEBSITE_STYLESHEET = '<link rel="stylesheet" href="css/websites.css">'
+
 EXPECTED_WEBSITE_DOMAINS = (
     "goreecloud.com",
     "suite.goreecloud.com",
@@ -55,14 +57,40 @@ def canonical_hero_labels() -> str:
     )
 
 
-def website_card(name: str, url: str, domain: str, description: str, status: str, status_class: str) -> str:
+def website_card(
+    name: str,
+    url: str,
+    domain: str,
+    description: str,
+    status: str,
+    status_class: str,
+    preview_class: str,
+    preview_mark: str,
+) -> str:
     return (
         '<article class="service-card website-card">\n'
-        f'  <p class="service-kicker">{domain}</p>\n'
-        f'  <h3>{name}</h3>\n'
-        f'  <p>{description}</p>\n'
-        f'  <a class="website-link" href="{url}">Visit website →</a>\n'
-        f'  <span class="badge {status_class}">{status}</span>\n'
+        f'  <a class="website-preview {preview_class}" href="{url}" aria-label="Open {name}">\n'
+        '    <span class="website-preview-browser" aria-hidden="true">\n'
+        '      <span class="website-preview-toolbar">\n'
+        '        <i></i><i></i><i></i>\n'
+        f'        <span class="website-preview-domain">{domain}</span>\n'
+        '      </span>\n'
+        '      <span class="website-preview-page">\n'
+        f'        <span class="website-preview-mark">{preview_mark}</span>\n'
+        f'        <span class="website-preview-title">{name}</span>\n'
+        '        <span class="website-preview-lines"><span></span><span></span></span>\n'
+        '      </span>\n'
+        '    </span>\n'
+        '  </a>\n'
+        '  <div class="website-card-body">\n'
+        f'    <p class="service-kicker">{domain}</p>\n'
+        f'    <h3>{name}</h3>\n'
+        f'    <p>{description}</p>\n'
+        '    <div class="website-card-footer">\n'
+        f'      <a class="website-link" href="{url}">Visit website →</a>\n'
+        f'      <span class="badge {status_class}">{status}</span>\n'
+        '    </div>\n'
+        '  </div>\n'
         '</article>'
     )
 
@@ -76,6 +104,8 @@ def websites_section() -> str:
             "The main public hub for GoreeCloud: platform direction, project story, repositories, and links into the wider public web ecosystem.",
             "Primary Website",
             "active",
+            "website-main",
+            "GC",
         ),
         website_card(
             "GoreeCloud Suite",
@@ -84,6 +114,8 @@ def websites_section() -> str:
             "The dedicated home for GoreeCloud Suite applications, services, umbrella capabilities, lifecycle status, and cross-client product identity.",
             "Dedicated Site",
             "growing",
+            "website-suite",
+            "SU",
         ),
         website_card(
             "GoreeCloud Projects",
@@ -92,6 +124,8 @@ def websites_section() -> str:
             "The public software and project portfolio for representative GoreeCloud development work and project-level context.",
             "Portfolio",
             "active",
+            "website-projects",
+            "PR",
         ),
         website_card(
             "Glaze UI",
@@ -100,6 +134,8 @@ def websites_section() -> str:
             "The design-system website for GoreeCloud interface foundations, interaction contracts, adaptive behavior, and visual language.",
             "Platform System",
             "active",
+            "website-design",
+            "GU",
         ),
         website_card(
             "Privacy Shield",
@@ -108,6 +144,8 @@ def websites_section() -> str:
             "The public privacy identity and documentation surface for GoreeCloud privacy contracts, controls, and data-minimization expectations.",
             "Platform System",
             "active",
+            "website-privacy",
+            "PS",
         ),
         website_card(
             "Wardveil Security",
@@ -116,6 +154,8 @@ def websites_section() -> str:
             "The security and protection website for evidence-backed GoreeCloud security state, reporting, and protection experiences.",
             "Platform System",
             "active",
+            "website-security",
+            "WS",
         ),
         website_card(
             "GoreeCloud Roadmap",
@@ -124,6 +164,8 @@ def websites_section() -> str:
             "The focused public roadmap for planned GoreeCloud infrastructure, applications, services, migrations, and platform evolution.",
             "Roadmap",
             "growing",
+            "website-roadmap",
+            "RM",
         ),
         website_card(
             "GoreeCloud Blog",
@@ -132,6 +174,8 @@ def websites_section() -> str:
             "The public development and engineering journal for build notes, implementation lessons, architecture decisions, and project updates.",
             "Publication",
             "active",
+            "website-blog",
+            "BL",
         ),
         website_card(
             "GoreeCloud Archive",
@@ -140,6 +184,8 @@ def websites_section() -> str:
             "The curated historical archive for preserving selected GoreeCloud public records, milestones, and project history over time.",
             "Archive",
             "active",
+            "website-archive",
+            "AR",
         ),
     ]
     rendered_cards = "\n          ".join(cards)
@@ -149,7 +195,7 @@ def websites_section() -> str:
         '        <div class="section-heading">\n'
         '          <p class="eyebrow">GoreeCloud websites</p>\n'
         '          <h2>Explore the public GoreeCloud web ecosystem.</h2>\n'
-        '          <p>Each website has a focused responsibility, keeping the main homepage concise while dedicated destinations carry the deeper information that belongs there.</p>\n'
+        '          <p>Visual preview cards make each destination easier to recognize while dedicated sites carry the deeper information that does not belong on the main homepage.</p>\n'
         '        </div>\n'
         '        <div class="service-grid website-grid">\n'
         f'          {rendered_cards}\n'
@@ -208,6 +254,9 @@ def normalize_homepage(source: str) -> str:
     if ai_count != 1:
         raise ValueError("homepage GoreeCloud AI roadmap card could not be normalized")
 
+    if WEBSITE_STYLESHEET not in normalized:
+        normalized = normalized.replace("</head>", f"  {WEBSITE_STYLESHEET}\n</head>", 1)
+
     hero = HERO_PREFIX.search(normalized)
     hero_text = hero.group(0) if hero else ""
     for label in ("Glaze UI", "Privacy Shield", "Wardveil Security", "Everkeep", "GoreeCloud Mesh"):
@@ -229,6 +278,10 @@ def normalize_homepage(source: str) -> str:
     website_section = website_section_match.group(0) if website_section_match else ""
     if website_section.count('class="service-card website-card"') != len(EXPECTED_WEBSITE_DOMAINS):
         raise ValueError("homepage website portfolio must contain exactly nine website cards")
+    if website_section.count('class="website-preview ') != len(EXPECTED_WEBSITE_DOMAINS):
+        raise ValueError("each website card must include a visual preview")
+    if normalized.count(WEBSITE_STYLESHEET) != 1:
+        raise ValueError("homepage must include the website preview stylesheet exactly once")
     if "Open WebUI" in normalized or "AnythingLLM" in normalized:
         raise ValueError("retired AI front ends remain in the public homepage")
     return normalized
