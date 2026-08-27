@@ -20,7 +20,7 @@ BASELINE_PATH = ROOT / "docs" / "stability-baseline.md"
 GLAZE_CONFORMANCE_PATH = ROOT / "docs" / "glaze-ui-conformance.md"
 README_PATH = ROOT / "README.md"
 SEMVER_RE = re.compile(r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$")
-GLAZE_11_REVISION = "5c8320de4f770614a3e2bcf9de2a27f7fcfd920c"
+GLAZE_15_REVISION = "e8f68770540d00499b5613a00310ac7002a674fd"
 
 
 class StabilityBaselineTests(unittest.TestCase):
@@ -68,7 +68,6 @@ class StabilityBaselineTests(unittest.TestCase):
         for marker in (
             "static homepage",
             "GoreeCloud Monitor",
-            "Glaze UI 1.1",
             "semantic tokens",
             "adaptive ranges",
             "privacy",
@@ -78,14 +77,13 @@ class StabilityBaselineTests(unittest.TestCase):
 
     def test_glaze_conformance_records_current_target(self) -> None:
         for marker in (
-            "Target Glaze UI version: **1.1.0**",
-            GLAZE_11_REVISION,
-            "GoreeCloud/glaze-ui",
-            "on-accent",
+            "Target Glaze UI version: **1.5.0**",
+            GLAZE_15_REVISION,
+            "GoreeCloud/goreecloud-glaze-ui",
             "state-layer",
             "safe-area",
-            "Canvas, Solid, Raised, Glaze, and Overlay",
-            "Visual acceptance: **Preserved**",
+            "Canvas → Solid → Raised → Functional Glass → Overlay",
+            "Visual acceptance: **Pending user review**",
             "No production Glaze UI exception is recorded",
         ):
             self.assertIn(marker, self.glaze_conformance)
