@@ -21,6 +21,10 @@ BAND_BLOCK = re.compile(
     r'\n    <section class="band" aria-label="Core principles">.*?</section>\n',
     re.DOTALL,
 )
+STORY_BLOCK = re.compile(
+    r'\n    <section id="story" class="section">.*?(?=\n    <section id="follow")',
+    re.DOTALL,
+)
 ROADMAP_AI_CARD = re.compile(
     r'          <article class="roadmap-card">\s*'
     r'<div class="roadmap-card-head">\s*'
@@ -214,6 +218,55 @@ def websites_section() -> str:
     )
 
 
+def story_section() -> str:
+    milestones = (
+        ("2026-06-01", "June 1, 2026", "Initial planning begins", "The first planning work starts with a goal of replacing subscription dependence with greater privacy, control, and data ownership."),
+        ("2026-06-07", "June 7, 2026", "The GoreeCloud name is established", "GoreeCloud becomes the name for the complete ecosystem: hardware, software, infrastructure, services, configurations, and data."),
+        ("2026-06-25", "June 25, 2026", "GoreeCloud.com is purchased", "The domain becomes the public identity for the platform and its future applications."),
+        ("2026-08-12", "August 12, 2026", "Glaze UI and the software portfolio expand", "Glaze UI becomes the shared design language while the first-party software portfolio grows across productivity, organization, communication, and platform management."),
+        ("2026-08-14", "August 14, 2026", "Native software ownership expands", "GoreeCloud Notes, Memos, Notify, and other first-party projects deepen the move from assembled services toward software directly governed by GoreeCloud."),
+        ("2026-08-16", "August 16, 2026", "GoreeCloud Monitor enters public development", "Native availability and recovery monitoring begins its path toward replacing externally branded monitoring at the GoreeCloud experience layer."),
+        ("2026-08-17", "August 17, 2026", "GoreeCloud-owned service layers expand", "Search, notifications, monitoring, and the public repository portfolio continue moving toward first-party interfaces and explicit GoreeCloud governance."),
+    )
+    rendered = []
+    for datetime_value, label, title, description in milestones:
+        rendered.append(
+            '          <article class="story-milestone" role="listitem">\n'
+            '            <span class="story-rail" aria-hidden="true"><span class="story-dot"></span></span>\n'
+            f'            <time datetime="{datetime_value}">{label}</time>\n'
+            '            <div class="story-card">\n'
+            f'              <h3>{title}</h3>\n'
+            f'              <p>{description}</p>\n'
+            '            </div>\n'
+            '          </article>'
+        )
+    rendered.append(
+        '          <article class="story-milestone story-milestone-current" role="listitem">\n'
+        '            <span class="story-rail" aria-hidden="true"><span class="story-dot"></span></span>\n'
+        '            <span class="story-current-label">Ongoing</span>\n'
+        '            <div class="story-card">\n'
+        '              <h3>From homelab to documented personal cloud</h3>\n'
+        '              <p>The project continues toward locally owned infrastructure with defined governance, recovery requirements, software standards, and long-term family continuity.</p>\n'
+        '            </div>\n'
+        '          </article>'
+    )
+    return (
+        '\n    <section id="story" class="section story-section">\n'
+        '      <div class="container story-layout">\n'
+        '        <div class="story-intro">\n'
+        '          <p class="eyebrow">The GoreeCloud story</p>\n'
+        '          <h2>Built through deliberate milestones.</h2>\n'
+        '          <p>GoreeCloud started in 2026 as a self-hosting plan and grew through a sequence of decisions about ownership, governance, first-party software, recoverability, and long-term preservation.</p>\n'
+        '          <a class="story-archive-link" href="https://archive.goreecloud.com/">Explore the GoreeCloud Archive →</a>\n'
+        '        </div>\n'
+        '        <div class="story-timeline" role="list" aria-label="GoreeCloud milestones">\n'
+        f'{chr(10).join(rendered)}\n'
+        '        </div>\n'
+        '      </div>\n'
+        '    </section>\n'
+    )
+
+
 def goreecloud_ai_roadmap_card() -> str:
     return (
         '          <article class="roadmap-card" data-roadmap="goreecloud-ai">\n'
@@ -246,6 +299,10 @@ def normalize_homepage(source: str) -> str:
     normalized, band_count = BAND_BLOCK.subn("\n", normalized, count=1)
     if band_count != 1:
         raise ValueError("duplicated homepage principle band could not be removed")
+
+    normalized, story_count = STORY_BLOCK.subn(story_section(), normalized, count=1)
+    if story_count != 1:
+        raise ValueError("homepage story could not be normalized into the Glaze milestone timeline")
 
     normalized = normalized.replace(
         '<a href="#services">Suite</a>\n        <a href="#capabilities">Capabilities</a>',
@@ -296,6 +353,12 @@ def normalize_homepage(source: str) -> str:
         raise ValueError("simulated browser previews must not appear in the website directory")
     if website_section.count('class="website-mark"') != len(EXPECTED_WEBSITE_DOMAINS):
         raise ValueError("each website card must include one compact site identity mark")
+    if normalized.count('class="story-milestone') != 8:
+        raise ValueError("homepage story must contain the complete eight-milestone sequence")
+    if "2026 →" in normalized:
+        raise ValueError("homepage story must use an explicit ongoing state instead of a fake future date")
+    if 'href="https://archive.goreecloud.com/"' not in normalized:
+        raise ValueError("homepage story must link to the dedicated GoreeCloud Archive")
     if '<section class="band" aria-label="Core principles">' in normalized:
         raise ValueError("duplicated homepage principle band must not return")
     for stylesheet in (WEBSITE_STYLESHEET, HOMEPAGE_STYLESHEET):
