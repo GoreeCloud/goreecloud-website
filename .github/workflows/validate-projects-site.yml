@@ -55,7 +55,12 @@ jobs:
         if: github.event_name == 'pull_request'
         env:
           GITHUB_HEAD_REF: ${{ github.head_ref }}
-        run: python3 sites/projects/browser_smoke.py --target branch-preview
+        run: python3 sites/projects/browser_smoke.py --target branch-preview --browser chrome
+      - name: Exercise pull request Projects branch preview in Firefox
+        if: github.event_name == 'pull_request'
+        env:
+          GITHUB_HEAD_REF: ${{ github.head_ref }}
+        run: python3 sites/projects/browser_smoke.py --target branch-preview --browser firefox
       - name: Verify Projects production after main update
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
@@ -73,4 +78,7 @@ jobs:
           exit 1
       - name: Exercise Projects production in Chrome
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: python3 sites/projects/browser_smoke.py --target production
+        run: python3 sites/projects/browser_smoke.py --target production --browser chrome
+      - name: Exercise Projects production in Firefox
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: python3 sites/projects/browser_smoke.py --target production --browser firefox

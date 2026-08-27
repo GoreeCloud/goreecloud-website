@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Exercise GoreeCloud Projects in a real headless Chrome session.
+"""Exercise GoreeCloud Projects in a real headless browser session.
 
-The smoke test intentionally uses only Python's standard library plus the Chrome and
-ChromeDriver binaries already present on GitHub's pinned ubuntu-24.04 runner image.
-It detects navigation hangs, renderer crashes, missing card rendering, broken local
-search/filter behavior, and loss of responsiveness under repeated UI updates.
+The smoke test intentionally uses only Python's standard library plus the browser
+and WebDriver binaries already present on GitHub's pinned ubuntu-24.04 runner
+image. It detects navigation hangs, renderer crashes, missing card rendering,
+broken local search/filter behavior, and loss of responsiveness under repeated
+UI updates in both Chrome and Firefox.
 """
 
 from __future__ import annotations
@@ -24,8 +25,8 @@ from urllib.request import Request, urlopen
 import verify_remote
 
 DRIVER_HOST = "127.0.0.1"
-DRIVER_PORT = 9515
-DRIVER_BASE = f"http://{DRIVER_HOST}:{DRIVER_PORT}"
+DRIVER_PORTS = {"chrome": 9515, "firefox": 9516}
+DRIVER_BASE = ""
 HTTP_TIMEOUT = 20
 STARTUP_TIMEOUT = 15
 MIN_PROJECT_CARDS = 30
@@ -36,23 +37,35 @@ class WebDriverError(RuntimeError):
     pass
 
 
-def driver_binary() -> str:
+def executable_from_env_or_path(browser: str) -> str:
+    if browser == "chrome":
+        env_name = "CHROMEWEBDRIVER"
+        binary_name = "chromedriver"
+        fallback = Path("/usr/local/share/chromedriver-linux64/chromedriver")
+    else:
+        env_name = "GECKOWEBDRIVER"
+        binary_name = "geckodriver"
+        fallback = Path("/usr/local/share/gecko_driver/geckodriver")
+
     candidates: list[Path] = []
-    env_path = os.environ.get("CHROMEWEBDRIVER")
+    env_path = os.environ.get(env_name)
     if env_path:
         path = Path(env_path)
-        candidates.append(path / "chromedriver" if path.is_dir() else path)
-    found = shutil.which("chromedriver")
+        candidates.append(path / binary_name if path.is_dir() else path)
+    found = shutil.which(binary_name)
     if found:
         candidates.append(Path(found))
-    candidates.append(Path("/usr/local/share/chromedriver-linux64/chromedriver"))
+    candidates.append(fallback)
+
     for candidate in candidates:
         if candidate.is_file() and os.access(candidate, os.X_OK):
             return str(candidate)
-    raise WebDriverError("ChromeDriver is unavailable on the runner.")
+    raise WebDriverError(f"{binary_name} is unavailable on the runner.")
 
 
 def webdriver_request(method: str, path: str, payload: dict[str, Any] | None = None) -> Any:
+    if not DRIVER_BASE:
+        raise WebDriverError("WebDriver endpoint has not been initialized.")
     body = None if payload is None else json.dumps(payload).encode("utf-8")
     request = Request(
         f"{DRIVER_BASE}{path}",
@@ -84,7 +97,7 @@ def webdriver_request(method: str, path: str, payload: dict[str, Any] | None = N
     return value
 
 
-def wait_for_driver() -> None:
+def wait_for_driver(browser: str) -> None:
     deadline = time.monotonic() + STARTUP_TIMEOUT
     last_error: Exception | None = None
     while time.monotonic() < deadline:
@@ -95,41 +108,53 @@ def wait_for_driver() -> None:
         except (WebDriverError, json.JSONDecodeError) as error:
             last_error = error
         time.sleep(0.2)
-    raise WebDriverError(f"ChromeDriver did not become ready: {last_error}")
+    raise WebDriverError(f"{browser} WebDriver did not become ready: {last_error}")
 
 
-def create_session() -> str:
+def create_session(browser: str) -> str:
+    if browser == "chrome":
+        always_match: dict[str, Any] = {
+            "browserName": "chrome",
+            "goog:chromeOptions": {
+                "args": [
+                    "--headless=new",
+                    "--no-sandbox",
+                    "--disable-dev-shm-usage",
+                    "--disable-background-networking",
+                    "--disable-component-update",
+                    "--disable-default-apps",
+                    "--disable-extensions",
+                    "--disable-sync",
+                    "--metrics-recording-only",
+                    "--no-first-run",
+                    "--window-size=1440,1200",
+                ]
+            },
+        }
+    else:
+        always_match = {
+            "browserName": "firefox",
+            "moz:firefoxOptions": {
+                "args": ["-headless", "--width=1440", "--height=1200"],
+                "prefs": {
+                    "browser.shell.checkDefaultBrowser": False,
+                    "browser.startup.homepage_override.mstone": "ignore",
+                    "datareporting.policy.dataSubmissionEnabled": False,
+                    "toolkit.telemetry.enabled": False,
+                },
+            },
+        }
+
     value = webdriver_request(
         "POST",
         "/session",
-        {
-            "capabilities": {
-                "alwaysMatch": {
-                    "browserName": "chrome",
-                    "goog:chromeOptions": {
-                        "args": [
-                            "--headless=new",
-                            "--no-sandbox",
-                            "--disable-dev-shm-usage",
-                            "--disable-background-networking",
-                            "--disable-component-update",
-                            "--disable-default-apps",
-                            "--disable-extensions",
-                            "--disable-sync",
-                            "--metrics-recording-only",
-                            "--no-first-run",
-                            "--window-size=1440,1200",
-                        ]
-                    },
-                }
-            }
-        },
+        {"capabilities": {"alwaysMatch": always_match}},
     )
     if not isinstance(value, dict):
-        raise WebDriverError(f"Unexpected WebDriver session response: {value!r}")
+        raise WebDriverError(f"Unexpected {browser} WebDriver session response: {value!r}")
     session_id = value.get("sessionId")
     if not isinstance(session_id, str) or not session_id:
-        raise WebDriverError(f"ChromeDriver did not return a session id: {value!r}")
+        raise WebDriverError(f"{browser} WebDriver did not return a session id: {value!r}")
     return session_id
 
 
@@ -146,7 +171,7 @@ def require(condition: bool, message: str) -> None:
         raise WebDriverError(message)
 
 
-def exercise_page(session_id: str, target_url: str) -> None:
+def exercise_page(session_id: str, target_url: str, browser: str) -> None:
     webdriver_request(
         "POST",
         f"/session/{session_id}/timeouts",
@@ -166,19 +191,19 @@ def exercise_page(session_id: str, target_url: str) -> None:
         };
         """,
     )
-    require(isinstance(initial, dict), f"Projects runtime state was not readable: {initial!r}")
-    require(initial.get("ready") == "complete", f"Projects document did not finish loading: {initial}")
-    require(initial.get("title") == "Projects — GoreeCloud", f"Unexpected Projects title: {initial.get('title')!r}")
-    require(int(initial.get("cards", 0)) >= MIN_PROJECT_CARDS, f"Projects rendered too few cards: {initial}")
+    require(isinstance(initial, dict), f"Projects runtime state was not readable in {browser}: {initial!r}")
+    require(initial.get("ready") == "complete", f"Projects document did not finish loading in {browser}: {initial}")
+    require(initial.get("title") == "Projects — GoreeCloud", f"Unexpected Projects title in {browser}: {initial.get('title')!r}")
+    require(int(initial.get("cards", 0)) >= MIN_PROJECT_CARDS, f"Projects rendered too few cards in {browser}: {initial}")
 
     resources = initial.get("resources") or []
     require(
         any("/assets/app.js?v=20260827-cache2" in resource for resource in resources),
-        "Headless Chrome did not load the versioned Projects app.js resource.",
+        f"Headless {browser} did not load the versioned Projects app.js resource.",
     )
     require(
         any("/assets/public-refresh.js?v=20260827-cache2" in resource for resource in resources),
-        "Headless Chrome did not load the versioned Projects public-refresh.js resource.",
+        f"Headless {browser} did not load the versioned Projects public-refresh.js resource.",
     )
 
     searched = execute(
@@ -195,9 +220,9 @@ def exercise_page(session_id: str, target_url: str) -> None:
         };
         """,
     )
-    require(isinstance(searched, dict), f"Projects search did not return state: {searched!r}")
-    require("GoreeCloud AI" in (searched.get("names") or []), f"Projects search failed to retain GoreeCloud AI: {searched}")
-    require(int(searched.get("cards", 0)) >= 1, f"Projects search rendered no cards: {searched}")
+    require(isinstance(searched, dict), f"Projects search did not return state in {browser}: {searched!r}")
+    require("GoreeCloud AI" in (searched.get("names") or []), f"Projects search failed to retain GoreeCloud AI in {browser}: {searched}")
+    require(int(searched.get("cards", 0)) >= 1, f"Projects search rendered no cards in {browser}: {searched}")
 
     foundations = execute(
         session_id,
@@ -216,11 +241,11 @@ def exercise_page(session_id: str, target_url: str) -> None:
         };
         """,
     )
-    require(isinstance(foundations, dict), f"Projects filter did not return state: {foundations!r}")
-    require(int(foundations.get("cards", 0)) >= 1, f"Foundations filter rendered no cards: {foundations}")
+    require(isinstance(foundations, dict), f"Projects filter did not return state in {browser}: {foundations!r}")
+    require(int(foundations.get("cards", 0)) >= 1, f"Foundations filter rendered no cards in {browser}: {foundations}")
     require(
         all(kind == "foundation" for kind in (foundations.get("kinds") or [])),
-        f"Foundations filter leaked non-foundation cards: {foundations}",
+        f"Foundations filter leaked non-foundation cards in {browser}: {foundations}",
     )
 
     stressed = execute(
@@ -247,39 +272,52 @@ def exercise_page(session_id: str, target_url: str) -> None:
         };
         """,
     )
-    require(isinstance(stressed, dict), f"Projects stress exercise did not return state: {stressed!r}")
-    require(stressed.get("responsive") == 42, f"Projects renderer stopped responding: {stressed}")
-    require(int(stressed.get("cards", 0)) >= MIN_PROJECT_CARDS, f"Projects did not recover after repeated interactions: {stressed}")
-    require(float(stressed.get("elapsed", MAX_STRESS_LOOP_MS + 1)) <= MAX_STRESS_LOOP_MS, f"Projects repeated render loop was unexpectedly slow: {stressed}")
+    require(isinstance(stressed, dict), f"Projects stress exercise did not return state in {browser}: {stressed!r}")
+    require(stressed.get("responsive") == 42, f"Projects renderer stopped responding in {browser}: {stressed}")
+    require(int(stressed.get("cards", 0)) >= MIN_PROJECT_CARDS, f"Projects did not recover after repeated interactions in {browser}: {stressed}")
+    require(float(stressed.get("elapsed", MAX_STRESS_LOOP_MS + 1)) <= MAX_STRESS_LOOP_MS, f"Projects repeated render loop was unexpectedly slow in {browser}: {stressed}")
 
     final_ping = execute(
         session_id,
         "return {cards:document.querySelectorAll('#projects .card').length, title:document.title, ping:Date.now()};",
     )
-    require(isinstance(final_ping, dict) and int(final_ping.get("cards", 0)) >= MIN_PROJECT_CARDS, f"Projects browser became unhealthy after interaction exercise: {final_ping}")
+    require(
+        isinstance(final_ping, dict) and int(final_ping.get("cards", 0)) >= MIN_PROJECT_CARDS,
+        f"Projects {browser} renderer became unhealthy after interaction exercise: {final_ping}",
+    )
 
 
-def run(target: str) -> int:
+def driver_command(browser: str, port: int) -> list[str]:
+    binary = executable_from_env_or_path(browser)
+    if browser == "chrome":
+        return [binary, f"--port={port}", "--allowed-ips=127.0.0.1"]
+    return [binary, "--host", DRIVER_HOST, "--port", str(port)]
+
+
+def run(target: str, browser: str) -> int:
+    global DRIVER_BASE
     target_url = verify_remote.target_url(target)
     verify_remote.validate_url(target_url)
+    port = DRIVER_PORTS[browser]
+    DRIVER_BASE = f"http://{DRIVER_HOST}:{port}"
     log_path: str | None = None
     process: subprocess.Popen[bytes] | None = None
     session_id: str | None = None
     try:
-        with tempfile.NamedTemporaryFile(prefix="projects-chromedriver-", suffix=".log", delete=False) as log_file:
+        with tempfile.NamedTemporaryFile(prefix=f"projects-{browser}-webdriver-", suffix=".log", delete=False) as log_file:
             log_path = log_file.name
             process = subprocess.Popen(
-                [driver_binary(), f"--port={DRIVER_PORT}", "--allowed-ips=127.0.0.1"],
+                driver_command(browser, port),
                 stdout=log_file,
                 stderr=subprocess.STDOUT,
             )
-        wait_for_driver()
-        session_id = create_session()
-        exercise_page(session_id, target_url)
-        print(f"Projects headless Chrome runtime smoke passed for {target}: {target_url}")
+        wait_for_driver(browser)
+        session_id = create_session(browser)
+        exercise_page(session_id, target_url, browser)
+        print(f"Projects headless {browser} runtime smoke passed for {target}: {target_url}")
         return 0
     except (WebDriverError, OSError, ValueError, json.JSONDecodeError) as error:
-        print(f"Projects headless Chrome runtime smoke failed for {target}: {target_url}")
+        print(f"Projects headless {browser} runtime smoke failed for {target}: {target_url}")
         print(f"- {error}")
         if log_path:
             try:
@@ -287,7 +325,7 @@ def run(target: str) -> int:
             except OSError:
                 log_text = ""
             if log_text:
-                print("ChromeDriver log:")
+                print(f"{browser} WebDriver log:")
                 print(log_text[-8_000:])
         return 1
     finally:
@@ -308,13 +346,15 @@ def run(target: str) -> int:
                 Path(log_path).unlink()
             except OSError:
                 pass
+        DRIVER_BASE = ""
 
 
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--target", choices=("branch-preview", "production"), required=True)
+    parser.add_argument("--browser", choices=("chrome", "firefox"), required=True)
     args = parser.parse_args()
-    return run(args.target)
+    return run(args.target, args.browser)
 
 
 if __name__ == "__main__":
