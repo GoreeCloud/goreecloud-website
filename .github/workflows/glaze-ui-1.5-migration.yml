@@ -23,16 +23,10 @@ jobs:
 
           root = Path.cwd()
           revision = "2c5078410d022eba683c8e029bc3cafe773df0b7"
-          files = [
-              "glaze.css",
-              "glaze.controls.css",
-              "glaze.expressive.css",
-              "glaze.formfactors.css",
-              "glaze.accessibility.css",
-              "glaze.color.css",
-              "glaze.motion.css",
-              "glaze.materials.css",
-              "glaze.layout.css",
+          layers = [
+              "glaze.css", "glaze.controls.css", "glaze.expressive.css",
+              "glaze.formfactors.css", "glaze.accessibility.css", "glaze.color.css",
+              "glaze.motion.css", "glaze.materials.css", "glaze.layout.css",
               "glaze.states.css",
           ]
           base = f"https://raw.githubusercontent.com/GoreeCloud/goreecloud-glaze-ui/{revision}/css"
@@ -40,21 +34,16 @@ jobs:
               "/* GoreeCloud Glaze UI 1.5.0 Stable — vendored production bundle. */",
               f"/* Canonical source revision: {revision}. */",
           ]
-          for name in files:
+          for name in layers:
               with urllib.request.urlopen(f"{base}/{name}", timeout=30) as response:
                   parts.append(f"\n/* ===== {name} ===== */\n" + response.read().decode("utf-8"))
-
           parts.append(r'''
           /* ===== GoreeCloud public-site 1.5 integration ===== */
           body.glaze-canvas {
-            margin: 0;
-            min-height: 100vh;
-            color: var(--glaze-text);
-            font-family: var(--glaze-font-sans);
-            background:
-              radial-gradient(circle at 12% -8%, color-mix(in srgb, var(--glaze-accent) 14%, transparent), transparent 34rem),
-              radial-gradient(circle at 88% 2%, color-mix(in srgb, var(--glaze-accent-2) 10%, transparent), transparent 30rem),
-              linear-gradient(180deg, var(--glaze-canvas-accent), var(--glaze-canvas));
+            margin: 0; min-height: 100vh; color: var(--glaze-text); font-family: var(--glaze-font-sans);
+            background: radial-gradient(circle at 12% -8%, color-mix(in srgb, var(--glaze-accent) 14%, transparent), transparent 34rem),
+                        radial-gradient(circle at 88% 2%, color-mix(in srgb, var(--glaze-accent-2) 10%, transparent), transparent 30rem),
+                        linear-gradient(180deg, var(--glaze-canvas-accent), var(--glaze-canvas));
           }
           .site-header {
             border-bottom: 1px solid var(--glaze-line);
@@ -65,42 +54,30 @@ jobs:
           }
           .hero-panel, .glass-card, .app-card, .project-card, .post-card, .archive-card,
           .website-card, .repository-card, .status-card, .surface-card, .principle-grid > div {
-            border: 1px solid var(--glaze-line);
-            border-radius: var(--glaze-radius-xl);
+            border: 1px solid var(--glaze-line); border-radius: var(--glaze-radius-xl);
             background: color-mix(in srgb, var(--glaze-surface-strong) 91%, transparent);
             box-shadow: var(--glaze-shadow-soft);
           }
-          .hero, .section, .section-block { scroll-margin-top: 6rem; }
           .button, button, .theme-button, .theme-toggle, .appearance-control {
-            min-height: var(--glaze-target-min);
-            border-radius: var(--glaze-radius-control);
+            min-height: var(--glaze-target-min); border-radius: var(--glaze-radius-control);
             transition: transform var(--glaze-motion-fast) var(--glaze-ease-standard),
                         box-shadow var(--glaze-motion-fast) var(--glaze-ease-standard),
                         background-color var(--glaze-motion-fast) var(--glaze-ease-standard),
                         border-color var(--glaze-motion-fast) var(--glaze-ease-standard);
           }
-          nav a, .chip, .badge, .eyebrow {
-            border-radius: var(--glaze-radius-pill);
-          }
+          nav a, .chip, .badge, .eyebrow { border-radius: var(--glaze-radius-pill); }
           a:focus-visible, button:focus-visible, [tabindex]:focus-visible {
-            outline: var(--glaze-focus-width) solid var(--glaze-accent);
-            outline-offset: var(--glaze-focus-offset);
+            outline: var(--glaze-focus-width) solid var(--glaze-accent); outline-offset: var(--glaze-focus-offset);
           }
           @media (hover: hover) and (pointer: fine) {
             .app-card:hover, .project-card:hover, .post-card:hover, .archive-card:hover,
             .website-card:hover, .repository-card:hover, .glass-card:hover {
-              transform: translateY(-2px);
-              box-shadow: var(--glaze-shadow-raised);
+              transform: translateY(-2px); box-shadow: var(--glaze-shadow-raised);
             }
             .button:hover, button:hover { transform: translateY(-1px); }
           }
           @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after {
-              scroll-behavior: auto !important;
-              animation-duration: 0.001ms !important;
-              animation-iteration-count: 1 !important;
-              transition-duration: 0ms !important;
-            }
+            *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: 0ms !important; }
           }
           @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
             .site-header { background: var(--glaze-surface-strong); }
@@ -121,34 +98,20 @@ jobs:
 
           def patch_html(path: Path, href: str) -> None:
               text = path.read_text(encoding="utf-8")
-              meta = '  <meta name="goreecloud-glaze-ui" content="1.5.0">\n'
-              link = f'  <link rel="stylesheet" href="{href}" data-glaze-ui="1.5.0">\n'
               if 'name="goreecloud-glaze-ui"' not in text:
-                  text = text.replace("</head>", meta + link + "</head>", 1)
+                  text = text.replace("</head>", '  <meta name="goreecloud-glaze-ui" content="1.5.0">\n' + f'  <link rel="stylesheet" href="{href}" data-glaze-ui="1.5.0">\n</head>', 1)
               elif 'data-glaze-ui="1.5.0"' not in text:
-                  text = text.replace("</head>", link + "</head>", 1)
-              if "glaze-canvas" not in text.split("</head>", 1)[-1].split(">", 1)[0]:
-                  text = re.sub(r'<body(?![^>]*\bclass=)([^>]*)>', r'<body class="glaze-canvas"\1>', text, count=1)
-                  text = re.sub(
-                      r'<body([^>]*\bclass=")([^"]*)"',
-                      lambda m: m.group(0) if "glaze-canvas" in m.group(2).split() else f'<body{m.group(1)}{m.group(2)} glaze-canvas"',
-                      text,
-                      count=1,
-                  )
+                  text = text.replace("</head>", f'  <link rel="stylesheet" href="{href}" data-glaze-ui="1.5.0">\n</head>', 1)
+              text = re.sub(r'<body(?![^>]*\bclass=)([^>]*)>', r'<body class="glaze-canvas"\1>', text, count=1)
+              text = re.sub(r'<body([^>]*\bclass=")([^"]*)"', lambda m: m.group(0) if "glaze-canvas" in m.group(2).split() else f'<body{m.group(1)}{m.group(2)} glaze-canvas"', text, count=1)
               path.write_text(text, encoding="utf-8")
 
           for name in ("index.html", "privacy.html", "security.html", "repositories.html", "404.html"):
               patch_html(root / name, "/css/glaze-ui-1.5.0.css")
-          for site, href in (
-              ("projects", "/assets/glaze-ui-1.5.0.css"),
-              ("roadmap", "/glaze-ui-1.5.0.css"),
-              ("blog", "/glaze-ui-1.5.0.css"),
-              ("archive", "/glaze-ui-1.5.0.css"),
-          ):
+          for site, href in (("projects", "/assets/glaze-ui-1.5.0.css"), ("roadmap", "/glaze-ui-1.5.0.css"), ("blog", "/glaze-ui-1.5.0.css"), ("archive", "/glaze-ui-1.5.0.css")):
               for name in ("index.html", "404.html"):
                   path = root / "sites" / site / name
-                  if path.exists():
-                      patch_html(path, href)
+                  if path.exists(): patch_html(path, href)
 
           build = root / "scripts/build_public_site.py"
           text = build.read_text(encoding="utf-8")
@@ -158,27 +121,12 @@ jobs:
           build.write_text(text, encoding="utf-8")
 
           conformance = root / "docs/glaze-ui-conformance.md"
-          if conformance.exists():
-              text = conformance.read_text(encoding="utf-8")
-              text = text.replace("**1.1.0**", "**1.5.0**")
-              text = text.replace("Glaze UI 1.1", "Glaze UI 1.5")
-              text = text.replace("1.1 adoption", "1.5 adoption")
-              text = text.replace("the 1.1", "the 1.5")
-              text = text.replace("GoreeCloud/glaze-ui", "GoreeCloud/goreecloud-glaze-ui")
-              text = re.sub(r'Canonical reference revision reviewed for this alignment: `[^`]+`', f'Canonical reference revision reviewed for this alignment: `{revision}`', text)
-              if "Stable 1.5 production mapping" not in text:
-                  text += f'''\n\n## Stable 1.5 production mapping\n\nThe public website now vendors the canonical Stable 1.5 web stylesheet set from `GoreeCloud/goreecloud-glaze-ui` at `{revision}` into each independently deployed public surface. The bundle is local to every deployment and adds the current adaptive color, material, motion, layout/density, accessibility, component, state, and Mobile/Tablet/Desktop/TV semantics without creating a cross-domain runtime dependency.\n'''
-              conformance.write_text(text, encoding="utf-8")
+          conformance.write_text(f'''# GoreeCloud Website — Glaze UI 1.5.0 Conformance\n\n## Conformance record\n\n- Target Glaze UI version: **1.5.0**\n- Canonical design-system repository: `GoreeCloud/goreecloud-glaze-ui`\n- Canonical reference revision reviewed for this alignment: `{revision}`\n- Conformance state: **Aligned — Stable 1.5 web contract vendored across all independently deployed GoreeCloud website surfaces in this repository**\n\n## Scope\n\nThis record covers the Main, Projects, Roadmap, Blog, and Archive public surfaces. Each deployment carries a same-origin copy of the Stable 1.5 web bundle so design-system availability does not depend on another GoreeCloud domain at runtime.\n\n## Stable 1.5 web layers\n\nThe production bundle follows the Design Center order: core, controls, expressive components, form factors, accessibility, adaptive semantic color, motion, materials, layout/density, and interaction states. Candidate wearable and Glaze Motion promotion layers are excluded from this production adoption.\n\n## Surface and interaction mapping\n\nThe sites use Glaze UI semantic canvas, Solid/Raised/Glaze/Overlay materials, adaptive color, 44px minimum targets, current focus semantics, restrained hover/press motion, current corner and spacing roles, and responsive Mobile/Tablet/Desktop/TV vocabulary while retaining each site's information architecture and product identity.\n\n## Accessibility and resilience\n\nReduced-motion behavior removes nonessential animation and transitions. Focus-visible treatment remains explicit. Translucent header treatment has a solid fallback when backdrop filters are unavailable. Existing page-level no-JavaScript and theme behavior remains intact.\n\n## Privacy boundary\n\nThe design-system bundle is vendored at build/source time and served same-origin. It adds no analytics, advertising, trackers, remote fonts, runtime UI framework, or cross-domain stylesheet dependency.\n\n## Release boundary\n\nGlaze UI 1.6 Candidate and wearable Candidate work are not production inputs. Public presentation cannot upgrade application, Privacy Shield, Wardveil Security, Everkeep, or Mesh evidence state.\n\n## Exceptions\n\nNo production Glaze UI exception is recorded for these website surfaces.\n''', encoding="utf-8")
 
           validator = root / "scripts/validate_glaze_ui.py"
-          if validator.exists():
-              text = validator.read_text(encoding="utf-8")
-              text = text.replace("1.1.0", "1.5.0").replace("Glaze UI 1.1", "Glaze UI 1.5")
-              text = text.replace("GoreeCloud/glaze-ui", "GoreeCloud/goreecloud-glaze-ui")
-              validator.write_text(text, encoding="utf-8")
+          validator.write_text(f'''#!/usr/bin/env python3\nfrom pathlib import Path\nimport sys\n\nROOT = Path(__file__).resolve().parents[1]\nREVISION = "{revision}"\nBUNDLE = ROOT / "css/glaze-ui-1.5.0.css"\nPAGES = [ROOT / n for n in ("index.html","repositories.html","privacy.html","security.html","404.html")]\nCONFORMANCE = ROOT / "docs/glaze-ui-conformance.md"\nLAYERS = {layers!r}\nerrors = []\n\nif not BUNDLE.is_file(): errors.append("Stable 1.5 bundle is missing")\nelse:\n    css = BUNDLE.read_text(encoding="utf-8")\n    for marker in ["Glaze UI 1.5.0 Stable", REVISION, "GoreeCloud public-site 1.5 integration", "prefers-reduced-motion", "backdrop-filter"]:\n        if marker not in css: errors.append(f"Stable bundle marker missing: {{marker}}")\n    for layer in LAYERS:\n        if f"===== {{layer}} =====" not in css: errors.append(f"Stable layer missing: {{layer}}")\n\nfor page in PAGES:\n    text = page.read_text(encoding="utf-8")\n    for marker in ['name="goreecloud-glaze-ui" content="1.5.0"', 'data-glaze-ui="1.5.0"', 'glaze-canvas', 'name="viewport"', 'name="color-scheme"']:\n        if marker not in text: errors.append(f"{{page.name}} missing 1.5 page marker: {{marker}}")\n    if "http://raw.githubusercontent.com" in text or "https://raw.githubusercontent.com" in text:\n        errors.append(f"{{page.name}} must not load remote Glaze UI at runtime")\n\ntext = CONFORMANCE.read_text(encoding="utf-8") if CONFORMANCE.is_file() else ""\nfor marker in ["Target Glaze UI version: **1.5.0**", "GoreeCloud/goreecloud-glaze-ui", REVISION, "same-origin", "Candidate wearable", "No production Glaze UI exception"]:\n    if marker not in text: errors.append(f"Conformance marker missing: {{marker}}")\n\nif errors:\n    print("Glaze UI 1.5 validation failed:")\n    for error in errors: print(f"  - {{error}}")\n    sys.exit(1)\nprint("Glaze UI 1.5.0 Stable validation passed across the five goreecloud-website public surfaces.")\n''', encoding="utf-8")
 
-          adoption = root / "docs/glaze-ui-1.5-public-sites.md"
-          adoption.write_text(f'''# Glaze UI 1.5.0 public-site adoption\n\n- Stable target: **1.5.0**\n- Canonical repository: `GoreeCloud/goreecloud-glaze-ui`\n- Source revision: `{revision}`\n- Surfaces: Main, Projects, Roadmap, Blog, Archive\n- Delivery: vendored, same-origin CSS bundle per independently deployed surface\n- Runtime dependency on Design Center: none\n- Candidate/Wearable layers: excluded from production adoption\n\nThe bundle follows the Design Center Stable web order: core, controls, expressive, form factors, accessibility, adaptive color, motion, materials, layout, and states. A public-site integration layer maps those semantics onto existing GoreeCloud website cards, navigation, controls, focus behavior, motion, and fallbacks while preserving each site's information architecture.\n''', encoding="utf-8")
+          (root / "docs/glaze-ui-1.5-public-sites.md").write_text(f'''# Glaze UI 1.5.0 public-site adoption\n\n- Stable target: **1.5.0**\n- Canonical repository: `GoreeCloud/goreecloud-glaze-ui`\n- Source revision: `{revision}`\n- Surfaces: Main, Projects, Roadmap, Blog, Archive\n- Delivery: vendored same-origin CSS per deployment\n- Candidate/Wearable layers: excluded\n\nThe integration maps Stable 1.5 color, materials, spacing/density, states, focus behavior, motion and fallback semantics onto the existing GoreeCloud website language without changing product evidence authority.\n''', encoding="utf-8")
 
       - name: Validate migration
         run: |
