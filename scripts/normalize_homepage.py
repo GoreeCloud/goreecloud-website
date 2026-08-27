@@ -74,32 +74,21 @@ def website_card(
     description: str,
     status: str,
     status_class: str,
-    preview_class: str,
-    preview_mark: str,
+    card_class: str,
+    mark: str,
 ) -> str:
+    """Render one concise website card without a simulated browser preview."""
     return (
-        '<article class="service-card website-card">\n'
-        f'  <a class="website-preview {preview_class}" href="{url}" aria-label="Open {name}">\n'
-        '    <span class="website-preview-browser" aria-hidden="true">\n'
-        '      <span class="website-preview-toolbar">\n'
-        '        <i></i><i></i><i></i>\n'
-        f'        <span class="website-preview-domain">{domain}</span>\n'
-        '      </span>\n'
-        '      <span class="website-preview-page">\n'
-        f'        <span class="website-preview-mark">{preview_mark}</span>\n'
-        f'        <span class="website-preview-title">{name}</span>\n'
-        '        <span class="website-preview-lines"><span></span><span></span></span>\n'
-        '      </span>\n'
-        '    </span>\n'
-        '  </a>\n'
+        f'<article class="service-card website-card {card_class}">\n'
         '  <div class="website-card-body">\n'
+        '    <div class="website-card-head">\n'
+        f'      <span class="website-mark" aria-hidden="true">{mark}</span>\n'
+        f'      <span class="badge {status_class}">{status}</span>\n'
+        '    </div>\n'
         f'    <p class="service-kicker">{domain}</p>\n'
         f'    <h3>{name}</h3>\n'
         f'    <p>{description}</p>\n'
-        '    <div class="website-card-footer">\n'
-        f'      <a class="website-link" href="{url}">Visit website →</a>\n'
-        f'      <span class="badge {status_class}">{status}</span>\n'
-        '    </div>\n'
+        f'    <a class="website-link" href="{url}" aria-label="Visit {name} website">Visit website →</a>\n'
         '  </div>\n'
         '</article>'
     )
@@ -297,14 +286,16 @@ def normalize_homepage(source: str) -> str:
     if normalized.count('id="websites"') != 1:
         raise ValueError("homepage must contain exactly one GoreeCloud websites section")
     for domain in EXPECTED_WEBSITE_DOMAINS:
-        if normalized.count(domain) < 1:
-            raise ValueError(f"homepage website portfolio is missing: {domain}")
+        if normalized.count(f'<p class="service-kicker">{domain}</p>') != 1:
+            raise ValueError(f"homepage website portfolio must show destination domain exactly once: {domain}")
     website_section_match = re.search(r'<section id="websites".*?</section>', normalized, re.DOTALL)
     website_section = website_section_match.group(0) if website_section_match else ""
-    if website_section.count('class="service-card website-card"') != len(EXPECTED_WEBSITE_DOMAINS):
+    if website_section.count('class="service-card website-card ') != len(EXPECTED_WEBSITE_DOMAINS):
         raise ValueError("homepage website portfolio card count must match the website manifest")
-    if website_section.count('class="website-preview ') != len(EXPECTED_WEBSITE_DOMAINS):
-        raise ValueError("each website card must include a visual preview")
+    if "website-preview" in website_section or "website-preview-browser" in website_section:
+        raise ValueError("simulated browser previews must not appear in the website directory")
+    if website_section.count('class="website-mark"') != len(EXPECTED_WEBSITE_DOMAINS):
+        raise ValueError("each website card must include one compact site identity mark")
     if '<section class="band" aria-label="Core principles">' in normalized:
         raise ValueError("duplicated homepage principle band must not return")
     for stylesheet in (WEBSITE_STYLESHEET, HOMEPAGE_STYLESHEET):
