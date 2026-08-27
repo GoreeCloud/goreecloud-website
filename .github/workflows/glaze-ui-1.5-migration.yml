@@ -116,6 +116,8 @@ jobs:
           roadmap = root / "sites/roadmap/index.html"
           roadmap_text = roadmap.read_text(encoding="utf-8")
           roadmap_text = roadmap_text.replace("Messenger is advancing private messaging", "GoreeCloud Messenger is advancing private messaging")
+          roadmap_text = roadmap_text.replace("Gateway is establishing native HTTPS ingress", "GoreeCloud Gateway is establishing native HTTPS ingress")
+          roadmap_text = roadmap_text.replace("Quill is evolving as the first-party typing", "GoreeCloud Quill is evolving as the first-party typing")
           roadmap.write_text(roadmap_text, encoding="utf-8")
 
           build = root / "scripts/build_public_site.py"
