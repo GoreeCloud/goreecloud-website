@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
-  "as_of": "2026-08-23",
+  "as_of": "2026-08-27",
   "review_method": "Authenticated GitHub repository inventory reconciliation",
   "counts": {
-    "total": 46,
-    "public": 34,
-    "private": 12,
+    "total": 53,
+    "public": 39,
+    "private": 14,
     "functional_groups": 13
   },
   "groups": [
@@ -14,10 +14,10 @@
       "label": "Design system",
       "repositories": [
         {
-          "name": "glaze-ui",
+          "name": "goreecloud-glaze-ui",
           "visibility": "public",
-          "description": "Canonical source for the Glaze UI design system.",
-          "role": "Shared design-system authority and interface source of truth."
+          "description": "Canonical source for the Glaze UI design system and Design Center website.",
+          "role": "Shared design-system authority, current Stable 1.5.0 contract, and interface source of truth."
         }
       ]
     },
@@ -34,8 +34,8 @@
         {
           "name": "goreecloud-everkeep",
           "visibility": "private",
-          "description": "Private source for Everkeep resilience, recovery, preservation, and digital-legacy contracts.",
-          "role": "Platform resilience and preservation source boundary."
+          "description": "Private source for Everkeep resilience, recovery, preservation, portability, continuity, succession, and assurance contracts.",
+          "role": "Everkeep platform authority and Continuity Center source boundary."
         },
         {
           "name": "goreecloud-logo",
@@ -46,14 +46,26 @@
         {
           "name": "goreecloud-suite",
           "visibility": "private",
-          "description": "Private source for Suite-level integration and ecosystem coordination.",
-          "role": "GoreeCloud Suite integration source boundary."
+          "description": "Private source for Suite-level integration and the public GoreeCloud Suite directory.",
+          "role": "GoreeCloud Suite integration and product-directory source boundary."
         },
         {
           "name": "goreecloud-waypoint",
           "visibility": "public",
           "description": "Canonical source for the Waypoint capability identity associated with GoreeCloud Tasks.",
           "role": "Waypoint capability-identity authority."
+        },
+        {
+          "name": "goreecloud-mesh",
+          "visibility": "public",
+          "description": "Coordination and governance plane connecting GoreeCloud applications, services, evidence, and platform relationships.",
+          "role": "GoreeCloud Mesh platform authority and Mesh Center source."
+        },
+        {
+          "name": "goreecloud-gateway",
+          "visibility": "public",
+          "description": "Native GoreeCloud reverse proxy, HTTPS ingress, routing, certificate-management, and controlled service-publication platform.",
+          "role": "Ingress, certificate, routing, and publication authority under active development."
         }
       ]
     },
@@ -76,14 +88,14 @@
         {
           "name": "goreecloud-wardveil-security",
           "visibility": "private",
-          "description": "Private source boundary for Wardveil Security by GoreeCloud.",
-          "role": "Security-identity source boundary."
+          "description": "Private source boundary for Wardveil Security, its evidence contracts, protection semantics, and Security Center website.",
+          "role": "Wardveil Security platform authority and Security Center source."
         },
         {
           "name": "goreecloud-privacy-shield",
           "visibility": "private",
-          "description": "Private source boundary for GoreeCloud Privacy Shield.",
-          "role": "Privacy and content-protection source boundary."
+          "description": "Private source boundary for Privacy Shield contracts, adapters, evidence semantics, and the Privacy Center website.",
+          "role": "Privacy Shield platform authority and Privacy Center source."
         }
       ]
     },
@@ -156,6 +168,12 @@
           "visibility": "public",
           "description": "Official browser extension for GoreeCloud Bookmarks.",
           "role": "Browser integration client for GoreeCloud Bookmarks."
+        },
+        {
+          "name": "goreecloud-documents",
+          "visibility": "public",
+          "description": "First-party intelligent document-management platform for capture, OCR, search, organization, automation, collaboration, and preservation.",
+          "role": "Document-management authority; Milestone 1 native foundation is in development."
         }
       ]
     },
@@ -184,7 +202,7 @@
         {
           "name": "goreecloud-keyboard",
           "visibility": "public",
-          "description": "GoreeCloud-maintained Android keyboard project based on CleverKeys.",
+          "description": "GoreeCloud-maintained Android keyboard with first-party input capabilities.",
           "role": "Android input method and productivity client under active development."
         },
         {
@@ -192,12 +210,18 @@
           "visibility": "public",
           "description": "Original GoreeCloud-owned Android home-screen launcher.",
           "role": "Privacy-first Android launcher under active development."
+        },
+        {
+          "name": "goreecloud-quill",
+          "visibility": "public",
+          "description": "First-party GoreeCloud typing, editing, privacy, and intelligent-input capability project.",
+          "role": "Quill input-capability source and shared editing/intelligence foundation."
         }
       ]
     },
     {
       "id": "operations-developer-tools",
-      "label": "Operations & developer tools",
+      "label": "Operations, developer tools & intelligence",
       "repositories": [
         {
           "name": "goreecloud-changelogs",
@@ -234,6 +258,18 @@
           "visibility": "private",
           "description": "Canonical private source repository for Firefox extensions built or maintained by GoreeCloud.",
           "role": "Firefox-extension source, build, maintenance, and release boundary."
+        },
+        {
+          "name": "goreecloud-code",
+          "visibility": "private",
+          "description": "First-party developer and source-control platform for repositories, collaboration, CI/CD, packages, security, and AI-assisted development.",
+          "role": "Developer platform under active development; Forgejo is the initial replaceable infrastructure foundation."
+        },
+        {
+          "name": "goreecloud-ai",
+          "visibility": "public",
+          "description": "First-party conversational AI and local-model workspace built around Ollama, GoreeCloud Search, knowledge, tools, and service integrations.",
+          "role": "Private AI workspace and governed model, knowledge, research, and tool-interaction layer."
         }
       ]
     },
@@ -282,6 +318,12 @@
           "visibility": "private",
           "description": "Native GoreeCloud front-end mail application and provider-integration project.",
           "role": "Private mail-client application; GoreeCloud does not operate a mail server."
+        },
+        {
+          "name": "goreecloud-messenger",
+          "visibility": "private",
+          "description": "First-party private messaging and calling application with explicit transport and encryption boundaries.",
+          "role": "Native messaging, groups, calling, and GoreeCloud Data integration under active development."
         }
       ]
     },
@@ -346,8 +388,8 @@
         {
           "name": "goreecloud-website",
           "visibility": "private",
-          "description": "Source repository for the public static GoreeCloud website portfolio.",
-          "role": "Public web presence and website deployment source."
+          "description": "Source repository for the public GoreeCloud website portfolio.",
+          "role": "Main, Projects, Blog, Roadmap, and Archive website deployment source."
         },
         {
           "name": "GoreeCloud",
