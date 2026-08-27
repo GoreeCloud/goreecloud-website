@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "as_of": "2026-08-26",
+  "as_of": "2026-08-27",
   "section_title": "GoreeCloud Suite",
   "section_description": "The GoreeCloud Suite is the first-party application layer of GoreeCloud: user-facing software, client applications, platform services, operations tools, developer systems, and intelligence experiences that share GoreeCloud design, privacy, security, resilience, and coordination contracts.",
   "groups": [
@@ -17,9 +17,9 @@
           "status_class": "growing",
           "icon": "assets/suite/notes.svg",
           "icon_blob": "9618b85e29f89990320cc3a101f0f3bf6fffc89f",
-          "source_repository": "GoreeCloud/goreecloud-notes",
-          "source_path": "artwork/app-icon.svg",
-          "source_ref": "main"
+          "source_repository": "GoreeCloud/goreecloud-branding-assets",
+          "source_path": "products/notes/app-icon.svg",
+          "source_ref": "dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc"
         },
         {
           "id": "memos",
@@ -30,9 +30,9 @@
           "status_class": "active",
           "icon": "assets/suite/memos.svg",
           "icon_blob": "eb9396c3a1891f6afb96849a29110c6f35e65f19",
-          "source_repository": "GoreeCloud/goreecloud-memos",
-          "source_path": "artwork/app-icon.svg",
-          "source_ref": "main"
+          "source_repository": "GoreeCloud/goreecloud-branding-assets",
+          "source_path": "products/memos/app-icon.svg",
+          "source_ref": "dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc"
         },
         {
           "id": "tasks",
@@ -43,9 +43,9 @@
           "status_class": "growing",
           "icon": "assets/suite/tasks.svg",
           "icon_blob": "180e162c81b34a0b1dffd20031b36cbb874e2f61",
-          "source_repository": "GoreeCloud/goreecloud-tasks",
-          "source_path": "artwork/app-icon.svg",
-          "source_ref": "c9f017f2992f9077fe16419e1f528a27232f011d"
+          "source_repository": "GoreeCloud/goreecloud-branding-assets",
+          "source_path": "products/tasks/app-icon.svg",
+          "source_ref": "dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc"
         },
         {
           "id": "calendar",
@@ -56,9 +56,9 @@
           "status_class": "growing",
           "icon": "assets/suite/calendar.svg",
           "icon_blob": "369c42a204c6b130f49f37f91ec0569256a2c19e",
-          "source_repository": "GoreeCloud/goreecloud-calendar",
-          "source_path": "artwork/app-icon.svg",
-          "source_ref": "655f36122301bb4c90b9d9dc6dc7e60a499ff26b"
+          "source_repository": "GoreeCloud/goreecloud-branding-assets",
+          "source_path": "products/calendar/app-icon.svg",
+          "source_ref": "dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc"
         },
         {
           "id": "contacts",
@@ -69,9 +69,9 @@
           "status_class": "growing",
           "icon": "assets/suite/contacts.svg",
           "icon_blob": "22e818436ebef790333fcf56efa79d5bdfff5c88",
-          "source_repository": "GoreeCloud/goreecloud-contacts",
-          "source_path": "artwork/app-icon.svg",
-          "source_ref": "29323f902bde492621dc77da9d5cf7c0bc775bfb"
+          "source_repository": "GoreeCloud/goreecloud-branding-assets",
+          "source_path": "products/contacts/app-icon.svg",
+          "source_ref": "dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc"
         },
         {
           "id": "documents",
@@ -82,9 +82,9 @@
           "status_class": "growing",
           "icon": "assets/suite/documents.svg",
           "icon_blob": "58200e22b053fe17a2d80cc69e9908a3a2987a34",
-          "source_repository": "GoreeCloud/goreecloud-documents",
-          "source_path": "artwork/app-icon.svg",
-          "source_ref": "f78b5f94111a9d93a384c03db80f318c6d5a6a55"
+          "source_repository": "GoreeCloud/goreecloud-branding-assets",
+          "source_path": "products/documents/app-icon.svg",
+          "source_ref": "dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc"
         }
       ]
     },
@@ -101,9 +101,9 @@
           "status_class": "growing",
           "icon": "assets/suite/drive.svg",
           "icon_blob": "a931ebc4e657895128adb6391eb4665c99e74c4a",
-          "source_repository": "GoreeCloud/goreecloud-drive",
-          "source_path": "artwork/app-icon.svg",
-          "source_ref": "main"
+          "source_repository": "GoreeCloud/goreecloud-branding-assets",
+          "source_path": "products/drive/app-icon.svg",
+          "source_ref": "dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc"
         },
         {
           "id": "sync",
@@ -114,9 +114,9 @@
           "status_class": "growing",
           "icon": "assets/suite/sync.svg",
           "icon_blob": "91e40049d146881df6befe32d836e260e2bd908c",
-          "source_repository": "GoreeCloud/goreecloud-sync",
-          "source_path": "artwork/app-icon.svg",
-          "source_ref": "main"
+          "source_repository": "GoreeCloud/goreecloud-branding-assets",
+          "source_path": "products/sync/app-icon.svg",
+          "source_ref": "dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc"
         },
         {
           "id": "photos",
@@ -127,9 +127,9 @@
           "status_class": "growing",
           "icon": "assets/suite/photos.svg",
           "icon_blob": "7cce0f2f1b1fad209577a4e0294f0b767fd06b14",
-          "source_repository": "GoreeCloud/goreecloud-photos",
-          "source_path": "artwork/app-icon.svg",
-          "source_ref": "492d4f8d6c31c084620a2c5392a94a1fa8ca445c"
+          "source_repository": "GoreeCloud/goreecloud-branding-assets",
+          "source_path": "products/photos/app-icon.svg",
+          "source_ref": "dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc"
         },
         {
           "id": "gallery",
@@ -140,9 +140,9 @@
           "status_class": "growing",
           "icon": "assets/suite/gallery.svg",
           "icon_blob": "ff3085d705b567283dd566a3c02e667866458012",
-          "source_repository": "GoreeCloud/goreecloud-gallery",
-          "source_path": "artwork/app-icon.svg",
-          "source_ref": "e72b1a87e1df167defc94a64b321ca6f16e5ab6f"
+          "source_repository": "GoreeCloud/goreecloud-branding-assets",
+          "source_path": "products/gallery/app-icon.svg",
+          "source_ref": "dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc"
         },
         {
           "id": "music",
@@ -153,9 +153,9 @@
           "status_class": "growing",
           "icon": "assets/suite/music.svg",
           "icon_blob": "74d7726676faf6447116153da53790e4c272e03c",
-          "source_repository": "GoreeCloud/goreecloud-music",
-          "source_path": "artwork/app-icon.svg",
-          "source_ref": "78eb8605926e1722c0539943425a5b0f9337d3ba"
+          "source_repository": "GoreeCloud/goreecloud-branding-assets",
+          "source_path": "products/music/app-icon.svg",
+          "source_ref": "dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc"
         },
         {
           "id": "video",
@@ -166,9 +166,9 @@
           "status_class": "growing",
           "icon": "assets/suite/video.svg",
           "icon_blob": "0fbffa1c5210b5da3934c4615b40d59303c0844c",
-          "source_repository": "GoreeCloud/goreecloud-video",
-          "source_path": "artwork/app-icon.svg",
-          "source_ref": "06694cdee9b692e6752b76e14f624dc04904a6bc"
+          "source_repository": "GoreeCloud/goreecloud-branding-assets",
+          "source_path": "products/video/app-icon.svg",
+          "source_ref": "dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc"
         },
         {
           "id": "bookmarks",
@@ -179,9 +179,9 @@
           "status_class": "growing",
           "icon": "assets/suite/bookmarks.svg",
           "icon_blob": "2e9947924708df10844a3a81f47585c4da6b931a",
-          "source_repository": "GoreeCloud/goreecloud-bookmarks",
-          "source_path": "artwork/app-icon.svg",
-          "source_ref": "bf8da4114cf4810bb07c3cb42d42a200d0f577a1"
+          "source_repository": "GoreeCloud/goreecloud-branding-assets",
+          "source_path": "products/bookmarks/app-icon.svg",
+          "source_ref": "dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc"
         }
       ]
     },
@@ -198,9 +198,9 @@
           "status_class": "growing",
           "icon": "assets/suite/mail.svg",
           "icon_blob": "6fcc489ccfc6348514755a9a052dc413ee17ccde",
-          "source_repository": "GoreeCloud/goreecloud-mail",
-          "source_path": "artwork/app-icon.svg",
-          "source_ref": "24b87367efea098518610a7abf29775e46295593"
+          "source_repository": "GoreeCloud/goreecloud-branding-assets",
+          "source_path": "products/mail/app-icon.svg",
+          "source_ref": "dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc"
         },
         {
           "id": "messenger",
@@ -211,9 +211,9 @@
           "status_class": "growing",
           "icon": "assets/suite/messenger.svg",
           "icon_blob": "01102af91a43e100c66877489b94929165ec0430",
-          "source_repository": "GoreeCloud/goreecloud-messenger",
-          "source_path": "artwork/app-icon.svg",
-          "source_ref": "e4092fb2e0d7aa3984161faab073ea76929f1a24"
+          "source_repository": "GoreeCloud/goreecloud-branding-assets",
+          "source_path": "products/messenger/app-icon.svg",
+          "source_ref": "dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc"
         },
         {
           "id": "search",
@@ -224,9 +224,9 @@
           "status_class": "active",
           "icon": "assets/suite/search.svg",
           "icon_blob": "fc441c75d6cc2bd0d88a80d77b60994b34475670",
-          "source_repository": "GoreeCloud/goreecloud-search",
-          "source_path": "artwork/app-icon.svg",
-          "source_ref": "master"
+          "source_repository": "GoreeCloud/goreecloud-branding-assets",
+          "source_path": "products/search/app-icon.svg",
+          "source_ref": "dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc"
         },
         {
           "id": "browser",
@@ -237,9 +237,9 @@
           "status_class": "growing",
           "icon": "assets/suite/browser.svg",
           "icon_blob": "2a81cc68cb8c1831dfd7bec6c3d0b14e2f421f1f",
-          "source_repository": "GoreeCloud/goreecloud-browser",
-          "source_path": "assets/branding/goreecloud-browser.svg",
-          "source_ref": "f4ab699f310d18901f2e012d56079a38c3e16d9a"
+          "source_repository": "GoreeCloud/goreecloud-branding-assets",
+          "source_path": "products/browser/app-icon.svg",
+          "source_ref": "dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc"
         },
         {
           "id": "feed",
@@ -250,9 +250,9 @@
           "status_class": "growing",
           "icon": "assets/suite/feed.svg",
           "icon_blob": "3464434f08f1c200621900ae86a00d04e812a5fb",
-          "source_repository": "GoreeCloud/goreecloud-rss",
-          "source_path": "artwork/app-icon.svg",
-          "source_ref": "e9a163554c088a0d618af371bbc07035b5591c50"
+          "source_repository": "GoreeCloud/goreecloud-branding-assets",
+          "source_path": "products/feed/app-icon.svg",
+          "source_ref": "dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc"
         },
         {
           "id": "location",
@@ -263,9 +263,9 @@
           "status_class": "growing",
           "icon": "assets/suite/location.svg",
           "icon_blob": "ceb93b6d814c80ece0929022eb5edcdfbc346e2d",
-          "source_repository": "GoreeCloud/goreecloud-location",
-          "source_path": "artwork/app-icon.svg",
-          "source_ref": "fee75f234ec3a8935713f553a12bc2957f31bfbd"
+          "source_repository": "GoreeCloud/goreecloud-branding-assets",
+          "source_path": "products/location/app-icon.svg",
+          "source_ref": "dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc"
         }
       ]
     },
@@ -282,9 +282,9 @@
           "status_class": "growing",
           "icon": "assets/suite/keyboard.svg",
           "icon_blob": "9dea51ca5853dc0faf41d94fbc12ee810480c472",
-          "source_repository": "GoreeCloud/goreecloud-keyboard",
-          "source_path": "artwork/app-icon.svg",
-          "source_ref": "037b98d3520b199b7a05264cfe46ab57bf365394"
+          "source_repository": "GoreeCloud/goreecloud-branding-assets",
+          "source_path": "products/keyboard/app-icon.svg",
+          "source_ref": "dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc"
         },
         {
           "id": "launcher",
@@ -295,9 +295,9 @@
           "status_class": "growing",
           "icon": "assets/suite/launcher.svg",
           "icon_blob": "d6768114e689058f1c911beca4050f33c96bd7c2",
-          "source_repository": "GoreeCloud/goreecloud-launcher",
-          "source_path": "artwork/app-icon.svg",
-          "source_ref": "c968a7a9c064952349718fa27b7c19faa7faeb6e"
+          "source_repository": "GoreeCloud/goreecloud-branding-assets",
+          "source_path": "products/launcher/app-icon.svg",
+          "source_ref": "dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc"
         },
         {
           "id": "terminal",
@@ -308,9 +308,9 @@
           "status_class": "growing",
           "icon": "assets/suite/terminal.svg",
           "icon_blob": "fd28f49fc0dd67e2f3e31480942d555914e8fc5b",
-          "source_repository": "GoreeCloud/goreecloud-terminal",
-          "source_path": "artwork/app-icon.svg",
-          "source_ref": "b96e1c2e97fce081c344ce70779509a8a98b0172"
+          "source_repository": "GoreeCloud/goreecloud-branding-assets",
+          "source_path": "products/terminal/app-icon.svg",
+          "source_ref": "dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc"
         }
       ]
     },
@@ -327,9 +327,9 @@
           "status_class": "growing",
           "icon": "assets/suite/manager.svg",
           "icon_blob": "024d82d5b5911e426216dfbd6a19d95cd6d71fc3",
-          "source_repository": "GoreeCloud/goreecloud-manager",
-          "source_path": "artwork/app-icon.svg",
-          "source_ref": "main"
+          "source_repository": "GoreeCloud/goreecloud-branding-assets",
+          "source_path": "products/manager/app-icon.svg",
+          "source_ref": "dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc"
         },
         {
           "id": "identity",
@@ -340,9 +340,9 @@
           "status_class": "growing",
           "icon": "assets/suite/identity.svg",
           "icon_blob": "dc8287e385f86767f0105c48a8f234d8440d7623",
-          "source_repository": "GoreeCloud/goreecloud-identity",
-          "source_path": "artwork/app-icon.svg",
-          "source_ref": "main"
+          "source_repository": "GoreeCloud/goreecloud-branding-assets",
+          "source_path": "products/identity/app-icon.svg",
+          "source_ref": "dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc"
         },
         {
           "id": "vault",
@@ -353,9 +353,9 @@
           "status_class": "growing",
           "icon": "assets/suite/vault.svg",
           "icon_blob": "c34edae0c57a6bac002fb0f940de7ae26cf1450e",
-          "source_repository": "GoreeCloud/goreecloud-vault",
-          "source_path": "artwork/app-icon.svg",
-          "source_ref": "525d983fbc1ac7b32afc955af801a6e44a06cd59"
+          "source_repository": "GoreeCloud/goreecloud-branding-assets",
+          "source_path": "products/vault/app-icon.svg",
+          "source_ref": "dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc"
         },
         {
           "id": "backup",
@@ -366,9 +366,9 @@
           "status_class": "growing",
           "icon": "assets/suite/backup.svg",
           "icon_blob": "6e8f2bc02beb4679ed99f2db787e7dc6b4a0f28f",
-          "source_repository": "GoreeCloud/goreecloud-backup",
-          "source_path": "artwork/app-icon.svg",
-          "source_ref": "master"
+          "source_repository": "GoreeCloud/goreecloud-branding-assets",
+          "source_path": "products/backup/app-icon.svg",
+          "source_ref": "dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc"
         },
         {
           "id": "network",
@@ -379,9 +379,9 @@
           "status_class": "growing",
           "icon": "assets/suite/network.svg",
           "icon_blob": "7457cd187d65887189150016b44c28af279635e5",
-          "source_repository": "GoreeCloud/goreecloud-network",
-          "source_path": "artwork/app-icon.svg",
-          "source_ref": "main"
+          "source_repository": "GoreeCloud/goreecloud-branding-assets",
+          "source_path": "products/network/app-icon.svg",
+          "source_ref": "dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc"
         },
         {
           "id": "dns",
@@ -392,9 +392,9 @@
           "status_class": "growing",
           "icon": "assets/suite/dns.svg",
           "icon_blob": "99c8e09f4e8e65bde57e671e4fd4beb1bd2fcb4a",
-          "source_repository": "GoreeCloud/goreecloud-dns",
-          "source_path": "artwork/app-icon.svg",
-          "source_ref": "master"
+          "source_repository": "GoreeCloud/goreecloud-branding-assets",
+          "source_path": "products/dns/app-icon.svg",
+          "source_ref": "dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc"
         },
         {
           "id": "gateway",
@@ -405,9 +405,9 @@
           "status_class": "growing",
           "icon": "assets/suite/gateway.svg",
           "icon_blob": "f8a94f6a6ff5dece3f93bc15531ee5845fa3db61",
-          "source_repository": "GoreeCloud/goreecloud-gateway",
-          "source_path": "artwork/app-icon.svg",
-          "source_ref": "8067ce3a0b20107f1e4a82b98a2923dd3141fa6c"
+          "source_repository": "GoreeCloud/goreecloud-branding-assets",
+          "source_path": "products/gateway/app-icon.svg",
+          "source_ref": "dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc"
         },
         {
           "id": "notify",
@@ -418,9 +418,9 @@
           "status_class": "growing",
           "icon": "assets/suite/notify.svg",
           "icon_blob": "1ce1239cd2319a0f96232b1562ec1f6e68d43815",
-          "source_repository": "GoreeCloud/goreecloud-notify",
-          "source_path": "artwork/app-icon.svg",
-          "source_ref": "main"
+          "source_repository": "GoreeCloud/goreecloud-branding-assets",
+          "source_path": "products/notify/app-icon.svg",
+          "source_ref": "dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc"
         },
         {
           "id": "monitor",
@@ -431,9 +431,9 @@
           "status_class": "growing",
           "icon": "assets/suite/monitor.svg",
           "icon_blob": "f31c9abab93f1e9e45e34e0eef411705228d1a66",
-          "source_repository": "GoreeCloud/goreecloud-monitor",
-          "source_path": "artwork/app-icon.svg",
-          "source_ref": "main"
+          "source_repository": "GoreeCloud/goreecloud-branding-assets",
+          "source_path": "products/monitor/app-icon.svg",
+          "source_ref": "dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc"
         },
         {
           "id": "changelogs",
@@ -444,9 +444,9 @@
           "status_class": "growing",
           "icon": "assets/suite/changelogs.svg",
           "icon_blob": "958878ecde32cadd3e646c606534638e4f5e01fb",
-          "source_repository": "GoreeCloud/goreecloud-changelogs",
-          "source_path": "artwork/app-icon.svg",
-          "source_ref": "8ca326c0d7a81b71da3a7fd64ce2bcac66c9a30f"
+          "source_repository": "GoreeCloud/goreecloud-branding-assets",
+          "source_path": "products/changelogs/app-icon.svg",
+          "source_ref": "dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc"
         }
       ]
     },
@@ -463,9 +463,9 @@
           "status_class": "growing",
           "icon": "assets/suite/ai.svg",
           "icon_blob": "1cbe04748f50cb843eef0cbb7233e2769efa275a",
-          "source_repository": "GoreeCloud/goreecloud-ai",
-          "source_path": "artwork/app-icon.svg",
-          "source_ref": "800b06ad723ccabbc9fd1c74c278a4f0396522ed"
+          "source_repository": "GoreeCloud/goreecloud-branding-assets",
+          "source_path": "products/ai/app-icon.svg",
+          "source_ref": "dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc"
         },
         {
           "id": "code",
@@ -476,9 +476,9 @@
           "status_class": "growing",
           "icon": "assets/suite/code.svg",
           "icon_blob": "579f0416bd2839bf40e87de7751e319d80bd0bf9",
-          "source_repository": "GoreeCloud/goreecloud-code",
-          "source_path": "artwork/app-icon.svg",
-          "source_ref": "71e68a1ec6efd28d26f1ba4774096916ff2b08d8"
+          "source_repository": "GoreeCloud/goreecloud-branding-assets",
+          "source_path": "products/code/app-icon.svg",
+          "source_ref": "dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc"
         }
       ]
     }
