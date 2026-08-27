@@ -21,7 +21,7 @@ This inventory records every deployable website artwork file. It is not a licens
 | `assets/services/jellyfin.svg` | jellyfin/jellyfin-ux | master · logos/SVG/jellyfin-icon--color-on-light.svg | `c90d5e9acf2a5b27c730d1ea4a63d0184c5c766f` |
 | `assets/services/matrix.svg` | matrix-org/matrix.org | afca85178d131d3d85a33da34d64cbae88697a77 · static/images/matrix-logo-white.svg | `900a5aa0ed4c59c887e1ca79ec3864fb7d77a533` |
 | `assets/services/navidrome.png` | navidrome/navidrome | master · ui/public/android-chrome-192x192.png | `07c10ba2bdbc4ddc40008e7eeb7f347645ddc754` |
-| `assets/services/nextcloud.svg` | nextcloud/server | master · core/img/logo/logo.svg | `d68aca1fb46cd6dd22343ec7473b9191170c05` |
+| `assets/services/nextcloud.svg` | nextcloud/server | master · core/img/logo/logo.svg | `d68aca1fb46cd6dd6d22343ec7473b9191170c05` |
 | `assets/services/onlyoffice.ico` | ONLYOFFICE official website | 2026-08-19 · /favicon.ico | `39534c95e3660f4f3789f969488c12a581075e01` |
 | `assets/services/paperless-ngx.svg` | paperless-ngx/paperless-ngx | dev · docs/assets/logo_leaf.svg | `f1a5553729a1e2963c545265e8bf09327945f3fd` |
 | `assets/services/stirling-pdf.png` | Stirling Tools official GitHub organization | 2026-08-19 · GitHub organization avatar | `6a3badc57ce42fdbc544af253cfb6a5b75194caf` |
