@@ -1,7 +1,6 @@
-/* GoreeCloud website directory previews.
- * These are lightweight, origin-local representative previews rather than
- * embedded third-party/live frames. They keep the homepage fast, private,
- * accessible, and resilient when a destination site is unavailable.
+/* GoreeCloud website directory cards.
+ * Keep destination identity concise: one name, one domain, one action.
+ * No simulated browser chrome or duplicated preview labels.
  */
 
 .websites-section .section-heading {
@@ -18,130 +17,40 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-}
-
-.website-preview {
-  display: block;
-  padding: 1rem;
-  color: inherit;
-  text-decoration: none;
-  border-bottom: 1px solid var(--border);
+  border-top: 3px solid color-mix(in srgb, var(--website-accent, var(--cyan)) 72%, var(--border));
   background:
-    radial-gradient(circle at 78% 18%, color-mix(in srgb, var(--website-accent, var(--cyan)) 16%, transparent), transparent 42%),
-    linear-gradient(180deg, color-mix(in srgb, var(--website-accent, var(--blue)) 5%, var(--panel)), var(--panel));
+    radial-gradient(circle at 94% 6%, color-mix(in srgb, var(--website-accent, var(--cyan)) 10%, transparent), transparent 34%),
+    var(--panel);
 }
-
-.website-preview:hover,
-.website-preview:focus-visible {
-  background:
-    radial-gradient(circle at 78% 18%, color-mix(in srgb, var(--website-accent, var(--cyan)) 22%, transparent), transparent 44%),
-    linear-gradient(180deg, color-mix(in srgb, var(--website-accent, var(--blue)) 8%, var(--panel)), var(--panel));
-}
-
-.website-preview:focus-visible {
-  outline: 3px solid var(--website-accent, var(--cyan));
-  outline-offset: -3px;
-}
-
-.website-preview-browser {
-  min-height: 170px;
-  display: block;
-  overflow: hidden;
-  border: 1px solid color-mix(in srgb, var(--website-accent, var(--cyan)) 28%, var(--border));
-  border-radius: 14px;
-  background: color-mix(in srgb, var(--surface) 92%, transparent);
-  box-shadow: 0 14px 34px rgba(0,0,0,.14);
-}
-
-.website-preview-toolbar {
-  min-height: 34px;
-  display: flex;
-  align-items: center;
-  gap: .36rem;
-  padding: .45rem .58rem;
-  border-bottom: 1px solid var(--border);
-  background: color-mix(in srgb, var(--surface-strong) 94%, transparent);
-}
-
-.website-preview-toolbar i {
-  width: 7px;
-  height: 7px;
-  display: block;
-  border-radius: 50%;
-  background: color-mix(in srgb, var(--muted) 55%, transparent);
-}
-
-/* The card body is the single visible source of truth for destination names
- * and domains. Preview labels are decorative and intentionally suppressed so
- * each application/site identity is presented only once. */
-.website-preview-domain,
-.website-preview-title {
-  display: none !important;
-}
-
-.website-preview-page {
-  min-height: 134px;
-  display: grid;
-  align-content: center;
-  gap: .72rem;
-  padding: 1rem 1.05rem 1.1rem;
-  background:
-    linear-gradient(90deg, color-mix(in srgb, var(--website-accent, var(--blue)) 8%, transparent) 1px, transparent 1px),
-    linear-gradient(color-mix(in srgb, var(--website-accent, var(--blue)) 8%, transparent) 1px, transparent 1px);
-  background-size: 24px 24px;
-}
-
-.website-preview-mark {
-  width: 30px;
-  height: 30px;
-  display: grid;
-  place-items: center;
-  border-radius: 10px;
-  color: var(--website-accent, var(--cyan));
-  border: 1px solid color-mix(in srgb, var(--website-accent, var(--cyan)) 32%, var(--border));
-  background: color-mix(in srgb, var(--website-accent, var(--cyan)) 9%, var(--surface));
-  font-size: .72rem;
-  font-weight: 900;
-  letter-spacing: -.03em;
-}
-
-.website-preview-lines {
-  display: grid;
-  gap: .35rem;
-  width: min(78%, 250px);
-}
-
-.website-preview-lines span {
-  display: block;
-  height: 5px;
-  border-radius: 99px;
-  background: color-mix(in srgb, var(--muted) 28%, transparent);
-}
-
-.website-preview-lines span:nth-child(2) { width: 78%; }
 
 .website-card-body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 1.2rem 1.35rem 1.3rem;
+  padding: 1.25rem 1.35rem 1.3rem;
 }
 
-.website-card .service-kicker {
-  margin-top: 0;
-}
-
-.website-card-body > p:not(.service-kicker) {
-  flex: 1;
-  margin: .6rem 0 1rem;
-}
-
-.website-card-footer {
+.website-card-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: .75rem;
-  margin-top: auto;
+  gap: .8rem;
+  margin-bottom: 1rem;
+}
+
+.website-mark {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  color: var(--website-accent, var(--cyan));
+  border: 1px solid color-mix(in srgb, var(--website-accent, var(--cyan)) 34%, var(--border));
+  background: color-mix(in srgb, var(--website-accent, var(--cyan)) 9%, var(--surface));
+  font-size: .74rem;
+  font-weight: 900;
+  letter-spacing: -.03em;
 }
 
 .website-card .badge {
@@ -149,7 +58,23 @@
   flex: 0 0 auto;
 }
 
+.website-card .service-kicker {
+  margin: 0 0 .38rem;
+  color: var(--website-accent, var(--cyan));
+}
+
+.website-card h3 {
+  margin: 0;
+}
+
+.website-card-body > p:not(.service-kicker) {
+  flex: 1;
+  margin: .65rem 0 1rem;
+}
+
 .website-link {
+  width: fit-content;
+  margin-top: auto;
   color: var(--website-accent, var(--cyan));
   font-size: .86rem;
   font-weight: 800;
@@ -162,12 +87,19 @@
   text-underline-offset: .18em;
 }
 
+.website-link:focus-visible {
+  outline: 3px solid var(--website-accent, var(--cyan));
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
 .website-main { --website-accent: #2f72ff; }
 .website-suite { --website-accent: #00a9e8; }
 .website-projects { --website-accent: #18a776; }
 .website-design { --website-accent: #7957d5; }
 .website-privacy { --website-accent: #13a58d; }
 .website-security { --website-accent: #e67d34; }
+.website-everkeep { --website-accent: #4a73d9; }
 .website-roadmap { --website-accent: #4f75d8; }
 .website-blog { --website-accent: #b65b9c; }
 .website-archive { --website-accent: #7b8798; }
@@ -178,22 +110,21 @@
 
 @media (max-width: 640px) {
   .website-grid { grid-template-columns: 1fr; }
-  .website-preview-browser { min-height: 154px; }
-  .website-preview-page { min-height: 118px; }
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .website-preview,
-  .website-preview-browser {
-    transition: background-color .18s ease, border-color .18s ease, transform .18s ease;
+  .website-card {
+    transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
   }
-  .website-card:hover .website-preview-browser { transform: translateY(-2px); }
+
+  .website-card:hover {
+    transform: translateY(-2px);
+  }
 }
 
 @media (forced-colors: active) {
-  .website-preview,
-  .website-preview-browser,
-  .website-preview-mark {
+  .website-card,
+  .website-mark {
     background: Canvas;
     color: CanvasText;
     border-color: CanvasText;
