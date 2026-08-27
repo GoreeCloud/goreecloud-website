@@ -236,10 +236,10 @@
           "status": "0.1.0-beta.1",
           "status_class": "growing",
           "icon": "assets/suite/browser.svg",
-          "icon_blob": "1fc17ec2abe29f16c1235ab88e38a24afa7253f6",
+          "icon_blob": "2a81cc68cb8c1831dfd7bec6c3d0b14e2f421f1f",
           "source_repository": "GoreeCloud/goreecloud-browser",
           "source_path": "assets/branding/goreecloud-browser.svg",
-          "source_ref": "main"
+          "source_ref": "f4ab699f310d18901f2e012d56079a38c3e16d9a"
         },
         {
           "id": "feed",
