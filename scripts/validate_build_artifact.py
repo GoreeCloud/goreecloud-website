@@ -7,6 +7,7 @@ from pathlib import Path
 import sys
 
 from build_public_site import DIST, GENERATED_HTML, PUBLIC_FILES, ROOT
+from normalize_homepage import normalize_homepage
 from render_repository_portfolio import load_manifest, render_public_file
 
 FORBIDDEN_NAMES = {".git", ".github", ".gitignore", "README.md", "SECURITY.md", "scripts"}
@@ -24,6 +25,8 @@ def expected_bytes(path: Path, manifest: dict) -> bytes:
     source = ROOT / path
     if str(path) in GENERATED_HTML:
         rendered = render_public_file(str(path), source.read_text(encoding="utf-8"), manifest)
+        if str(path) == "index.html":
+            rendered = normalize_homepage(rendered)
         return rendered.encode("utf-8")
     return source.read_bytes()
 
