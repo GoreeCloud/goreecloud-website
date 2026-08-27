@@ -28,28 +28,17 @@ function ensureAugust27Entries(){
 }
 ensureAugust27Entries();
 
+for(const entry of entries){
+  const update=currentProjectDirection[entry.name];
+  if(!update)continue;
+  entry.status=update[0];
+  entry.role=update[1];
+  entry.model=update[2]||'Native GoreeCloud end state · transitional upstream provenance retained where applicable';
+}
+
 if(typeof appCount!=='undefined'&&appCount)appCount.textContent=entries.filter(entry=>entry.kind==='Application').length;
 if(typeof foundationCount!=='undefined'&&foundationCount)foundationCount.textContent=entries.filter(entry=>entry.kind==='Foundation').length;
 
-function applyCurrentDirection(){
-  document.querySelectorAll('#projects .card').forEach(card=>{
-    const name=card.querySelector('h3')?.textContent?.trim();
-    const update=currentProjectDirection[name];
-    if(!update)return;
-    const status=card.querySelector('.status');
-    const role=card.querySelector('.role');
-    const model=card.querySelector('.model');
-    if(status)status.textContent=update[0];
-    if(role)role.textContent=update[1];
-    if(model)model.textContent=update[2]||'Native GoreeCloud end state · transitional upstream provenance retained where applicable';
-  });
-}
-
-const projectGrid=document.querySelector('#projects');
-if(projectGrid){
-  // Observe only direct card-list replacement. Watching the full subtree causes
-  // applyCurrentDirection() to observe its own textContent writes and loop.
-  new MutationObserver(applyCurrentDirection).observe(projectGrid,{childList:true});
-  render();
-  applyCurrentDirection();
-}
+// The current-direction overrides now live in the data model itself, so every
+// later search/filter render stays current without observing or rewriting DOM.
+render();
