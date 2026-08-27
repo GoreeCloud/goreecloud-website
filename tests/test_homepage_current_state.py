@@ -45,7 +45,7 @@ class HomepageCurrentStateTests(unittest.TestCase):
 
     def test_main_homepage_is_a_website_hub(self) -> None:
         self.assertEqual(self.homepage.count('id="websites"'), 1)
-        for domain in (
+        domains = (
             "goreecloud.com",
             "suite.goreecloud.com",
             "projects.goreecloud.com",
@@ -56,21 +56,41 @@ class HomepageCurrentStateTests(unittest.TestCase):
             "roadmap.goreecloud.com",
             "blog.goreecloud.com",
             "archive.goreecloud.com",
-        ):
+        )
+        for domain in domains:
             with self.subTest(domain=domain):
-                self.assertIn(domain, self.homepage)
-        self.assertEqual(self.homepage.count('class="service-card website-card"'), 10)
-        self.assertEqual(self.homepage.count('class="website-preview '), 10)
+                self.assertEqual(self.homepage.count(f'<p class="service-kicker">{domain}</p>'), 1)
+        self.assertEqual(self.homepage.count('class="service-card website-card '), 10)
         self.assertIn('<a href="#websites">Websites</a>', self.homepage)
         self.assertIn('<a href="https://suite.goreecloud.com/">Suite</a>', self.homepage)
         self.assertIn('css/websites.css', self.homepage)
         self.assertIn('css/homepage-v6.css', self.homepage)
 
-    def test_website_cards_show_names_and_domains_only_once(self) -> None:
-        self.assertIn('.website-preview-domain,\n.website-preview-title', self.websites_css)
-        self.assertIn('display: none !important;', self.websites_css)
+    def test_website_cards_are_concise_without_browser_mockups(self) -> None:
+        self.assertNotIn('website-preview', self.homepage)
+        self.assertNotIn('website-preview-browser', self.homepage)
+        self.assertNotIn('.website-preview', self.websites_css)
         self.assertEqual(self.homepage.count('class="website-card-body"'), 10)
+        self.assertEqual(self.homepage.count('class="website-card-head"'), 10)
+        self.assertEqual(self.homepage.count('class="website-mark"'), 10)
         self.assertEqual(self.homepage.count('class="website-link"'), 10)
+
+    def test_website_names_are_visible_once_as_card_titles(self) -> None:
+        names = (
+            "GoreeCloud",
+            "GoreeCloud Suite",
+            "GoreeCloud Projects",
+            "Glaze UI",
+            "Privacy Shield",
+            "Wardveil Security",
+            "Everkeep",
+            "GoreeCloud Roadmap",
+            "GoreeCloud Blog",
+            "GoreeCloud Archive",
+        )
+        for name in names:
+            with self.subTest(name=name):
+                self.assertEqual(self.homepage.count(f'<h3>{name}</h3>'), 1)
 
     def test_everkeep_has_a_dedicated_public_destination(self) -> None:
         self.assertIn('https://everkeep.goreecloud.com/', self.homepage)
