@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Validate the reviewed GoreeCloud umbrella capability portfolio and homepage rendering."""
+"""Validate GoreeCloud umbrella capabilities and dedicated-Suite placement."""
 
 from __future__ import annotations
 
 from pathlib import Path
 import sys
 
+from normalize_homepage import normalize_homepage
 from render_repository_portfolio import (
     load_capability_manifest,
     load_manifest,
@@ -23,17 +24,8 @@ EXPECTED_CAPABILITIES = {
     "beacon": "GoreeCloud Beacon",
 }
 REQUIRED_FIELDS = {
-    "id",
-    "name",
-    "short_name",
-    "parent_app_id",
-    "parent_application",
-    "icon",
-    "description",
-    "families",
-    "relationship",
-    "status",
-    "status_class",
+    "id", "name", "short_name", "parent_app_id", "parent_application", "icon",
+    "description", "families", "relationship", "status", "status_class",
 }
 
 
@@ -67,16 +59,11 @@ def main() -> int:
             errors.append("Each capability portfolio entry must be an object.")
             continue
         missing = sorted(
-            field
-            for field in REQUIRED_FIELDS
-            if field not in capability
-            or capability[field] is None
-            or capability[field] == ""
+            field for field in REQUIRED_FIELDS
+            if field not in capability or capability[field] is None or capability[field] == ""
         )
         if missing:
-            errors.append(
-                f"Capability {capability.get('id')!r} is missing fields: {', '.join(missing)}"
-            )
+            errors.append(f"Capability {capability.get('id')!r} is missing fields: {', '.join(missing)}")
             continue
 
         capability_id = capability["id"]
@@ -87,24 +74,17 @@ def main() -> int:
         if name in names:
             errors.append(f"Duplicate capability name: {name}")
         names.add(name)
+        if EXPECTED_CAPABILITIES.get(capability_id) != name:
+            errors.append(f"Capability identity drifted for {capability_id}.")
 
-        expected_name = EXPECTED_CAPABILITIES.get(capability_id)
-        if expected_name != name:
-            errors.append(
-                f"Capability identity drifted for {capability_id}: expected {expected_name!r}, found {name!r}."
-            )
-
-        parent_id = capability["parent_app_id"]
-        parent = suite_apps.get(parent_id)
+        parent = suite_apps.get(capability["parent_app_id"])
         if parent is None:
-            errors.append(f"Capability {capability_id} references unknown Suite parent: {parent_id}")
+            errors.append(f"Capability {capability_id} references unknown Suite parent: {capability['parent_app_id']}")
             continue
         if capability["parent_application"] != parent["name"]:
             errors.append(f"Capability {capability_id} parent application name drifted.")
         if capability["icon"] != parent["icon"]:
-            errors.append(
-                f"Capability {capability_id} must reuse its parent application's approved Suite icon."
-            )
+            errors.append(f"Capability {capability_id} must reuse its parent application's approved Suite icon.")
         if capability["status_class"] != "active":
             errors.append(f"Capability {capability_id} must use the approved active status class.")
         families = capability["families"]
@@ -120,32 +100,11 @@ def main() -> int:
             errors.append("Capability portfolio contains unreviewed identities: " + ", ".join(extra))
 
     source = INDEX.read_text(encoding="utf-8")
-    rendered = render_public_file("index.html", source, load_manifest(ROOT))
-    if 'id="capabilities"' not in rendered:
-        errors.append("Rendered homepage is missing the umbrella capabilities section.")
-    if '<a href="#capabilities">Capabilities</a>' not in rendered:
-        errors.append("Rendered homepage navigation is missing the Capabilities link.")
-    if "These identities are capability umbrellas, not standalone Suite products." not in rendered:
-        errors.append("Rendered homepage must preserve the capability-versus-product boundary.")
-    if "no separate umbrella mark is implied" not in rendered:
-        errors.append("Rendered homepage must preserve the umbrella artwork boundary.")
-
-    for capability in capabilities:
-        if not isinstance(capability, dict) or "id" not in capability:
-            continue
-        marker = f'data-capability="{capability["id"]}"'
-        if rendered.count(marker) != 1:
-            errors.append(
-                f"Rendered homepage must contain exactly one umbrella card for {capability['id']}."
-            )
-        if f'<h3>{capability.get("name", "")}</h3>' not in rendered:
-            errors.append(f"Rendered homepage is missing capability heading for {capability['id']}.")
-        if f'Inside {capability.get("parent_application", "")}' not in rendered:
-            errors.append(f"Rendered homepage is missing parent relationship for {capability['id']}.")
-        if f'data-suite-app="{capability["id"]}"' in rendered:
-            errors.append(
-                f"Umbrella identity {capability['id']} must not be rendered as a standalone Suite application."
-            )
+    rendered = normalize_homepage(render_public_file("index.html", source, load_manifest(ROOT)))
+    if 'data-capability=' in rendered or 'id="capabilities"' in rendered:
+        errors.append("Main homepage must not render umbrella capability cards; they belong on suite.goreecloud.com.")
+    if "suite.goreecloud.com" not in rendered:
+        errors.append("Main homepage must link users to the dedicated Suite website for application capability detail.")
 
     if errors:
         print("GoreeCloud capability portfolio validation failed:")
@@ -153,7 +112,7 @@ def main() -> int:
             print(f"  - {error}")
         return 1
 
-    print(f"GoreeCloud capability portfolio validation passed: {len(capabilities)} umbrella identities.")
+    print(f"GoreeCloud capability portfolio validation passed: {len(capabilities)} umbrella identities; main-site separation preserved.")
     return 0
 
 

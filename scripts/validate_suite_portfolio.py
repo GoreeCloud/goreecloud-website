@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the reviewed GoreeCloud Suite manifest and rendered homepage section."""
+"""Validate the reviewed GoreeCloud Suite manifest and main-site separation."""
 
 from __future__ import annotations
 
@@ -8,6 +8,7 @@ from pathlib import Path
 import re
 import sys
 
+from normalize_homepage import normalize_homepage
 from render_repository_portfolio import load_manifest, load_suite_manifest, render_public_file
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -15,30 +16,8 @@ INDEX = ROOT / "index.html"
 REF = re.compile(r"^[0-9a-f]{40}$|^(?:main|master)$")
 STATUS_CLASSES = {"active", "growing", "planned"}
 REQUIRED_FIELDS = {
-    "id",
-    "name",
-    "description",
-    "role",
-    "status",
-    "status_class",
-    "icon",
-    "icon_blob",
-    "source_repository",
-    "source_path",
-    "source_ref",
-}
-LEGACY_CARD_IDS = {
-    "nextcloud",
-    "immich",
-    "jellyfin",
-    "navidrome",
-    "audiobookshelf",
-    "paperless",
-    "vaultwarden",
-    "element",
-    "onlyoffice",
-    "stirling-pdf",
-    "actual-budget",
+    "id", "name", "description", "role", "status", "status_class", "icon",
+    "icon_blob", "source_repository", "source_path", "source_ref",
 }
 
 
@@ -65,7 +44,6 @@ def main() -> int:
     names: set[str] = set()
     icons: set[str] = set()
     applications: list[dict] = []
-
     for group in groups:
         if not str(group.get("id", "")).strip() or not str(group.get("label", "")).strip():
             errors.append("Every Suite group must have a non-empty id and label.")
@@ -83,17 +61,13 @@ def main() -> int:
         if missing:
             errors.append(f"Suite application {app.get('id')!r} is missing fields: {', '.join(missing)}")
             continue
-
         app_id = app["id"]
         if app_id in ids:
             errors.append(f"Duplicate Suite application id: {app_id}")
         ids.add(app_id)
-
-        name = app["name"]
-        if name in names:
-            errors.append(f"Duplicate Suite application name: {name}")
-        names.add(name)
-
+        if app["name"] in names:
+            errors.append(f"Duplicate Suite application name: {app['name']}")
+        names.add(app["name"])
         icon = app["icon"]
         if icon in icons:
             errors.append(f"Duplicate Suite icon path: {icon}")
@@ -106,7 +80,6 @@ def main() -> int:
                 errors.append(f"Suite icon is missing or invalid: {icon}")
             elif blob_id(path.read_bytes()) != app["icon_blob"]:
                 errors.append(f"Suite icon bytes do not match reviewed repository-owned artwork: {icon}")
-
         if app["status_class"] not in STATUS_CLASSES:
             errors.append(f"Unsupported Suite status class for {app_id}: {app['status_class']}")
         if not app["source_repository"].startswith("GoreeCloud/"):
@@ -118,30 +91,13 @@ def main() -> int:
         errors.append("Quill is a GoreeCloud Keyboard capability family and must not be listed as a standalone Suite application.")
 
     source = INDEX.read_text(encoding="utf-8")
-    rendered = render_public_file("index.html", source, load_manifest(ROOT))
-    if "Personal &amp; family services" in rendered or "Personal & family services" in rendered:
-        errors.append("Rendered homepage still contains the replaced Personal & Family Services heading.")
-    if '<p class="eyebrow">GoreeCloud Suite</p>' not in rendered:
-        errors.append("Rendered homepage is missing the GoreeCloud Suite heading.")
-    if '<a href="#services">Suite</a>' not in rendered:
-        errors.append("Rendered homepage navigation does not identify the section as Suite.")
-
-    for legacy_id in sorted(LEGACY_CARD_IDS):
-        if f'data-service="{legacy_id}"' in rendered:
-            errors.append(f"Legacy service card remains in rendered GoreeCloud Suite section: {legacy_id}")
-
-    for app in applications:
-        marker = f'data-suite-app="{app["id"]}"'
-        if rendered.count(marker) != 1:
-            errors.append(f"Rendered homepage must contain exactly one Suite card for {app['id']}.")
-        if app["icon"] not in rendered:
-            errors.append(f"Rendered homepage does not use the reviewed Suite icon for {app['id']}.")
-        if f'<strong>Description:</strong> {app["description"]}' not in rendered:
-            errors.append(f"Rendered homepage description drifted for {app['id']}.")
-        if f'<strong>Role:</strong> {app["role"]}' not in rendered:
-            errors.append(f"Rendered homepage role drifted for {app['id']}.")
-        if f'>{app["status"]}</span>' not in rendered:
-            errors.append(f"Rendered homepage status drifted for {app['id']}.")
+    rendered = normalize_homepage(render_public_file("index.html", source, load_manifest(ROOT)))
+    if 'data-suite-app=' in rendered:
+        errors.append("Main homepage must not render GoreeCloud Suite application cards.")
+    if '<a href="https://suite.goreecloud.com/">Suite</a>' not in rendered:
+        errors.append("Main homepage must link to the dedicated GoreeCloud Suite website.")
+    if "suite.goreecloud.com" not in rendered:
+        errors.append("Main homepage must identify suite.goreecloud.com as the Suite destination.")
 
     if errors:
         print("GoreeCloud Suite validation failed:")
@@ -149,7 +105,7 @@ def main() -> int:
             print(f"  - {error}")
         return 1
 
-    print(f"GoreeCloud Suite validation passed: {len(applications)} applications across {len(groups)} groups.")
+    print(f"GoreeCloud Suite manifest validation passed: {len(applications)} applications across {len(groups)} groups; main-site separation preserved.")
     return 0
 
 

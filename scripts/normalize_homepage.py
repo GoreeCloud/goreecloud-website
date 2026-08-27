@@ -1,12 +1,20 @@
 #!/usr/bin/env python3
-"""Normalize current GoreeCloud homepage identities and roadmap product state."""
+"""Normalize the GoreeCloud homepage into the public website hub."""
 
 from __future__ import annotations
 
 import re
 
-HERO_LABELS = re.compile(
-    r'<div class="hero-labels" aria-label="GoreeCloud platform (?:foundations|systems)">.*?</div>',
+HERO_PREFIX = re.compile(
+    r'<div class="hero-labels"[^>]*>.*?(?=\s*<h1>)',
+    re.DOTALL,
+)
+HERO_ACTIONS = re.compile(
+    r'<div class="hero-actions">.*?</div>',
+    re.DOTALL,
+)
+PORTFOLIO_BLOCK = re.compile(
+    r'\n    <section id="services" class="section suite-section">.*?(?=\n    <section id="how-it-works")',
     re.DOTALL,
 )
 ROADMAP_AI_CARD = re.compile(
@@ -30,9 +38,80 @@ def canonical_hero_labels() -> str:
         '            <a class="glaze-chip" href="https://security.goreecloud.com/">Wardveil Security</a>\n'
         '            <span class="glaze-chip">Everkeep</span>\n'
         '            <span class="glaze-chip">GoreeCloud Mesh</span>\n'
-        '            <span class="glaze-chip">GoreeCloud Identity</span>\n'
-        '            <span class="eyebrow">Design • Privacy • Security • Resilience • Coordination • Identity</span>\n'
-        '          </div>'
+        '            <span class="eyebrow">Design • Privacy • Security • Resilience • Coordination</span>\n'
+        '          </div>\n\n          '
+    )
+
+
+def website_card(name: str, url: str, domain: str, description: str, status: str, status_class: str) -> str:
+    return (
+        '<article class="service-card website-card">\n'
+        f'  <p class="service-kicker">{domain}</p>\n'
+        f'  <h3>{name}</h3>\n'
+        f'  <p>{description}</p>\n'
+        f'  <a class="website-link" href="{url}">Visit website →</a>\n'
+        f'  <span class="badge {status_class}">{status}</span>\n'
+        '</article>'
+    )
+
+
+def websites_section() -> str:
+    cards = [
+        website_card(
+            "GoreeCloud",
+            "https://www.goreecloud.com/",
+            "goreecloud.com",
+            "The public home for GoreeCloud: platform direction, roadmap, repositories, project story, and public information.",
+            "Current Website",
+            "active",
+        ),
+        website_card(
+            "GoreeCloud Suite",
+            "https://suite.goreecloud.com/",
+            "suite.goreecloud.com",
+            "The dedicated home for GoreeCloud Suite applications, services, umbrella capabilities, lifecycle status, and cross-client product identity.",
+            "Dedicated Site",
+            "growing",
+        ),
+        website_card(
+            "Glaze UI",
+            "https://design.goreecloud.com/",
+            "design.goreecloud.com",
+            "The design-system website for GoreeCloud interface foundations, interaction contracts, adaptive behavior, and visual language.",
+            "Platform System",
+            "active",
+        ),
+        website_card(
+            "Privacy Shield",
+            "https://privacy.goreecloud.com/",
+            "privacy.goreecloud.com",
+            "The public privacy identity and documentation surface for GoreeCloud privacy contracts, controls, and data-minimization expectations.",
+            "Platform System",
+            "active",
+        ),
+        website_card(
+            "Wardveil Security",
+            "https://security.goreecloud.com/",
+            "security.goreecloud.com",
+            "The security and protection website for evidence-backed GoreeCloud security state, reporting, and protection experiences.",
+            "Platform System",
+            "active",
+        ),
+    ]
+    rendered_cards = "\n          ".join(cards)
+    return (
+        '\n    <section id="websites" class="section websites-section">\n'
+        '      <div class="container">\n'
+        '        <div class="section-heading">\n'
+        '          <p class="eyebrow">GoreeCloud websites</p>\n'
+        '          <h2>Explore the public GoreeCloud web ecosystem.</h2>\n'
+        '          <p>Each website has a focused responsibility. The main site stays concise while dedicated sites carry the deeper product, design, privacy, security, and Suite information that belongs there.</p>\n'
+        '        </div>\n'
+        '        <div class="service-grid website-grid">\n'
+        f'          {rendered_cards}\n'
+        '        </div>\n'
+        '      </div>\n'
+        '    </section>\n'
     )
 
 
@@ -57,16 +136,45 @@ def goreecloud_ai_roadmap_card() -> str:
 
 
 def normalize_homepage(source: str) -> str:
-    normalized, hero_count = HERO_LABELS.subn(canonical_hero_labels(), source, count=1)
+    normalized, hero_count = HERO_PREFIX.subn(canonical_hero_labels(), source, count=1)
     if hero_count != 1:
         raise ValueError("homepage platform-system labels could not be normalized")
+
+    normalized, portfolio_count = PORTFOLIO_BLOCK.subn(websites_section(), normalized, count=1)
+    if portfolio_count != 1:
+        raise ValueError("homepage Suite/capability block could not be replaced with website hub")
+
+    normalized = normalized.replace(
+        '<a href="#services">Suite</a>\n        <a href="#capabilities">Capabilities</a>',
+        '<a href="#websites">Websites</a>\n        <a href="https://suite.goreecloud.com/">Suite</a>',
+    )
+
+    normalized, action_count = HERO_ACTIONS.subn(
+        '<div class="hero-actions">\n'
+        '            <a class="button primary" href="#websites">Explore GoreeCloud Websites</a>\n'
+        '            <a class="button secondary" href="https://suite.goreecloud.com/">Explore GoreeCloud Suite</a>\n'
+        '          </div>',
+        normalized,
+        count=1,
+    )
+    if action_count != 1:
+        raise ValueError("homepage hero actions could not be normalized")
 
     normalized, ai_count = ROADMAP_AI_CARD.subn(goreecloud_ai_roadmap_card(), normalized, count=1)
     if ai_count != 1:
         raise ValueError("homepage GoreeCloud AI roadmap card could not be normalized")
 
-    if normalized.count('>Everkeep</span>') != 1:
-        raise ValueError("homepage must contain exactly one Everkeep platform chip")
+    hero = HERO_PREFIX.search(normalized)
+    hero_text = hero.group(0) if hero else ""
+    for label in ("Glaze UI", "Privacy Shield", "Wardveil Security", "Everkeep", "GoreeCloud Mesh"):
+        if len(re.findall(rf">{re.escape(label)}<", hero_text)) != 1:
+            raise ValueError(f"homepage platform-system identity must appear exactly once: {label}")
+    if "GoreeCloud Identity" in hero_text:
+        raise ValueError("GoreeCloud Identity is an application identity, not a platform-system hero chip")
+    if 'data-suite-app=' in normalized or 'data-capability=' in normalized:
+        raise ValueError("Suite application/capability cards must live on suite.goreecloud.com, not the main homepage")
+    if normalized.count('id="websites"') != 1:
+        raise ValueError("homepage must contain exactly one GoreeCloud websites section")
     if "Open WebUI" in normalized or "AnythingLLM" in normalized:
         raise ValueError("retired AI front ends remain in the public homepage")
     return normalized
