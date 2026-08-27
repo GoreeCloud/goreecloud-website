@@ -12,11 +12,15 @@ from build_public_site import PUBLIC_FILES, ROOT
 KIB = 1024
 HTML_FILE_BUDGET = 64 * KIB
 HTML_TOTAL_BUDGET = 96 * KIB
-CSS_FILE_BUDGET = 24 * KIB
-# The homepage now includes an origin-local visual website directory and a
-# responsive compact-layout layer. Keep the CSS ceiling explicit and bounded
-# rather than dropping those styles or relying on cross-origin screenshots.
-CSS_TOTAL_BUDGET = 80 * KIB
+# Glaze UI 1.5 Stable is intentionally vendored as one same-origin bundle so
+# public pages do not depend on a cross-origin design-system runtime. The
+# reviewed bundle is ~49 KiB; keep a narrow ceiling above it rather than
+# weakening the per-file check entirely.
+CSS_FILE_BUDGET = 56 * KIB
+# The homepage retains its existing local presentation layers alongside the
+# vendored Stable bundle. 128 KiB keeps the aggregate CSS budget explicit while
+# accommodating the reviewed 1.5 adoption without removing those local layers.
+CSS_TOTAL_BUDGET = 128 * KIB
 JS_FILE_BUDGET = 16 * KIB
 JS_TOTAL_BUDGET = 24 * KIB
 SVG_FILE_BUDGET = 24 * KIB
@@ -26,10 +30,10 @@ RASTER_TOTAL_BUDGET = 256 * KIB
 PUBLIC_ARTIFACT_BUDGET = 512 * KIB
 MAX_STYLESHEETS_BY_PAGE = {
     "index.html": 12,
-    "repositories.html": 4,
-    "privacy.html": 3,
-    "security.html": 3,
-    "404.html": 4,
+    "repositories.html": 5,
+    "privacy.html": 4,
+    "security.html": 4,
+    "404.html": 5,
 }
 MAX_SCRIPTS_BY_PAGE = {
     "index.html": 2,

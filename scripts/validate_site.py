@@ -250,7 +250,8 @@ def validate() -> list[str]:
         fail(errors, f"Missing in-page target for #{fragment}.")
 
     for reference in sorted(parser.local_refs):
-        target = (ROOT / reference).resolve()
+        local_path = reference.lstrip("/") if reference.startswith("/") else reference
+        target = (ROOT / local_path).resolve()
         try:
             target.relative_to(ROOT.resolve())
         except ValueError:

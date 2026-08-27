@@ -47,7 +47,9 @@ function applyCurrentDirection(){
 
 const projectGrid=document.querySelector('#projects');
 if(projectGrid){
-  new MutationObserver(applyCurrentDirection).observe(projectGrid,{childList:true,subtree:true});
+  // Observe only direct card-list replacement. Watching the full subtree causes
+  // applyCurrentDirection() to observe its own textContent writes and loop.
+  new MutationObserver(applyCurrentDirection).observe(projectGrid,{childList:true});
   render();
   applyCurrentDirection();
 }

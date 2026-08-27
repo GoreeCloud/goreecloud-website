@@ -20,7 +20,7 @@ BASELINE_PATH = ROOT / "docs" / "stability-baseline.md"
 GLAZE_CONFORMANCE_PATH = ROOT / "docs" / "glaze-ui-conformance.md"
 README_PATH = ROOT / "README.md"
 SEMVER_RE = re.compile(r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$")
-GLAZE_11_REVISION = "5c8320de4f770614a3e2bcf9de2a27f7fcfd920c"
+GLAZE_15_REVISION = "2c5078410d022eba683c8e029bc3cafe773df0b7"
 
 
 class StabilityBaselineTests(unittest.TestCase):
@@ -78,14 +78,15 @@ class StabilityBaselineTests(unittest.TestCase):
 
     def test_glaze_conformance_records_current_target(self) -> None:
         for marker in (
-            "Target Glaze UI version: **1.1.0**",
-            GLAZE_11_REVISION,
-            "GoreeCloud/glaze-ui",
-            "on-accent",
-            "state-layer",
-            "safe-area",
-            "Canvas, Solid, Raised, Glaze, and Overlay",
-            "Visual acceptance: **Preserved**",
+            "Target Glaze UI version: **1.5.0**",
+            GLAZE_15_REVISION,
+            "GoreeCloud/goreecloud-glaze-ui",
+            "Stable 1.5 web contract vendored",
+            "same-origin copy of the Stable 1.5 web bundle",
+            "adaptive semantic color",
+            "44px minimum targets",
+            "Solid/Raised/Glaze/Overlay materials",
+            "Reduced-motion behavior",
             "No production Glaze UI exception is recorded",
         ):
             self.assertIn(marker, self.glaze_conformance)

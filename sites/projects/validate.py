@@ -75,4 +75,8 @@ for directive in ["Content-Security-Policy:","Permissions-Policy:","X-Content-Ty
 if "localStorage" not in js or "data-theme-choice" not in html: raise SystemExit("local appearance preference contract missing")
 release_boundary="Public source, a successful build, active development, a release candidate, or a platform identity does not automatically establish production acceptance or protection."
 if release_boundary not in html: raise SystemExit("source-versus-production boundary missing")
+if "observe(projectGrid,{childList:true,subtree:true})" in refresh:
+    raise SystemExit("Projects refresh must not observe its own descendant text mutations")
+if "observe(projectGrid,{childList:true})" not in refresh:
+    raise SystemExit("Projects refresh must observe only direct card-list replacement")
 print("GoreeCloud Projects current portfolio validation passed")
