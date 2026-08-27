@@ -73,5 +73,6 @@ for src in re.findall(r'src=["\']([^"\']+)',html):
 for directive in ["Content-Security-Policy:","Permissions-Policy:","X-Content-Type-Options: nosniff"]:
     if directive not in headers: raise SystemExit(f"security header missing: {directive}")
 if "localStorage" not in js or "data-theme-choice" not in html: raise SystemExit("local appearance preference contract missing")
-if "Repository visibility and development status are shown independently from production acceptance" not in html: raise SystemExit("source-versus-production boundary missing")
+release_boundary="Public source, a successful build, active development, a release candidate, or a platform identity does not automatically establish production acceptance or protection."
+if release_boundary not in html: raise SystemExit("source-versus-production boundary missing")
 print("GoreeCloud Projects current portfolio validation passed")
