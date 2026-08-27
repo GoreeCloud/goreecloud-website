@@ -160,7 +160,7 @@ def websites_section() -> str:
             "Everkeep",
             "https://everkeep.goreecloud.com/",
             "everkeep.goreecloud.com",
-            "The GoreeCloud Continuity Center for Everkeep: resilience, recovery, preservation, portability, continuity, succession, assurance, and evidence-backed recoverability.",
+            "The GoreeCloud Continuity Center for Everkeep is the dedicated resilience and preservation website for recovery, portability, continuity, succession, assurance, and evidence-backed recoverability.",
             "Continuity Center",
             "growing",
             "website-everkeep",
