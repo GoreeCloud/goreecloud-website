@@ -29,6 +29,18 @@ ROADMAP_AI_CARD = re.compile(
     re.DOTALL,
 )
 
+EXPECTED_WEBSITE_DOMAINS = (
+    "goreecloud.com",
+    "suite.goreecloud.com",
+    "projects.goreecloud.com",
+    "design.goreecloud.com",
+    "privacy.goreecloud.com",
+    "security.goreecloud.com",
+    "roadmap.goreecloud.com",
+    "blog.goreecloud.com",
+    "archive.goreecloud.com",
+)
+
 
 def canonical_hero_labels() -> str:
     return (
@@ -61,8 +73,8 @@ def websites_section() -> str:
             "GoreeCloud",
             "https://www.goreecloud.com/",
             "goreecloud.com",
-            "The public home for GoreeCloud: platform direction, roadmap, repositories, project story, and public information.",
-            "Current Website",
+            "The main public hub for GoreeCloud: platform direction, project story, repositories, and links into the wider public web ecosystem.",
+            "Primary Website",
             "active",
         ),
         website_card(
@@ -72,6 +84,14 @@ def websites_section() -> str:
             "The dedicated home for GoreeCloud Suite applications, services, umbrella capabilities, lifecycle status, and cross-client product identity.",
             "Dedicated Site",
             "growing",
+        ),
+        website_card(
+            "GoreeCloud Projects",
+            "https://projects.goreecloud.com/",
+            "projects.goreecloud.com",
+            "The public software and project portfolio for representative GoreeCloud development work and project-level context.",
+            "Portfolio",
+            "active",
         ),
         website_card(
             "Glaze UI",
@@ -97,6 +117,30 @@ def websites_section() -> str:
             "Platform System",
             "active",
         ),
+        website_card(
+            "GoreeCloud Roadmap",
+            "https://roadmap.goreecloud.com/",
+            "roadmap.goreecloud.com",
+            "The focused public roadmap for planned GoreeCloud infrastructure, applications, services, migrations, and platform evolution.",
+            "Roadmap",
+            "growing",
+        ),
+        website_card(
+            "GoreeCloud Blog",
+            "https://blog.goreecloud.com/",
+            "blog.goreecloud.com",
+            "The public development and engineering journal for build notes, implementation lessons, architecture decisions, and project updates.",
+            "Publication",
+            "active",
+        ),
+        website_card(
+            "GoreeCloud Archive",
+            "https://archive.goreecloud.com/",
+            "archive.goreecloud.com",
+            "The curated historical archive for preserving selected GoreeCloud public records, milestones, and project history over time.",
+            "Archive",
+            "active",
+        ),
     ]
     rendered_cards = "\n          ".join(cards)
     return (
@@ -105,7 +149,7 @@ def websites_section() -> str:
         '        <div class="section-heading">\n'
         '          <p class="eyebrow">GoreeCloud websites</p>\n'
         '          <h2>Explore the public GoreeCloud web ecosystem.</h2>\n'
-        '          <p>Each website has a focused responsibility. The main site stays concise while dedicated sites carry the deeper product, design, privacy, security, and Suite information that belongs there.</p>\n'
+        '          <p>Each website has a focused responsibility, keeping the main homepage concise while dedicated destinations carry the deeper information that belongs there.</p>\n'
         '        </div>\n'
         '        <div class="service-grid website-grid">\n'
         f'          {rendered_cards}\n'
@@ -171,10 +215,20 @@ def normalize_homepage(source: str) -> str:
             raise ValueError(f"homepage platform-system identity must appear exactly once: {label}")
     if "GoreeCloud Identity" in hero_text:
         raise ValueError("GoreeCloud Identity is an application identity, not a platform-system hero chip")
+    if hero_text.count('class="glaze-chip"') != 5:
+        raise ValueError("homepage hero must contain exactly five platform-system chips")
+
     if 'data-suite-app=' in normalized or 'data-capability=' in normalized:
         raise ValueError("Suite application/capability cards must live on suite.goreecloud.com, not the main homepage")
     if normalized.count('id="websites"') != 1:
         raise ValueError("homepage must contain exactly one GoreeCloud websites section")
+    for domain in EXPECTED_WEBSITE_DOMAINS:
+        if normalized.count(domain) < 1:
+            raise ValueError(f"homepage website portfolio is missing: {domain}")
+    website_section_match = re.search(r'<section id="websites".*?</section>', normalized, re.DOTALL)
+    website_section = website_section_match.group(0) if website_section_match else ""
+    if website_section.count('class="service-card website-card"') != len(EXPECTED_WEBSITE_DOMAINS):
+        raise ValueError("homepage website portfolio must contain exactly nine website cards")
     if "Open WebUI" in normalized or "AnythingLLM" in normalized:
         raise ValueError("retired AI front ends remain in the public homepage")
     return normalized
