@@ -17,17 +17,51 @@ permissions:
 jobs:
   validate:
     runs-on: ubuntu-24.04
-    timeout-minutes: 5
+    timeout-minutes: 8
     steps:
       - name: Check out exact source revision
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
-      - name: Compile validator
-        run: python3 -m py_compile sites/projects/validate.py
+      - name: Compile validators
+        run: |
+          python3 -m py_compile sites/projects/validate.py
+          python3 -m py_compile sites/projects/verify_remote.py
       - name: Validate projects website
         run: python3 sites/projects/validate.py
       - name: Check JavaScript syntax
         run: |
           node --check sites/projects/assets/app.js
           node --check sites/projects/assets/public-refresh.js
+      - name: Verify pull request Projects branch preview
+        if: github.event_name == 'pull_request'
+        env:
+          GITHUB_HEAD_REF: ${{ github.head_ref }}
+        run: |
+          attempts=6
+          for attempt in 1 2 3 4 5 6; do
+            if python3 sites/projects/verify_remote.py --target branch-preview; then
+              exit 0
+            fi
+            if [ "$attempt" -lt "$attempts" ]; then
+              echo "Projects branch preview not ready or not candidate-identical (attempt $attempt/$attempts); retrying in 10 seconds."
+              sleep 10
+            fi
+          done
+          echo "Projects branch-preview verification failed after $attempts attempts."
+          exit 1
+      - name: Verify Projects production after main update
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          attempts=6
+          for attempt in 1 2 3 4 5 6; do
+            if python3 sites/projects/verify_remote.py --target production; then
+              exit 0
+            fi
+            if [ "$attempt" -lt "$attempts" ]; then
+              echo "Projects production is not ready or not candidate-identical (attempt $attempt/$attempts); retrying in 10 seconds."
+              sleep 10
+            fi
+          done
+          echo "Projects production verification failed after $attempts attempts."
+          exit 1
