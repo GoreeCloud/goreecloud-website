@@ -17,7 +17,7 @@ permissions:
 jobs:
   validate:
     runs-on: ubuntu-24.04
-    timeout-minutes: 8
+    timeout-minutes: 12
     steps:
       - name: Check out exact source revision
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -28,12 +28,14 @@ jobs:
           python3 -m py_compile sites/projects/validate.py
           python3 -m py_compile sites/projects/verify_remote.py
           python3 -m py_compile sites/projects/browser_smoke.py
+          python3 -m py_compile sites/projects/mobile_smoke.py
       - name: Validate projects website
         run: python3 sites/projects/validate.py
       - name: Check JavaScript syntax
         run: |
           node --check sites/projects/assets/app.js
           node --check sites/projects/assets/public-refresh.js
+          node --check sites/projects/assets/icon-refresh.js
       - name: Verify pull request Projects branch preview
         if: github.event_name == 'pull_request'
         env:
@@ -61,6 +63,16 @@ jobs:
         env:
           GITHUB_HEAD_REF: ${{ github.head_ref }}
         run: python3 sites/projects/browser_smoke.py --target branch-preview --browser firefox
+      - name: Exercise pull request Projects mobile layout in Chrome
+        if: github.event_name == 'pull_request'
+        env:
+          GITHUB_HEAD_REF: ${{ github.head_ref }}
+        run: python3 sites/projects/mobile_smoke.py --target branch-preview --browser chrome
+      - name: Exercise pull request Projects mobile layout in Firefox
+        if: github.event_name == 'pull_request'
+        env:
+          GITHUB_HEAD_REF: ${{ github.head_ref }}
+        run: python3 sites/projects/mobile_smoke.py --target branch-preview --browser firefox
       - name: Verify Projects production after main update
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
@@ -82,3 +94,9 @@ jobs:
       - name: Exercise Projects production in Firefox
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: python3 sites/projects/browser_smoke.py --target production --browser firefox
+      - name: Exercise Projects production mobile layout in Chrome
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: python3 sites/projects/mobile_smoke.py --target production --browser chrome
+      - name: Exercise Projects production mobile layout in Firefox
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: python3 sites/projects/mobile_smoke.py --target production --browser firefox
