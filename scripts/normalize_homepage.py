@@ -6,7 +6,7 @@ from __future__ import annotations
 import re
 
 HERO_PREFIX = re.compile(
-    r'<div class="hero-labels"[^>]*>.*?(?=\s*<h1>)',
+    r'<div class="hero-labels[^"]*"[^>]*>.*?(?=\s*<h1>)',
     re.DOTALL,
 )
 HERO_ACTIONS = re.compile(
@@ -15,6 +15,10 @@ HERO_ACTIONS = re.compile(
 )
 PORTFOLIO_BLOCK = re.compile(
     r'\n    <section id="services" class="section suite-section">.*?(?=\n    <section id="how-it-works")',
+    re.DOTALL,
+)
+BAND_BLOCK = re.compile(
+    r'\n    <section class="band" aria-label="Core principles">.*?</section>\n',
     re.DOTALL,
 )
 ROADMAP_AI_CARD = re.compile(
@@ -30,6 +34,7 @@ ROADMAP_AI_CARD = re.compile(
 )
 
 WEBSITE_STYLESHEET = '<link rel="stylesheet" href="css/websites.css">'
+HOMEPAGE_STYLESHEET = '<link rel="stylesheet" href="css/homepage-v6.css">'
 
 EXPECTED_WEBSITE_DOMAINS = (
     "goreecloud.com",
@@ -43,16 +48,20 @@ EXPECTED_WEBSITE_DOMAINS = (
     "archive.goreecloud.com",
 )
 
+PLATFORM_SYSTEM_LABELS = (
+    "Glaze UI",
+    "Privacy Shield",
+    "Wardveil Security",
+    "Everkeep",
+    "GoreeCloud Mesh",
+)
+
 
 def canonical_hero_labels() -> str:
+    """Keep the hero focused; platform-system detail belongs in its own section."""
     return (
-        '<div class="hero-labels" aria-label="GoreeCloud platform systems">\n'
-        '            <a class="glaze-chip" href="https://design.goreecloud.com/">Glaze UI</a>\n'
-        '            <a class="glaze-chip" href="https://privacy.goreecloud.com/">Privacy Shield</a>\n'
-        '            <a class="glaze-chip" href="https://security.goreecloud.com/">Wardveil Security</a>\n'
-        '            <span class="glaze-chip">Everkeep</span>\n'
-        '            <span class="glaze-chip">GoreeCloud Mesh</span>\n'
-        '            <span class="eyebrow">Design • Privacy • Security • Resilience • Coordination</span>\n'
+        '<div class="hero-labels hero-context" aria-label="GoreeCloud platform focus">\n'
+        '            <span class="eyebrow">Private • Self-hosted • Recoverable</span>\n'
         '          </div>\n\n          '
     )
 
@@ -192,10 +201,10 @@ def websites_section() -> str:
     return (
         '\n    <section id="websites" class="section websites-section">\n'
         '      <div class="container">\n'
-        '        <div class="section-heading">\n'
+        '        <div class="section-heading website-heading">\n'
         '          <p class="eyebrow">GoreeCloud websites</p>\n'
-        '          <h2>Explore the public GoreeCloud web ecosystem.</h2>\n'
-        '          <p>Visual preview cards make each destination easier to recognize while dedicated sites carry the deeper information that does not belong on the main homepage.</p>\n'
+        '          <h2>Nine focused destinations. One GoreeCloud ecosystem.</h2>\n'
+        '          <p>The main site stays concise while dedicated destinations carry product, design, privacy, security, roadmap, publishing, and historical depth.</p>\n'
         '        </div>\n'
         '        <div class="service-grid website-grid">\n'
         f'          {rendered_cards}\n'
@@ -228,11 +237,15 @@ def goreecloud_ai_roadmap_card() -> str:
 def normalize_homepage(source: str) -> str:
     normalized, hero_count = HERO_PREFIX.subn(canonical_hero_labels(), source, count=1)
     if hero_count != 1:
-        raise ValueError("homepage platform-system labels could not be normalized")
+        raise ValueError("homepage hero context could not be normalized")
 
     normalized, portfolio_count = PORTFOLIO_BLOCK.subn(websites_section(), normalized, count=1)
     if portfolio_count != 1:
         raise ValueError("homepage Suite/capability block could not be replaced with website hub")
+
+    normalized, band_count = BAND_BLOCK.subn("\n", normalized, count=1)
+    if band_count != 1:
+        raise ValueError("duplicated homepage principle band could not be removed")
 
     normalized = normalized.replace(
         '<a href="#services">Suite</a>\n        <a href="#capabilities">Capabilities</a>',
@@ -254,18 +267,19 @@ def normalize_homepage(source: str) -> str:
     if ai_count != 1:
         raise ValueError("homepage GoreeCloud AI roadmap card could not be normalized")
 
-    if WEBSITE_STYLESHEET not in normalized:
-        normalized = normalized.replace("</head>", f"  {WEBSITE_STYLESHEET}\n</head>", 1)
+    for stylesheet in (WEBSITE_STYLESHEET, HOMEPAGE_STYLESHEET):
+        if stylesheet not in normalized:
+            normalized = normalized.replace("</head>", f"  {stylesheet}\n</head>", 1)
 
     hero = HERO_PREFIX.search(normalized)
     hero_text = hero.group(0) if hero else ""
-    for label in ("Glaze UI", "Privacy Shield", "Wardveil Security", "Everkeep", "GoreeCloud Mesh"):
-        if len(re.findall(rf">{re.escape(label)}<", hero_text)) != 1:
-            raise ValueError(f"homepage platform-system identity must appear exactly once: {label}")
+    if "Private • Self-hosted • Recoverable" not in hero_text:
+        raise ValueError("homepage hero focus label is missing")
+    for label in PLATFORM_SYSTEM_LABELS:
+        if label in hero_text:
+            raise ValueError(f"platform-system detail must not be duplicated in the hero: {label}")
     if "GoreeCloud Identity" in hero_text:
-        raise ValueError("GoreeCloud Identity is an application identity, not a platform-system hero chip")
-    if hero_text.count('class="glaze-chip"') != 5:
-        raise ValueError("homepage hero must contain exactly five platform-system chips")
+        raise ValueError("GoreeCloud Identity must not appear in the homepage hero")
 
     if 'data-suite-app=' in normalized or 'data-capability=' in normalized:
         raise ValueError("Suite application/capability cards must live on suite.goreecloud.com, not the main homepage")
@@ -280,8 +294,11 @@ def normalize_homepage(source: str) -> str:
         raise ValueError("homepage website portfolio must contain exactly nine website cards")
     if website_section.count('class="website-preview ') != len(EXPECTED_WEBSITE_DOMAINS):
         raise ValueError("each website card must include a visual preview")
-    if normalized.count(WEBSITE_STYLESHEET) != 1:
-        raise ValueError("homepage must include the website preview stylesheet exactly once")
+    if '<section class="band" aria-label="Core principles">' in normalized:
+        raise ValueError("duplicated homepage principle band must not return")
+    for stylesheet in (WEBSITE_STYLESHEET, HOMEPAGE_STYLESHEET):
+        if normalized.count(stylesheet) != 1:
+            raise ValueError(f"homepage must include {stylesheet} exactly once")
     if "Open WebUI" in normalized or "AnythingLLM" in normalized:
         raise ValueError("retired AI front ends remain in the public homepage")
     return normalized

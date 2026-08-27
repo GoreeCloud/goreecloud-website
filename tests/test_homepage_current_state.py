@@ -17,37 +17,42 @@ class HomepageCurrentStateTests(unittest.TestCase):
         rendered = render_public_file("index.html", source, load_manifest(ROOT))
         cls.homepage = normalize_homepage(rendered)
 
-    def test_hero_platform_systems_are_unique_and_complete(self) -> None:
-        expected = (
+    def test_hero_is_focused_without_platform_system_duplication(self) -> None:
+        hero = self.homepage.split("<h1>", 1)[0]
+        self.assertIn("Private • Self-hosted • Recoverable", hero)
+        for label in (
             "Glaze UI",
             "Privacy Shield",
             "Wardveil Security",
             "Everkeep",
             "GoreeCloud Mesh",
-        )
-        hero = self.homepage.split("<h1>", 1)[0]
-        for label in expected:
+            "GoreeCloud Identity",
+        ):
             with self.subTest(label=label):
-                self.assertEqual(hero.count(f">{label}<"), 1)
-        self.assertNotIn("GoreeCloud Identity", hero)
-        self.assertIn(
-            "Design • Privacy • Security • Resilience • Coordination",
-            hero,
-        )
+                self.assertNotIn(label, hero)
+        self.assertNotIn('<section class="band" aria-label="Core principles">', self.homepage)
 
     def test_main_homepage_is_a_website_hub(self) -> None:
         self.assertEqual(self.homepage.count('id="websites"'), 1)
         for domain in (
             "goreecloud.com",
             "suite.goreecloud.com",
+            "projects.goreecloud.com",
             "design.goreecloud.com",
             "privacy.goreecloud.com",
             "security.goreecloud.com",
+            "roadmap.goreecloud.com",
+            "blog.goreecloud.com",
+            "archive.goreecloud.com",
         ):
             with self.subTest(domain=domain):
                 self.assertIn(domain, self.homepage)
+        self.assertEqual(self.homepage.count('class="service-card website-card"'), 9)
+        self.assertEqual(self.homepage.count('class="website-preview '), 9)
         self.assertIn('<a href="#websites">Websites</a>', self.homepage)
         self.assertIn('<a href="https://suite.goreecloud.com/">Suite</a>', self.homepage)
+        self.assertIn('css/websites.css', self.homepage)
+        self.assertIn('css/homepage-v6.css', self.homepage)
 
     def test_suite_and_capability_cards_moved_off_main_homepage(self) -> None:
         self.assertNotIn('data-suite-app=', self.homepage)

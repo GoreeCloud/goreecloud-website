@@ -106,6 +106,7 @@ PUBLIC_STYLE_FILES = (
     "css/error.css",
     "css/glaze-polish.css",
     "css/glaze.css",
+    "css/homepage-v6.css",
     "css/how-it-works.css",
     "css/platform.css",
     "css/repositories.css",
@@ -113,6 +114,7 @@ PUBLIC_STYLE_FILES = (
     "css/social.css",
     "css/status.css",
     "css/style.css",
+    "css/websites.css",
 )
 
 PUBLIC_SCRIPT_FILES = (
