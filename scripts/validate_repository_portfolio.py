@@ -127,6 +127,10 @@ def validate_discovery_enhancement(main_js: str, repository_css: str) -> list[st
             if marker in filter_source:
                 errors.append("Repository search/filter controls must remain local, ephemeral, and network-independent: " + marker)
 
+    for prohibited in ("public-info.js", "current-platform-update", "native-application-update"):
+        if prohibited in main_js:
+            errors.append(f"Public JavaScript must not inject editorial homepage content at runtime: {prohibited}")
+
     required_css_markers = (
         ".repo-tools {",
         "min-height: var(--glaze-target-comfortable);",
@@ -159,6 +163,32 @@ def validate_summary_counts(text: str, counts: dict, context: str) -> list[str]:
     return errors
 
 
+def validate_homepage_deduplication(homepage: str) -> list[str]:
+    errors: list[str] = []
+    if 'id="platform"' in homepage:
+        errors.append("Rendered homepage must not restore the removed Platform Foundation section.")
+    if 'id="development"' in homepage:
+        errors.append("Rendered homepage must not duplicate Suite content in a Software & Development project-card section.")
+    if 'href="#platform"' in homepage or 'href="#development"' in homepage:
+        errors.append("Rendered homepage navigation must not link to removed duplicate sections.")
+
+    hero_match = re.search(r'<div class="hero-labels"[^>]*>(.*?)</div>', homepage, re.DOTALL)
+    if not hero_match:
+        errors.append("Rendered homepage is missing the platform-system hero labels.")
+    else:
+        hero = hero_match.group(1)
+        expected = ("Glaze UI", "Privacy Shield", "Wardveil Security", "Everkeep", "GoreeCloud Mesh")
+        for label in expected:
+            if hero.count(label) != 1:
+                errors.append(f"Hero platform-system label must appear exactly once: {label}.")
+        if "GoreeCloud Identity" in hero:
+            errors.append("GoreeCloud Identity must not be presented as a sixth platform-system hero label.")
+
+    if "current-platform-update" in homepage or "native-application-update" in homepage:
+        errors.append("Rendered homepage must not contain legacy runtime editorial overlays.")
+    return errors
+
+
 def validate(root: Path = ROOT) -> list[str]:
     errors: list[str] = []
     try:
@@ -180,11 +210,10 @@ def validate(root: Path = ROOT) -> list[str]:
     counts = data["counts"]
     errors.extend(validate_summary_counts(directory, counts, "Repository directory"))
     errors.extend(validate_summary_counts(homepage, counts, "Homepage"))
+    errors.extend(validate_homepage_deduplication(homepage))
     group_marker = f"<strong>{counts['functional_groups']}</strong><span>functional groups</span>"
     if group_marker not in homepage:
         errors.append(f"Homepage repository summary is missing the current functional-group count: {counts['functional_groups']}.")
-    if f"all {counts['total']} current repositories" not in homepage:
-        errors.append("Homepage software overview must identify the current repository directory total.")
     if f"GoreeCloud currently maintains {counts['total']} repositories" not in homepage:
         errors.append("Homepage repository teaser must state the manifest-derived current total.")
 
