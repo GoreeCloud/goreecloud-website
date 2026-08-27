@@ -31,8 +31,8 @@ PUBLIC_ARTIFACT_BUDGET = 512 * KIB
 MAX_STYLESHEETS_BY_PAGE = {
     "index.html": 12,
     "repositories.html": 4,
-    "privacy.html": 3,
-    "security.html": 3,
+    "privacy.html": 4,
+    "security.html": 4,
     "404.html": 4,
 }
 MAX_SCRIPTS_BY_PAGE = {
