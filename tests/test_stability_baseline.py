@@ -80,7 +80,7 @@ class StabilityBaselineTests(unittest.TestCase):
             "Target Glaze UI version: **1.5.0**",
             GLAZE_15_REVISION,
             "GoreeCloud/goreecloud-glaze-ui",
-            "state-layer",
+            "State-layer",
             "safe-area",
             "Canvas → Solid → Raised → Functional Glass → Overlay",
             "Visual acceptance: **Pending user review**",
