@@ -28,4 +28,6 @@ jobs:
       - name: Validate projects website
         run: python3 sites/projects/validate.py
       - name: Check JavaScript syntax
-        run: node --check sites/projects/assets/app.js
+        run: |
+          node --check sites/projects/assets/app.js
+          node --check sites/projects/assets/public-refresh.js
