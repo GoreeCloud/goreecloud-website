@@ -11,6 +11,7 @@ import re
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "docs" / "repository-portfolio.json"
 SUITE_MANIFEST = ROOT / "docs" / "suite-portfolio.json"
+CAPABILITY_MANIFEST = ROOT / "docs" / "capability-portfolio.json"
 
 SUMMARY_PATTERNS = {
     "total": re.compile(r"<strong>\d+</strong><span>current repositories</span>"),
@@ -69,6 +70,10 @@ def load_manifest(root: Path = ROOT) -> dict:
 
 def load_suite_manifest(root: Path = ROOT) -> dict:
     return json.loads((root / "docs" / "suite-portfolio.json").read_text(encoding="utf-8"))
+
+
+def load_capability_manifest(root: Path = ROOT) -> dict:
+    return json.loads((root / "docs" / "capability-portfolio.json").read_text(encoding="utf-8"))
 
 
 def _mark(name: str) -> str:
@@ -168,6 +173,40 @@ def _suite_section(manifest: dict) -> str:
     )
 
 
+def _capability_card(capability: dict) -> str:
+    families = " · ".join(escape(item) for item in capability["families"])
+    return (
+        f'<article class="service-card capability-card" data-capability="{escape(capability["id"])}">\n'
+        f'  <div class="service-art suite-art" aria-hidden="true"><img src="{escape(capability["icon"])}" alt="" width="52" height="52"></div>\n'
+        f'  <p class="service-kicker">Inside {escape(capability["parent_application"])}</p>\n'
+        f'  <h3>{escape(capability["name"])}</h3>\n'
+        f'  <p class="suite-description"><strong>What it is:</strong> {escape(capability["description"])}</p>\n'
+        f'  <p class="capability-families"><strong>Includes:</strong> {families}</p>\n'
+        f'  <p class="suite-role"><strong>Relationship:</strong> {escape(capability["relationship"])}</p>\n'
+        f'  <span class="badge {escape(capability["status_class"])}">{escape(capability["status"])}</span>\n'
+        '</article>'
+    )
+
+
+def _capability_section(manifest: dict) -> str:
+    cards = "\n".join(f"          {_capability_card(item)}" for item in manifest["capabilities"])
+    return (
+        '    <section id="capabilities" class="section section-alt capability-section">\n'
+        '      <div class="container">\n'
+        '        <div class="section-heading capability-heading">\n'
+        f'          <p class="eyebrow">{escape(manifest["section_title"])}</p>\n'
+        '          <h2>The named systems behind GoreeCloud applications.</h2>\n'
+        f'          <p>{escape(manifest["section_description"])}</p>\n'
+        '        </div>\n'
+        '        <div class="service-grid suite-grid capability-grid">\n'
+        f'{cards}\n'
+        '        </div>\n'
+        '        <p class="status-note capability-note">These identities are capability umbrellas, not standalone Suite products. Artwork shown is the approved icon of each parent application; no separate umbrella mark is implied.</p>\n'
+        '      </div>\n'
+        '    </section>\n'
+    )
+
+
 def _hero_labels() -> str:
     return (
         '<div class="hero-labels" aria-label="GoreeCloud platform systems">\n'
@@ -206,15 +245,25 @@ def render_repository_directory(source: str, manifest: dict) -> str:
     return _remove_obsolete_navigation(source)
 
 
-def render_homepage(source: str, manifest: dict, suite_manifest: dict | None = None) -> str:
+def render_homepage(
+    source: str,
+    manifest: dict,
+    suite_manifest: dict | None = None,
+    capability_manifest: dict | None = None,
+) -> str:
     counts = manifest["counts"]
     suite_manifest = suite_manifest or load_suite_manifest(ROOT)
+    capability_manifest = capability_manifest or load_capability_manifest(ROOT)
     rendered = source
 
-    rendered, suite_replacements = SUITE_SECTION.subn(_suite_section(suite_manifest), rendered, count=1)
+    portfolio_sections = _suite_section(suite_manifest) + "\n" + _capability_section(capability_manifest)
+    rendered, suite_replacements = SUITE_SECTION.subn(portfolio_sections, rendered, count=1)
     if suite_replacements != 1:
         raise ValueError("homepage GoreeCloud Suite template could not be resolved")
-    rendered = rendered.replace('<a href="#services">Services</a>', '<a href="#services">Suite</a>')
+    rendered = rendered.replace(
+        '<a href="#services">Services</a>',
+        '<a href="#services">Suite</a>\n        <a href="#capabilities">Capabilities</a>',
+    )
 
     rendered, platform_replacements = PLATFORM_SECTION.subn("", rendered, count=1)
     if platform_replacements != 1:
