@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
-"""Validate the GoreeCloud public site's Glaze UI 1.1 design contract.
+"""Validate the GoreeCloud public site's Glaze UI 1.5 design contract.
 
-This structural regression gate checks that every human-facing page participates
-in the same branding, responsive, accessibility, privacy, resilience, and
-progressive-enhancement foundation. It also binds the website to one exact
-Glaze UI version and canonical source revision. Automated checks do not replace
-visual review in real browsers or assistive technologies.
+The gate binds human-facing pages to the current Stable Glaze UI consumer
+mapping while preserving website-specific composition. Structural automation is
+not a substitute for visual or assistive-technology acceptance.
 """
 
 from __future__ import annotations
@@ -24,11 +22,13 @@ HUMAN_PAGES = (
 )
 GLAZE = ROOT / "css" / "glaze.css"
 POLISH = ROOT / "css" / "glaze-polish.css"
+HOMEPAGE = ROOT / "css" / "homepage-v6.css"
 THEME_INIT = ROOT / "js" / "theme-init.js"
 MAIN_JS = ROOT / "js" / "main.js"
 CONFORMANCE = ROOT / "docs" / "glaze-ui-conformance.md"
-TARGET_GLAZE_UI_VERSION = "1.1.0"
-TARGET_GLAZE_UI_REVISION = "5c8320de4f770614a3e2bcf9de2a27f7fcfd920c"
+TARGET_GLAZE_UI_VERSION = "1.5.0"
+TARGET_GLAZE_UI_REPOSITORY = "GoreeCloud/goreecloud-glaze-ui"
+TARGET_GLAZE_UI_REVISION = "e8f68770540d00499b5613a00310ac7002a674fd"
 GLAZE_COMPONENT_CLASSES = {
     "button",
     "glaze-chip",
@@ -90,6 +90,17 @@ def fail(errors: list[str], message: str) -> None:
     errors.append(message)
 
 
+def require_markers(path: Path, markers: tuple[str, ...], errors: list[str]) -> str:
+    if not path.exists():
+        fail(errors, f"Required Glaze UI source is missing: {path.relative_to(ROOT)}")
+        return ""
+    text = path.read_text(encoding="utf-8")
+    for marker in markers:
+        if marker not in text:
+            fail(errors, f"{path.relative_to(ROOT)} is missing required Glaze UI 1.5 marker: {marker}")
+    return text
+
+
 def validate_pages(errors: list[str]) -> None:
     for page in HUMAN_PAGES:
         if not page.exists():
@@ -109,17 +120,17 @@ def validate_pages(errors: list[str]) -> None:
         if "css/glaze.css" not in parser.stylesheets:
             fail(errors, f"{page.name} must load the Glaze UI foundation stylesheet.")
         if "css/glaze-polish.css" not in parser.stylesheets:
-            fail(errors, f"{page.name} must load the Glaze UI polish/accessibility stylesheet.")
+            fail(errors, f"{page.name} must load the current-Stable Glaze UI consumer mapping.")
         if parser.stylesheets.index("css/glaze.css") > parser.stylesheets.index("css/glaze-polish.css"):
             fail(errors, f"{page.name} must load glaze.css before glaze-polish.css.")
         if "js/theme-init.js" not in parser.scripts:
-            fail(errors, f"{page.name} must load the early local Glaze UI appearance initializer.")
+            fail(errors, f"{page.name} must load the early local appearance initializer.")
         if not parser.has_brand or not parser.has_brand_icon:
             fail(errors, f"{page.name} must retain GoreeCloud brand identity and controlled icon artwork.")
         if not parser.has_skip_link:
             fail(errors, f"{page.name} must retain the keyboard skip link to #main.")
         if not parser.has_main or parser.main_tabindex != "-1":
-            fail(errors, f"{page.name} main landmark must remain programmatically focusable with tabindex=-1.")
+            fail(errors, f"{page.name} main landmark must remain focusable with tabindex=-1.")
         if not parser.has_glaze_component:
             fail(errors, f"{page.name} must retain at least one Glaze UI surface or control marker.")
 
@@ -129,18 +140,7 @@ def validate_pages(errors: list[str]) -> None:
             fail(errors, f"{page.name} must initialize stored/system appearance before stylesheets load.")
 
 
-def require_markers(path: Path, markers: tuple[str, ...], errors: list[str]) -> str:
-    if not path.exists():
-        fail(errors, f"Required Glaze UI source is missing: {path.relative_to(ROOT)}")
-        return ""
-    text = path.read_text(encoding="utf-8")
-    for marker in markers:
-        if marker not in text:
-            fail(errors, f"{path.relative_to(ROOT)} is missing required Glaze UI contract marker: {marker}")
-    return text
-
-
-def validate_semantic_tokens(errors: list[str]) -> None:
+def validate_foundation(errors: list[str]) -> None:
     glaze = require_markers(
         GLAZE,
         (
@@ -160,106 +160,78 @@ def validate_semantic_tokens(errors: list[str]) -> None:
             "--glaze-radius-control:",
             "--glaze-target-min: 44px",
             "--glaze-target-comfortable: 48px",
-            "--glaze-blur:",
-            "--glaze-shadow-raised:",
             "--glaze-motion-instant: 90ms",
             "--glaze-motion-fast: 160ms",
             "--glaze-motion-standard: 220ms",
             "--glaze-motion-emphasized: 320ms",
             "--glaze-ease-standard:",
             "--glaze-ease-emphasized:",
-            "--glaze-focus-width:",
-            "--glaze-content-max:",
-            "--glaze-reading-max:",
-        ),
-        errors,
-    )
-
-    if glaze and glaze.count("--glaze-motion-") < 4:
-        fail(errors, "css/glaze.css must retain all four Glaze UI motion-duration roles.")
-
-    require_markers(
-        POLISH,
-        (
-            "Glaze UI 1.1",
-            "--glaze-on-accent:#fff",
-            "--glaze-info:",
-            "--glaze-scrim:",
-            "--glaze-state-hover:.08",
-            "--glaze-state-pressed:.12",
-            "--glaze-state-focus:.14",
-            "--glaze-state-selected:.12",
-            "--glaze-icon-sm:16px",
-            "--glaze-icon-md:20px",
-            "--glaze-icon-lg:24px",
-            "--glaze-icon-xl:32px",
-            "--glaze-control-padding-compact:12px",
-            "--glaze-control-padding-comfortable:16px",
-            "--glaze-gutter-compact:16px",
-            "--glaze-gutter-medium:24px",
-            "--glaze-gutter-expanded:32px",
-            "--glaze-gutter-wide:40px",
-            ".button.primary {color:var(--glaze-on-accent);}",
-            ".glaze-scrim {background:var(--glaze-scrim);}",
-        ),
-        errors,
-    )
-
-
-def validate_surface_and_adaptive_contract(errors: list[str]) -> None:
-    require_markers(
-        GLAZE,
-        (
-            ".glaze-surface-solid",
-            ".glaze-surface-raised",
-            ".glaze-surface {",
-            ".glaze-overlay",
+            ":where(a, button):focus-visible",
             "@media (max-width: 599px)",
             "@media (min-width: 600px) and (max-width: 1023px)",
             "@media (min-width: 1024px) and (max-width: 1439px)",
             "@media (min-width: 1440px)",
-            ".glaze-adaptive-hide-compact",
-            ".glaze-adaptive-hide-medium",
-            ".glaze-adaptive-hide-expanded",
-            ".glaze-adaptive-hide-wide",
-        ),
-        errors,
-    )
-    require_markers(
-        POLISH,
-        (
-            "env(safe-area-inset-left)",
-            "env(safe-area-inset-right)",
-        ),
-        errors,
-    )
-
-
-def validate_accessibility_resilience(errors: list[str]) -> None:
-    require_markers(
-        GLAZE,
-        (
-            ':root[data-theme="light"]',
-            "@media (prefers-color-scheme: light)",
-            ":where(a, button):focus-visible",
             "@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)))",
             "@media (prefers-reduced-transparency: reduce)",
             "@media (prefers-reduced-motion: reduce)",
-            "animation-duration: .01ms !important",
-            "transition-duration: .01ms !important",
         ),
         errors,
     )
+    if glaze and glaze.count("--glaze-motion-") < 4:
+        fail(errors, "css/glaze.css must retain all four Glaze UI motion-duration roles.")
+
+
+def validate_current_stable_mapping(errors: list[str]) -> None:
     require_markers(
         POLISH,
         (
-            "var(--glaze-motion-fast)",
-            "var(--glaze-ease-standard)",
+            "Glaze UI 1.5 Stable",
+            "--glaze-on-accent:#fff",
+            "--glaze-state-hover:.08",
+            "--glaze-state-pressed:.12",
+            "--glaze-state-focus:.14",
+            "--glaze-state-selected:.12",
+            "--glaze-gutter-compact:16px",
+            "--glaze-gutter-medium:24px",
+            "--glaze-gutter-expanded:32px",
+            "--glaze-gutter-wide:48px",
+            "--glaze-content-standard:1200px",
+            "--glaze-content-wide:1600px",
+            "--glaze-prose-max:72ch",
+            "--glaze-form-max:720px",
+            "--glaze-density-comfortable:1",
+            "--glaze-depth-raised:10",
+            "--glaze-depth-navigation:100",
+            "--glaze-material-functional-blur:24px",
+            "--glaze-material-functional-saturation:145%",
+            "--glaze-material-functional-opacity:.78",
+            "backdrop-filter:blur(var(--glaze-material-functional-blur))",
+            "background:var(--glaze-surface-strong);",
+            "env(safe-area-inset-left)",
+            "env(safe-area-inset-right)",
+            "@media (prefers-reduced-transparency:reduce)",
             "@media (prefers-contrast: more)",
             "@media (forced-colors: active)",
             "@media print",
             'html:not([data-js="true"]) .site-nav',
-            ":where(a, button):focus-visible",
+        ),
+        errors,
+    )
+
+    require_markers(
+        HOMEPAGE,
+        (
+            "Glaze UI 1.5 composition",
+            "grid-template-columns: repeat(5, minmax(0, 1fr))",
+            ".story-layout",
+            ".story-timeline",
+            ".story-milestone",
+            ".story-current-label",
+            "var(--glaze-surface-strong)",
+            "var(--glaze-shadow-raised)",
+            "@media (prefers-reduced-transparency: reduce)",
+            "@media (prefers-reduced-motion: reduce)",
+            "@media (forced-colors: active)",
         ),
         errors,
     )
@@ -270,13 +242,9 @@ def validate_conformance_record(errors: list[str]) -> None:
         CONFORMANCE,
         (
             f"Target Glaze UI version: **{TARGET_GLAZE_UI_VERSION}**",
-            "Canonical design-system repository: `GoreeCloud/glaze-ui`",
+            f"Canonical design-system repository: `{TARGET_GLAZE_UI_REPOSITORY}`",
             f"Canonical reference revision reviewed for this alignment: `{TARGET_GLAZE_UI_REVISION}`",
-            "on-accent",
-            "semantic scrim",
-            "state-layer",
-            "safe-area",
-            "Canvas, Solid, Raised, Glaze, and Overlay",
+            "Canvas → Solid → Raised → Functional Glass → Overlay",
             "Compact: through 599 CSS pixels",
             "Medium: 600 through 1023 CSS pixels",
             "Expanded: 1024 through 1439 CSS pixels",
@@ -285,7 +253,7 @@ def validate_conformance_record(errors: list[str]) -> None:
             "Fast: 160 ms",
             "Standard: 220 ms",
             "Emphasized: 320 ms",
-            "Visual acceptance: **Preserved**",
+            "Visual acceptance: **Pending user review**",
             "No production Glaze UI exception is recorded",
         ),
         errors,
@@ -322,9 +290,8 @@ def validate_interaction(errors: list[str]) -> None:
 def main() -> int:
     errors: list[str] = []
     validate_pages(errors)
-    validate_semantic_tokens(errors)
-    validate_surface_and_adaptive_contract(errors)
-    validate_accessibility_resilience(errors)
+    validate_foundation(errors)
+    validate_current_stable_mapping(errors)
     validate_conformance_record(errors)
     validate_interaction(errors)
 
@@ -336,7 +303,7 @@ def main() -> int:
 
     print(
         f"Glaze UI {TARGET_GLAZE_UI_VERSION} validation passed across "
-        f"{len(HUMAN_PAGES)} human-facing pages with recorded conformance."
+        f"{len(HUMAN_PAGES)} human-facing pages with current-Stable mapping recorded."
     )
     return 0
 
