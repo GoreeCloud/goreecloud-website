@@ -13,7 +13,10 @@ KIB = 1024
 HTML_FILE_BUDGET = 64 * KIB
 HTML_TOTAL_BUDGET = 96 * KIB
 CSS_FILE_BUDGET = 24 * KIB
-CSS_TOTAL_BUDGET = 64 * KIB
+# The homepage now includes an origin-local visual website directory and a
+# responsive compact-layout layer. Keep the CSS ceiling explicit and bounded
+# rather than dropping those styles or relying on cross-origin screenshots.
+CSS_TOTAL_BUDGET = 80 * KIB
 JS_FILE_BUDGET = 16 * KIB
 JS_TOTAL_BUDGET = 24 * KIB
 SVG_FILE_BUDGET = 24 * KIB
@@ -22,7 +25,7 @@ RASTER_FILE_BUDGET = 256 * KIB
 RASTER_TOTAL_BUDGET = 256 * KIB
 PUBLIC_ARTIFACT_BUDGET = 512 * KIB
 MAX_STYLESHEETS_BY_PAGE = {
-    "index.html": 10,
+    "index.html": 12,
     "repositories.html": 4,
     "privacy.html": 3,
     "security.html": 3,
