@@ -21,7 +21,7 @@ This inventory records every deployable website artwork file. It is not a licens
 | `assets/services/jellyfin.svg` | jellyfin/jellyfin-ux | master · logos/SVG/jellyfin-icon--color-on-light.svg | `c90d5e9acf2a5b27c730d1ea4a63d0184c5c766f` |
 | `assets/services/matrix.svg` | matrix-org/matrix.org | afca85178d131d3d85a33da34d64cbae88697a77 · static/images/matrix-logo-white.svg | `900a5aa0ed4c59c887e1ca79ec3864fb7d77a533` |
 | `assets/services/navidrome.png` | navidrome/navidrome | master · ui/public/android-chrome-192x192.png | `07c10ba2bdbc4ddc40008e7eeb7f347645ddc754` |
-| `assets/services/nextcloud.svg` | nextcloud/server | master · core/img/logo/logo.svg | `d68aca1fb46cd6dd6d22343ec7473b9191170c05` |
+| `assets/services/nextcloud.svg` | nextcloud/server | master · core/img/logo/logo.svg | `d68aca1fb46cd6dd22343ec7473b9191170c05` |
 | `assets/services/onlyoffice.ico` | ONLYOFFICE official website | 2026-08-19 · /favicon.ico | `39534c95e3660f4f3789f969488c12a581075e01` |
 | `assets/services/paperless-ngx.svg` | paperless-ngx/paperless-ngx | dev · docs/assets/logo_leaf.svg | `f1a5553729a1e2963c545265e8bf09327945f3fd` |
 | `assets/services/stirling-pdf.png` | Stirling Tools official GitHub organization | 2026-08-19 · GitHub organization avatar | `6a3badc57ce42fdbc544af253cfb6a5b75194caf` |
@@ -29,7 +29,7 @@ This inventory records every deployable website artwork file. It is not a licens
 | `assets/suite/ai.svg` | GoreeCloud/goreecloud-ai | 800b06ad723ccabbc9fd1c74c278a4f0396522ed · artwork/app-icon.svg | `1cbe04748f50cb843eef0cbb7233e2769efa275a` |
 | `assets/suite/backup.svg` | GoreeCloud/goreecloud-backup | master · artwork/app-icon.svg | `6e8f2bc02beb4679ed99f2db787e7dc6b4a0f28f` |
 | `assets/suite/bookmarks.svg` | GoreeCloud/goreecloud-bookmarks | bf8da4114cf4810bb07c3cb42d42a200d0f577a1 · artwork/app-icon.svg | `2e9947924708df10844a3a81f47585c4da6b931a` |
-| `assets/suite/browser.svg` | GoreeCloud/goreecloud-browser | main · assets/branding/goreecloud-browser.svg | `1fc17ec2abe29f16c1235ab88e38a24afa7253f6` |
+| `assets/suite/browser.svg` | GoreeCloud/goreecloud-browser | f4ab699f310d18901f2e012d56079a38c3e16d9a · assets/branding/goreecloud-browser.svg | `2a81cc68cb8c1831dfd7bec6c3d0b14e2f421f1f` |
 | `assets/suite/calendar.svg` | GoreeCloud/goreecloud-calendar | 655f36122301bb4c90b9d9dc6dc7e60a499ff26b · artwork/app-icon.svg | `369c42a204c6b130f49f37f91ec0569256a2c19e` |
 | `assets/suite/changelogs.svg` | GoreeCloud/goreecloud-changelogs | 8ca326c0d7a81b71da3a7fd64ce2bcac66c9a30f · artwork/app-icon.svg | `958878ecde32cadd3e646c606534638e4f5e01fb` |
 | `assets/suite/code.svg` | GoreeCloud/goreecloud-code | 71e68a1ec6efd28d26f1ba4774096916ff2b08d8 · artwork/app-icon.svg | `579f0416bd2839bf40e87de7751e319d80bd0bf9` |
