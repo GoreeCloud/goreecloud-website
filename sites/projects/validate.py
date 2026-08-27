@@ -75,8 +75,17 @@ for directive in ["Content-Security-Policy:","Permissions-Policy:","X-Content-Ty
 if "localStorage" not in js or "data-theme-choice" not in html: raise SystemExit("local appearance preference contract missing")
 release_boundary="Public source, a successful build, active development, a release candidate, or a platform identity does not automatically establish production acceptance or protection."
 if release_boundary not in html: raise SystemExit("source-versus-production boundary missing")
-if "observe(projectGrid,{childList:true,subtree:true})" in refresh:
-    raise SystemExit("Projects refresh must not observe its own descendant text mutations")
-if "observe(projectGrid,{childList:true})" not in refresh:
-    raise SystemExit("Projects refresh must observe only direct card-list replacement")
+if "MutationObserver" in refresh:
+    raise SystemExit("Projects refresh must update the data model without a DOM MutationObserver")
+for needle in ["entry.status=update[0]","entry.role=update[1]","entry.model=update[2]","render();"]:
+    if needle not in refresh:
+        raise SystemExit(f"Projects data-model refresh contract missing: {needle}")
+for script in ["/assets/app.js?v=20260827-cache2","/assets/public-refresh.js?v=20260827-cache2"]:
+    if script not in html:
+        raise SystemExit(f"Projects cache-busted script reference missing: {script}")
+if "Cache-Control: public, max-age=0, must-revalidate" not in headers:
+    raise SystemExit("Projects mutable assets must revalidate instead of remaining browser-fresh for a day")
+for stale_cache in ["max-age=86400","stale-while-revalidate"]:
+    if stale_cache in headers:
+        raise SystemExit(f"Projects stale asset cache policy remains: {stale_cache}")
 print("GoreeCloud Projects current portfolio validation passed")
