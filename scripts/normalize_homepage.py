@@ -43,6 +43,7 @@ EXPECTED_WEBSITE_DOMAINS = (
     "design.goreecloud.com",
     "privacy.goreecloud.com",
     "security.goreecloud.com",
+    "everkeep.goreecloud.com",
     "roadmap.goreecloud.com",
     "blog.goreecloud.com",
     "archive.goreecloud.com",
@@ -58,7 +59,7 @@ PLATFORM_SYSTEM_LABELS = (
 
 
 def canonical_hero_labels() -> str:
-    """Keep the hero focused; platform-system detail belongs in its own section."""
+    """Keep the hero focused; platform-system detail belongs in dedicated sections/sites."""
     return (
         '<div class="hero-labels hero-context" aria-label="GoreeCloud platform focus">\n'
         '            <span class="eyebrow">Private • Self-hosted • Recoverable</span>\n'
@@ -167,6 +168,16 @@ def websites_section() -> str:
             "WS",
         ),
         website_card(
+            "Everkeep",
+            "https://everkeep.goreecloud.com/",
+            "everkeep.goreecloud.com",
+            "The dedicated resilience and preservation website for recovery, continuity, portability, succession, assurance, and evidence-backed protection state.",
+            "Platform System",
+            "growing",
+            "website-everkeep",
+            "EK",
+        ),
+        website_card(
             "GoreeCloud Roadmap",
             "https://roadmap.goreecloud.com/",
             "roadmap.goreecloud.com",
@@ -203,8 +214,8 @@ def websites_section() -> str:
         '      <div class="container">\n'
         '        <div class="section-heading website-heading">\n'
         '          <p class="eyebrow">GoreeCloud websites</p>\n'
-        '          <h2>Nine focused destinations. One GoreeCloud ecosystem.</h2>\n'
-        '          <p>The main site stays concise while dedicated destinations carry product, design, privacy, security, roadmap, publishing, and historical depth.</p>\n'
+        '          <h2>Ten focused destinations. One GoreeCloud ecosystem.</h2>\n'
+        '          <p>The main site stays concise while dedicated destinations carry product, design, privacy, security, resilience, roadmap, publishing, and historical depth.</p>\n'
         '        </div>\n'
         '        <div class="service-grid website-grid">\n'
         f'          {rendered_cards}\n'
@@ -291,7 +302,7 @@ def normalize_homepage(source: str) -> str:
     website_section_match = re.search(r'<section id="websites".*?</section>', normalized, re.DOTALL)
     website_section = website_section_match.group(0) if website_section_match else ""
     if website_section.count('class="service-card website-card"') != len(EXPECTED_WEBSITE_DOMAINS):
-        raise ValueError("homepage website portfolio must contain exactly nine website cards")
+        raise ValueError("homepage website portfolio card count must match the website manifest")
     if website_section.count('class="website-preview ') != len(EXPECTED_WEBSITE_DOMAINS):
         raise ValueError("each website card must include a visual preview")
     if '<section class="band" aria-label="Core principles">' in normalized:
