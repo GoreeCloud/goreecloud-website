@@ -71,22 +71,19 @@
   background: color-mix(in srgb, var(--muted) 55%, transparent);
 }
 
-.website-preview-domain {
-  min-width: 0;
-  margin-left: .24rem;
-  color: var(--muted);
-  font-size: .62rem;
-  line-height: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+/* The card body is the single visible source of truth for destination names
+ * and domains. Preview labels are decorative and intentionally suppressed so
+ * each application/site identity is presented only once. */
+.website-preview-domain,
+.website-preview-title {
+  display: none !important;
 }
 
 .website-preview-page {
   min-height: 134px;
   display: grid;
   align-content: center;
-  gap: .52rem;
+  gap: .72rem;
   padding: 1rem 1.05rem 1.1rem;
   background:
     linear-gradient(90deg, color-mix(in srgb, var(--website-accent, var(--blue)) 8%, transparent) 1px, transparent 1px),
@@ -105,15 +102,6 @@
   background: color-mix(in srgb, var(--website-accent, var(--cyan)) 9%, var(--surface));
   font-size: .72rem;
   font-weight: 900;
-  letter-spacing: -.03em;
-}
-
-.website-preview-title {
-  max-width: 18ch;
-  color: var(--text);
-  font-size: 1.08rem;
-  font-weight: 850;
-  line-height: 1.08;
   letter-spacing: -.03em;
 }
 
