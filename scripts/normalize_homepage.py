@@ -6,7 +6,7 @@ from __future__ import annotations
 import re
 
 HERO_PREFIX = re.compile(
-    r'<div class="hero-labels"[^>]*>.*?(?=\s*<h1>)',
+    r'<div class="hero-labels[^"]*"[^>]*>.*?(?=\s*<h1>)',
     re.DOTALL,
 )
 HERO_ACTIONS = re.compile(
