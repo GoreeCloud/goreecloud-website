@@ -13,7 +13,8 @@ const currentProjectDirection={
   'GoreeCloud Gallery':['Native rebuild target','GoreeCloud Gallery is required to become original GoreeCloud-owned software at the application layer. Existing upstream-derived Android gallery code is transitional while equivalent local-media capabilities are rebuilt and accepted natively.'],
   'GoreeCloud Vault Server':['Native rebuild target · transitional service','The password and credential server is required to move to an original GoreeCloud application architecture. Vaultwarden-derived code remains transitional continuity and compatibility material until the native replacement satisfies security, migration, recovery, and client-compatibility gates.'],
   'GoreeCloud Keyboard':['Native rebuild active','GoreeCloud Keyboard is an original native application target powered by first-party Quill capabilities. Any inherited upstream application layer is transitional; platform keyboard APIs, language resources, and mature technical dependencies remain bounded supporting foundations.'],
-  'GoreeCloud Terminal':['50.2-rc.2 source · native rebuild required','The current 50.2-rc.2 line remains a release candidate and transitional implementation. GoreeCloud Terminal must reach an original GoreeCloud application end state while retaining only narrowly justified terminal, shell, toolkit, and operating-system foundations. Stable and production acceptance remain separate evidence gates.']
+  'GoreeCloud Terminal':['50.2-rc.2 source · native rebuild required','The current 50.2-rc.2 line remains a release candidate and transitional implementation. GoreeCloud Terminal must reach an original GoreeCloud application end state while retaining only narrowly justified terminal, shell, toolkit, and operating-system foundations. Stable and production acceptance remain separate evidence gates.'],
+  'Glaze UI':['1.5.0 current Stable','GoreeCloud Design Center and shared design-system authority for Stable 1.5.0 semantics across Mobile, Tablet, Desktop, TV, and supported web experiences. Current conformance still depends on each consumer completing applicable implementation and acceptance evidence.','Design system · Stable 1.5.0']
 };
 
 function ensureAugust27Entries(){
@@ -40,7 +41,7 @@ function applyCurrentDirection(){
     const model=card.querySelector('.model');
     if(status)status.textContent=update[0];
     if(role)role.textContent=update[1];
-    if(model)model.textContent='Native GoreeCloud end state · transitional upstream provenance retained where applicable';
+    if(model)model.textContent=update[2]||'Native GoreeCloud end state · transitional upstream provenance retained where applicable';
   });
 }
 
