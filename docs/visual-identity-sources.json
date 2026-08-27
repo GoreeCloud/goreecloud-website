@@ -5,10 +5,10 @@
       "bytes": 689,
       "official_artwork_exists": true,
       "sha256": "630c05ea616f4de042436dcb0968ba60c650540c8e99abd0ca6ed12eb13564df",
-      "source_authority": "GoreeCloud/goreecloud-logo",
+      "source_authority": "GoreeCloud/goreecloud-branding-assets",
       "source_path": "official/goreecloud-logo.svg",
-      "source_ref": "c766a4299196f8c80ed3f6de70ee8b74eb5818d9",
-      "source_url": "https://raw.githubusercontent.com/GoreeCloud/goreecloud-logo/c766a4299196f8c80ed3f6de70ee8b74eb5818d9/official/goreecloud-logo.svg"
+      "source_ref": "9f434ac22fe2cf9121a4390df22ccb0ce1c648dc",
+      "source_url": "https://raw.githubusercontent.com/GoreeCloud/goreecloud-branding-assets/9f434ac22fe2cf9121a4390df22ccb0ce1c648dc/official/goreecloud-logo.svg"
     },
     {
       "asset_path": "assets/services/nextcloud.svg",
@@ -350,6 +350,6 @@
     }
   ],
   "policy": "Official icon, logo, or artwork is required when it exists; text-only is the only allowed fallback when approved official artwork does not exist.",
-  "reviewed": "2026-08-19",
+  "reviewed": "2026-08-27",
   "schema_version": 1
 }
