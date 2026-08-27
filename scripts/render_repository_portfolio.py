@@ -115,18 +115,12 @@ def _suite_card(application: dict) -> str:
 
 def _suite_section(manifest: dict) -> str:
     groups: list[str] = []
-    application_count = 0
-    for number, group in enumerate(manifest["groups"], start=1):
-        applications = group["applications"]
-        application_count += len(applications)
+    for group in manifest["groups"]:
         group_id = f'suite-group-{escape(group["id"])}'
-        cards = "\n".join(f"            {_suite_card(app)}" for app in applications)
+        cards = "\n".join(f"            {_suite_card(app)}" for app in group["applications"])
         groups.append(
-            '        <section class="suite-group" aria-labelledby="' + group_id + '">\n'
-            '          <div class="suite-group-heading">\n'
-            f'            <span aria-hidden="true">{number:02d}</span>\n'
-            f'            <div><p class="eyebrow">{escape(group["label"])}</p><h3 id="{group_id}">{escape(group["label"])}</h3></div>\n'
-            '          </div>\n'
+            f'        <section class="suite-group" aria-labelledby="{group_id}">\n'
+            f'          <div class="suite-group-heading"><p class="eyebrow">{escape(group["label"])}</p><h3 id="{group_id}">{escape(group["label"])}</h3></div>\n'
             '          <div class="service-grid suite-grid">\n'
             f'{cards}\n'
             '          </div>\n'
@@ -140,11 +134,6 @@ def _suite_section(manifest: dict) -> str:
         f'          <p class="eyebrow">{escape(manifest["section_title"])}</p>\n'
         '          <h2>First-party applications for the complete GoreeCloud experience.</h2>\n'
         f'          <p>{escape(manifest["section_description"])}</p>\n'
-        '        </div>\n'
-        '        <div class="suite-summary" aria-label="GoreeCloud Suite summary">\n'
-        f'          <div><strong>{application_count}</strong><span>applications &amp; services</span></div>\n'
-        f'          <div><strong>{len(manifest["groups"])}</strong><span>functional groups</span></div>\n'
-        '          <div><strong>First-party</strong><span>product identities</span></div>\n'
         '        </div>\n\n'
         + "\n\n".join(groups)
         + '\n\n        <p class="status-note suite-note">Status labels describe GoreeCloud lifecycle and acceptance state, not upstream project maturity. A source repository, milestone, beta, or release-candidate label does not imply production approval unless the card explicitly states a Stable or current-service status.</p>\n'
