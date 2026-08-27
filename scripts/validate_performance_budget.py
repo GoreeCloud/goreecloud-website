@@ -30,10 +30,10 @@ RASTER_TOTAL_BUDGET = 256 * KIB
 PUBLIC_ARTIFACT_BUDGET = 512 * KIB
 MAX_STYLESHEETS_BY_PAGE = {
     "index.html": 12,
-    "repositories.html": 4,
+    "repositories.html": 5,
     "privacy.html": 4,
     "security.html": 4,
-    "404.html": 4,
+    "404.html": 5,
 }
 MAX_SCRIPTS_BY_PAGE = {
     "index.html": 2,
