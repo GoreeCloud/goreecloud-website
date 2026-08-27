@@ -39,8 +39,27 @@ PLATFORM_SECTION = re.compile(
     r'\n    <section id="platform" class="section platform-section">.*?(?=\n    <section id="development")',
     re.DOTALL,
 )
+DEVELOPMENT_SECTION = re.compile(
+    r'\n    <section id="development" class="section section-alt">.*?(?=\n    <section id="repositories")',
+    re.DOTALL,
+)
 PLATFORM_NAVIGATION = re.compile(
     r'\s*<a href="(?:index\.html)?#platform">Platform</a>',
+)
+DEVELOPMENT_NAVIGATION = re.compile(
+    r'\s*<a href="(?:index\.html)?#development">Projects</a>',
+)
+HERO_LABELS = re.compile(
+    r'<div class="hero-labels" aria-label="GoreeCloud platform foundations">.*?</div>',
+    re.DOTALL,
+)
+HERO_LEDE = re.compile(
+    r'<p class="hero-lede">.*?</p>',
+    re.DOTALL,
+)
+HERO_ACTIONS = re.compile(
+    r'<div class="hero-actions">.*?</div>',
+    re.DOTALL,
 )
 
 
@@ -149,8 +168,23 @@ def _suite_section(manifest: dict) -> str:
     )
 
 
-def _remove_platform_navigation(source: str) -> str:
-    return PLATFORM_NAVIGATION.sub("", source)
+def _hero_labels() -> str:
+    return (
+        '<div class="hero-labels" aria-label="GoreeCloud platform systems">\n'
+        '            <a class="glaze-chip" href="https://design.goreecloud.com/">Glaze UI</a>\n'
+        '            <a class="glaze-chip" href="https://privacy.goreecloud.com/">Privacy Shield</a>\n'
+        '            <a class="glaze-chip" href="https://security.goreecloud.com/">Wardveil Security</a>\n'
+        '            <span class="glaze-chip">Everkeep</span>\n'
+        '            <span class="glaze-chip">GoreeCloud Mesh</span>\n'
+        '            <span class="eyebrow">Design • Privacy • Security • Resilience • Coordination</span>\n'
+        '          </div>'
+    )
+
+
+def _remove_obsolete_navigation(source: str) -> str:
+    source = PLATFORM_NAVIGATION.sub("", source)
+    source = DEVELOPMENT_NAVIGATION.sub("", source)
+    return source
 
 
 def render_repository_directory(source: str, manifest: dict) -> str:
@@ -169,7 +203,7 @@ def render_repository_directory(source: str, manifest: dict) -> str:
     source, group_replacements = DIRECTORY_GROUP_BLOCK.subn(_groups(manifest), source, count=1)
     if group_replacements != 1:
         raise ValueError("repository directory group template could not be resolved")
-    return _remove_platform_navigation(source)
+    return _remove_obsolete_navigation(source)
 
 
 def render_homepage(source: str, manifest: dict, suite_manifest: dict | None = None) -> str:
@@ -185,8 +219,34 @@ def render_homepage(source: str, manifest: dict, suite_manifest: dict | None = N
     rendered, platform_replacements = PLATFORM_SECTION.subn("", rendered, count=1)
     if platform_replacements != 1:
         raise ValueError("homepage Platform Foundation section could not be resolved")
-    rendered = _remove_platform_navigation(rendered)
+
+    rendered, development_replacements = DEVELOPMENT_SECTION.subn("", rendered, count=1)
+    if development_replacements != 1:
+        raise ValueError("homepage duplicate Software & Development section could not be resolved")
+
+    rendered = _remove_obsolete_navigation(rendered)
     rendered = rendered.replace('  <link rel="stylesheet" href="css/platform.css">\n', '')
+    rendered = rendered.replace('  <link rel="stylesheet" href="css/development.css">\n', '')
+
+    rendered, labels_replacements = HERO_LABELS.subn(_hero_labels(), rendered, count=1)
+    if labels_replacements != 1:
+        raise ValueError("homepage platform-system labels could not be resolved")
+
+    rendered, lede_replacements = HERO_LEDE.subn(
+        '<p class="hero-lede">GoreeCloud is a privacy-first, self-hosted personal and family cloud for keeping important data, applications, and digital history under the control of the people they belong to.</p>',
+        rendered,
+        count=1,
+    )
+    if lede_replacements != 1:
+        raise ValueError("homepage hero description could not be resolved")
+
+    rendered, action_replacements = HERO_ACTIONS.subn(
+        '<div class="hero-actions">\n            <a class="button primary" href="#services">Explore GoreeCloud Suite</a>\n            <a class="button secondary" href="repositories.html">Browse Source Repositories</a>\n          </div>',
+        rendered,
+        count=1,
+    )
+    if action_replacements != 1:
+        raise ValueError("homepage hero actions could not be resolved")
 
     rendered = re.sub(
         r"all \d+ current repositories",
@@ -232,5 +292,5 @@ def render_public_file(relative: str, source: str, manifest: dict) -> str:
     if relative == "repositories.html":
         return render_repository_directory(source, manifest)
     if relative.endswith(".html"):
-        return _remove_platform_navigation(source)
+        return _remove_obsolete_navigation(source)
     return source
