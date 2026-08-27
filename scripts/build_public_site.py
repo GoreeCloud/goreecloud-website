@@ -13,6 +13,7 @@ from pathlib import Path
 import shutil
 import sys
 
+from normalize_homepage import normalize_homepage
 from render_repository_portfolio import load_manifest, render_public_file
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -166,6 +167,8 @@ def main() -> int:
             destination.parent.mkdir(parents=True, exist_ok=True)
             if relative in GENERATED_HTML:
                 rendered = render_public_file(relative, source.read_text(encoding="utf-8"), manifest)
+                if relative == "index.html":
+                    rendered = normalize_homepage(rendered)
                 destination.write_text(rendered, encoding="utf-8")
             else:
                 shutil.copy2(source, destination)
