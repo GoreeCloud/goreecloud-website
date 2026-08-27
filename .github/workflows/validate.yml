@@ -46,6 +46,9 @@ jobs:
       - name: Validate public creative-asset boundary
         run: python scripts/validate_public_assets.py
 
+      - name: Validate GoreeCloud Suite portfolio
+        run: python scripts/validate_suite_portfolio.py
+
       - name: Validate GoreeCloud governance readiness
         run: python scripts/validate_governance_readiness.py
 
