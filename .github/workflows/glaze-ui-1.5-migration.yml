@@ -113,6 +113,11 @@ jobs:
                   path = root / "sites" / site / name
                   if path.exists(): patch_html(path, href)
 
+          roadmap = root / "sites/roadmap/index.html"
+          roadmap_text = roadmap.read_text(encoding="utf-8")
+          roadmap_text = roadmap_text.replace("Messenger is advancing private messaging", "GoreeCloud Messenger is advancing private messaging")
+          roadmap.write_text(roadmap_text, encoding="utf-8")
+
           build = root / "scripts/build_public_site.py"
           text = build.read_text(encoding="utf-8")
           marker = '    "css/glaze.css",\n'
