@@ -28,6 +28,7 @@ DRIVER_HOST = "127.0.0.1"
 DRIVER_PORTS = {"chrome": 9515, "firefox": 9516}
 DRIVER_BASE = ""
 HTTP_TIMEOUT = 20
+FIREFOX_SESSION_TIMEOUT = 45
 STARTUP_TIMEOUT = 15
 MIN_PROJECT_CARDS = 30
 MAX_STRESS_LOOP_MS = 5_000
@@ -63,7 +64,13 @@ def executable_from_env_or_path(browser: str) -> str:
     raise WebDriverError(f"{binary_name} is unavailable on the runner.")
 
 
-def webdriver_request(method: str, path: str, payload: dict[str, Any] | None = None) -> Any:
+def webdriver_request(
+    method: str,
+    path: str,
+    payload: dict[str, Any] | None = None,
+    *,
+    timeout: int = HTTP_TIMEOUT,
+) -> Any:
     if not DRIVER_BASE:
         raise WebDriverError("WebDriver endpoint has not been initialized.")
     body = None if payload is None else json.dumps(payload).encode("utf-8")
@@ -74,7 +81,7 @@ def webdriver_request(method: str, path: str, payload: dict[str, Any] | None = N
         headers={"Content-Type": "application/json; charset=utf-8"},
     )
     try:
-        with urlopen(request, timeout=HTTP_TIMEOUT) as response:
+        with urlopen(request, timeout=timeout) as response:
             raw = response.read()
     except HTTPError as error:
         raw = error.read()
@@ -131,11 +138,12 @@ def create_session(browser: str) -> str:
                 ]
             },
         }
+        session_timeout = HTTP_TIMEOUT
     else:
         always_match = {
             "browserName": "firefox",
             "moz:firefoxOptions": {
-                "args": ["-headless", "--width=1440", "--height=1200"],
+                "args": ["-headless"],
                 "prefs": {
                     "browser.shell.checkDefaultBrowser": False,
                     "browser.startup.homepage_override.mstone": "ignore",
@@ -144,11 +152,16 @@ def create_session(browser: str) -> str:
                 },
             },
         }
+        # Firefox can spend materially longer starting Marionette on a cold hosted
+        # runner. This timeout applies only to session creation; navigation and
+        # script execution retain the strict per-page timeouts below.
+        session_timeout = FIREFOX_SESSION_TIMEOUT
 
     value = webdriver_request(
         "POST",
         "/session",
         {"capabilities": {"alwaysMatch": always_match}},
+        timeout=session_timeout,
     )
     if not isinstance(value, dict):
         raise WebDriverError(f"Unexpected {browser} WebDriver session response: {value!r}")
