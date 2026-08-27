@@ -41,18 +41,24 @@ class HomepageCurrentStateTests(unittest.TestCase):
             "design.goreecloud.com",
             "privacy.goreecloud.com",
             "security.goreecloud.com",
+            "everkeep.goreecloud.com",
             "roadmap.goreecloud.com",
             "blog.goreecloud.com",
             "archive.goreecloud.com",
         ):
             with self.subTest(domain=domain):
                 self.assertIn(domain, self.homepage)
-        self.assertEqual(self.homepage.count('class="service-card website-card"'), 9)
-        self.assertEqual(self.homepage.count('class="website-preview '), 9)
+        self.assertEqual(self.homepage.count('class="service-card website-card"'), 10)
+        self.assertEqual(self.homepage.count('class="website-preview '), 10)
         self.assertIn('<a href="#websites">Websites</a>', self.homepage)
         self.assertIn('<a href="https://suite.goreecloud.com/">Suite</a>', self.homepage)
         self.assertIn('css/websites.css', self.homepage)
         self.assertIn('css/homepage-v6.css', self.homepage)
+
+    def test_everkeep_has_a_dedicated_public_destination(self) -> None:
+        self.assertIn('https://everkeep.goreecloud.com/', self.homepage)
+        self.assertIn('<h3>Everkeep</h3>', self.homepage)
+        self.assertIn('resilience and preservation website', self.homepage)
 
     def test_suite_and_capability_cards_moved_off_main_homepage(self) -> None:
         self.assertNotIn('data-suite-app=', self.homepage)
