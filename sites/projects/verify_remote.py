@@ -27,16 +27,21 @@ REMOTE_FILES = (
     "404.html",
     "assets/app.js",
     "assets/public-refresh.js",
+    "assets/icon-refresh.js",
     "assets/styles.css",
+    "assets/mobile-refresh.css",
     "assets/goreecloud-logo.svg",
     "assets/glaze-ui-mark.svg",
+    "assets/everkeep.svg",
     "assets/privacy-shield-icon.svg",
     "assets/wardveil-security-icon.svg",
     "assets/glaze-ui-1.5.0.css",
 )
-CRITICAL_SCRIPT_PATHS = (
+CRITICAL_ASSET_PATHS = (
     "/assets/app.js",
     "/assets/public-refresh.js",
+    "/assets/icon-refresh.js",
+    "/assets/mobile-refresh.css",
 )
 
 
@@ -171,12 +176,22 @@ def verify_root_contract(base_url: str, errors: list[str]) -> None:
         "<title>Projects — GoreeCloud</title>",
         "/assets/app.js?v=20260827-cache2",
         "/assets/public-refresh.js?v=20260827-cache2",
+        "/assets/icon-refresh.js?v=20260827-icons1",
+        "/assets/mobile-refresh.css?v=20260827-mobile1",
+        "/assets/everkeep.svg",
+        "class=\"mesh-mark\"",
         "GoreeCloud software portfolio",
     ):
         if marker not in text:
             errors.append(f"Projects root is missing production marker: {marker}")
     csp = response.headers.get("content-security-policy", "").lower()
-    for marker in ("default-src 'self'", "script-src 'self'", "connect-src 'none'", "frame-ancestors 'none'"):
+    for marker in (
+        "default-src 'self'",
+        "script-src 'self'",
+        "connect-src 'none'",
+        "frame-ancestors 'none'",
+        "img-src 'self' data: https://www.goreecloud.com",
+    ):
         if marker not in csp:
             errors.append(f"Projects root CSP is missing: {marker}")
     if response.headers.get("x-content-type-options", "").lower() != "nosniff":
@@ -184,7 +199,7 @@ def verify_root_contract(base_url: str, errors: list[str]) -> None:
 
 
 def verify_critical_asset_cache(base_url: str, errors: list[str]) -> None:
-    for path in CRITICAL_SCRIPT_PATHS:
+    for path in CRITICAL_ASSET_PATHS:
         try:
             response = fetch(build_url(base_url, path))
         except RuntimeError as error:
@@ -196,7 +211,7 @@ def verify_critical_asset_cache(base_url: str, errors: list[str]) -> None:
         cache_control = response.headers.get("cache-control", "").lower()
         if "max-age=0" not in cache_control or "must-revalidate" not in cache_control:
             errors.append(
-                f"{path} must revalidate mutable JavaScript; got Cache-Control {cache_control!r}."
+                f"{path} must revalidate mutable Projects assets; got Cache-Control {cache_control!r}."
             )
         for forbidden in ("max-age=86400", "stale-while-revalidate"):
             if forbidden in cache_control:
