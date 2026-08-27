@@ -49,6 +49,9 @@ jobs:
       - name: Validate GoreeCloud Suite portfolio
         run: python scripts/validate_suite_portfolio.py
 
+      - name: Validate GoreeCloud capability portfolio
+        run: python scripts/validate_capability_portfolio.py
+
       - name: Validate GoreeCloud governance readiness
         run: python scripts/validate_governance_readiness.py
 
