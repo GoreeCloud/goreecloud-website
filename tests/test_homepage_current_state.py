@@ -17,14 +17,43 @@ class HomepageCurrentStateTests(unittest.TestCase):
         rendered = render_public_file("index.html", source, load_manifest(ROOT))
         cls.homepage = normalize_homepage(rendered)
 
-    def test_hero_platform_identities_are_unique_and_complete(self) -> None:
-        self.assertEqual(self.homepage.count('>Everkeep</span>'), 1)
-        self.assertEqual(self.homepage.count('>GoreeCloud Mesh</span>'), 1)
-        self.assertEqual(self.homepage.count('>GoreeCloud Identity</span>'), 1)
-        self.assertIn(
-            "Design • Privacy • Security • Resilience • Coordination • Identity",
-            self.homepage,
+    def test_hero_platform_systems_are_unique_and_complete(self) -> None:
+        expected = (
+            "Glaze UI",
+            "Privacy Shield",
+            "Wardveil Security",
+            "Everkeep",
+            "GoreeCloud Mesh",
         )
+        hero = self.homepage.split("<h1>", 1)[0]
+        for label in expected:
+            with self.subTest(label=label):
+                self.assertEqual(hero.count(f">{label}<"), 1)
+        self.assertNotIn("GoreeCloud Identity", hero)
+        self.assertIn(
+            "Design • Privacy • Security • Resilience • Coordination",
+            hero,
+        )
+
+    def test_main_homepage_is_a_website_hub(self) -> None:
+        self.assertEqual(self.homepage.count('id="websites"'), 1)
+        for domain in (
+            "goreecloud.com",
+            "suite.goreecloud.com",
+            "design.goreecloud.com",
+            "privacy.goreecloud.com",
+            "security.goreecloud.com",
+        ):
+            with self.subTest(domain=domain):
+                self.assertIn(domain, self.homepage)
+        self.assertIn('<a href="#websites">Websites</a>', self.homepage)
+        self.assertIn('<a href="https://suite.goreecloud.com/">Suite</a>', self.homepage)
+
+    def test_suite_and_capability_cards_moved_off_main_homepage(self) -> None:
+        self.assertNotIn('data-suite-app=', self.homepage)
+        self.assertNotIn('data-capability=', self.homepage)
+        self.assertNotIn('<p class="eyebrow">GoreeCloud Suite</p>', self.homepage)
+        self.assertNotIn('<p class="eyebrow">Umbrella Capabilities</p>', self.homepage)
 
     def test_goreecloud_ai_replaces_retired_front_ends_in_roadmap(self) -> None:
         self.assertIn('data-roadmap="goreecloud-ai"', self.homepage)
@@ -34,12 +63,6 @@ class HomepageCurrentStateTests(unittest.TestCase):
         self.assertNotIn("AnythingLLM", self.homepage)
         self.assertIn("Ollama local model runtime", self.homepage)
         self.assertIn("Controlled web research through GoreeCloud Search", self.homepage)
-
-    def test_suite_uses_manifest_owned_icons(self) -> None:
-        self.assertIn('data-suite-app="ai"', self.homepage)
-        self.assertIn('data-suite-app="browser"', self.homepage)
-        self.assertIn('data-suite-app="music"', self.homepage)
-        self.assertNotIn("goreecloud-artwork-pending.svg", self.homepage)
 
 
 if __name__ == "__main__":
