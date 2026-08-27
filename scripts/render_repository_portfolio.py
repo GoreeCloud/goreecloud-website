@@ -35,6 +35,13 @@ SUITE_SECTION = re.compile(
     r'    <section id="services" class="section">.*?(?=\n    <section id="how-it-works")',
     re.DOTALL,
 )
+PLATFORM_SECTION = re.compile(
+    r'\n    <section id="platform" class="section platform-section">.*?(?=\n    <section id="development")',
+    re.DOTALL,
+)
+PLATFORM_NAVIGATION = re.compile(
+    r'\s*<a href="(?:index\.html)?#platform">Platform</a>',
+)
 
 
 def load_manifest(root: Path = ROOT) -> dict:
@@ -142,6 +149,10 @@ def _suite_section(manifest: dict) -> str:
     )
 
 
+def _remove_platform_navigation(source: str) -> str:
+    return PLATFORM_NAVIGATION.sub("", source)
+
+
 def render_repository_directory(source: str, manifest: dict) -> str:
     counts = manifest["counts"]
     summary = (
@@ -158,7 +169,7 @@ def render_repository_directory(source: str, manifest: dict) -> str:
     source, group_replacements = DIRECTORY_GROUP_BLOCK.subn(_groups(manifest), source, count=1)
     if group_replacements != 1:
         raise ValueError("repository directory group template could not be resolved")
-    return source
+    return _remove_platform_navigation(source)
 
 
 def render_homepage(source: str, manifest: dict, suite_manifest: dict | None = None) -> str:
@@ -170,6 +181,12 @@ def render_homepage(source: str, manifest: dict, suite_manifest: dict | None = N
     if suite_replacements != 1:
         raise ValueError("homepage GoreeCloud Suite template could not be resolved")
     rendered = rendered.replace('<a href="#services">Services</a>', '<a href="#services">Suite</a>')
+
+    rendered, platform_replacements = PLATFORM_SECTION.subn("", rendered, count=1)
+    if platform_replacements != 1:
+        raise ValueError("homepage Platform Foundation section could not be resolved")
+    rendered = _remove_platform_navigation(rendered)
+    rendered = rendered.replace('  <link rel="stylesheet" href="css/platform.css">\n', '')
 
     rendered = re.sub(
         r"all \d+ current repositories",
@@ -214,4 +231,6 @@ def render_public_file(relative: str, source: str, manifest: dict) -> str:
         return render_homepage(source, manifest)
     if relative == "repositories.html":
         return render_repository_directory(source, manifest)
+    if relative.endswith(".html"):
+        return _remove_platform_navigation(source)
     return source
