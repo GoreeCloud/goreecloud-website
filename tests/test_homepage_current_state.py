@@ -18,6 +18,7 @@ class HomepageCurrentStateTests(unittest.TestCase):
         cls.homepage = normalize_homepage(rendered)
         cls.homepage_css = (ROOT / "css" / "homepage-v6.css").read_text(encoding="utf-8")
         cls.websites_css = (ROOT / "css" / "websites.css").read_text(encoding="utf-8")
+        cls.glaze_polish_css = (ROOT / "css" / "glaze-polish.css").read_text(encoding="utf-8")
 
     def test_hero_is_focused_without_platform_system_duplication(self) -> None:
         hero = self.homepage.split("<h1>", 1)[0]
@@ -34,14 +35,13 @@ class HomepageCurrentStateTests(unittest.TestCase):
                 self.assertNotIn(label, hero)
         self.assertNotIn('<section class="band" aria-label="Core principles">', self.homepage)
 
-    def test_hero_visual_contract_rejects_chip_stack_and_narrow_title(self) -> None:
+    def test_hero_visual_contract_rejects_chip_stack(self) -> None:
         hero = self.homepage.split("<h1>", 1)[0]
         self.assertNotIn('class="glaze-chip"', hero)
         self.assertIn('.hero .hero-labels .glaze-chip', self.homepage_css)
         self.assertIn('display: none !important;', self.homepage_css)
-        self.assertIn('max-width: 13.7ch;', self.homepage_css)
-        self.assertIn('grid-template-columns: minmax(0, 1.16fr) minmax(360px, .84fr);', self.homepage_css)
-        self.assertIn('background: transparent;', self.homepage_css)
+        self.assertIn('max-width: 13.9ch;', self.homepage_css)
+        self.assertIn('grid-template-columns: minmax(0, 1.08fr) minmax(360px, .92fr);', self.homepage_css)
 
     def test_main_homepage_is_a_website_hub(self) -> None:
         self.assertEqual(self.homepage.count('id="websites"'), 1)
@@ -91,6 +91,28 @@ class HomepageCurrentStateTests(unittest.TestCase):
         for name in names:
             with self.subTest(name=name):
                 self.assertEqual(self.homepage.count(f'<h3>{name}</h3>'), 1)
+
+    def test_story_is_a_real_timeline_not_a_fixed_card_grid(self) -> None:
+        self.assertEqual(self.homepage.count('class="story-milestone'), 8)
+        self.assertIn('class="story-timeline"', self.homepage)
+        self.assertIn('class="story-current-label">Ongoing</span>', self.homepage)
+        self.assertIn('https://archive.goreecloud.com/', self.homepage)
+        self.assertNotIn('2026 →', self.homepage)
+        self.assertIn('grid-template-columns: minmax(260px, .72fr) minmax(0, 1.28fr);', self.homepage_css)
+        self.assertIn('grid-template-columns: 126px 30px minmax(0, 1fr);', self.homepage_css)
+        self.assertNotIn('grid-template-columns: repeat(4, minmax(0, 1fr));\n  gap: .85rem;\n}\n\n.timeline', self.homepage_css)
+        self.assertNotIn('min-height: 156px;', self.homepage_css)
+
+    def test_glaze_1_5_material_and_layout_contract_is_applied(self) -> None:
+        self.assertIn('Glaze UI 1.5 Stable', self.glaze_polish_css)
+        self.assertIn('--glaze-gutter-wide:48px;', self.glaze_polish_css)
+        self.assertIn('--glaze-content-standard:1200px;', self.glaze_polish_css)
+        self.assertIn('--glaze-prose-max:72ch;', self.glaze_polish_css)
+        self.assertIn('--glaze-material-functional-blur:24px;', self.glaze_polish_css)
+        self.assertIn('backdrop-filter:blur(var(--glaze-material-functional-blur))', self.glaze_polish_css)
+        self.assertIn('background:var(--glaze-surface-strong);', self.glaze_polish_css)
+        self.assertIn('prefers-reduced-transparency:reduce', self.glaze_polish_css)
+        self.assertIn('prefers-reduced-motion: reduce', self.glaze_polish_css)
 
     def test_everkeep_has_a_dedicated_public_destination(self) -> None:
         self.assertIn('https://everkeep.goreecloud.com/', self.homepage)
