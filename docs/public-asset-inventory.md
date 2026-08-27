@@ -4,7 +4,7 @@ This inventory records every deployable website artwork file. It is not a licens
 
 | Deployable asset | Source authority | Source revision/path | Reviewed Git blob |
 | --- | --- | --- | --- |
-| `assets/goreecloud-logo.svg` | GoreeCloud/goreecloud-logo | c766a4299196f8c80ed3f6de70ee8b74eb5818d9 · official/goreecloud-logo.svg | `082936062de7839148db89ea3ab4e86ff71341b0` |
+| `assets/goreecloud-logo.svg` | GoreeCloud/goreecloud-branding-assets | 9f434ac22fe2cf9121a4390df22ccb0ce1c648dc · official/goreecloud-logo.svg | `082936062de7839148db89ea3ab4e86ff71341b0` |
 | `assets/platform/adguard-home.svg` | AdguardTeam/AdGuardHome | 5c113ec4c565a8911f4531b3701a9013e066c433 · client_v2/public/assets/favicon.svg | `b0d41618384ec3f77d6bcf59a2a8cbc534287d8a` |
 | `assets/platform/caddy.svg` | caddyserver/website | 15ac087cfd9c21a53b2ddfa10359fdc63d5ec9b6 · src/old/resources/images/caddy-logo.svg | `6be9b71e62112325d3899c08d627ae1123766bbe` |
 | `assets/platform/debian.svg` | Debian official logo page | 2026-08-19 · logos/openlogo-nd.svg | `50dcb70c8f475407116c0ca483f96f9c7500fd60` |
@@ -20,7 +20,7 @@ This inventory records every deployable website artwork file. It is not a licens
 | `assets/services/immich.svg` | immich-app/immich | main · design/immich-logo.svg | `376fa6f3e837e907acafe8a5ae85a1beb7bcfac7` |
 | `assets/services/jellyfin.svg` | jellyfin/jellyfin-ux | master · logos/SVG/jellyfin-icon--color-on-light.svg | `c90d5e9acf2a5b27c730d1ea4a63d0184c5c766f` |
 | `assets/services/matrix.svg` | matrix-org/matrix.org | afca85178d131d3d85a33da34d64cbae88697a77 · static/images/matrix-logo-white.svg | `900a5aa0ed4c59c887e1ca79ec3864fb7d77a533` |
-| `assets/services/navidrome.png` | navidrome/navidrome | master · ui/public/android-chrome-192x192.png | `07c10ba2bdbc4ddc40008e7eeb7f347645ddc754` |
+| `assets/services/navidrome.png` | navidrome/navidrome | master · ui/public/android-chrome-192x192.png | `07c10ba2bdbc4ddc40008e7eeb7f347645ddc927a` |
 | `assets/services/nextcloud.svg` | nextcloud/server | master · core/img/logo/logo.svg | `d68aca1fb46cd6dd6d22343ec7473b9191170c05` |
 | `assets/services/onlyoffice.ico` | ONLYOFFICE official website | 2026-08-19 · /favicon.ico | `39534c95e3660f4f3789f969488c12a581075e01` |
 | `assets/services/paperless-ngx.svg` | paperless-ngx/paperless-ngx | dev · docs/assets/logo_leaf.svg | `f1a5553729a1e2963c545265e8bf09327945f3fd` |
