@@ -16,6 +16,7 @@ class HomepageCurrentStateTests(unittest.TestCase):
         source = (ROOT / "index.html").read_text(encoding="utf-8")
         rendered = render_public_file("index.html", source, load_manifest(ROOT))
         cls.homepage = normalize_homepage(rendered)
+        cls.homepage_css = (ROOT / "css" / "homepage-v6.css").read_text(encoding="utf-8")
 
     def test_hero_is_focused_without_platform_system_duplication(self) -> None:
         hero = self.homepage.split("<h1>", 1)[0]
@@ -31,6 +32,15 @@ class HomepageCurrentStateTests(unittest.TestCase):
             with self.subTest(label=label):
                 self.assertNotIn(label, hero)
         self.assertNotIn('<section class="band" aria-label="Core principles">', self.homepage)
+
+    def test_hero_visual_contract_rejects_chip_stack_and_narrow_title(self) -> None:
+        hero = self.homepage.split("<h1>", 1)[0]
+        self.assertNotIn('class="glaze-chip"', hero)
+        self.assertIn('.hero .hero-labels .glaze-chip', self.homepage_css)
+        self.assertIn('display: none !important;', self.homepage_css)
+        self.assertIn('max-width: 13.7ch;', self.homepage_css)
+        self.assertIn('grid-template-columns: minmax(0, 1.16fr) minmax(360px, .84fr);', self.homepage_css)
+        self.assertIn('background: transparent;', self.homepage_css)
 
     def test_main_homepage_is_a_website_hub(self) -> None:
         self.assertEqual(self.homepage.count('id="websites"'), 1)
