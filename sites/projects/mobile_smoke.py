@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate GoreeCloud Projects mobile layout and icon identity in a real browser."""
+"""Validate GoreeCloud Projects mobile layout and branding identity in a real browser."""
 
 from __future__ import annotations
 
@@ -39,11 +39,11 @@ def inspect_mobile(session_id: str, browser: str, width: int) -> None:
         const nav=[...document.querySelectorAll('.topbar nav a')];
         const visibleThemes=[...document.querySelectorAll('.theme-group button')].filter(node=>getComputedStyle(node).display!=='none');
         const foundation=[...document.querySelectorAll('.foundation-strip>a')];
+        const mesh=document.querySelector('.foundation-strip .text-only-system');
         return {
           viewport,
           scrollWidth:document.documentElement.scrollWidth,
           bodyScrollWidth:document.body.scrollWidth,
-          gridColumns:getComputedStyle(document.querySelector('#projects')).gridTemplateColumns,
           cardCount:cards.length,
           cardRight:cards.length?Math.max(...cards.map(node=>rect(node).right)):0,
           cardLeft:cards.length?Math.min(...cards.map(node=>rect(node).left)):0,
@@ -53,7 +53,7 @@ def inspect_mobile(session_id: str, browser: str, width: int) -> None:
           foundationRight:foundation.length?Math.max(...foundation.map(node=>rect(node).right)):0,
           foundationLeft:foundation.length?Math.min(...foundation.map(node=>rect(node).left)):0,
           statusAlign:getComputedStyle(document.querySelector('.card .status')).textAlign,
-          meshStatic:Boolean(document.querySelector('.foundation-strip .mesh-mark')),
+          meshTextOnly:Boolean(mesh)&&!mesh.querySelector('img')&&!mesh.querySelector('.mesh-mark'),
           everkeepStatic:document.querySelector('a[href="https://everkeep.goreecloud.com/"] img')?.getAttribute('src')||'',
         };
         """,
@@ -68,7 +68,7 @@ def inspect_mobile(session_id: str, browser: str, width: int) -> None:
     require(float(state.get("navMinHeight",0))>=43.5,f"Projects mobile navigation targets are too short in {browser} at {width}px: {state}")
     require(float(state.get("themeMinHeight",0))>=43.5,f"Projects mobile appearance targets are too short in {browser} at {width}px: {state}")
     require(state.get("statusAlign") in ("left","start"),f"Projects mobile status text is not left-aligned in {browser} at {width}px: {state}")
-    require(state.get("meshStatic") is True,f"Projects mobile Mesh mark is missing in {browser} at {width}px: {state}")
+    require(state.get("meshTextOnly") is True,f"Projects mobile Mesh identity must remain text-only in {browser} at {width}px: {state}")
     require(state.get("everkeepStatic")=="/assets/everkeep.svg",f"Projects mobile Everkeep artwork is incorrect in {browser} at {width}px: {state}")
 
 
@@ -79,17 +79,28 @@ def inspect_identities(session_id: str, browser: str) -> None:
         state=browser_smoke.execute(
             session_id,
             """
+            const cards=[...document.querySelectorAll('#projects .card')];
+            const byName=name=>cards.find(card=>card.querySelector('h3')?.textContent===name);
             const images=[...document.querySelectorAll('#projects .project-icon img')];
+            const icon=name=>byName(name)?.querySelector('.project-icon img')?.getAttribute('src')||'';
+            const iconAbsolute=name=>byName(name)?.querySelector('.project-icon img')?.src||'';
+            const noIcon=name=>Boolean(byName(name))&&!byName(name).querySelector('.project-icon');
             return {
               total:images.length,
               loaded:images.filter(img=>img.complete&&img.naturalWidth>0).length,
               generic:images.filter(img=>new URL(img.src).pathname==='/assets/goreecloud-logo.svg').length,
               suite:images.filter(img=>img.src.startsWith('https://www.goreecloud.com/assets/suite/')).length,
-              glaze:[...document.querySelectorAll('#projects .card')].find(card=>card.querySelector('h3')?.textContent==='Glaze UI')?.querySelector('.project-icon img')?.getAttribute('src')||'',
-              everkeep:[...document.querySelectorAll('#projects .card')].find(card=>card.querySelector('h3')?.textContent==='Everkeep')?.querySelector('.project-icon img')?.getAttribute('src')||'',
-              mesh:[...document.querySelectorAll('#projects .card')].find(card=>card.querySelector('h3')?.textContent==='GoreeCloud Mesh')?.querySelector('.project-icon img')?.getAttribute('src')||'',
-              manager:[...document.querySelectorAll('#projects .card')].find(card=>card.querySelector('h3')?.textContent==='GoreeCloud Manager')?.querySelector('.project-icon img')?.src||'',
-              browser:[...document.querySelectorAll('#projects .card')].find(card=>card.querySelector('h3')?.textContent==='GoreeCloud Browser')?.querySelector('.project-icon img')?.src||'',
+              glaze:icon('Glaze UI'),
+              privacy:icon('GoreeCloud Privacy Shield'),
+              wardveil:icon('Wardveil Security'),
+              everkeep:icon('Everkeep'),
+              meshNoIcon:noIcon('GoreeCloud Mesh'),
+              suiteNoIcon:noIcon('GoreeCloud Suite'),
+              githubDashboardNoIcon:noIcon('GoreeCloud GitHub Dashboard'),
+              waypointNoIcon:noIcon('GoreeCloud Waypoint'),
+              manager:iconAbsolute('GoreeCloud Manager'),
+              browser:iconAbsolute('GoreeCloud Browser'),
+              generatedData:images.filter(img=>img.src.startsWith('data:')).length,
             };
             """,
         )
@@ -97,14 +108,18 @@ def inspect_identities(session_id: str, browser: str) -> None:
             break
         time.sleep(.25)
     require(isinstance(state,dict),f"Projects icon state unreadable in {browser}: {state!r}")
-    require(int(state.get("loaded",0))==int(state.get("total",-1)),f"Projects contains unloaded repository artwork in {browser}: {state}")
-    require(int(state.get("generic",99))<=2,f"Projects still applies the GoreeCloud platform logo broadly to repository cards in {browser}: {state}")
-    require(int(state.get("suite",0))>=30,f"Projects did not load the canonical per-product Suite artwork set in {browser}: {state}")
+    require(int(state.get("loaded",0))==int(state.get("total",-1)),f"Projects contains unloaded approved branding artwork in {browser}: {state}")
+    require(int(state.get("generic",99))==0,f"Projects still applies the GoreeCloud platform logo to repository cards in {browser}: {state}")
+    require(int(state.get("generatedData",99))==0,f"Projects still generates unapproved data-URI artwork in {browser}: {state}")
+    require(int(state.get("suite",0))>=30,f"Projects did not load the approved per-product publication derivatives in {browser}: {state}")
     require(state.get("glaze")=="/assets/glaze-ui-mark.svg",f"Projects Glaze UI card uses the wrong artwork in {browser}: {state}")
+    require(state.get("privacy")=="/assets/privacy-shield-icon.svg",f"Projects Privacy Shield card uses the wrong artwork in {browser}: {state}")
+    require(state.get("wardveil")=="/assets/wardveil-security-icon.svg",f"Projects Wardveil card uses the wrong artwork in {browser}: {state}")
     require(state.get("everkeep")=="/assets/everkeep.svg",f"Projects Everkeep card uses the wrong artwork in {browser}: {state}")
-    require(str(state.get("mesh","")).startswith("data:image/svg+xml"),f"Projects Mesh card uses the wrong artwork in {browser}: {state}")
-    require("/assets/suite/manager.svg" in str(state.get("manager","")),f"Projects Manager card is not using its canonical icon in {browser}: {state}")
-    require("/assets/suite/browser.svg" in str(state.get("browser","")),f"Projects Browser card is not using its canonical icon in {browser}: {state}")
+    for field in ("meshNoIcon","suiteNoIcon","githubDashboardNoIcon","waypointNoIcon"):
+        require(state.get(field) is True,f"Projects entry without approved catalog artwork must be text-only ({field}) in {browser}: {state}")
+    require("/assets/suite/manager.svg" in str(state.get("manager","")),f"Projects Manager card is not using its approved derivative in {browser}: {state}")
+    require("/assets/suite/browser.svg" in str(state.get("browser","")),f"Projects Browser card is not using its approved derivative in {browser}: {state}")
 
 
 def run(target: str,browser: str) -> int:
@@ -129,10 +144,10 @@ def run(target: str,browser: str) -> int:
             set_viewport(session_id,width,height)
             time.sleep(.2)
             inspect_mobile(session_id,browser,width)
-        print(f"Projects mobile {browser} smoke passed for {target}: {target_url}")
+        print(f"Projects mobile {browser} branding/layout smoke passed for {target}: {target_url}")
         return 0
     except (browser_smoke.WebDriverError,OSError,ValueError) as error:
-        print(f"Projects mobile {browser} smoke failed for {target}: {target_url}")
+        print(f"Projects mobile {browser} branding/layout smoke failed for {target}: {target_url}")
         print(f"- {error}")
         if log_path:
             try:
