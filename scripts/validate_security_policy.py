@@ -32,7 +32,10 @@ SENSITIVE_TERMS = ("goreecloud-vps-01", ".netbird.selfhosted")
 REQUIRED_COPY = (
     "Responsible security reporting",
     WARDVEIL_IDENTITY,
-    "security identity and presentation layer",
+    "platform-wide first-party security system and shared security plane",
+    "Foundation 0.9",
+    "Sentinel Fold",
+    "production ClamAV runtime remains unaccepted",
     "security@goreecloud.com",
     "/.well-known/security.txt",
     "does not currently offer a bug bounty",
@@ -41,12 +44,19 @@ REQUIRED_COPY = (
 REQUIRED_REPOSITORY_POLICY_COPY = (
     "Do **not** open a public GitHub issue",
     WARDVEIL_IDENTITY,
-    "security identity and presentation layer",
+    "platform-wide first-party security system and shared security plane",
+    "Foundation 0.9",
+    "Sentinel Fold",
+    "production ClamAV runtime remains unaccepted",
     "security@goreecloud.com",
     POLICY_URL,
     CANONICAL_SECURITY_TXT,
     "does not authorize testing of private family infrastructure",
     "does not currently offer a bug bounty",
+)
+STALE_WARDVEIL_COPY = (
+    "security identity and presentation layer",
+    "Three complementary GoreeCloud foundations",
 )
 
 
@@ -264,6 +274,10 @@ def main() -> int:
     for marker in REQUIRED_REPOSITORY_POLICY_COPY:
         if marker.casefold() not in repository_policy.casefold():
             errors.append(f"SECURITY.md required reporting guidance is missing: {marker}")
+
+    for stale in STALE_WARDVEIL_COPY:
+        if stale.casefold() in html.casefold() or stale.casefold() in repository_policy.casefold():
+            errors.append(f"Superseded Wardveil reporting model remains published: {stale}")
 
     for path in (SECURITY_TXT, SECURITY_PAGE, SECURITY_MD):
         text = path.read_text(encoding="utf-8", errors="replace")
