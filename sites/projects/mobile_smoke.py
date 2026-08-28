@@ -39,7 +39,7 @@ def inspect_mobile(session_id: str, browser: str, width: int) -> None:
         const nav=[...document.querySelectorAll('.topbar nav a')];
         const visibleThemes=[...document.querySelectorAll('.theme-group button')].filter(node=>getComputedStyle(node).display!=='none');
         const foundation=[...document.querySelectorAll('.foundation-strip>a')];
-        const mesh=document.querySelector('.foundation-strip .text-only-system');
+        const mesh=[...foundation].find(node=>node.textContent.includes('GoreeCloud Mesh'));
         return {
           viewport,
           scrollWidth:document.documentElement.scrollWidth,
@@ -53,7 +53,9 @@ def inspect_mobile(session_id: str, browser: str, width: int) -> None:
           foundationRight:foundation.length?Math.max(...foundation.map(node=>rect(node).right)):0,
           foundationLeft:foundation.length?Math.min(...foundation.map(node=>rect(node).left)):0,
           statusAlign:getComputedStyle(document.querySelector('.card .status')).textAlign,
-          meshTextOnly:Boolean(mesh)&&!mesh.querySelector('img')&&!mesh.querySelector('.mesh-mark'),
+          meshArtwork:mesh?.querySelector('img')?.getAttribute('src')||'',
+          meshLabel:mesh?.querySelector('small')?.textContent.trim()||'',
+          wardveilLabel:document.querySelector('a[href="https://security.goreecloud.com/"] small')?.textContent.trim()||'',
           everkeepStatic:document.querySelector('a[href="https://everkeep.goreecloud.com/"] img')?.getAttribute('src')||'',
         };
         """,
@@ -68,7 +70,9 @@ def inspect_mobile(session_id: str, browser: str, width: int) -> None:
     require(float(state.get("navMinHeight",0))>=43.5,f"Projects mobile navigation targets are too short in {browser} at {width}px: {state}")
     require(float(state.get("themeMinHeight",0))>=43.5,f"Projects mobile appearance targets are too short in {browser} at {width}px: {state}")
     require(state.get("statusAlign") in ("left","start"),f"Projects mobile status text is not left-aligned in {browser} at {width}px: {state}")
-    require(state.get("meshTextOnly") is True,f"Projects mobile Mesh identity must remain text-only in {browser} at {width}px: {state}")
+    require(state.get("meshArtwork")=="/assets/goreecloud-mesh-mark.svg",f"Projects mobile Mesh must use the approved Weave artwork in {browser} at {width}px: {state}")
+    require(state.get("meshLabel")=="Mesh Center · Weave",f"Projects mobile Mesh identity label is stale in {browser} at {width}px: {state}")
+    require(state.get("wardveilLabel")=="Security Center · Sentinel Fold",f"Projects mobile Wardveil identity label is stale in {browser} at {width}px: {state}")
     require(state.get("everkeepStatic")=="/assets/everkeep.svg",f"Projects mobile Everkeep artwork is incorrect in {browser} at {width}px: {state}")
 
 
@@ -94,7 +98,7 @@ def inspect_identities(session_id: str, browser: str) -> None:
               privacy:icon('GoreeCloud Privacy Shield'),
               wardveil:icon('Wardveil Security'),
               everkeep:icon('Everkeep'),
-              meshNoIcon:noIcon('GoreeCloud Mesh'),
+              mesh:icon('GoreeCloud Mesh'),
               suiteNoIcon:noIcon('GoreeCloud Suite'),
               githubDashboardNoIcon:noIcon('GoreeCloud GitHub Dashboard'),
               waypointNoIcon:noIcon('GoreeCloud Waypoint'),
@@ -116,7 +120,8 @@ def inspect_identities(session_id: str, browser: str) -> None:
     require(state.get("privacy")=="/assets/privacy-shield-icon.svg",f"Projects Privacy Shield card uses the wrong artwork in {browser}: {state}")
     require(state.get("wardveil")=="/assets/wardveil-security-icon.svg",f"Projects Wardveil card uses the wrong artwork in {browser}: {state}")
     require(state.get("everkeep")=="/assets/everkeep.svg",f"Projects Everkeep card uses the wrong artwork in {browser}: {state}")
-    for field in ("meshNoIcon","suiteNoIcon","githubDashboardNoIcon","waypointNoIcon"):
+    require(state.get("mesh")=="/assets/goreecloud-mesh-mark.svg",f"Projects Mesh card uses the wrong artwork in {browser}: {state}")
+    for field in ("suiteNoIcon","githubDashboardNoIcon","waypointNoIcon"):
         require(state.get(field) is True,f"Projects entry without approved catalog artwork must be text-only ({field}) in {browser}: {state}")
     require("/assets/suite/manager.svg" in str(state.get("manager","")),f"Projects Manager card is not using its approved derivative in {browser}: {state}")
     require("/assets/suite/browser.svg" in str(state.get("browser","")),f"Projects Browser card is not using its approved derivative in {browser}: {state}")
