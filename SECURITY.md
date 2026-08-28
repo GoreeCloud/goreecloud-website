@@ -2,7 +2,7 @@
 
 GoreeCloud welcomes good-faith security reports affecting the public GoreeCloud website and publicly available GoreeCloud software.
 
-**Wardveil Security by GoreeCloud** is the platform security identity and presentation layer. It does not replace the source validation, hosting controls, application safeguards, policies, or other technical authorities that establish the actual security state of a GoreeCloud component.
+**Wardveil Security by GoreeCloud** is the platform-wide first-party security system and shared security plane. Foundation 0.9 defines scoped Wardveil-native trust, policy, protection, detection, scanning, quarantine, response, audit, and Security Center capabilities while applications, hosting controls, infrastructure, scanners, authorized executors, and other owning systems remain authoritative for the technical state and actions they control.
 
 ## Reporting a vulnerability
 
@@ -25,7 +25,11 @@ Do not access, retain, modify, or disclose information that does not belong to y
 
 ## Wardveil identity boundary
 
-Wardveil provides a consistent GoreeCloud security identity. Security claims must remain tied to the evidence and authority responsible for the underlying state. This repository policy does not use a blanket protection claim to imply that every GoreeCloud system or control has been independently verified.
+**Sentinel Fold** is the owner-approved standalone primary visual mark for Wardveil Security. The Wardveil Security name and Security Center label are supporting identity rather than part of the emblem itself. Branding does not establish security evidence or technical acceptance.
+
+Wardveil security claims must remain tied to the evidence and authority responsible for the represented state. A Policy decision, transport receipt, storage-health result, scanner brand, Security Center screen, or other presentation fact cannot by itself prove that a protection action executed. This repository policy does not use a blanket protection claim to imply that every GoreeCloud system or control has been independently verified.
+
+ClamAV is the initial replaceable signature-based malware engine beneath Wardveil Scan. The production ClamAV runtime remains unaccepted until the required deployed scanner, authenticated application-consumer, quarantine-execution, and environment-specific acceptance evidence is complete.
 
 ## Handling and disclosure
 

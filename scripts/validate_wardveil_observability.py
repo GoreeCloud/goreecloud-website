@@ -20,6 +20,22 @@ SECURITY_CONTACT = "security@goreecloud.com"
 PROTECTED_PHRASE = "Protected by Wardveil"
 WORKFLOW_COMMAND = "python scripts/validate_wardveil_observability.py"
 
+REQUIRED_SECURITY_PAGE_COPY = (
+    WARDVEIL_IDENTITY,
+    SECURITY_CONTACT,
+    "platform-wide first-party security system and shared security plane",
+    "Foundation 0.9",
+    "Sentinel Fold",
+    "current authoritative evidence",
+    "production ClamAV runtime remains unaccepted",
+)
+REQUIRED_SECURITY_POLICY_COPY = (
+    WARDVEIL_IDENTITY,
+    SECURITY_CONTACT,
+    "platform-wide first-party security system and shared security plane",
+    "Foundation 0.9",
+    "Sentinel Fold",
+)
 REQUIRED_OBSERVABILITY_COPY = (
     WARDVEIL_IDENTITY,
     "anonymous static site",
@@ -80,11 +96,10 @@ def main() -> int:
         )
     )
 
-    require(errors, security_page, WARDVEIL_IDENTITY, "security.html")
-    require(errors, security_page, SECURITY_CONTACT, "security.html")
-    require(errors, security_page, "security identity and presentation layer", "security.html")
-    require(errors, security_md, WARDVEIL_IDENTITY, "SECURITY.md")
-    require(errors, security_md, SECURITY_CONTACT, "SECURITY.md")
+    for marker in REQUIRED_SECURITY_PAGE_COPY:
+        require(errors, security_page, marker, "security.html")
+    for marker in REQUIRED_SECURITY_POLICY_COPY:
+        require(errors, security_md, marker, "SECURITY.md")
     require(errors, security_txt, f"Contact: mailto:{SECURITY_CONTACT}", ".well-known/security.txt")
     require(errors, validation_workflow, WORKFLOW_COMMAND, ".github/workflows/validate.yml")
 
@@ -95,6 +110,10 @@ def main() -> int:
         errors.append(
             "security.html must not use the blanket 'Protected by Wardveil' phrase; public Wardveil presentation must remain evidence-scoped."
         )
+
+    for stale in ("security identity and presentation layer", "Foundation 0.7"):
+        if stale.casefold() in security_page.casefold() or stale.casefold() in security_md.casefold():
+            errors.append(f"Superseded Wardveil public model remains published: {stale}")
 
     for marker in PROHIBITED_BROWSER_MARKERS:
         if marker.casefold() in browser_source.casefold():

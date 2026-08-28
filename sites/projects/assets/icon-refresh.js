@@ -41,7 +41,7 @@ const canonicalSystemBranding={
   'goreecloud-privacy-shield':['systems/privacy-shield/privacy-shield-icon.svg','/assets/privacy-shield-icon.svg','approved'],
   'goreecloud-wardveil-security':['systems/wardveil-security/wardveil-security-icon.svg','/assets/wardveil-security-icon.svg','approved'],
   'goreecloud-everkeep':['systems/everkeep/everkeep.svg','/assets/everkeep.svg','approved'],
-  'goreecloud-mesh':[null,null,'text-only-pending-approved-artwork']
+  'goreecloud-mesh':['systems/goreecloud-mesh/goreecloud-mesh-mark.svg','/assets/goreecloud-mesh-mark.svg','approved']
 };
 
 for(const entry of entries){
