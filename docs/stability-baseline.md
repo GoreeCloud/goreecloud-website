@@ -32,7 +32,7 @@ Version 5.23.0 is the official visual-identity correction release. It reverses t
 
 The release:
 
-- makes `GoreeCloud/goreecloud-logo` revision `c766a4299196f8c80ed3f6de70ee8b74eb5818d9` and `official/goreecloud-logo.svg` the canonical GoreeCloud website artwork source;
+- makes `GoreeCloud/goreecloud-branding-assets` revision `9f434ac22fe2cf9121a4390df22ccb0ce1c648dc` and `official/goreecloud-logo.svg` the canonical GoreeCloud website artwork source;
 - replaces service, platform, roadmap, and social-media letter/monogram placeholders with local static copies of official artwork from recorded first-party sources where available;
 - keeps GoreeCloud products and other entries without approved canonical artwork text-only rather than creating initials, generic icons, or unofficial substitutes;
 - records source authority, source revision or review date, source path or URL, SHA-256 integrity, and deployable asset path in `docs/visual-identity-sources.json`;
@@ -111,4 +111,4 @@ The open creative-rights and source-publication review remains authoritative for
 
 ## v5.23 official visual identity
 
-The website uses official project, service, platform, and social-media artwork when a canonical identity exists. GoreeCloud website branding is sourced from `GoreeCloud/goreecloud-logo` and `official/goreecloud-logo.svg`. Placeholder initials and generic monograms are not production identity. If an approved official artwork asset does not exist, the public surface remains text-only rather than inventing a replacement. All deployed identity assets are local static copies with source authority and integrity recorded in `docs/visual-identity-sources.json`.
+The website uses official project, service, platform, and social-media artwork when a canonical identity exists. GoreeCloud website branding is sourced from `GoreeCloud/goreecloud-branding-assets` and `official/goreecloud-logo.svg`. Placeholder initials and generic monograms are not production identity. If an approved official artwork asset does not exist, the public surface remains text-only rather than inventing a replacement. All deployed identity assets are local static copies with source authority and integrity recorded in `docs/visual-identity-sources.json`.
