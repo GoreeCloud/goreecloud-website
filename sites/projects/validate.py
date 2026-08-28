@@ -46,7 +46,7 @@ system_blobs={
     "assets/goreecloud-logo.svg":"082936062de7839148db89ea3ab4e86ff71341b0",
     "assets/glaze-ui-mark.svg":"7756ca8f04a588286e05e37e9a141dbea7f1965d",
     "assets/privacy-shield-icon.svg":"62b10029d4104d0235afe634c21f55d0a826a63d",
-    "assets/wardveil-security-icon.svg":"4269987d9aeb3d19a54fc436e8b0bff69babfb7e",
+    "assets/wardveil-security-icon.svg":"fb3d643cca5477c3f8d4e03ce10a3458fd12f407",
     "assets/everkeep.svg":"5f70a483e06147193944c816291d42774a8648b2",
 }
 for relative,expected in system_blobs.items():
