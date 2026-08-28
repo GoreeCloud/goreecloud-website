@@ -176,24 +176,33 @@ def verify_root_contract(base_url: str, errors: list[str]) -> None:
         "<title>Projects — GoreeCloud</title>",
         "/assets/app.js?v=20260827-cache2",
         "/assets/public-refresh.js?v=20260827-cache2",
-        "/assets/icon-refresh.js?v=20260827-icons1",
-        "/assets/mobile-refresh.css?v=20260827-mobile1",
+        "/assets/icon-refresh.js?v=20260827-icons2",
+        "/assets/mobile-refresh.css?v=20260827-mobile2",
         "/assets/everkeep.svg",
-        "class=\"mesh-mark\"",
+        "/assets/privacy-shield-icon.svg",
+        "/assets/wardveil-security-icon.svg",
+        "class=\"text-only-system\"",
+        "Mesh Center · artwork pending approval",
         "GoreeCloud software portfolio",
     ):
         if marker not in text:
             errors.append(f"Projects root is missing production marker: {marker}")
+    for forbidden in ("class=\"mesh-mark\"", "data:image/svg+xml"):
+        if forbidden in text:
+            errors.append(f"Projects root still publishes unapproved generated artwork marker: {forbidden}")
     csp = response.headers.get("content-security-policy", "").lower()
     for marker in (
         "default-src 'self'",
         "script-src 'self'",
         "connect-src 'none'",
         "frame-ancestors 'none'",
-        "img-src 'self' data: https://www.goreecloud.com",
+        "img-src 'self' https://www.goreecloud.com",
     ):
         if marker not in csp:
             errors.append(f"Projects root CSP is missing: {marker}")
+    for forbidden in ("data:", "raw.githubusercontent.com", "githubusercontent.com"):
+        if forbidden in csp:
+            errors.append(f"Projects root CSP permits an unauthorized branding image source: {forbidden}")
     if response.headers.get("x-content-type-options", "").lower() != "nosniff":
         errors.append("Projects root is missing X-Content-Type-Options: nosniff.")
 
