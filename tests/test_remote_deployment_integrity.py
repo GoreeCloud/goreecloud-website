@@ -56,7 +56,10 @@ class RemoteDeploymentIntegrityTests(unittest.TestCase):
 
     def test_exact_candidate_bytes_pass_remote_integrity(self) -> None:
         relative = "privacy.html"
-        expected = (ROOT / relative).read_bytes()
+        # Compare against the exact reviewed build candidate, not the raw source
+        # template. Glaze UI 2.0 normalization is intentionally applied at the
+        # public render boundary before Cloudflare receives this page.
+        expected = verifier.candidate_bytes(relative)
         errors: list[str] = []
 
         with (
