@@ -95,7 +95,7 @@ class HomepageCurrentStateTests(unittest.TestCase):
     def test_everkeep_has_a_dedicated_public_destination(self) -> None:
         self.assertIn('https://everkeep.goreecloud.com/', self.homepage)
         self.assertIn('<h3>Everkeep</h3>', self.homepage)
-        self.assertIn('resilience and preservation website', self.homepage)
+        self.assertIn('resilience, backup, recovery, preservation, portability, succession, legacy, and evidence-backed continuity', self.homepage)
 
     def test_suite_and_capability_cards_moved_off_main_homepage(self) -> None:
         self.assertNotIn('data-suite-app=', self.homepage)
@@ -109,7 +109,8 @@ class HomepageCurrentStateTests(unittest.TestCase):
         self.assertIn('src="assets/suite/ai.svg"', self.homepage)
         self.assertNotIn("Open WebUI", self.homepage)
         self.assertNotIn("AnythingLLM", self.homepage)
-        self.assertIn("Ollama local model runtime", self.homepage)
+        self.assertIn("Local model runtime support", self.homepage)
+        self.assertIn("Keep model runtimes replaceable", self.homepage)
         self.assertIn("Controlled web research through GoreeCloud Search", self.homepage)
 
 
