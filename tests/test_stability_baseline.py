@@ -31,24 +31,46 @@ class StabilityBaselineTests(unittest.TestCase):
         cls.glaze_conformance = GLAZE_CONFORMANCE_PATH.read_text(encoding="utf-8")
         cls.readme = README_PATH.read_text(encoding="utf-8")
 
-    def test_version_is_strict_semver(self) -> None:
+    def test_version_is_current_strict_semver(self) -> None:
         self.assertRegex(self.version, SEMVER_RE)
+        self.assertEqual(self.version, "5.24.0")
 
     def test_baseline_names_canonical_version(self) -> None:
         self.assertIn(f"**{self.version}**", self.baseline)
         self.assertIn("`VERSION` is the canonical machine-readable version source", self.baseline)
 
-    def test_readme_tracks_canonical_version_and_completed_dist_cutover(self) -> None:
-        self.assertIn(f"Current website package: **v{self.version}", self.readme)
+    def test_readme_tracks_current_release_state(self) -> None:
+        self.assertIn(f"Current website package: **v{self.version}**", self.readme)
         self.assertIn("`VERSION` is the canonical machine-readable version source", self.readme)
-        self.assertIn("isolated `dist/` Cloudflare Pages cutover is complete", self.readme)
-        self.assertIn("Issue #6 is closed", self.readme)
-        self.assertNotIn("production-readiness hardening in progress", self.readme)
+        self.assertIn("Glaze UI 2.0.0 Stable", self.readme)
+        self.assertIn("56 repositories — 40 public, 16 private", self.readme)
+        self.assertIn("10 active destinations", self.readme)
+        self.assertIn("GoreeCloud/goreecloud-branding-assets", self.readme)
 
     def test_stability_requires_exact_preview_and_production_verification(self) -> None:
         self.assertIn("exact branch-preview deployment verification", self.baseline)
         self.assertIn("exact production deployment verification", self.baseline)
         self.assertIn("A merge alone is not a stable release", self.baseline)
+
+    def test_stability_records_current_portfolio_and_platform_systems(self) -> None:
+        for marker in (
+            "56 repositories: 40 public, 16 private, across 13 functional groups",
+            "10 active production destinations",
+            "GoreeCloud Identity",
+            "Identity Center",
+            "Glaze UI 2.1 remains Candidate",
+            "Facet",
+        ):
+            self.assertIn(marker, self.baseline)
+
+    def test_stability_rejects_obsolete_current_state(self) -> None:
+        for stale in (
+            "30 repository / 23 public / 7 private",
+            "Glaze UI 1.1.0 using the exact canonical source revision",
+            "current Stable production target for GoreeCloud-controlled user-facing applications.\n\nGlaze UI 1.5.0",
+            "goreecloud-logo` repository artwork source",
+        ):
+            self.assertNotIn(stale, self.baseline)
 
     def test_stability_preserves_governance_boundaries(self) -> None:
         for marker in (
@@ -64,15 +86,14 @@ class StabilityBaselineTests(unittest.TestCase):
         self.assertNotIn("docs/stability-baseline.md", PUBLIC_FILES)
         self.assertNotIn("docs/glaze-ui-conformance.md", PUBLIC_FILES)
 
-    def test_scope_preserves_static_privacy_and_glaze_boundaries(self) -> None:
+    def test_scope_preserves_static_privacy_and_current_glaze_boundaries(self) -> None:
         for marker in (
-            "static homepage",
-            "GoreeCloud Monitor",
-            "Glaze UI 1.1",
-            "semantic tokens",
-            "adaptive ranges",
-            "privacy",
-            "isolated publication",
+            "Glaze UI 2.0.0 Stable",
+            "Canvas → Surface → Soft Glaze → Glaze → Deep Glaze → Live Glaze",
+            "48px minimum general interaction targets",
+            "reduced-motion and reduced-transparency",
+            "privacy-preserving static browser surfaces",
+            "isolated Cloudflare Pages publication artifact",
         ):
             self.assertIn(marker, self.baseline)
 

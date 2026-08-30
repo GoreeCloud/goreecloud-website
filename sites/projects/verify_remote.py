@@ -30,13 +30,14 @@ REMOTE_FILES = (
     "assets/icon-refresh.js",
     "assets/styles.css",
     "assets/mobile-refresh.css",
+    "assets/glaze-ui-2.0.0.css",
     "assets/goreecloud-logo.svg",
     "assets/glaze-ui-mark.svg",
     "assets/everkeep.svg",
     "assets/privacy-shield-icon.svg",
     "assets/wardveil-security-icon.svg",
     "assets/goreecloud-mesh-mark.svg",
-    "assets/glaze-ui-1.5.0.css",
+    "assets/identity.svg",
 )
 CRITICAL_ASSET_PATHS = (
     "/assets/app.js",
@@ -176,22 +177,30 @@ def verify_root_contract(base_url: str, errors: list[str]) -> None:
     for marker in (
         "<title>Projects — GoreeCloud</title>",
         "/assets/app.js?v=20260827-cache2",
-        "/assets/public-refresh.js?v=20260827-cache2",
+        "/assets/public-refresh.js?v=20260829-glaze2",
         "/assets/icon-refresh.js?v=20260828-identities1",
         "/assets/mobile-refresh.css?v=20260827-mobile2",
+        "/assets/glaze-ui-2.0.0.css",
         "/assets/everkeep.svg",
         "/assets/privacy-shield-icon.svg",
         "/assets/wardveil-security-icon.svg",
         "/assets/goreecloud-mesh-mark.svg",
+        "/assets/identity.svg",
         "Security Center · Sentinel Fold",
         "Mesh Center · Weave",
+        "GoreeCloud Identity",
+        "Identity Center",
         "GoreeCloud software portfolio",
     ):
         if marker not in text:
             errors.append(f"Projects root is missing production marker: {marker}")
-    for forbidden in ("Mesh Center · artwork pending approval", "data:image/svg+xml"):
+    for forbidden in (
+        "Mesh Center · artwork pending approval",
+        "data:image/svg+xml",
+        'data-glaze-ui="1.5.0"',
+    ):
         if forbidden in text:
-            errors.append(f"Projects root still publishes superseded or generated artwork marker: {forbidden}")
+            errors.append(f"Projects root still publishes superseded or generated artwork/design marker: {forbidden}")
     csp = response.headers.get("content-security-policy", "").lower()
     for marker in (
         "default-src 'self'",

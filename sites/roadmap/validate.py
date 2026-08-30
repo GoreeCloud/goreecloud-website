@@ -5,10 +5,12 @@ ROOT = Path(__file__).resolve().parent
 for name in ("index.html", "404.html", "site.css", "site.js", "glaze-ui-2.0.0.css", "_headers"):
     if not (ROOT / name).is_file():
         raise SystemExit(f"missing roadmap site file: {name}")
-html=(ROOT/"index.html").read_text(encoding="utf-8")
-error_html=(ROOT/"404.html").read_text(encoding="utf-8")
-css=(ROOT/"glaze-ui-2.0.0.css").read_text(encoding="utf-8")
-headers=(ROOT/"_headers").read_text(encoding="utf-8")
+
+html = (ROOT / "index.html").read_text(encoding="utf-8")
+error_html = (ROOT / "404.html").read_text(encoding="utf-8")
+css = (ROOT / "glaze-ui-2.0.0.css").read_text(encoding="utf-8")
+headers = (ROOT / "_headers").read_text(encoding="utf-8")
+
 for needle in (
     "Public Development Roadmap",
     "August 29, 2026",
@@ -17,46 +19,57 @@ for needle in (
     "Long-term direction",
     "dates are not promises",
     "private infrastructure or security-sensitive work is omitted",
-    "53-repository source inventory",
+    "56-repository inventory",
     "GoreeCloud Code",
-    "Forgejo is the initial replaceable infrastructure foundation",
+    "Forgejo is an initial replaceable infrastructure foundation",
     "GoreeCloud AI",
     "GoreeCloud Documents",
     "GoreeCloud Messenger",
     "GoreeCloud Gateway",
     "GoreeCloud Quill",
     "GoreeCloud Mesh",
-    "Design Center",
-    "Privacy Center",
-    "Security Center",
-    "Continuity Center",
-    "Mesh Center",
+    "GoreeCloud Identity",
+    "GoreeCloud File Manager",
+    "GoreeCloud Maps",
+    "GoreeCloud App Store",
+    "Six substantive platform systems",
     "Glaze UI 2.0.0",
-    "Glaze UI Fold identity",
-    "Drive persistent storage foundation",
-    "Search, Notify, and Terminal candidates",
-    "PostgreSQL",
+    "Glaze UI 2.1 remains Candidate",
+    "Facet is the current official Glaze UI identity",
+    "Evidence over labels",
 ):
     if needle not in html:
         raise SystemExit(f"required roadmap content missing: {needle}")
-for page_name,page in (("index",html),("404",error_html)):
-    for needle in ('name="goreecloud-glaze-ui" content="2.0.0"','data-glaze-ui="2.0.0"','glaze-canvas'):
-        if needle not in page: raise SystemExit(f"{page_name} missing Glaze UI 2.0 marker: {needle}")
-    if 'data-glaze-ui="1.5.0"' in page: raise SystemExit(f"{page_name} still activates Glaze UI 1.5")
-for needle in ("Glaze UI 2.0.0 Stable integration","ff3fff4306bd53ea9c0715a7c0d64265bb038617","prefers-reduced-motion","prefers-reduced-transparency","forced-colors"):
-    if needle not in css: raise SystemExit(f"Glaze UI 2.0 web-layer marker missing: {needle}")
+
+for page_name, page in (("index", html), ("404", error_html)):
+    for needle in ('name="goreecloud-glaze-ui" content="2.0.0"', 'data-glaze-ui="2.0.0"', 'glaze-canvas'):
+        if needle not in page:
+            raise SystemExit(f"{page_name} missing Glaze UI 2.0 marker: {needle}")
+    if 'data-glaze-ui="1.5.0"' in page:
+        raise SystemExit(f"{page_name} still activates Glaze UI 1.5")
+
+for needle in ("Glaze UI 2.0.0 Stable integration", "ff3fff4306bd53ea9c0715a7c0d64265bb038617", "prefers-reduced-motion", "prefers-reduced-transparency", "forced-colors"):
+    if needle not in css:
+        raise SystemExit(f"Glaze UI 2.0 web-layer marker missing: {needle}")
+
 for stale in (
+    "53-repository source inventory",
+    "the five substantive platform systems",
     "Gitea is the selected permanent authoritative source-control",
     "Complete Gitea independence",
     "Glaze UI 1.4 is the current Stable production target",
     "Glaze UI 1.5.0 is the current Stable production target",
+    "Glaze UI Fold identity",
+    "approved Fold mark remains the canonical Glaze UI visual identity",
 ):
     if stale in html:
         raise SystemExit(f"superseded roadmap direction remains public: {stale}")
-for needle in ("Content-Security-Policy:","frame-ancestors 'none'","Permissions-Policy:","X-Content-Type-Options: nosniff"):
+
+for needle in ("Content-Security-Policy:", "frame-ancestors 'none'", "Permissions-Policy:", "X-Content-Type-Options: nosniff"):
     if needle not in headers:
         raise SystemExit(f"required security header missing: {needle}")
-for prohibited in ("google-analytics","googletagmanager","fonts.googleapis.com","segment.com"):
+for prohibited in ("google-analytics", "googletagmanager", "fonts.googleapis.com", "segment.com"):
     if prohibited in html.lower():
         raise SystemExit(f"prohibited runtime dependency: {prohibited}")
-print("GoreeCloud roadmap Glaze UI 2.0 public-site validation passed")
+
+print("GoreeCloud roadmap current portfolio, six-system model, Facet identity, and Glaze UI 2.0 public-site validation passed")

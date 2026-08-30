@@ -2,7 +2,9 @@
 
 The main GoreeCloud site has several deployable HTML templates. This helper keeps
 all of them on the same Stable Glaze UI contract without requiring duplicated
-version wiring in generated and hand-authored pages.
+version wiring in generated and hand-authored pages. It also corrects legacy
+content that remains in source templates before the isolated public artifact is
+validated and deployed.
 """
 
 from __future__ import annotations
@@ -25,7 +27,14 @@ def apply_glaze_ui_2(html: str) -> str:
         ('class="repo-summary"', 'class="repo-summary glaze-material"'),
         ('Glaze UI 1.5.0 is the current Stable', 'Glaze UI 2.0.0 is the current Stable'),
         ('Glaze UI 1.5 is the current Stable', 'Glaze UI 2.0 is the current Stable'),
+        ('Glaze UI 1.5 Stable', 'Glaze UI 2.0 Stable'),
         ('Stable 1.5', 'Stable 2.0'),
+        ('current 53-repository portfolio', 'current 56-repository portfolio'),
+        ('the five substantive platform systems', 'the six substantive platform systems'),
+        (
+            'Glaze UI, Privacy Shield, Wardveil Security, Everkeep, and GoreeCloud Mesh remain substantive platform systems',
+            'Glaze UI, Privacy Shield, Wardveil Security, Everkeep, GoreeCloud Mesh, and GoreeCloud Identity remain substantive platform systems',
+        ),
     )
     for old, new in replacements:
         html = html.replace(old, new)

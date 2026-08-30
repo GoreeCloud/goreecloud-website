@@ -152,9 +152,6 @@ def create_session(browser: str) -> str:
                 },
             },
         }
-        # Firefox can spend materially longer starting Marionette on a cold hosted
-        # runner. This timeout applies only to session creation; navigation and
-        # script execution retain the strict per-page timeouts below.
         session_timeout = FIREFOX_SESSION_TIMEOUT
 
     value = webdriver_request(
@@ -215,7 +212,7 @@ def exercise_page(session_id: str, target_url: str, browser: str) -> None:
         f"Headless {browser} did not load the versioned Projects app.js resource.",
     )
     require(
-        any("/assets/public-refresh.js?v=20260827-cache2" in resource for resource in resources),
+        any("/assets/public-refresh.js?v=20260829-glaze2" in resource for resource in resources),
         f"Headless {browser} did not load the versioned Projects public-refresh.js resource.",
     )
 

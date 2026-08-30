@@ -1,143 +1,112 @@
 #!/usr/bin/env python3
-"""Regression tests for the representative GoreeCloud homepage software portfolio.
+"""Regression coverage for the current public GoreeCloud portfolio surfaces.
 
-The homepage project overview is intentionally static and representative rather than an
-exhaustive repository inventory. The complete source-controlled portfolio lives in
-``repositories.html`` and ``docs/repository-portfolio.json``. This keeps normal and
-no-JavaScript experiences aligned without duplicating every repository as a homepage card.
+The main homepage is a ten-site ecosystem hub. The exhaustive source portfolio lives
+in the manifest-rendered repository directory, while product-specific directory
+content belongs on Projects and Suite rather than being duplicated on the main page.
 """
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
-import re
+import sys
 import unittest
-from urllib.parse import urlparse
 
 ROOT = Path(__file__).resolve().parents[1]
-INDEX = (ROOT / "index.html").read_text(encoding="utf-8")
+SCRIPTS = ROOT / "scripts"
+if str(SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(SCRIPTS))
+
+from normalize_homepage import normalize_homepage  # noqa: E402
+from render_repository_portfolio import render_public_file, render_repository_directory  # noqa: E402
+
+MANIFEST = json.loads((ROOT / "docs" / "repository-portfolio.json").read_text(encoding="utf-8"))
+REPOSITORIES = [repo for group in MANIFEST["groups"] for repo in group["repositories"]]
+PUBLIC_REPOSITORIES = {repo["name"] for repo in REPOSITORIES if repo["visibility"] == "public"}
+PRIVATE_REPOSITORIES = {repo["name"] for repo in REPOSITORIES if repo["visibility"] == "private"}
+
+SOURCE_HOME = (ROOT / "index.html").read_text(encoding="utf-8")
+INTERMEDIATE_HOME = render_public_file("index.html", SOURCE_HOME, MANIFEST)
+PUBLIC_HOME = normalize_homepage(INTERMEDIATE_HOME)
+PUBLIC_DIRECTORY = render_repository_directory((ROOT / "repositories.html").read_text(encoding="utf-8"), MANIFEST)
 MAIN_JS = (ROOT / "js" / "main.js").read_text(encoding="utf-8")
-
-PUBLIC_PROJECTS = {
-    "GoreeCloud Manager": "https://github.com/GoreeCloud/goreecloud-manager",
-    "GoreeCloud Calendar": "https://github.com/GoreeCloud/goreecloud-calendar",
-    "GoreeCloud Monitoring": "https://github.com/GoreeCloud/goreecloud-monitor",
-    "GoreeCloud Search": "https://github.com/GoreeCloud/goreecloud-search",
-    "GoreeCloud Browser": "https://github.com/GoreeCloud/goreecloud-browser",
-    "GoreeCloud Redirector": "https://github.com/GoreeCloud/goreecloud-redirector",
-    "GoreeCloud Source Resync": "https://github.com/GoreeCloud/goreecloud-source-resync",
-    "GoreeCloud Notes": "https://github.com/GoreeCloud/goreecloud-notes",
-    "GoreeCloud Memos": "https://github.com/GoreeCloud/goreecloud-memos",
-    "GoreeCloud Bookmarks": "https://github.com/GoreeCloud/goreecloud-bookmarks",
-    "GoreeCloud Bookmarks Browser Extension": "https://github.com/GoreeCloud/goreecloud-bookmark-browser-extension",
-    "GoreeCloud Feed": "https://github.com/GoreeCloud/goreecloud-rss",
-    "GoreeCloud Gallery": "https://github.com/GoreeCloud/goreecloud-gallery",
-    "GoreeVault Server": "https://github.com/GoreeCloud/goreevault-server",
-}
-
-PRIVATE_PROJECTS = {
-    "GoreeCloud Tasks": "https://github.com/GoreeCloud/goreecloud-tasks",
-    "GoreeCloud Contacts": "https://github.com/GoreeCloud/goreecloud-contacts",
-    "GoreeCloud Notify": "https://github.com/GoreeCloud/goreecloud-notify",
-}
-
-EXPECTED_PROJECT_SLUGS = {
-    "goreecloud-manager",
-    "goreecloud-tasks",
-    "goreecloud-contacts",
-    "goreecloud-calendar",
-    "goreecloud-notify",
-    "goreecloud-monitor",
-    "goreecloud-search",
-    "goreecloud-browser",
-    "goreecloud-redirector",
-    "goreecloud-source-resync",
-    "goreecloud-notes",
-    "goreecloud-memos",
-    "goreecloud-bookmarks",
-    "goreecloud-bookmark-browser-extension",
-    "goreecloud-feed",
-    "goreecloud-gallery",
-    "goreevault-server",
-}
-
-PROJECT_SLUG_RE = re.compile(r'data-project="([a-z0-9-]+)"')
 
 
 class ProjectPortfolioContractTests(unittest.TestCase):
-    """Protect the static representative project overview and migration boundaries."""
+    def test_final_homepage_is_ecosystem_hub_not_duplicate_project_directory(self) -> None:
+        self.assertEqual(PUBLIC_HOME.count('id="websites"'), 1)
+        self.assertEqual(PUBLIC_HOME.count('class="service-card website-card '), 10)
+        self.assertNotIn('id="development"', PUBLIC_HOME)
+        self.assertNotIn('data-project=', PUBLIC_HOME)
+        self.assertNotIn('data-suite-app=', PUBLIC_HOME)
+        self.assertNotIn('data-capability=', PUBLIC_HOME)
+        self.assertIn('href="https://suite.goreecloud.com/"', PUBLIC_HOME)
+        self.assertIn('href="https://projects.goreecloud.com/"', PUBLIC_HOME)
 
-    def test_project_inventory_is_static_explicit_and_unique(self) -> None:
-        slugs = PROJECT_SLUG_RE.findall(INDEX)
-        self.assertEqual(set(slugs), EXPECTED_PROJECT_SLUGS)
-        self.assertEqual(len(slugs), len(set(slugs)), "Public project markers must be unique.")
+    def test_manifest_is_current_reviewed_inventory(self) -> None:
+        self.assertEqual(MANIFEST["counts"], {
+            "total": 56,
+            "public": 40,
+            "private": 16,
+            "functional_groups": 13,
+        })
+        names = {repo["name"] for repo in REPOSITORIES}
+        for current in (
+            "goreecloud-glaze-ui",
+            "goreecloud-identity",
+            "goreecloud-mesh",
+            "goreecloud-app-store",
+            "goreecloud-file-manager",
+            "goreecloud-maps",
+            "goreecloud-branding-assets",
+            "goreecloud-vault-server",
+        ):
+            self.assertIn(current, names)
+        for retired_or_wrong in ("glaze-ui", "goreecloud-logo", "goreevault-server"):
+            self.assertNotIn(retired_or_wrong, names)
 
-        for project_name in [*PUBLIC_PROJECTS, *PRIVATE_PROJECTS]:
-            with self.subTest(project=project_name):
-                self.assertIn(f"<strong>{project_name}</strong>", INDEX)
+    def test_repository_directory_contains_every_current_repository_once(self) -> None:
+        for repository in REPOSITORIES:
+            name = repository["name"]
+            with self.subTest(repository=name):
+                self.assertEqual(PUBLIC_DIRECTORY.count(f"<h4>{name}</h4>"), 1)
+        self.assertIn("56</strong><span>current repositories", PUBLIC_DIRECTORY)
+        self.assertIn("40</strong><span>public repositories", PUBLIC_DIRECTORY)
+        self.assertIn("16</strong><span>private repositories", PUBLIC_DIRECTORY)
 
-    def test_public_project_links_remain_goreecloud_controlled_https_urls(self) -> None:
-        for project_name, repository in PUBLIC_PROJECTS.items():
-            with self.subTest(project=project_name):
-                parsed = urlparse(repository)
-                self.assertEqual(parsed.scheme, "https")
-                self.assertEqual(parsed.hostname, "github.com")
-                self.assertTrue(parsed.path.startswith("/GoreeCloud/"))
-                self.assertFalse(parsed.params)
-                self.assertFalse(parsed.query)
-                self.assertFalse(parsed.fragment)
-                self.assertIn(f'href="{repository}" target="_blank" rel="noopener noreferrer"', INDEX)
+    def test_repository_links_preserve_visibility_boundary(self) -> None:
+        for name in PUBLIC_REPOSITORIES:
+            with self.subTest(public=name):
+                self.assertIn(f"https://github.com/GoreeCloud/{name}", PUBLIC_DIRECTORY)
+        for name in PRIVATE_REPOSITORIES:
+            with self.subTest(private=name):
+                self.assertNotIn(f"https://github.com/GoreeCloud/{name}", PUBLIC_DIRECTORY)
 
-    def test_private_development_projects_do_not_publish_repository_links(self) -> None:
-        for project_name, repository in PRIVATE_PROJECTS.items():
-            with self.subTest(project=project_name):
-                self.assertIn(project_name, INDEX)
-                self.assertNotIn(repository, INDEX)
+    def test_current_design_and_platform_truth_is_visible_in_final_homepage(self) -> None:
+        for marker in (
+            "current 56-repository portfolio",
+            "Glaze UI 2.0.0 Stable",
+            "Glaze UI 2.1 remains Candidate",
+            "six substantive platform systems",
+            "GoreeCloud Identity",
+            "GoreeCloud Mesh",
+            "GoreeCloud/goreecloud-branding-assets",
+        ):
+            if marker == "GoreeCloud/goreecloud-branding-assets":
+                # Branding authority is repository metadata, not a browser-facing URL.
+                self.assertIn(marker, (ROOT / "README.md").read_text(encoding="utf-8"))
+            else:
+                self.assertIn(marker, PUBLIC_HOME)
 
-    def test_notification_and_search_transitions_are_current(self) -> None:
-        self.assertIn("GoreeCloud Notify", INDEX)
-        self.assertIn("GoreeCloud Notify is a release candidate", INDEX)
-        self.assertIn("ntfy remains the current production notification service", INDEX)
-        self.assertNotIn("has replaced ntfy", INDEX)
-        self.assertNotIn("GoreeCloud Notify replaces ntfy", INDEX)
-
-        self.assertIn("GoreeCloud Search", INDEX)
-        self.assertIn("has replaced the direct SearXNG-facing service", INDEX)
-
-    def test_memos_static_content_reflects_accepted_production(self) -> None:
-        self.assertIn("GoreeCloud Memos", INDEX)
-        self.assertIn("GoreeCloud Memos v0.1.2 is the accepted Stable production service", INDEX)
-        self.assertIn('<span class="badge active">Available Now</span>', INDEX)
-        self.assertNotIn('<span class="badge growing">Stabilizing</span>', INDEX)
-
-    def test_monitor_transition_preserves_uptime_kuma_until_cutover(self) -> None:
-        self.assertIn("GoreeCloud Monitoring", INDEX)
-        self.assertIn("Uptime Kuma", INDEX)
-        self.assertIn("remains in service until GoreeCloud Monitoring completes validation", INDEX)
-        self.assertIn("replacement for Uptime Kuma", INDEX)
-
-    def test_bookmarks_static_content_reflects_current_public_repository(self) -> None:
-        self.assertIn("Maintained Linkwarden-based bookmark", INDEX)
-        self.assertIn(PUBLIC_PROJECTS["GoreeCloud Bookmarks"], INDEX)
-        self.assertNotIn("Specification &amp; fork planning", INDEX)
-
-    def test_glaze_ui_repository_is_linked_from_project_overview(self) -> None:
-        self.assertIn("https://github.com/GoreeCloud/glaze-ui", INDEX)
-        self.assertIn("View public repository →", INDEX)
-
-    def test_complete_repository_directory_is_discoverable(self) -> None:
-        self.assertIn('href="repositories.html"', INDEX)
-        self.assertIn("complete repository directory", INDEX)
-        self.assertIn("all 29 current repositories", INDEX)
-        self.assertIn("representative", INDEX)
-
-    def test_javascript_does_not_mutate_project_or_repository_portfolios(self) -> None:
+    def test_javascript_does_not_generate_repository_or_editorial_facts(self) -> None:
         for removed_marker in (
             "CURRENT_PUBLIC_PROJECTS",
             "createProjectCard",
             "reconcilePublicProjectPortfolio",
-            "#development .development-grid",
             "repositorySection.innerHTML",
+            "current-platform-update",
+            "native-application-update",
         ):
             self.assertNotIn(removed_marker, MAIN_JS)
 
