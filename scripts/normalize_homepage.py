@@ -1,26 +1,14 @@
 #!/usr/bin/env python3
-"""Normalize the GoreeCloud homepage into the public website hub."""
+"""Normalize the GoreeCloud homepage into the current public website hub."""
 
 from __future__ import annotations
 
 import re
 
-HERO_PREFIX = re.compile(
-    r'<div class="hero-labels[^"]*"[^>]*>.*?(?=\s*<h1>)',
-    re.DOTALL,
-)
-HERO_ACTIONS = re.compile(
-    r'<div class="hero-actions">.*?</div>',
-    re.DOTALL,
-)
-PORTFOLIO_BLOCK = re.compile(
-    r'\n    <section id="services" class="section suite-section">.*?(?=\n    <section id="how-it-works")',
-    re.DOTALL,
-)
-BAND_BLOCK = re.compile(
-    r'\n    <section class="band" aria-label="Core principles">.*?</section>\n',
-    re.DOTALL,
-)
+HERO_PREFIX = re.compile(r'<div class="hero-labels[^"]*"[^>]*>.*?(?=\s*<h1>)', re.DOTALL)
+HERO_ACTIONS = re.compile(r'<div class="hero-actions">.*?</div>', re.DOTALL)
+PORTFOLIO_BLOCK = re.compile(r'\n    <section id="services" class="section suite-section">.*?(?=\n    <section id="how-it-works")', re.DOTALL)
+BAND_BLOCK = re.compile(r'\n    <section class="band" aria-label="Core principles">.*?</section>\n', re.DOTALL)
 ROADMAP_AI_CARD = re.compile(
     r'          <article class="roadmap-card">\s*'
     r'<div class="roadmap-card-head">\s*'
@@ -55,11 +43,12 @@ PLATFORM_SYSTEM_LABELS = (
     "Wardveil Security",
     "Everkeep",
     "GoreeCloud Mesh",
+    "GoreeCloud Identity",
 )
 
 
 def canonical_hero_labels() -> str:
-    """Keep the hero focused; platform-system detail belongs in dedicated sections/sites."""
+    """Keep the hero focused; platform-system detail belongs in the ecosystem section."""
     return (
         '<div class="hero-labels hero-context" aria-label="GoreeCloud platform focus">\n'
         '            <span class="eyebrow">Private • Self-hosted • Recoverable</span>\n'
@@ -67,16 +56,7 @@ def canonical_hero_labels() -> str:
     )
 
 
-def website_card(
-    name: str,
-    url: str,
-    domain: str,
-    description: str,
-    status: str,
-    status_class: str,
-    card_class: str,
-    mark: str,
-) -> str:
+def website_card(name: str, url: str, domain: str, description: str, status: str, status_class: str, card_class: str, mark: str) -> str:
     """Render one concise website card without a simulated browser preview."""
     return (
         f'<article class="service-card website-card {card_class}">\n'
@@ -100,101 +80,71 @@ def websites_section() -> str:
             "GoreeCloud",
             "https://www.goreecloud.com/",
             "goreecloud.com",
-            "The main public hub for GoreeCloud: platform direction, project story, the current 53-repository portfolio, and links into the wider public web ecosystem.",
-            "Primary Website",
-            "active",
-            "website-main",
-            "GC",
+            "The main public hub for GoreeCloud: platform direction, project story, the current 56-repository portfolio, and links into the wider public web ecosystem.",
+            "Primary Website", "active", "website-main", "GC",
         ),
         website_card(
             "GoreeCloud Suite",
             "https://suite.goreecloud.com/",
             "suite.goreecloud.com",
-            "The dedicated home for GoreeCloud applications and services, umbrella capabilities, lifecycle status, product identity, and the five substantive platform systems.",
-            "Dedicated Site",
-            "growing",
-            "website-suite",
-            "SU",
+            "The dedicated home for GoreeCloud applications and services, umbrella capabilities, lifecycle status, product identity, and relationships to the six substantive platform systems.",
+            "Dedicated Site", "growing", "website-suite", "SU",
         ),
         website_card(
             "GoreeCloud Projects",
             "https://projects.goreecloud.com/",
             "projects.goreecloud.com",
-            "The public software portfolio for current GoreeCloud development, including AI, Code, Documents, Messenger, Gateway, Mesh, Quill, and the broader native-suite transition.",
-            "Portfolio",
-            "active",
-            "website-projects",
-            "PR",
+            "The current software portfolio for GoreeCloud AI, Code, Documents, Messenger, Gateway, Mesh, Quill, File Manager, Maps, App Store, and the broader native-suite transition.",
+            "Portfolio", "active", "website-projects", "PR",
         ),
         website_card(
             "Glaze UI",
             "https://design.goreecloud.com/",
             "design.goreecloud.com",
-            "The GoreeCloud Design Center for Glaze UI 1.5 Stable: interface foundations, interaction contracts, adaptive form factors, accessibility, motion, materials, and visual language.",
-            "Design Center",
-            "active",
-            "website-design",
-            "GU",
+            "The GoreeCloud Design Center for Glaze UI 2.0.0 Stable: interaction, material, adaptive form factors, accessibility, motion, visual language, and design-system governance. Glaze UI 2.1 remains Candidate.",
+            "Design Center", "active", "website-design", "GU",
         ),
         website_card(
             "Privacy Shield",
             "https://privacy.goreecloud.com/",
             "privacy.goreecloud.com",
-            "The GoreeCloud Privacy Center for Privacy Shield: privacy-control contracts, application adapters, data minimization, evidence semantics, and privacy-by-default expectations.",
-            "Privacy Center",
-            "active",
-            "website-privacy",
-            "PS",
+            "The GoreeCloud Privacy Center for privacy, consent, data minimization, data governance, user control, adapters, and evidence semantics.",
+            "Privacy Center", "active", "website-privacy", "PS",
         ),
         website_card(
             "Wardveil Security",
             "https://security.goreecloud.com/",
             "security.goreecloud.com",
-            "The GoreeCloud Security Center for Wardveil Security: evidence-backed protection state, security semantics, reporting, authority boundaries, and protection experiences.",
-            "Security Center",
-            "active",
-            "website-security",
-            "WS",
+            "The GoreeCloud Security Center for protection, detection, trust, verification, response, evidence-backed security state, and authority boundaries.",
+            "Security Center", "active", "website-security", "WS",
         ),
         website_card(
             "Everkeep",
             "https://everkeep.goreecloud.com/",
             "everkeep.goreecloud.com",
-            "The GoreeCloud Continuity Center for Everkeep is the dedicated resilience and preservation website for recovery, portability, continuity, succession, assurance, and evidence-backed recoverability.",
-            "Continuity Center",
-            "growing",
-            "website-everkeep",
-            "EK",
+            "The GoreeCloud Continuity Center for resilience, backup, recovery, preservation, portability, succession, legacy, and evidence-backed continuity.",
+            "Continuity Center", "growing", "website-everkeep", "EK",
         ),
         website_card(
             "GoreeCloud Roadmap",
             "https://roadmap.goreecloud.com/",
             "roadmap.goreecloud.com",
-            "The focused public roadmap for GoreeCloud applications, services, infrastructure, controlled migrations, platform-center adoption, and first-party evolution.",
-            "Roadmap",
-            "growing",
-            "website-roadmap",
-            "RM",
+            "The focused public roadmap for native application development, current platform-system work, controlled migrations, and first-party evolution.",
+            "Roadmap", "growing", "website-roadmap", "RM",
         ),
         website_card(
             "GoreeCloud Blog",
             "https://blog.goreecloud.com/",
             "blog.goreecloud.com",
-            "The public development journal for build notes, architecture decisions, implementation lessons, platform-system updates, and project milestones.",
-            "Publication",
-            "active",
-            "website-blog",
-            "BL",
+            "The public development journal for build notes, architecture decisions, implementation lessons, platform-system updates, and current project milestones.",
+            "Publication", "active", "website-blog", "BL",
         ),
         website_card(
             "GoreeCloud Archive",
             "https://archive.goreecloud.com/",
             "archive.goreecloud.com",
-            "The curated historical archive for preserving selected GoreeCloud public records, superseded decisions, milestones, and project evolution over time.",
-            "Archive",
-            "active",
-            "website-archive",
-            "AR",
+            "The curated historical archive preserving selected public records, superseded decisions, identity changes, milestones, and project evolution over time.",
+            "Archive", "active", "website-archive", "AR",
         ),
     ]
     rendered_cards = "\n          ".join(cards)
@@ -204,7 +154,7 @@ def websites_section() -> str:
         '        <div class="section-heading website-heading">\n'
         '          <p class="eyebrow">GoreeCloud websites</p>\n'
         '          <h2>Ten focused destinations. One GoreeCloud ecosystem.</h2>\n'
-        '          <p>The main site stays concise while dedicated destinations carry application, design, privacy, security, continuity, roadmap, publishing, and historical depth. Glaze UI, Privacy Shield, Wardveil Security, Everkeep, and GoreeCloud Mesh remain substantive platform systems whose public claims are tied to implementation and evidence.</p>\n'
+        '          <p>The public portfolio uses Glaze UI 2.0.0 Stable as its production design target. Glaze UI, Privacy Shield, Wardveil Security, Everkeep, GoreeCloud Mesh, and GoreeCloud Identity remain six substantive platform systems with distinct design, privacy, security, continuity, coordination, identity, authentication, and authorization responsibilities. Public claims remain tied to actual implementation and applicable evidence.</p>\n'
         '        </div>\n'
         '        <div class="service-grid website-grid">\n'
         f'          {rendered_cards}\n'
@@ -223,10 +173,10 @@ def goreecloud_ai_roadmap_card() -> str:
         '            </div>\n'
         '            <p class="roadmap-kicker">Local Intelligence</p>\n'
         '            <h3>GoreeCloud AI</h3>\n'
-        '            <p>First-party private AI experience built around GoreeCloud AI with Ollama as the local model runtime, plus Workspaces, knowledge and RAG, files, tools, orchestration, and controlled current-information research through GoreeCloud Search.</p>\n'
-        '            <p class="roadmap-current"><strong>Target:</strong> A dedicated AI Services VM running Ollama and GoreeCloud AI as the first-party conversation, knowledge, and orchestration layer.</p>\n'
+        '            <p>First-party private AI experience built around GoreeCloud AI with local-model runtime support, Workspaces, knowledge and RAG, files, tools, orchestration, and controlled current-information research through GoreeCloud Search.</p>\n'
+        '            <p class="roadmap-current"><strong>Direction:</strong> Keep model runtimes replaceable while GoreeCloud AI remains the first-party conversation, knowledge, research, and orchestration product.</p>\n'
         '            <ul class="roadmap-details">\n'
-        '              <li>Ollama local model runtime</li>\n'
+        '              <li>Local model runtime support</li>\n'
         '              <li>GoreeCloud AI Workspaces, knowledge, RAG, files, tools, and orchestration</li>\n'
         '              <li>Controlled web research through GoreeCloud Search</li>\n'
         '            </ul>\n'
@@ -278,8 +228,6 @@ def normalize_homepage(source: str) -> str:
     for label in PLATFORM_SYSTEM_LABELS:
         if label in hero_text:
             raise ValueError(f"platform-system detail must not be duplicated in the hero: {label}")
-    if "GoreeCloud Identity" in hero_text:
-        raise ValueError("GoreeCloud Identity must not appear in the homepage hero")
 
     if 'data-suite-app=' in normalized or 'data-capability=' in normalized:
         raise ValueError("Suite application/capability cards must live on suite.goreecloud.com, not the main homepage")
@@ -292,6 +240,11 @@ def normalize_homepage(source: str) -> str:
     website_section = website_section_match.group(0) if website_section_match else ""
     if website_section.count('class="service-card website-card ') != len(EXPECTED_WEBSITE_DOMAINS):
         raise ValueError("homepage website portfolio card count must match the website manifest")
+    for label in PLATFORM_SYSTEM_LABELS:
+        if label not in website_section:
+            raise ValueError(f"homepage website ecosystem section must name current platform system: {label}")
+    if "Glaze UI 2.0.0 Stable" not in website_section or "Glaze UI 2.1" not in website_section:
+        raise ValueError("homepage website ecosystem section must preserve Stable/Candidate Glaze UI boundary")
     if "website-preview" in website_section or "website-preview-browser" in website_section:
         raise ValueError("simulated browser previews must not appear in the website directory")
     if website_section.count('class="website-mark"') != len(EXPECTED_WEBSITE_DOMAINS):
