@@ -14,13 +14,13 @@ if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
 from build_public_site import PUBLIC_FILES  # noqa: E402
+from glaze_ui_2 import GLAZE_PROMOTION_REVISION, GLAZE_VERSION  # noqa: E402
 
 VERSION_PATH = ROOT / "VERSION"
 BASELINE_PATH = ROOT / "docs" / "stability-baseline.md"
 GLAZE_CONFORMANCE_PATH = ROOT / "docs" / "glaze-ui-conformance.md"
 README_PATH = ROOT / "README.md"
 SEMVER_RE = re.compile(r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$")
-GLAZE_15_REVISION = "2c5078410d022eba683c8e029bc3cafe773df0b7"
 
 
 class StabilityBaselineTests(unittest.TestCase):
@@ -78,15 +78,15 @@ class StabilityBaselineTests(unittest.TestCase):
 
     def test_glaze_conformance_records_current_target(self) -> None:
         for marker in (
-            "Target Glaze UI version: **1.5.0**",
-            GLAZE_15_REVISION,
+            f"Target Glaze UI version: **{GLAZE_VERSION}**",
+            GLAZE_PROMOTION_REVISION,
             "GoreeCloud/goreecloud-glaze-ui",
-            "Stable 1.5 web contract vendored",
-            "same-origin copy of the Stable 1.5 web bundle",
-            "adaptive semantic color",
-            "44px minimum targets",
-            "Solid/Raised/Glaze/Overlay materials",
+            "Glaze UI 2.0.0 Stable web contract prepared",
+            "same-origin Glaze UI 2.0.0 web layer",
+            "48px interaction targets",
+            "Canvas → Surface → Soft Glaze → Glaze → Deep Glaze → Live Glaze",
             "Reduced-motion behavior",
+            "Reduced-transparency preferences",
             "No production Glaze UI exception is recorded",
         ):
             self.assertIn(marker, self.glaze_conformance)
