@@ -40,7 +40,8 @@ class StabilityBaselineTests(unittest.TestCase):
         self.assertIn("`VERSION` is the canonical machine-readable version source", self.baseline)
 
     def test_readme_tracks_current_release_state(self) -> None:
-        self.assertIn(f"Website package: **v{self.version}**", self.readme)
+        self.assertIn(f"Current website package: **v{self.version}**", self.readme)
+        self.assertIn("`VERSION` is the canonical machine-readable version source", self.readme)
         self.assertIn("Glaze UI 2.0.0 Stable", self.readme)
         self.assertIn("56 repositories — 40 public, 16 private", self.readme)
         self.assertIn("10 active destinations", self.readme)
