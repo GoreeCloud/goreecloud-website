@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the GoreeCloud repository portfolio and its build-time static rendering."""
+"""Validate the GoreeCloud repository portfolio and build-time static rendering."""
 
 from __future__ import annotations
 
@@ -13,11 +13,14 @@ import sys
 from render_repository_portfolio import render_homepage, render_repository_directory
 
 ROOT = Path(__file__).resolve().parents[1]
-MANIFEST = ROOT / "docs" / "repository-portfolio.json"
-DIRECTORY = ROOT / "repositories.html"
-HOMEPAGE = ROOT / "index.html"
-MAIN_JS = ROOT / "js" / "main.js"
-REPOSITORY_CSS = ROOT / "css" / "repositories.css"
+PLATFORM_SYSTEMS = (
+    "Glaze UI",
+    "Privacy Shield",
+    "Wardveil Security",
+    "Everkeep",
+    "GoreeCloud Mesh",
+    "GoreeCloud Identity",
+)
 
 
 def validate_manifest(data: dict) -> list[str]:
@@ -106,9 +109,9 @@ def validate_manifest(data: dict) -> list[str]:
         "goreecloud-mesh",
         "goreecloud-glaze-ui",
     }
-    missing_current = sorted(expected_current.difference(names))
-    if missing_current:
-        errors.append("Repository portfolio is missing current repositories: " + ", ".join(missing_current) + ".")
+    missing = sorted(expected_current.difference(names))
+    if missing:
+        errors.append("Repository portfolio is missing current repositories: " + ", ".join(missing) + ".")
     if "goreecloud-logo" in names:
         errors.append("Retired goreecloud-logo repository must not remain in the current portfolio.")
     return errors
@@ -116,7 +119,7 @@ def validate_manifest(data: dict) -> list[str]:
 
 def validate_discovery_enhancement(main_js: str, repository_css: str) -> list[str]:
     errors: list[str] = []
-    required_js_markers = (
+    required_js = (
         "const repositoryDirectory = document.querySelector('.repo-directory-section');",
         "tools.className = 'repo-tools';",
         "searchInput.type = 'search';",
@@ -132,21 +135,21 @@ def validate_discovery_enhancement(main_js: str, repository_css: str) -> list[st
         "repositoryCards.length",
         "searchInput.focus();",
     )
-    for marker in required_js_markers:
+    for marker in required_js:
         if marker not in main_js:
             errors.append(f"Repository discovery enhancement is missing required behavior: {marker}")
 
     if "const repositoryDirectory =" in main_js:
-        filter_source = main_js.split("const repositoryDirectory =", 1)[1]
+        source = main_js.split("const repositoryDirectory =", 1)[1]
         for marker in ("localStorage", "sessionStorage", "URLSearchParams", "history.pushState", "history.replaceState", "fetch(", "XMLHttpRequest", "sendBeacon"):
-            if marker in filter_source:
+            if marker in source:
                 errors.append("Repository search/filter controls must remain local, ephemeral, and network-independent: " + marker)
 
     for prohibited in ("public-info.js", "current-platform-update", "native-application-update"):
         if prohibited in main_js:
             errors.append(f"Public JavaScript must not inject editorial homepage content at runtime: {prohibited}")
 
-    required_css_markers = (
+    required_css = (
         ".repo-tools {",
         "min-height: var(--glaze-target-comfortable);",
         ".repo-filter-button[aria-pressed=\"true\"]",
@@ -159,7 +162,7 @@ def validate_discovery_enhancement(main_js: str, repository_css: str) -> list[st
         "@media print",
         ".repo-card[hidden], .repo-group[hidden] { display: block !important; }",
     )
-    for marker in required_css_markers:
+    for marker in required_css:
         if marker not in repository_css:
             errors.append(f"Repository discovery presentation is missing required Glaze UI behavior: {marker}")
     return errors
@@ -168,41 +171,46 @@ def validate_discovery_enhancement(main_js: str, repository_css: str) -> list[st
 def validate_summary_counts(text: str, counts: dict, context: str) -> list[str]:
     errors: list[str] = []
     for key, label in (("total", "current repositories"), ("public", "public repositories"), ("private", "private repositories")):
-        pattern = re.compile(rf"<strong>(\d+)</strong><span>{re.escape(label)}</span>")
-        values = [int(value) for value in pattern.findall(text)]
+        values = [int(v) for v in re.findall(rf"<strong>(\d+)</strong><span>{re.escape(label)}</span>", text)]
         expected = counts[key]
         if expected not in values:
             errors.append(f"{context} repository summary is missing current {label}: {expected}.")
-        for value in sorted(value for value in set(values) if value != expected):
+        for value in sorted(v for v in set(values) if v != expected):
             errors.append(f"{context} repository summary contains stale {label}: {value}; expected {expected}.")
     return errors
 
 
-def validate_homepage_deduplication(homepage: str) -> list[str]:
+def validate_homepage_structure(homepage: str) -> list[str]:
     errors: list[str] = []
     if 'id="platform"' in homepage:
         errors.append("Rendered homepage must not restore the removed Platform Foundation section.")
     if 'id="development"' in homepage:
-        errors.append("Rendered homepage must not duplicate Suite content in a Software & Development project-card section.")
+        errors.append("Rendered homepage must not duplicate Suite content in a Software & Development section.")
     if 'href="#platform"' in homepage or 'href="#development"' in homepage:
         errors.append("Rendered homepage navigation must not link to removed duplicate sections.")
 
-    hero_match = re.search(r'<div class="hero-labels"[^>]*>(.*?)</div>', homepage, re.DOTALL)
+    hero_match = re.search(r'<div class="hero-labels[^>]*>(.*?)</div>', homepage, re.DOTALL)
     if not hero_match:
-        errors.append("Rendered homepage is missing the platform-system hero labels.")
+        errors.append("Rendered homepage is missing its focused hero context.")
     else:
         hero = hero_match.group(1)
-        expected = (
-            "Glaze UI",
-            "Privacy Shield",
-            "Wardveil Security",
-            "Everkeep",
-            "GoreeCloud Mesh",
-            "GoreeCloud Identity",
-        )
-        for label in expected:
-            if hero.count(label) != 1:
-                errors.append(f"Hero platform-system label must appear exactly once: {label}.")
+        if "Private • Self-hosted • Recoverable" not in hero:
+            errors.append("Rendered homepage hero must preserve the concise platform-focus label.")
+        for label in PLATFORM_SYSTEMS:
+            if label in hero:
+                errors.append(f"Platform-system detail belongs in the ecosystem section, not the focused hero: {label}.")
+
+    website_match = re.search(r'<section id="websites".*?</section>', homepage, re.DOTALL)
+    if not website_match:
+        errors.append("Rendered homepage is missing the official website ecosystem section.")
+    else:
+        website_section = website_match.group(0)
+        for label in PLATFORM_SYSTEMS:
+            if label not in website_section:
+                errors.append(f"Website ecosystem section must name current platform system: {label}.")
+        for marker in ("Glaze UI 2.0.0 Stable", "Glaze UI 2.1 remains Candidate", "current 56-repository portfolio"):
+            if marker not in website_section:
+                errors.append(f"Website ecosystem section is missing current-state marker: {marker}.")
 
     if "current-platform-update" in homepage or "native-application-update" in homepage:
         errors.append("Rendered homepage must not contain legacy runtime editorial overlays.")
@@ -230,9 +238,8 @@ def validate(root: Path = ROOT) -> list[str]:
     counts = data["counts"]
     errors.extend(validate_summary_counts(directory, counts, "Repository directory"))
     errors.extend(validate_summary_counts(homepage, counts, "Homepage"))
-    errors.extend(validate_homepage_deduplication(homepage))
-    group_marker = f"<strong>{counts['functional_groups']}</strong><span>functional groups</span>"
-    if group_marker not in homepage:
+    errors.extend(validate_homepage_structure(homepage))
+    if f"<strong>{counts['functional_groups']}</strong><span>functional groups</span>" not in homepage:
         errors.append(f"Homepage repository summary is missing the current functional-group count: {counts['functional_groups']}.")
     if f"GoreeCloud currently maintains {counts['total']} repositories" not in homepage:
         errors.append("Homepage repository teaser must state the manifest-derived current total.")
@@ -241,11 +248,9 @@ def validate(root: Path = ROOT) -> list[str]:
     for repository in repositories:
         name = repository["name"]
         visibility = repository["visibility"]
-        heading = f"<h4>{name}</h4>"
-        if directory.count(heading) != 1:
+        if directory.count(f"<h4>{name}</h4>") != 1:
             errors.append(f"Rendered repository directory must contain exactly one card for {name}.")
-        visibility_marker = f'<span class="repo-visibility {visibility}">{visibility.title()}</span>'
-        if visibility_marker not in directory:
+        if f'<span class="repo-visibility {visibility}">{visibility.title()}</span>' not in directory:
             errors.append(f"Rendered repository {name} must display {visibility} visibility.")
         public_url = f"https://github.com/GoreeCloud/{name}"
         if visibility == "public" and public_url not in directory:
@@ -253,9 +258,10 @@ def validate(root: Path = ROOT) -> list[str]:
         if visibility == "private" and public_url in directory:
             errors.append(f"Private repository {name} must not publish a direct repository link.")
 
-    main_js = (root / "js" / "main.js").read_text(encoding="utf-8")
-    repository_css = (root / "css" / "repositories.css").read_text(encoding="utf-8")
-    errors.extend(validate_discovery_enhancement(main_js, repository_css))
+    errors.extend(validate_discovery_enhancement(
+        (root / "js" / "main.js").read_text(encoding="utf-8"),
+        (root / "css" / "repositories.css").read_text(encoding="utf-8"),
+    ))
     return errors
 
 
