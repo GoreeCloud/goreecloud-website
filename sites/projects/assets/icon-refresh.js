@@ -37,11 +37,12 @@ const canonicalProductBranding={
   'goreecloud-video':['products/video/app-icon.svg','video.svg']
 };
 const canonicalSystemBranding={
-  'glaze-ui':['systems/glaze-ui/glaze-ui-mark.svg','/assets/glaze-ui-mark.svg','approved'],
+  'goreecloud-glaze-ui':['systems/glaze-ui/glaze-ui-mark.svg','/assets/glaze-ui-mark.svg','approved'],
   'goreecloud-privacy-shield':['systems/privacy-shield/privacy-shield-icon.svg','/assets/privacy-shield-icon.svg','approved'],
   'goreecloud-wardveil-security':['systems/wardveil-security/wardveil-security-icon.svg','/assets/wardveil-security-icon.svg','approved'],
   'goreecloud-everkeep':['systems/everkeep/everkeep.svg','/assets/everkeep.svg','approved'],
-  'goreecloud-mesh':['systems/goreecloud-mesh/goreecloud-mesh-mark.svg','/assets/goreecloud-mesh-mark.svg','approved']
+  'goreecloud-mesh':['systems/goreecloud-mesh/goreecloud-mesh-mark.svg','/assets/goreecloud-mesh-mark.svg','approved'],
+  'goreecloud-identity':['products/identity/app-icon.svg','/assets/identity.svg','approved']
 };
 
 for(const entry of entries){
