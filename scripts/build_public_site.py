@@ -13,6 +13,8 @@ from pathlib import Path
 import shutil
 import sys
 
+import glaze_render_patch  # installs the reviewed Glaze UI 2.0 render boundary
+from glaze_ui_2 import apply_glaze_ui_2
 from normalize_homepage import normalize_homepage
 from render_repository_portfolio import load_manifest, render_public_file
 
@@ -106,7 +108,7 @@ PUBLIC_STYLE_FILES = (
     "css/error.css",
     "css/glaze-polish.css",
     "css/glaze.css",
-    "css/glaze-ui-1.5.0.css",
+    "css/glaze-ui-2.0.0.css",
     "css/homepage-v6.css",
     "css/how-it-works.css",
     "css/platform.css",
@@ -130,7 +132,10 @@ PUBLIC_FILES = (
     *PUBLIC_SCRIPT_FILES,
 )
 
-GENERATED_HTML = {"index.html", "repositories.html"}
+# Every public HTML file is rendered through the same normalization boundary so
+# build-time output, artifact validation, and remote byte-integrity checks share
+# the exact Glaze UI 2.0 candidate representation.
+GENERATED_HTML = {"index.html", "repositories.html", "privacy.html", "security.html", "404.html"}
 
 
 def fail(message: str) -> int:
@@ -168,10 +173,13 @@ def main() -> int:
             source = ROOT / relative
             destination = DIST / relative
             destination.parent.mkdir(parents=True, exist_ok=True)
-            if relative in GENERATED_HTML:
-                rendered = render_public_file(relative, source.read_text(encoding="utf-8"), manifest)
-                if relative == "index.html":
-                    rendered = normalize_homepage(rendered)
+            if relative.endswith(".html"):
+                rendered = source.read_text(encoding="utf-8")
+                if relative in GENERATED_HTML:
+                    rendered = render_public_file(relative, rendered, manifest)
+                    if relative == "index.html":
+                        rendered = normalize_homepage(rendered)
+                rendered = apply_glaze_ui_2(rendered)
                 destination.write_text(rendered, encoding="utf-8")
             else:
                 shutil.copy2(source, destination)

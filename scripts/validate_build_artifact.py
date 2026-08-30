@@ -7,6 +7,7 @@ from pathlib import Path
 import sys
 
 from build_public_site import DIST, GENERATED_HTML, PUBLIC_FILES, ROOT
+from glaze_ui_2 import apply_glaze_ui_2
 from normalize_homepage import normalize_homepage
 from render_repository_portfolio import load_manifest, render_public_file
 
@@ -23,11 +24,13 @@ def artifact_file_set() -> set[Path]:
 
 def expected_bytes(path: Path, manifest: dict) -> bytes:
     source = ROOT / path
-    if str(path) in GENERATED_HTML:
-        rendered = render_public_file(str(path), source.read_text(encoding="utf-8"), manifest)
-        if str(path) == "index.html":
-            rendered = normalize_homepage(rendered)
-        return rendered.encode("utf-8")
+    if path.suffix == ".html":
+        rendered = source.read_text(encoding="utf-8")
+        if str(path) in GENERATED_HTML:
+            rendered = render_public_file(str(path), rendered, manifest)
+            if str(path) == "index.html":
+                rendered = normalize_homepage(rendered)
+        return apply_glaze_ui_2(rendered).encode("utf-8")
     return source.read_bytes()
 
 
@@ -72,10 +75,16 @@ def main() -> int:
         Path("index.html"), Path("repositories.html"), Path("404.html"), Path("privacy.html"),
         Path("security.html"), Path("_headers"), Path("robots.txt"), Path("sitemap.xml"),
         Path("site.webmanifest"), Path(".well-known/security.txt"), Path("css/glaze.css"),
-        Path("css/glaze-polish.css"), Path("js/theme-init.js"),
+        Path("css/glaze-polish.css"), Path("css/glaze-ui-2.0.0.css"), Path("js/theme-init.js"),
     }
     for path in sorted(required_runtime_files - actual):
         errors.append(f"Required runtime file is missing from dist/: {path}")
+
+    for page in ("index.html","repositories.html","404.html","privacy.html","security.html"):
+        text=(DIST/page).read_text(encoding="utf-8")
+        for marker in ('name="goreecloud-glaze-ui" content="2.0.0"','data-glaze-ui="2.0.0"'):
+            if marker not in text: errors.append(f"Built {page} missing Glaze UI 2.0 marker: {marker}")
+        if 'data-glaze-ui="1.5.0"' in text: errors.append(f"Built {page} still activates Glaze UI 1.5")
 
     if errors:
         print("Build artifact validation failed:")

@@ -24,6 +24,7 @@ from urllib.parse import urljoin, urlparse
 from urllib.request import HTTPRedirectHandler, HTTPSHandler, Request, build_opener
 
 from build_public_site import GENERATED_HTML, PUBLIC_FILES, ROOT
+from glaze_ui_2 import apply_glaze_ui_2
 from normalize_homepage import normalize_homepage
 from render_repository_portfolio import load_manifest, render_public_file
 
@@ -300,11 +301,14 @@ def candidate_bytes(relative: str) -> bytes:
     source = ROOT / relative
     if source.is_symlink() or not source.is_file():
         raise ValueError(f"Candidate integrity source is unavailable or unsafe: {relative}")
-    if relative in GENERATED_HTML:
-        manifest = load_manifest(ROOT)
-        rendered = render_public_file(relative, source.read_text(encoding="utf-8"), manifest)
-        if relative == "index.html":
-            rendered = normalize_homepage(rendered)
+    if relative.endswith(".html"):
+        rendered = source.read_text(encoding="utf-8")
+        if relative in GENERATED_HTML:
+            manifest = load_manifest(ROOT)
+            rendered = render_public_file(relative, rendered, manifest)
+            if relative == "index.html":
+                rendered = normalize_homepage(rendered)
+        rendered = apply_glaze_ui_2(rendered)
         return rendered.encode("utf-8")
     return source.read_bytes()
 

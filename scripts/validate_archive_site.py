@@ -2,11 +2,13 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SITE = ROOT / 'sites' / 'archive'
-required = ['index.html','style.css','_headers','404.html','README.md']
+required = ['index.html','style.css','glaze-ui-2.0.0.css','_headers','404.html','README.md']
 missing = [name for name in required if not (SITE / name).is_file()]
 if missing:
     raise SystemExit(f'Missing archive site files: {missing}')
 index = (SITE/'index.html').read_text()
+error_page = (SITE/'404.html').read_text()
+css = (SITE/'glaze-ui-2.0.0.css').read_text()
 headers = (SITE/'_headers').read_text()
 for marker in [
     'GoreeCloud Archive',
@@ -20,6 +22,8 @@ for marker in [
     'Platform refresh · August 27, 2026',
     '53 repositories: 39 public and 14 private',
     'Glaze UI 1.5.0 becomes the current Stable baseline',
+    'Glaze UI 2.0.0 becomes the current Stable baseline',
+    'Design-system promotion · August 29, 2026',
     'GoreeCloud Code becomes the first-party source-control product',
     'Forgejo becomes the initial replaceable infrastructure foundation',
     'Public Center model · August 27, 2026',
@@ -31,9 +35,15 @@ for marker in [
 ]:
     if marker not in index:
         raise SystemExit(f'Missing required archive marker: {marker}')
+for page_name,page in [('index',index),('404',error_page)]:
+    for marker in ['name="goreecloud-glaze-ui" content="2.0.0"','data-glaze-ui="2.0.0"','glaze-canvas']:
+        if marker not in page: raise SystemExit(f'{page_name} missing Glaze UI 2.0 marker: {marker}')
+    if 'data-glaze-ui="1.5.0"' in page: raise SystemExit(f'{page_name} still activates Glaze UI 1.5')
+for marker in ['Glaze UI 2.0.0 Stable integration','ff3fff4306bd53ea9c0715a7c0d64265bb038617','prefers-reduced-motion','prefers-reduced-transparency','forced-colors']:
+    if marker not in css: raise SystemExit(f'Missing Archive Glaze UI 2.0 web-layer marker: {marker}')
 for forbidden in ['google-analytics','googletagmanager','fonts.googleapis.com','http://']:
     if forbidden in index.lower():
         raise SystemExit(f'Forbidden archive runtime dependency: {forbidden}')
 if "default-src 'self'" not in headers or "connect-src 'none'" not in headers:
     raise SystemExit('Archive CSP is not fail-closed enough')
-print('GoreeCloud Archive site validation passed.')
+print('GoreeCloud Archive Glaze UI 2.0 site validation passed.')
