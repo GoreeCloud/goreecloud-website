@@ -96,6 +96,21 @@ def validate_manifest(data: dict) -> list[str]:
     for key, actual in computed.items():
         if counts.get(key) != actual:
             errors.append(f"Repository portfolio count {key!r} must be {actual}, found {counts.get(key)!r}.")
+
+    expected_current = {
+        "goreecloud-app-store",
+        "goreecloud-file-manager",
+        "goreecloud-maps",
+        "goreecloud-branding-assets",
+        "goreecloud-identity",
+        "goreecloud-mesh",
+        "goreecloud-glaze-ui",
+    }
+    missing_current = sorted(expected_current.difference(names))
+    if missing_current:
+        errors.append("Repository portfolio is missing current repositories: " + ", ".join(missing_current) + ".")
+    if "goreecloud-logo" in names:
+        errors.append("Retired goreecloud-logo repository must not remain in the current portfolio.")
     return errors
 
 
@@ -177,12 +192,17 @@ def validate_homepage_deduplication(homepage: str) -> list[str]:
         errors.append("Rendered homepage is missing the platform-system hero labels.")
     else:
         hero = hero_match.group(1)
-        expected = ("Glaze UI", "Privacy Shield", "Wardveil Security", "Everkeep", "GoreeCloud Mesh")
+        expected = (
+            "Glaze UI",
+            "Privacy Shield",
+            "Wardveil Security",
+            "Everkeep",
+            "GoreeCloud Mesh",
+            "GoreeCloud Identity",
+        )
         for label in expected:
             if hero.count(label) != 1:
                 errors.append(f"Hero platform-system label must appear exactly once: {label}.")
-        if "GoreeCloud Identity" in hero:
-            errors.append("GoreeCloud Identity must not be presented as a sixth platform-system hero label.")
 
     if "current-platform-update" in homepage or "native-application-update" in homepage:
         errors.append("Rendered homepage must not contain legacy runtime editorial overlays.")
