@@ -32,7 +32,7 @@ for needle in (
     "GoreeCloud File Manager",
     "GoreeCloud Maps",
     "GoreeCloud App Store",
-    "six substantive platform systems",
+    "Six substantive platform systems",
     "Glaze UI 2.0.0",
     "Glaze UI 2.1 remains Candidate",
     "Facet is the current official Glaze UI identity",
