@@ -36,7 +36,7 @@ The browser surface is intentionally static, privacy-preserving, and evidence-sc
 - no unsupported production or security claims;
 - public/private GitHub repository boundaries are preserved;
 - application and platform-system claims are tied to current source, project specifications, and accepted evidence;
-- every deployable page is normalized onto Glaze UI 2.0.0 Stable before artifact validation.
+- every deployable main-site page is normalized onto Glaze UI 2.0.0 Stable before artifact validation.
 
 The six substantive GoreeCloud platform systems are Glaze UI, Privacy Shield, Wardveil Security, Everkeep, GoreeCloud Mesh, and GoreeCloud Identity. Their names represent actual design, privacy, security, continuity, coordination, identity, authentication, and authorization responsibilities rather than decorative branding.
 
@@ -54,6 +54,14 @@ Site-specific CSS may extend that layer while preserving Glaze UI hierarchy and 
 
 Approved GoreeCloud logos, product icons, system marks, artwork, and derivatives come from `GoreeCloud/goreecloud-branding-assets`. New products without an approved canonical asset use a neutral presentation until an asset is approved; the website must not invent an “official” mark.
 
+## Source license and creative-rights boundary
+
+The website source code, repository automation, validation scripts, and technical repository documentation are licensed under the **Apache License 2.0**. The authoritative source-license identifier is **Apache-2.0**, and the top-level `LICENSE` contains the reviewed license text.
+
+`NOTICE` records the separate creative-rights boundary. The source license does not grant unrestricted reuse of GoreeCloud trade names, logos, branding, editorial identity, or third-party marks. `docs/public-asset-inventory.md` records reviewed deployable-artwork provenance and is not itself a license grant.
+
+Issue #5 remains open as the separate human-controlled reachable-history, contextual-disclosure, creative-rights, and repository-publication decision. Passing CI validates technical boundaries and reviewed bytes; it does not grant trademark rights or authorize a repository visibility change.
+
 ## Build
 
 The main public site is built as an explicit allowlisted artifact:
@@ -68,19 +76,34 @@ The build renders repository facts, normalizes the homepage, applies Glaze UI 2.
 
 Before a revision is accepted, run the repository validators and tests used by CI. They cover the static deployment allowlist, content rendering, repository inventory, public/private boundaries, privacy invariants, Glaze UI conformance, navigation behavior, accessibility fallbacks, security headers, branding provenance, and Cloudflare Pages artifact expectations.
 
-Key sources include:
+Key validators and sources include:
 
 - `scripts/validate_repository_portfolio.py`
-- `scripts/validate_public_sites.py`
-- `scripts/validate_public_invariants.py`
-- `scripts/validate_asset_provenance.py`
+- `scripts/validate_public_assets.py`
+- `scripts/validate_public_runtime_status.py`
+- `scripts/validate_public_semantics.py`
+- `scripts/validate_public_surface.py`
+- `scripts/validate_accessibility.py`
+- `scripts/validate_glaze_ui.py`
+- `scripts/validate_browser_origin_integrity.py`
+- `scripts/validate_deployment_contract.py`
+- `scripts/validate_performance_budget.py`
+- `scripts/validate_build_artifact.py`
 - `docs/glaze-ui-conformance.md`
 - `docs/glaze-ui-2.0-public-sites.md`
 - `docs/stability-baseline.md`
 
+Run the complete offline regression suite with:
+
+```bash
+python3 -m unittest discover -s tests -p "test_*.py"
+```
+
 ## Deployment
 
-Cloudflare Pages deploys the reviewed static artifacts. Exact production revisions are recorded in the GoreeCloud Public Websites and Cloudflare Pages project specification in Google Drive. Deployment success does not by itself authorize broader product, privacy, security, continuity, identity, or production-readiness claims.
+Cloudflare Pages deploys reviewed static artifacts. Exact accepted production revisions are recorded in the GoreeCloud Public Websites and Cloudflare Pages project specification in Google Drive. A branch preview is evidence, not a release, and a merge alone is not a stable release; exact preview and post-merge production verification remain required by the stability baseline.
+
+Deployment success does not by itself authorize broader product, privacy, security, continuity, identity, or production-readiness claims.
 
 ## Maintenance rules
 
