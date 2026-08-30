@@ -12,7 +12,7 @@ required = [
     "assets/styles.css", "assets/mobile-refresh.css", "assets/glaze-ui-2.0.0.css",
     "assets/goreecloud-logo.svg", "assets/glaze-ui-mark.svg", "assets/everkeep.svg",
     "assets/privacy-shield-icon.svg", "assets/wardveil-security-icon.svg",
-    "assets/goreecloud-mesh-mark.svg",
+    "assets/goreecloud-mesh-mark.svg", "assets/identity.svg",
 ]
 for name in required:
     if not (SITE / name).is_file():
@@ -119,6 +119,7 @@ system_blobs = {
     "assets/wardveil-security-icon.svg": "fb3d643cca5477c3f8d4e03ce10a3458fd12f407",
     "assets/everkeep.svg": "5f70a483e06147193944c816291d42774a8648b2",
     "assets/goreecloud-mesh-mark.svg": "0b2c6881668ce319081390b217f6d59b4298dd4d",
+    "assets/identity.svg": "dc8287e385f86767f0105c48a8f234d8440d7623",
 }
 for relative, expected in system_blobs.items():
     actual = git_blob_sha(SITE / relative)
@@ -143,8 +144,8 @@ if '<img src="/assets/goreecloud-mesh-mark.svg"' not in html or "Mesh Center · 
     raise SystemExit("Projects Mesh foundation identity must publish the approved Weave mark")
 if "Security Center · Sentinel Fold" not in html:
     raise SystemExit("Projects Wardveil foundation identity must identify Sentinel Fold")
-if '<img src="/assets/suite/identity.svg"' not in html or "Identity Center" not in html:
-    raise SystemExit("Projects must present GoreeCloud Identity as a substantive platform system using approved existing identity artwork")
+if '<img src="/assets/identity.svg"' not in html or "Identity Center" not in html:
+    raise SystemExit("Projects must present GoreeCloud Identity as a substantive platform system using approved origin-local artwork")
 if "article.querySelector('.project-icon')?.remove()" not in icons or "entry.icon=''" not in icons:
     raise SystemExit("Projects must remove fallback platform logos from entries without approved artwork")
 
