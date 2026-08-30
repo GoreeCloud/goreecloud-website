@@ -5,15 +5,17 @@ import re
 
 SITE=Path(__file__).resolve().parent
 ROOT=SITE.parents[1]
-required=["index.html","404.html","README.md","_headers","assets/app.js","assets/public-refresh.js","assets/icon-refresh.js","assets/styles.css","assets/mobile-refresh.css","assets/goreecloud-logo.svg","assets/glaze-ui-mark.svg","assets/everkeep.svg","assets/privacy-shield-icon.svg","assets/wardveil-security-icon.svg","assets/goreecloud-mesh-mark.svg"]
+required=["index.html","404.html","README.md","_headers","assets/app.js","assets/public-refresh.js","assets/icon-refresh.js","assets/styles.css","assets/mobile-refresh.css","assets/glaze-ui-2.0.0.css","assets/goreecloud-logo.svg","assets/glaze-ui-mark.svg","assets/everkeep.svg","assets/privacy-shield-icon.svg","assets/wardveil-security-icon.svg","assets/goreecloud-mesh-mark.svg"]
 for name in required:
     if not (SITE/name).is_file(): raise SystemExit(f"missing Projects site file: {name}")
 html=(SITE/"index.html").read_text(encoding="utf-8")
+error_html=(SITE/"404.html").read_text(encoding="utf-8")
 js=(SITE/"assets/app.js").read_text(encoding="utf-8")
 refresh=(SITE/"assets/public-refresh.js").read_text(encoding="utf-8")
 icons=(SITE/"assets/icon-refresh.js").read_text(encoding="utf-8")
 mobile=(SITE/"assets/mobile-refresh.css").read_text(encoding="utf-8")
 readme=(SITE/"README.md").read_text(encoding="utf-8")
+glaze=(SITE/"assets/glaze-ui-2.0.0.css").read_text(encoding="utf-8")
 combined=html+js+refresh+icons+readme
 headers=(SITE/"_headers").read_text(encoding="utf-8")
 
@@ -22,7 +24,7 @@ def git_blob_sha(path: Path) -> str:
     return hashlib.sha1(f"blob {len(data)}\0".encode()+data).hexdigest()
 
 for needle in [
-    "Suite applications","Shared foundations","Glaze UI 1.5","Privacy Shield","Wardveil Security","Everkeep","GoreeCloud Mesh",
+    "Suite applications","Shared foundations","Glaze UI 2.0","Privacy Shield","Wardveil Security","Everkeep","GoreeCloud Mesh",
     "GoreeCloud AI","GoreeCloud Code","GoreeCloud Documents","GoreeCloud Messenger","GoreeCloud Gateway","GoreeCloud Quill",
     "Forgejo is the initial replaceable infrastructure foundation","Design Center","Privacy Center","Security Center","Continuity Center","Mesh Center",
     "Sentinel Fold","Weave",
@@ -31,6 +33,12 @@ for needle in [
     "Milestone 1 · persistent node CRUD","native client foundation merged",
 ]:
     if needle not in combined: raise SystemExit(f"current portfolio marker missing: {needle}")
+for page_name,page in (("index",html),("404",error_html)):
+    for marker in ('name="goreecloud-glaze-ui" content="2.0.0"','data-glaze-ui="2.0.0"','glaze-canvas'):
+        if marker not in page: raise SystemExit(f"{page_name} missing Glaze UI 2.0 marker: {marker}")
+    if 'data-glaze-ui="1.5.0"' in page: raise SystemExit(f"{page_name} still activates Glaze UI 1.5")
+for marker in ("Glaze UI 2.0.0 Stable integration","ff3fff4306bd53ea9c0715a7c0d64265bb038617","--glaze-touch-min:48px","prefers-reduced-motion","prefers-reduced-transparency","forced-colors"):
+    if marker not in glaze: raise SystemExit(f"Projects Glaze UI 2.0 web-layer marker missing: {marker}")
 if js.count("kind:'Application'") != 33: raise SystemExit("Projects base catalog must contain exactly 33 Suite applications before current portfolio augmentation")
 if js.count("kind:'Foundation'") != 6: raise SystemExit("Projects base catalog must contain exactly 6 shared foundations before current portfolio augmentation")
 for augmented in ["GoreeCloud AI","GoreeCloud Code","GoreeCloud Documents","GoreeCloud Messenger","GoreeCloud Gateway","GoreeCloud Quill","GoreeCloud Mesh"]:
@@ -39,6 +47,7 @@ for stale in [
     "Gitea is the planned permanent",
     "planned permanent source-control authority",
     "Glaze UI 1.4</strong><span>Current Stable baseline",
+    "Glaze UI 1.5</strong><span>Current Stable baseline",
     "Mesh Center · artwork pending approval",
     "GoreeCloud Mesh has no approved canonical artwork",
     "text-only-pending-approved-artwork",
@@ -128,4 +137,4 @@ for script in ["/assets/app.js?v=20260827-cache2","/assets/public-refresh.js?v=2
 if "Cache-Control: public, max-age=0, must-revalidate" not in headers: raise SystemExit("Projects mutable assets must revalidate instead of remaining browser-fresh for a day")
 for stale_cache in ["max-age=86400","stale-while-revalidate"]:
     if stale_cache in headers: raise SystemExit(f"Projects stale asset cache policy remains: {stale_cache}")
-print("GoreeCloud Projects current portfolio and unified branding validation passed")
+print("GoreeCloud Projects current portfolio, Glaze UI 2.0, and unified branding validation passed")
