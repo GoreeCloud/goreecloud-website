@@ -13,6 +13,7 @@ from pathlib import Path
 import shutil
 import sys
 
+import glaze_render_patch  # installs the reviewed Glaze UI 2.0 render boundary
 from glaze_ui_2 import apply_glaze_ui_2
 from normalize_homepage import normalize_homepage
 from render_repository_portfolio import load_manifest, render_public_file
@@ -131,7 +132,10 @@ PUBLIC_FILES = (
     *PUBLIC_SCRIPT_FILES,
 )
 
-GENERATED_HTML = {"index.html", "repositories.html"}
+# Every public HTML file is rendered through the same normalization boundary so
+# build-time output, artifact validation, and remote byte-integrity checks share
+# the exact Glaze UI 2.0 candidate representation.
+GENERATED_HTML = {"index.html", "repositories.html", "privacy.html", "security.html", "404.html"}
 
 
 def fail(message: str) -> int:
