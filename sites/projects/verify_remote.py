@@ -37,7 +37,7 @@ REMOTE_FILES = (
     "assets/privacy-shield-icon.svg",
     "assets/wardveil-security-icon.svg",
     "assets/goreecloud-mesh-mark.svg",
-    "assets/suite/identity.svg",
+    "assets/identity.svg",
 )
 CRITICAL_ASSET_PATHS = (
     "/assets/app.js",
@@ -185,7 +185,7 @@ def verify_root_contract(base_url: str, errors: list[str]) -> None:
         "/assets/privacy-shield-icon.svg",
         "/assets/wardveil-security-icon.svg",
         "/assets/goreecloud-mesh-mark.svg",
-        "/assets/suite/identity.svg",
+        "/assets/identity.svg",
         "Security Center · Sentinel Fold",
         "Mesh Center · Weave",
         "GoreeCloud Identity",
