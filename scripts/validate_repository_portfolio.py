@@ -10,6 +10,7 @@ from pathlib import Path
 import re
 import sys
 
+from normalize_homepage import normalize_homepage
 from render_repository_portfolio import render_homepage, render_repository_directory
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -231,7 +232,10 @@ def validate(root: Path = ROOT) -> list[str]:
     source_homepage = (root / "index.html").read_text(encoding="utf-8")
     try:
         directory = render_repository_directory(source_directory, data)
-        homepage = render_homepage(source_homepage, data)
+        # Production composes the homepage in two stages: portfolio facts first,
+        # then the ten-site ecosystem normalization. Validate the same final
+        # public shape rather than an unpublished intermediate representation.
+        homepage = normalize_homepage(render_homepage(source_homepage, data))
     except ValueError as exc:
         return [f"Repository portfolio static rendering failed: {exc}"]
 
