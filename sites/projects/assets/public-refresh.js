@@ -36,7 +36,7 @@ addCurrentPortfolioEntries();
 // the Projects taxonomy it is represented as a Foundation so the platform
 // systems are counted and grouped consistently without duplicating the entry.
 const identityEntry=entries.find(entry=>entry.name==='GoreeCloud Identity');
-if(identityEntry){identityEntry.kind='Foundation';identityEntry.category='Shared Foundations';identityEntry.url='https://www.goreecloud.com/';}
+if(identityEntry){identityEntry.kind='Foundation';identityEntry.category='Shared Foundations';}
 
 for(const entry of entries){
   const update=currentProjectDirection[entry.name];
