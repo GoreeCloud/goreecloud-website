@@ -1,22 +1,23 @@
 # GoreeCloud Website Stability Baseline
 
-## Current release version
+## Current accepted release version
 
-The repository-defined release version is **5.24.0**.
+The repository-defined accepted release version remains **5.24.0** until a newer exact revision completes preview, merge, and production acceptance.
 
-`VERSION` is the canonical machine-readable version source. The version file and this stability record are repository metadata only and are not part of the isolated Cloudflare Pages publication artifact.
+`VERSION` is the canonical machine-readable version source for the accepted website package. The version file and this stability record are repository metadata only and are not part of the isolated Cloudflare Pages publication artifact.
 
 Version metadata never establishes a Stable production release by itself. A revision must satisfy the source, artifact, preview, and production acceptance requirements below.
 
-## Current reviewed baseline
+## Current reviewed migration baseline
 
-Version 5.24.0 is the GoreeCloud public-web ecosystem modernization and current-state reconciliation release.
+The active modernization candidate moves the official GoreeCloud public-web ecosystem from the previously accepted Glaze UI 2.0 production baseline to **Glaze UI 2.1.0 Stable**.
 
-The reviewed baseline is:
+The reviewed migration baseline is:
 
-- **Glaze UI 2.0.0 Stable** is the current production design target.
-- Stable promotion reference: `ff3fff4306bd53ea9c0715a7c0d64265bb038617` in `GoreeCloud/goreecloud-glaze-ui`.
-- **Glaze UI 2.1 remains Candidate** and does not establish Stable consumer conformance.
+- **Glaze UI 2.1.0 Stable** is the current source design target.
+- Stable promotion reference: `c49113eb8b93c267613fdf1bbca1f814495acad7` in `GoreeCloud/goreecloud-glaze-ui`.
+- **Glaze UI 2.0.0 Stable** is the immediately preceding historical production baseline. Its accepted deployment evidence does not automatically establish 2.1 conformance.
+- 2.1 source alignment and production acceptance are separate states. Every website must earn repository-local 2.1 acceptance for its exact candidate and exact deployed revision.
 - The authenticated GoreeCloud owner inventory reviewed on **2026-08-29** contains **56 repositories: 40 public, 16 private, across 13 functional groups**.
 - The official production public-web portfolio contains **10 active production destinations**: Main, Suite, Projects, Design Center, Privacy Center, Security Center, Continuity Center, Roadmap, Blog, and Archive.
 - The six substantive GoreeCloud platform systems are **Glaze UI, Privacy Shield, Wardveil Security, Everkeep, GoreeCloud Mesh, and GoreeCloud Identity**.
@@ -43,18 +44,29 @@ A GoreeCloud website revision is considered stable only when all applicable cond
 
 A passing branch preview alone is not a stable release. **A merge alone is not a stable release.** Stability requires the reviewed source, isolated artifact, and deployed production bytes to agree.
 
-## Glaze UI 2.0 production boundary
+## Glaze UI 2.1 migration boundary
 
 Glaze UI is the substantive GoreeCloud design-system authority, not a decorative theme.
 
-The production websites target Glaze UI 2.0.0 Stable and use the current material hierarchy:
+The source migration target is Glaze UI 2.1.0 Stable and retains the material hierarchy:
 
 **Canvas → Surface → Soft Glaze → Glaze → Deep Glaze → Live Glaze**
+
+The 2.1 public-web rule is:
+
+**Content is solid. Interaction is glazed.**
+
+Durable reading surfaces such as cards, repository summaries, timelines, policies, status content, project entries, and articles use solid Surface material. Controlled glaze is reserved for navigation, transient controls, selected interactive emphasis, and deliberately live interaction surfaces.
 
 The public-web mapping includes, where applicable:
 
 - current semantic typography, spacing, shape, surface, state, and focus behavior;
 - 48px minimum general interaction targets;
+- a 56px Touch Assistance floor when touch assistance is enabled;
+- Comfortable, Standard, Compact, and Far View density behavior;
+- Clear, Balanced, and Solid clarity behavior;
+- large-text fallback behavior that prevents compact density from shrinking interaction targets below the safe floor;
+- deterministic reduced-material/performance behavior;
 - responsive mobile, tablet, and desktop layouts;
 - mobile safe-area handling;
 - Navigation Capsule behavior or an equivalent approved Glaze navigation mapping;
@@ -66,7 +78,7 @@ The public-web mapping includes, where applicable:
 
 Importing tokens or a stylesheet alone does not establish application conformance. Application-specific behavior, accessibility, representative viewport/device behavior, and deployment acceptance remain separate requirements.
 
-Glaze UI 2.1 Candidate work may be developed and previewed in isolation but must not be presented as current Stable production conformance until formally promoted and separately adopted.
+Glaze UI 2.0.0 is retained only as historical/rollback evidence where appropriate. Active public pages and built artifacts must not depend on 1.x or 2.0 after 2.1 acceptance.
 
 ## Public website portfolio boundary
 
@@ -130,7 +142,7 @@ Future dynamic features must define their own authentication, authorization, obs
 
 ## Governance and release boundaries
 
-This website release does not itself authorize a:
+This website migration does not itself authorize a:
 
 - repository visibility change;
 - DNS change;
