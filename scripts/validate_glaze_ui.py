@@ -6,7 +6,12 @@ from glaze_ui_2 import GLAZE_PROMOTION_REVISION, GLAZE_VERSION, apply_glaze_ui_2
 
 ROOT = Path(__file__).resolve().parents[1]
 BUNDLE = ROOT / "css/glaze-ui-2.1.0.css"
-ROOT_PAGES = [ROOT / n for n in ("index.html","repositories.html","privacy.html","security.html","404.html")]
+# Privacy, Security, and the error page are now source-native Glaze UI 2.1.
+# Main and Repositories still pass through the compatibility normalizer while
+# their larger canonical templates are being replaced without changing the
+# accepted generated public hierarchy.
+SOURCE_NATIVE_ROOT_PAGES = [ROOT / n for n in ("privacy.html", "security.html", "404.html")]
+COMPAT_ROOT_PAGES = [ROOT / n for n in ("index.html", "repositories.html")]
 CHILD_PAGES = [
     ROOT / "sites/projects/index.html", ROOT / "sites/projects/404.html",
     ROOT / "sites/roadmap/index.html", ROOT / "sites/roadmap/404.html",
@@ -45,27 +50,32 @@ for bundle in [BUNDLE, *CHILD_BUNDLES]:
         if marker not in css:
             errors.append(f"{bundle.relative_to(ROOT)} missing 2.1 marker: {marker}")
 
-for page in ROOT_PAGES:
-    text = apply_glaze_ui_2(page.read_text(encoding="utf-8"))
-    for marker in [f'name="goreecloud-glaze-ui" content="{GLAZE_VERSION}"', f'data-glaze-ui="{GLAZE_VERSION}"', 'glaze-canvas', 'name="viewport"']:
-        if marker not in text:
-            errors.append(f"{page.name} missing normalized 2.1 marker: {marker}")
-    for stale in ('data-glaze-ui="1.5.0"', 'data-glaze-ui="2.0.0"'):
-        if stale in text:
-            errors.append(f"{page.name} still activates a superseded Glaze UI bundle after normalization: {stale}")
-    if "raw.githubusercontent.com" in text:
-        errors.append(f"{page.name} must not load remote Glaze UI at runtime")
 
-for page in CHILD_PAGES:
-    text = page.read_text(encoding="utf-8")
-    for marker in [f'name="goreecloud-glaze-ui" content="{GLAZE_VERSION}"', f'data-glaze-ui="{GLAZE_VERSION}"', 'glaze-canvas', 'name="viewport"']:
+def validate_page(page: Path, text: str, *, normalized: bool) -> None:
+    mode = "normalized" if normalized else "source-native"
+    for marker in [
+        f'name="goreecloud-glaze-ui" content="{GLAZE_VERSION}"',
+        f'data-glaze-ui="{GLAZE_VERSION}"',
+        'glaze-canvas',
+        'name="viewport"',
+    ]:
         if marker not in text:
-            errors.append(f"{page.relative_to(ROOT)} missing 2.1 marker: {marker}")
+            errors.append(f"{page.relative_to(ROOT)} missing {mode} 2.1 marker: {marker}")
     for stale in ('data-glaze-ui="1.5.0"', 'data-glaze-ui="2.0.0"'):
         if stale in text:
-            errors.append(f"{page.relative_to(ROOT)} still activates a superseded Glaze UI bundle: {stale}")
+            errors.append(f"{page.relative_to(ROOT)} still activates a superseded Glaze UI bundle in {mode} form: {stale}")
     if "raw.githubusercontent.com" in text:
         errors.append(f"{page.relative_to(ROOT)} must not load remote Glaze UI at runtime")
+
+
+for page in SOURCE_NATIVE_ROOT_PAGES:
+    validate_page(page, page.read_text(encoding="utf-8"), normalized=False)
+
+for page in COMPAT_ROOT_PAGES:
+    validate_page(page, apply_glaze_ui_2(page.read_text(encoding="utf-8")), normalized=True)
+
+for page in CHILD_PAGES:
+    validate_page(page, page.read_text(encoding="utf-8"), normalized=False)
 
 text = CONFORMANCE.read_text(encoding="utf-8") if CONFORMANCE.is_file() else ""
 for marker in [
@@ -87,4 +97,6 @@ if errors:
     for error in errors:
         print(f"  - {error}")
     sys.exit(1)
-print("Glaze UI 2.1.0 Stable source validation passed across Main, Projects, Roadmap, Blog, and Archive surfaces.")
+print(
+    "Glaze UI 2.1.0 Stable validation passed: Privacy, Security, 404, Projects, Roadmap, Blog, and Archive are source-native; Main and Repositories remain compatibility-normalized pending canonical-template replacement."
+)
