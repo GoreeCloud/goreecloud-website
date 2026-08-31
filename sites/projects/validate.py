@@ -111,7 +111,6 @@ for stale in [
 
 for required_truth in [
     "2.1.0 current Stable",
-    "Content is solid. Interaction is glazed",
     "Identity platform · active development",
     "Recursive resolution remains a separate responsibility",
 ]:
