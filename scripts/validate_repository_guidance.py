@@ -131,7 +131,7 @@ def main() -> int:
     )
 
     readme_markers = (
-        f"Current website package: **v{version}" if version else "Current website package:",
+        f"Current accepted website package: **v{version}" if version else "Current accepted website package:",
         "`VERSION` is the canonical machine-readable version source",
         "## Source license and creative-rights boundary",
         "Apache License 2.0",
