@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate GoreeCloud Projects mobile layout and branding identity in a real browser."""
+"""Validate GoreeCloud Projects mobile layout, Glaze UI targets, and branding identity."""
 
 from __future__ import annotations
 
@@ -53,6 +53,7 @@ def inspect_mobile(session_id: str, browser: str, width: int) -> None:
           foundationRight:foundation.length?Math.max(...foundation.map(node=>rect(node).right)):0,
           foundationLeft:foundation.length?Math.min(...foundation.map(node=>rect(node).left)):0,
           statusAlign:getComputedStyle(document.querySelector('.card .status')).textAlign,
+          cardBackdrop:getComputedStyle(document.querySelector('.card')).backdropFilter || getComputedStyle(document.querySelector('.card')).webkitBackdropFilter || 'none',
           meshArtwork:mesh?.querySelector('img')?.getAttribute('src')||'',
           meshLabel:mesh?.querySelector('small')?.textContent.trim()||'',
           wardveilLabel:document.querySelector('a[href="https://security.goreecloud.com/"] small')?.textContent.trim()||'',
@@ -66,14 +67,39 @@ def inspect_mobile(session_id: str, browser: str, width: int) -> None:
     require(int(state.get("cardCount",0))>=browser_smoke.MIN_PROJECT_CARDS,f"Projects mobile card render incomplete in {browser} at {width}px: {state}")
     require(float(state.get("cardRight",99999))<=int(state.get("viewport",0))+1 and float(state.get("cardLeft",-1))>=-1,f"Projects cards escape the viewport in {browser} at {width}px: {state}")
     require(float(state.get("foundationRight",99999))<=int(state.get("viewport",0))+1 and float(state.get("foundationLeft",-1))>=-1,f"Projects foundation cards escape the viewport in {browser} at {width}px: {state}")
-    require(float(state.get("filterMinHeight",0))>=43.5,f"Projects mobile filter targets are too short in {browser} at {width}px: {state}")
-    require(float(state.get("navMinHeight",0))>=43.5,f"Projects mobile navigation targets are too short in {browser} at {width}px: {state}")
-    require(float(state.get("themeMinHeight",0))>=43.5,f"Projects mobile appearance targets are too short in {browser} at {width}px: {state}")
+    require(float(state.get("filterMinHeight",0))>=47.5,f"Projects mobile filter targets are below the Glaze UI 2.1 48px floor in {browser} at {width}px: {state}")
+    require(float(state.get("navMinHeight",0))>=47.5,f"Projects mobile navigation targets are below the Glaze UI 2.1 48px floor in {browser} at {width}px: {state}")
+    require(float(state.get("themeMinHeight",0))>=47.5,f"Projects mobile appearance targets are below the Glaze UI 2.1 48px floor in {browser} at {width}px: {state}")
     require(state.get("statusAlign") in ("left","start"),f"Projects mobile status text is not left-aligned in {browser} at {width}px: {state}")
+    require(str(state.get("cardBackdrop","none")) in ("none",""),f"Projects durable mobile cards must remain solid in {browser} at {width}px: {state}")
     require(state.get("meshArtwork")=="/assets/goreecloud-mesh-mark.svg",f"Projects mobile Mesh must use the approved Weave artwork in {browser} at {width}px: {state}")
     require(state.get("meshLabel")=="Mesh Center · Weave",f"Projects mobile Mesh identity label is stale in {browser} at {width}px: {state}")
     require(state.get("wardveilLabel")=="Security Center · Sentinel Fold",f"Projects mobile Wardveil identity label is stale in {browser} at {width}px: {state}")
     require(state.get("everkeepStatic")=="/assets/everkeep.svg",f"Projects mobile Everkeep artwork is incorrect in {browser} at {width}px: {state}")
+
+
+def inspect_touch_assistance(session_id: str, browser: str, width: int) -> None:
+    state=browser_smoke.execute(
+        session_id,
+        """
+        document.documentElement.setAttribute('data-glaze-touch-assistance','true');
+        const rect=node=>node?node.getBoundingClientRect():null;
+        const filters=[...document.querySelectorAll('#filters .filter')];
+        const nav=[...document.querySelectorAll('.topbar nav a')];
+        const themes=[...document.querySelectorAll('.theme-group button')].filter(node=>getComputedStyle(node).display!=='none');
+        const result={
+          filterMinHeight:filters.length?Math.min(...filters.map(node=>rect(node).height)):0,
+          navMinHeight:nav.length?Math.min(...nav.map(node=>rect(node).height)):0,
+          themeMinHeight:themes.length?Math.min(...themes.map(node=>rect(node).height)):0,
+        };
+        document.documentElement.removeAttribute('data-glaze-touch-assistance');
+        return result;
+        """,
+    )
+    require(isinstance(state,dict),f"Projects Touch Assistance state unreadable in {browser} at {width}px: {state!r}")
+    require(float(state.get("filterMinHeight",0))>=55.5,f"Projects filter targets do not reach the 56px Touch Assistance floor in {browser} at {width}px: {state}")
+    require(float(state.get("navMinHeight",0))>=55.5,f"Projects navigation targets do not reach the 56px Touch Assistance floor in {browser} at {width}px: {state}")
+    require(float(state.get("themeMinHeight",0))>=55.5,f"Projects appearance targets do not reach the 56px Touch Assistance floor in {browser} at {width}px: {state}")
 
 
 def inspect_identities(session_id: str, browser: str) -> None:
@@ -149,7 +175,8 @@ def run(target: str,browser: str) -> int:
             set_viewport(session_id,width,height)
             time.sleep(.2)
             inspect_mobile(session_id,browser,width)
-        print(f"Projects mobile {browser} branding/layout smoke passed for {target}: {target_url}")
+            inspect_touch_assistance(session_id,browser,width)
+        print(f"Projects mobile {browser} branding/layout/Glaze UI 2.1 smoke passed for {target}: {target_url}")
         return 0
     except (browser_smoke.WebDriverError,OSError,ValueError) as error:
         print(f"Projects mobile {browser} branding/layout smoke failed for {target}: {target_url}")
