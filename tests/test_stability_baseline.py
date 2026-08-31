@@ -116,8 +116,8 @@ class StabilityBaselineTests(unittest.TestCase):
             "Content is solid. Interaction is glazed.",
             "48px general interaction floor",
             "56px Touch Assistance floor",
-            "Reduced-motion behavior",
-            "Reduced-transparency preferences",
+            "Reduced Motion removes nonessential transformation and travel.",
+            "Reduced Transparency resolves optical material to solid hierarchy.",
             "No production Glaze UI exception is recorded",
         ):
             self.assertIn(marker, self.glaze_conformance)
