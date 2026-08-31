@@ -4,16 +4,18 @@ Canonical source for the main GoreeCloud public website and the Projects, Roadma
 
 ## Current baseline
 
-- Current website package: **v5.24.0**
-- Production design language: **Glaze UI 2.0.0 Stable**
+- Current accepted website package: **v5.24.0**
+- Current accepted production design language before this migration is deployed: **Glaze UI 2.0.0 Stable**
+- Current source migration target: **Glaze UI 2.1.0 Stable**
+- Glaze UI 2.1 Stable promotion reference: `c49113eb8b93c267613fdf1bbca1f814495acad7`
 - Glaze UI authority: `GoreeCloud/goreecloud-glaze-ui`
 - Branding and approved visual-asset authority: `GoreeCloud/goreecloud-branding-assets`
 - Repository inventory reviewed on **2026-08-29**: **56 repositories — 40 public, 16 private**
 - Public website portfolio: **10 active destinations**
 
-`VERSION` is the canonical machine-readable version source. Version metadata is repository-only release metadata and does not establish deployment or production acceptance by itself.
+`VERSION` is the canonical machine-readable version source for the last accepted website package. Version metadata is repository-only release metadata and does not establish deployment or production acceptance by itself.
 
-Glaze UI 2.1 remains a Candidate and is not used as a Stable production-conformance target by this repository.
+Glaze UI 2.1.0 is the current Stable design-system contract. This migration branch adopts it at source/build level, but the public websites do not inherit production 2.1 conformance by declaration. Exact repository validation, rendered branch-preview review, authorized merge, and exact production deployment verification remain required.
 
 ## Official GoreeCloud public websites
 
@@ -38,13 +40,16 @@ The browser surface is intentionally static, privacy-preserving, and evidence-sc
 - no unsupported production or security claims;
 - public/private GitHub repository boundaries are preserved;
 - application and platform-system claims are tied to current source, project specifications, and accepted evidence;
-- every deployable main-site page is normalized onto Glaze UI 2.0.0 Stable before artifact validation.
+- every deployable main-site page is normalized onto Glaze UI 2.1.0 Stable before artifact validation;
+- durable content surfaces remain solid while interaction uses controlled glaze.
 
 The six substantive GoreeCloud platform systems are Glaze UI, Privacy Shield, Wardveil Security, Everkeep, GoreeCloud Mesh, and GoreeCloud Identity. Their names represent actual design, privacy, security, continuity, coordination, identity, authentication, and authorization responsibilities rather than decorative branding.
 
 ## Design and accessibility
 
-Glaze UI is treated as a design contract, not merely a stylesheet or theme. The shared Glaze UI 2.0 web layer provides the production baseline for typography, spacing, materials, navigation, cards, buttons, forms, focus treatment, responsive behavior, reduced-motion and reduced-transparency preferences, forced-colors support, minimum interaction targets, mobile safe areas, and print resilience.
+Glaze UI is treated as a design contract, not merely a stylesheet or theme. The shared Glaze UI 2.1 web layer is the current source target for typography, spacing, materials, navigation, cards, buttons, forms, focus treatment, responsive behavior, reduced-motion and reduced-transparency preferences, forced-colors support, minimum interaction targets, mobile safe areas, and print resilience.
+
+The core 2.1 material rule is **Content is solid. Interaction is glazed.** Durable reading surfaces use solid Surface material; navigation, transient controls, selected interactive emphasis, and deliberately live interaction surfaces may use controlled Glaze material. The web contract also carries explicit clarity/density modes, a 56px Touch Assistance floor, large-text fallbacks, and deterministic material/performance fallbacks.
 
 Site-specific CSS may extend that layer while preserving Glaze UI hierarchy and accessibility contracts. Importing tokens alone is not considered conformance.
 
@@ -78,7 +83,7 @@ python scripts/build_public_site.py
 
 Build output directory: `dist`.
 
-The publication boundary is exact, per-file allowlisted. Adding a file to `assets/`, `css/`, `js/`, the repository root, or another source directory does not automatically add it to the deployable artifact. The build renders repository facts, normalizes the homepage, applies Glaze UI 2.0.0 Stable, and writes only approved paths to `dist/`.
+The publication boundary is exact, per-file allowlisted. Adding a file to `assets/`, `css/`, `js/`, the repository root, or another source directory does not automatically add it to the deployable artifact. The build renders repository facts, normalizes the homepage, applies Glaze UI 2.1.0 Stable, and writes only approved paths to `dist/`.
 
 Issue #6 is closed: the isolated `dist/` Cloudflare Pages cutover is complete. This records the deployment architecture only; it does not eliminate exact candidate and post-merge deployment verification.
 
@@ -114,7 +119,8 @@ Key validators and sources include:
 - `scripts/validate_performance_budget.py`
 - `scripts/validate_build_artifact.py`
 - `docs/glaze-ui-conformance.md`
-- `docs/glaze-ui-2.0-public-sites.md`
+- `docs/glaze-ui-2.1-public-sites.md`
+- `docs/glaze-ui-2.0-public-sites.md` (historical adoption record)
 - `docs/stability-baseline.md`
 - `docs/release-readiness-checklist.md`
 - `docs/release-evidence-template.md`
@@ -130,6 +136,8 @@ The same principle applies to every application and platform system. Source avai
 Cloudflare Pages deploys reviewed static artifacts. Exact accepted production revisions are recorded in the GoreeCloud Public Websites and Cloudflare Pages project specification in Google Drive.
 
 A branch preview is evidence, not a release. Passing CI does not itself authorize merge, production deployment, a public claim upgrade, or broader product acceptance. The exact pull-request candidate must pass branch-preview verification; after merge, the exact resulting `main` revision must pass production verification. Source, isolated artifact, and deployed bytes must agree.
+
+Glaze UI 2.0 production acceptance does not automatically transfer to 2.1. Each website must earn repository-local 2.1 acceptance for the exact deployed revision.
 
 Deployment success does not by itself authorize broader product, privacy, security, continuity, identity, or production-readiness claims.
 

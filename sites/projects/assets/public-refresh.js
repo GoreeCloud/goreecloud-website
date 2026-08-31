@@ -14,7 +14,7 @@ const currentProjectDirection={
   'GoreeCloud Vault Server':['Native rebuild target · transitional service','The credential server is required to move to an original GoreeCloud application architecture. Transitional compatibility material remains bounded until the native replacement satisfies security, migration, recovery, and client-compatibility gates.'],
   'GoreeCloud Keyboard':['Native rebuild active','GoreeCloud Keyboard is an original GoreeCloud application target powered by first-party Quill capabilities. Platform keyboard APIs, language resources, and mature technical dependencies remain bounded supporting foundations.'],
   'GoreeCloud Terminal':['Release-candidate source · Stable not assumed','GoreeCloud Terminal must reach an original GoreeCloud application end state while retaining only narrowly justified terminal, shell, toolkit, and operating-system foundations. Stable and production acceptance remain separate evidence gates.'],
-  'Glaze UI':['2.0.0 current Stable','GoreeCloud Design Center and shared design-system authority for Glaze UI 2.0.0 Stable across supported GoreeCloud surfaces. Glaze UI 2.1 remains Candidate and does not establish Stable consumer conformance.','Design system · Stable 2.0.0']
+  'Glaze UI':['2.1.0 current Stable','GoreeCloud Design Center and shared design-system authority for Glaze UI 2.1.0 Stable across supported GoreeCloud surfaces. The 2.1 contract requires content to remain solid, interaction to use controlled glaze, and every downstream consumer to earn repository-local acceptance.','Design system · Stable 2.1.0']
 };
 
 function addCurrentPortfolioEntries(){
@@ -32,9 +32,6 @@ function addCurrentPortfolioEntries(){
 }
 addCurrentPortfolioEntries();
 
-// Identity is both a user-facing service and a substantive platform system. In
-// the Projects taxonomy it is represented as a Foundation so the platform
-// systems are counted and grouped consistently without duplicating the entry.
 const identityEntry=entries.find(entry=>entry.name==='GoreeCloud Identity');
 if(identityEntry){identityEntry.kind='Foundation';identityEntry.category='Shared Foundations';}
 
@@ -48,7 +45,4 @@ for(const entry of entries){
 
 if(typeof appCount!=='undefined'&&appCount)appCount.textContent=entries.filter(entry=>entry.kind==='Application').length;
 if(typeof foundationCount!=='undefined'&&foundationCount)foundationCount.textContent=entries.filter(entry=>entry.kind==='Foundation').length;
-
-// Current-direction overrides live in the data model itself, so every later
-// search/filter render stays current without observing or rewriting DOM.
 render();

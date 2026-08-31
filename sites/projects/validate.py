@@ -9,7 +9,7 @@ ROOT = SITE.parents[1]
 required = [
     "index.html", "404.html", "README.md", "_headers",
     "assets/app.js", "assets/public-refresh.js", "assets/icon-refresh.js",
-    "assets/styles.css", "assets/mobile-refresh.css", "assets/glaze-ui-2.0.0.css",
+    "assets/styles.css", "assets/mobile-refresh.css", "assets/glaze-ui-2.1.0.css",
     "assets/goreecloud-logo.svg", "assets/glaze-ui-mark.svg", "assets/everkeep.svg",
     "assets/privacy-shield-icon.svg", "assets/wardveil-security-icon.svg",
     "assets/goreecloud-mesh-mark.svg", "assets/identity.svg",
@@ -25,9 +25,13 @@ refresh = (SITE / "assets/public-refresh.js").read_text(encoding="utf-8")
 icons = (SITE / "assets/icon-refresh.js").read_text(encoding="utf-8")
 mobile = (SITE / "assets/mobile-refresh.css").read_text(encoding="utf-8")
 readme = (SITE / "README.md").read_text(encoding="utf-8")
-glaze = (SITE / "assets/glaze-ui-2.0.0.css").read_text(encoding="utf-8")
+glaze = (SITE / "assets/glaze-ui-2.1.0.css").read_text(encoding="utf-8")
 headers = (SITE / "_headers").read_text(encoding="utf-8")
 combined = html + js + refresh + icons + readme
+# app.js is the intentionally stable base catalog. public-refresh.js applies
+# current direction before the final portfolio render; stale-current checks
+# therefore target the actual current-facing HTML/refresh/documentation layer.
+active_direction = html + refresh + readme
 
 
 def git_blob_sha(path: Path) -> str:
@@ -36,7 +40,7 @@ def git_blob_sha(path: Path) -> str:
 
 
 for needle in [
-    "Suite applications", "Shared foundations", "Glaze UI 2.0", "Privacy Shield",
+    "Suite applications", "Shared foundations", "Glaze UI 2.1", "Privacy Shield",
     "Wardveil Security", "Everkeep", "GoreeCloud Mesh", "GoreeCloud Identity",
     "GoreeCloud AI", "GoreeCloud Code", "GoreeCloud Documents", "GoreeCloud Messenger",
     "GoreeCloud Gateway", "GoreeCloud Quill", "GoreeCloud File Manager", "GoreeCloud Maps",
@@ -48,28 +52,34 @@ for needle in [
 
 for page_name, page in (("index", html), ("404", error_html)):
     for marker in (
-        'name="goreecloud-glaze-ui" content="2.0.0"',
-        'data-glaze-ui="2.0.0"',
+        'name="goreecloud-glaze-ui" content="2.1.0"',
+        'data-glaze-ui="2.1.0"',
         "glaze-canvas",
     ):
         if marker not in page:
-            raise SystemExit(f"{page_name} missing Glaze UI 2.0 marker: {marker}")
-    if 'data-glaze-ui="1.5.0"' in page:
-        raise SystemExit(f"{page_name} still activates Glaze UI 1.5")
+            raise SystemExit(f"{page_name} missing Glaze UI 2.1 marker: {marker}")
+    for stale in ('data-glaze-ui="1.5.0"', 'data-glaze-ui="2.0.0"'):
+        if stale in page:
+            raise SystemExit(f"{page_name} still activates superseded Glaze UI: {stale}")
 
 for marker in (
-    "Glaze UI 2.0.0 Stable integration",
-    "ff3fff4306bd53ea9c0715a7c0d64265bb038617",
+    "Glaze UI 2.1.0 Stable integration",
+    "c49113eb8b93c267613fdf1bbca1f814495acad7",
+    "Content is solid. Interaction is glazed.",
     "--glaze-touch-min:48px",
+    "--glaze-touch-assisted:56px",
+    "data-glaze-density=compact",
+    "data-glaze-performance=reduced",
+    "data-glaze-large-text=true",
     "prefers-reduced-motion",
     "prefers-reduced-transparency",
-    "forced-colors",
+    "forced-colors:active",
 ):
     if marker not in glaze:
-        raise SystemExit(f"Projects Glaze UI 2.0 web-layer marker missing: {marker}")
+        raise SystemExit(f"Projects Glaze UI 2.1 web-layer marker missing: {marker}")
 
 # Base catalog remains intentionally stable; current additions and status
-# corrections are applied by public-refresh.js before the first public render.
+# corrections are applied by public-refresh.js before the final public render.
 if js.count("kind:'Application'") != 33:
     raise SystemExit("Projects base catalog must contain exactly 33 Suite applications before current portfolio augmentation")
 if js.count("kind:'Foundation'") != 6:
@@ -86,19 +96,21 @@ for stale in [
     "Gitea is the planned permanent",
     "planned permanent source-control authority",
     "1.5.0 current Stable",
+    "2.0.0 current Stable",
+    "2.1 remains Candidate",
     "Glaze UI 1.4</strong><span>Current Stable baseline",
     "Glaze UI 1.5</strong><span>Current Stable baseline",
+    "Glaze UI 2.0</strong><span>Current Stable baseline",
     "Mesh Center · artwork pending approval",
     "GoreeCloud Mesh has no approved canonical artwork",
     "text-only-pending-approved-artwork",
     "recursive resolution, authoritative DNS",
 ]:
-    if stale in combined:
+    if stale in active_direction:
         raise SystemExit(f"superseded Projects direction remains public: {stale}")
 
 for required_truth in [
-    "2.0.0 current Stable",
-    "2.1 remains Candidate",
+    "2.1.0 current Stable",
     "Identity platform · active development",
     "Recursive resolution remains a separate responsibility",
 ]:
@@ -171,16 +183,16 @@ if "MutationObserver" in refresh:
 for needle in ["entry.status=update[0]", "entry.role=update[1]", "entry.model=update[2]", "render();"]:
     if needle not in refresh:
         raise SystemExit(f"Projects data-model refresh contract missing: {needle}")
-for needle in ["min-height:44px", "overflow-x:hidden", ".card-meta{flex-wrap:wrap", "@media(max-width:380px)"]:
+for needle in ["min-height:48px", "overflow-x:hidden", ".card-meta{flex-wrap:wrap", "@media(max-width:380px)"]:
     if needle not in mobile:
         raise SystemExit(f"Projects mobile hardening marker missing: {needle}")
 
-for stylesheet in ["/assets/mobile-refresh.css?v=20260827-mobile2"]:
+for stylesheet in ["/assets/mobile-refresh.css?v=20260827-mobile2", "/assets/glaze-ui-2.1.0.css"]:
     if stylesheet not in html:
-        raise SystemExit(f"Projects mobile stylesheet reference missing: {stylesheet}")
+        raise SystemExit(f"Projects stylesheet reference missing: {stylesheet}")
 for script in [
     "/assets/app.js?v=20260827-cache2",
-    "/assets/public-refresh.js?v=20260829-glaze2",
+    "/assets/public-refresh.js?v=20260830-glaze21",
     "/assets/icon-refresh.js?v=20260828-identities1",
 ]:
     if script not in html:
@@ -191,4 +203,4 @@ for stale_cache in ["max-age=86400", "stale-while-revalidate"]:
     if stale_cache in headers:
         raise SystemExit(f"Projects stale asset cache policy remains: {stale_cache}")
 
-print("GoreeCloud Projects current portfolio, Glaze UI 2.0, six-system model, and unified branding validation passed")
+print("GoreeCloud Projects current portfolio, Glaze UI 2.1, six-system model, responsive hardening, and unified branding validation passed")

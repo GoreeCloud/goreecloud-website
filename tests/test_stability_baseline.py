@@ -19,6 +19,7 @@ from glaze_ui_2 import GLAZE_PROMOTION_REVISION, GLAZE_VERSION  # noqa: E402
 VERSION_PATH = ROOT / "VERSION"
 BASELINE_PATH = ROOT / "docs" / "stability-baseline.md"
 GLAZE_CONFORMANCE_PATH = ROOT / "docs" / "glaze-ui-conformance.md"
+GLAZE_ADOPTION_PATH = ROOT / "docs" / "glaze-ui-2.1-public-sites.md"
 README_PATH = ROOT / "README.md"
 SEMVER_RE = re.compile(r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$")
 
@@ -29,6 +30,7 @@ class StabilityBaselineTests(unittest.TestCase):
         cls.version = VERSION_PATH.read_text(encoding="utf-8").strip()
         cls.baseline = BASELINE_PATH.read_text(encoding="utf-8")
         cls.glaze_conformance = GLAZE_CONFORMANCE_PATH.read_text(encoding="utf-8")
+        cls.glaze_adoption = GLAZE_ADOPTION_PATH.read_text(encoding="utf-8")
         cls.readme = README_PATH.read_text(encoding="utf-8")
 
     def test_version_is_current_strict_semver(self) -> None:
@@ -39,13 +41,16 @@ class StabilityBaselineTests(unittest.TestCase):
         self.assertIn(f"**{self.version}**", self.baseline)
         self.assertIn("`VERSION` is the canonical machine-readable version source", self.baseline)
 
-    def test_readme_tracks_current_release_state(self) -> None:
-        self.assertIn(f"Current website package: **v{self.version}**", self.readme)
+    def test_readme_tracks_current_release_and_migration_state(self) -> None:
+        self.assertIn(f"Current accepted website package: **v{self.version}**", self.readme)
         self.assertIn("`VERSION` is the canonical machine-readable version source", self.readme)
+        self.assertIn("Glaze UI 2.1.0 Stable", self.readme)
         self.assertIn("Glaze UI 2.0.0 Stable", self.readme)
         self.assertIn("56 repositories — 40 public, 16 private", self.readme)
         self.assertIn("10 active destinations", self.readme)
         self.assertIn("GoreeCloud/goreecloud-branding-assets", self.readme)
+        self.assertIn("Content is solid. Interaction is glazed.", self.readme)
+        self.assertIn("56px Touch Assistance floor", self.readme)
 
     def test_stability_requires_exact_preview_and_production_verification(self) -> None:
         self.assertIn("exact branch-preview deployment verification", self.baseline)
@@ -58,7 +63,8 @@ class StabilityBaselineTests(unittest.TestCase):
             "10 active production destinations",
             "GoreeCloud Identity",
             "Identity Center",
-            "Glaze UI 2.1 remains Candidate",
+            "Glaze UI 2.1.0 Stable",
+            "Glaze UI 2.0.0 Stable",
             "Facet",
         ):
             self.assertIn(marker, self.baseline)
@@ -67,7 +73,7 @@ class StabilityBaselineTests(unittest.TestCase):
         for stale in (
             "30 repository / 23 public / 7 private",
             "Glaze UI 1.1.0 using the exact canonical source revision",
-            "current Stable production target for GoreeCloud-controlled user-facing applications.\n\nGlaze UI 1.5.0",
+            "Glaze UI 2.1 remains Candidate",
             "goreecloud-logo` repository artwork source",
         ):
             self.assertNotIn(stale, self.baseline)
@@ -85,12 +91,15 @@ class StabilityBaselineTests(unittest.TestCase):
         self.assertNotIn("VERSION", PUBLIC_FILES)
         self.assertNotIn("docs/stability-baseline.md", PUBLIC_FILES)
         self.assertNotIn("docs/glaze-ui-conformance.md", PUBLIC_FILES)
+        self.assertNotIn("docs/glaze-ui-2.1-public-sites.md", PUBLIC_FILES)
 
     def test_scope_preserves_static_privacy_and_current_glaze_boundaries(self) -> None:
         for marker in (
-            "Glaze UI 2.0.0 Stable",
+            "Glaze UI 2.1.0 Stable",
             "Canvas → Surface → Soft Glaze → Glaze → Deep Glaze → Live Glaze",
+            "Content is solid. Interaction is glazed.",
             "48px minimum general interaction targets",
+            "56px Touch Assistance floor",
             "reduced-motion and reduced-transparency",
             "privacy-preserving static browser surfaces",
             "isolated Cloudflare Pages publication artifact",
@@ -102,15 +111,27 @@ class StabilityBaselineTests(unittest.TestCase):
             f"Target Glaze UI version: **{GLAZE_VERSION}**",
             GLAZE_PROMOTION_REVISION,
             "GoreeCloud/goreecloud-glaze-ui",
-            "Glaze UI 2.0.0 Stable web contract prepared",
-            "same-origin Glaze UI 2.0.0 web layer",
-            "48px interaction targets",
-            "Canvas → Surface → Soft Glaze → Glaze → Deep Glaze → Live Glaze",
-            "Reduced-motion behavior",
-            "Reduced-transparency preferences",
+            "Glaze UI 2.1.0 Stable web contract prepared",
+            "same-origin Glaze UI 2.1.0 web layer",
+            "Content is solid. Interaction is glazed.",
+            "48px general interaction floor",
+            "56px Touch Assistance floor",
+            "Reduced Motion removes nonessential transformation and travel.",
+            "Reduced Transparency resolves optical material to solid hierarchy.",
             "No production Glaze UI exception is recorded",
         ):
             self.assertIn(marker, self.glaze_conformance)
+
+    def test_21_adoption_record_preserves_acceptance_boundary(self) -> None:
+        for marker in (
+            "Stable source target: **2.1.0**",
+            GLAZE_PROMOTION_REVISION,
+            "Content is solid. Interaction is glazed.",
+            "56px Touch Assistance floor",
+            "source migration candidate; rendered preview and production acceptance remain separate gates",
+            "Glaze UI 2.0.0 remains the immediately preceding historical Stable baseline",
+        ):
+            self.assertIn(marker, self.glaze_adoption)
 
 
 if __name__ == "__main__":

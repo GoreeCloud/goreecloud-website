@@ -146,9 +146,13 @@
   box-shadow: 0 16px 42px color-mix(in srgb, #000 12%, transparent);
 }
 
+/* Balance all ten destinations into deliberate 3 / 4 / 3 desktop rows instead
+ * of leaving Archive stranded as a single card on a fourth row. */
 .website-card:nth-child(1) { grid-column: span 6; }
 .website-card:nth-child(2),
 .website-card:nth-child(3) { grid-column: span 3; }
+.website-card:nth-child(n+4):nth-child(-n+7) { grid-column: span 3; }
+.website-card:nth-child(n+8) { grid-column: span 4; }
 
 .website-card:nth-child(1) .website-preview-browser {
   min-height: 210px;
@@ -171,7 +175,7 @@
 
 .website-card:nth-child(2) .website-card-body > p:not(.service-kicker),
 .website-card:nth-child(3) .website-card-body > p:not(.service-kicker) {
-  font-size: .88rem;
+  font-size: .9rem;
 }
 
 .website-preview {
@@ -188,16 +192,16 @@
 }
 
 .website-card-body {
-  padding: 1.08rem 1.15rem 1.18rem;
+  padding: 1.15rem 1.2rem 1.22rem;
 }
 
 .website-card h3 {
-  font-size: 1.2rem;
+  font-size: 1.22rem;
 }
 
 .website-card-body > p:not(.service-kicker) {
-  font-size: .9rem;
-  line-height: 1.52;
+  font-size: .94rem;
+  line-height: 1.56;
 }
 
 .website-card-footer {
@@ -218,12 +222,13 @@
 #platform .service-card,
 #platform .platform-card {
   min-height: 0;
-  padding: 1.15rem;
+  padding: 1.22rem;
 }
 
 #platform .service-card p,
 #platform .platform-card p {
-  font-size: .88rem;
+  font-size: .92rem;
+  line-height: 1.52;
 }
 
 .repository-teaser {
@@ -243,13 +248,14 @@
 }
 
 .roadmap-card {
-  padding: 1.15rem;
+  padding: 1.2rem;
 }
 
 .roadmap-card > p:not(.roadmap-kicker):not(.roadmap-current),
 .roadmap-current,
 .roadmap-details {
-  font-size: .86rem;
+  font-size: .9rem;
+  line-height: 1.52;
 }
 
 /* Turn the long origin story into a scannable milestone grid. */
@@ -277,7 +283,7 @@
   display: block;
   margin-bottom: .5rem;
   color: var(--cyan);
-  font-size: .74rem;
+  font-size: .76rem;
   font-weight: 850;
   letter-spacing: .08em;
   text-transform: uppercase;
@@ -294,13 +300,13 @@
 
 .timeline article h3 {
   margin: 0 0 .55rem;
-  font-size: 1.02rem;
+  font-size: 1.04rem;
 }
 
 .timeline article p {
   margin: 0;
-  font-size: .84rem;
-  line-height: 1.48;
+  font-size: .88rem;
+  line-height: 1.5;
 }
 
 #follow .section-heading {
@@ -308,17 +314,17 @@
 }
 
 .social-grid {
-  gap: .72rem;
+  gap: .82rem;
 }
 
 .social-card {
   min-height: 0;
-  padding: .95rem;
+  padding: 1rem;
 }
 
 .social-icon {
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
 }
 
 .contact-section {
@@ -340,15 +346,9 @@
     font-size: clamp(3.05rem, 5.4vw, 4.25rem);
   }
 
-  .website-card,
-  .website-card:nth-child(1),
-  .website-card:nth-child(2),
-  .website-card:nth-child(3) {
+  /* Ten destinations resolve cleanly to five two-card rows at this width. */
+  .website-card:nth-child(n) {
     grid-column: span 6;
-  }
-
-  .website-card:nth-child(1) {
-    grid-column: 1 / -1;
   }
 
   .timeline {
@@ -382,10 +382,7 @@
     grid-template-columns: 1fr;
   }
 
-  .website-card,
-  .website-card:nth-child(1),
-  .website-card:nth-child(2),
-  .website-card:nth-child(3) {
+  .website-card:nth-child(n) {
     grid-column: 1;
   }
 
