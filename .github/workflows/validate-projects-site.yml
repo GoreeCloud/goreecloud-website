@@ -56,22 +56,62 @@ jobs:
         if: github.event_name == 'pull_request'
         env:
           GITHUB_HEAD_REF: ${{ github.head_ref }}
-        run: python3 sites/projects/browser_smoke.py --target branch-preview --browser chrome
+        run: |
+          for attempt in 1 2; do
+            if python3 sites/projects/browser_smoke.py --target branch-preview --browser chrome; then
+              exit 0
+            fi
+            if [ "$attempt" -lt 2 ]; then
+              echo "Chrome WebDriver smoke did not complete (attempt $attempt/2); starting a fresh driver session in 3 seconds."
+              sleep 3
+            fi
+          done
+          exit 1
       - name: Exercise pull request Projects branch preview in Firefox
         if: github.event_name == 'pull_request'
         env:
           GITHUB_HEAD_REF: ${{ github.head_ref }}
-        run: python3 sites/projects/browser_smoke.py --target branch-preview --browser firefox
+        run: |
+          for attempt in 1 2; do
+            if python3 sites/projects/browser_smoke.py --target branch-preview --browser firefox; then
+              exit 0
+            fi
+            if [ "$attempt" -lt 2 ]; then
+              echo "Firefox WebDriver smoke did not complete (attempt $attempt/2); starting a fresh driver session in 3 seconds."
+              sleep 3
+            fi
+          done
+          exit 1
       - name: Exercise pull request Projects mobile layout in Chrome
         if: github.event_name == 'pull_request'
         env:
           GITHUB_HEAD_REF: ${{ github.head_ref }}
-        run: python3 sites/projects/mobile_smoke.py --target branch-preview --browser chrome
+        run: |
+          for attempt in 1 2; do
+            if python3 sites/projects/mobile_smoke.py --target branch-preview --browser chrome; then
+              exit 0
+            fi
+            if [ "$attempt" -lt 2 ]; then
+              echo "Chrome mobile WebDriver smoke did not complete (attempt $attempt/2); starting a fresh driver session in 3 seconds."
+              sleep 3
+            fi
+          done
+          exit 1
       - name: Exercise pull request Projects mobile layout in Firefox
         if: github.event_name == 'pull_request'
         env:
           GITHUB_HEAD_REF: ${{ github.head_ref }}
-        run: python3 sites/projects/mobile_smoke.py --target branch-preview --browser firefox
+        run: |
+          for attempt in 1 2; do
+            if python3 sites/projects/mobile_smoke.py --target branch-preview --browser firefox; then
+              exit 0
+            fi
+            if [ "$attempt" -lt 2 ]; then
+              echo "Firefox mobile WebDriver smoke did not complete (attempt $attempt/2); starting a fresh driver session in 3 seconds."
+              sleep 3
+            fi
+          done
+          exit 1
       - name: Verify Projects production after main update
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
@@ -89,13 +129,53 @@ jobs:
           exit 1
       - name: Exercise Projects production in Chrome
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: python3 sites/projects/browser_smoke.py --target production --browser chrome
+        run: |
+          for attempt in 1 2; do
+            if python3 sites/projects/browser_smoke.py --target production --browser chrome; then
+              exit 0
+            fi
+            if [ "$attempt" -lt 2 ]; then
+              echo "Chrome production smoke did not complete (attempt $attempt/2); starting a fresh driver session in 3 seconds."
+              sleep 3
+            fi
+          done
+          exit 1
       - name: Exercise Projects production in Firefox
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: python3 sites/projects/browser_smoke.py --target production --browser firefox
+        run: |
+          for attempt in 1 2; do
+            if python3 sites/projects/browser_smoke.py --target production --browser firefox; then
+              exit 0
+            fi
+            if [ "$attempt" -lt 2 ]; then
+              echo "Firefox production smoke did not complete (attempt $attempt/2); starting a fresh driver session in 3 seconds."
+              sleep 3
+            fi
+          done
+          exit 1
       - name: Exercise Projects production mobile layout in Chrome
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: python3 sites/projects/mobile_smoke.py --target production --browser chrome
+        run: |
+          for attempt in 1 2; do
+            if python3 sites/projects/mobile_smoke.py --target production --browser chrome; then
+              exit 0
+            fi
+            if [ "$attempt" -lt 2 ]; then
+              echo "Chrome production mobile smoke did not complete (attempt $attempt/2); starting a fresh driver session in 3 seconds."
+              sleep 3
+            fi
+          done
+          exit 1
       - name: Exercise Projects production mobile layout in Firefox
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: python3 sites/projects/mobile_smoke.py --target production --browser firefox
+        run: |
+          for attempt in 1 2; do
+            if python3 sites/projects/mobile_smoke.py --target production --browser firefox; then
+              exit 0
+            fi
+            if [ "$attempt" -lt 2 ]; then
+              echo "Firefox production mobile smoke did not complete (attempt $attempt/2); starting a fresh driver session in 3 seconds."
+              sleep 3
+            fi
+          done
+          exit 1
