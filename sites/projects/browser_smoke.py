@@ -4,8 +4,8 @@
 The smoke test intentionally uses only Python's standard library plus the browser
 and WebDriver binaries already present on GitHub's pinned ubuntu-24.04 runner
 image. It detects navigation hangs, renderer crashes, missing card rendering,
-broken local search/filter behavior, and loss of responsiveness under repeated
-UI updates in both Chrome and Firefox.
+broken local search/filter behavior, Glaze UI material regressions, and loss of
+responsiveness under repeated UI updates in both Chrome and Firefox.
 """
 
 from __future__ import annotations
@@ -192,12 +192,19 @@ def exercise_page(session_id: str, target_url: str, browser: str) -> None:
     initial = execute(
         session_id,
         """
+        const card=document.querySelector('#projects .card');
+        const header=document.querySelector('.topbar');
+        const cardStyle=card?getComputedStyle(card):null;
+        const headerStyle=header?getComputedStyle(header):null;
         return {
           ready: document.readyState,
           title: document.title,
           cards: document.querySelectorAll('#projects .card').length,
           result: document.querySelector('#result-count')?.textContent || '',
           resources: performance.getEntriesByType('resource').map(entry => entry.name),
+          glazeVersion: document.querySelector('meta[name="goreecloud-glaze-ui"]')?.content || '',
+          cardBackdrop: cardStyle?.backdropFilter || cardStyle?.webkitBackdropFilter || 'none',
+          headerBackdrop: headerStyle?.backdropFilter || headerStyle?.webkitBackdropFilter || 'none',
         };
         """,
     )
@@ -205,16 +212,14 @@ def exercise_page(session_id: str, target_url: str, browser: str) -> None:
     require(initial.get("ready") == "complete", f"Projects document did not finish loading in {browser}: {initial}")
     require(initial.get("title") == "Projects — GoreeCloud", f"Unexpected Projects title in {browser}: {initial.get('title')!r}")
     require(int(initial.get("cards", 0)) >= MIN_PROJECT_CARDS, f"Projects rendered too few cards in {browser}: {initial}")
+    require(initial.get("glazeVersion") == "2.1.0", f"Projects did not expose the Glaze UI 2.1 document contract in {browser}: {initial}")
+    require(str(initial.get("cardBackdrop", "none")) in ("none", ""), f"Durable Projects content cards must remain solid under Glaze UI 2.1 in {browser}: {initial}")
 
     resources = initial.get("resources") or []
-    require(
-        any("/assets/app.js?v=20260827-cache2" in resource for resource in resources),
-        f"Headless {browser} did not load the versioned Projects app.js resource.",
-    )
-    require(
-        any("/assets/public-refresh.js?v=20260829-glaze2" in resource for resource in resources),
-        f"Headless {browser} did not load the versioned Projects public-refresh.js resource.",
-    )
+    require(any("/assets/app.js?v=20260827-cache2" in resource for resource in resources), f"Headless {browser} did not load the versioned Projects app.js resource.")
+    require(any("/assets/public-refresh.js?v=20260830-glaze21" in resource for resource in resources), f"Headless {browser} did not load the Glaze UI 2.1 Projects public-refresh.js resource.")
+    require(any("/assets/glaze-ui-2.1.0.css" in resource for resource in resources), f"Headless {browser} did not load the Glaze UI 2.1 stylesheet.")
+    require(not any("/assets/glaze-ui-2.0.0.css" in resource for resource in resources), f"Headless {browser} still loaded the superseded Glaze UI 2.0 stylesheet.")
 
     searched = execute(
         session_id,
@@ -253,10 +258,7 @@ def exercise_page(session_id: str, target_url: str, browser: str) -> None:
     )
     require(isinstance(foundations, dict), f"Projects filter did not return state in {browser}: {foundations!r}")
     require(int(foundations.get("cards", 0)) >= 1, f"Foundations filter rendered no cards in {browser}: {foundations}")
-    require(
-        all(kind == "foundation" for kind in (foundations.get("kinds") or [])),
-        f"Foundations filter leaked non-foundation cards in {browser}: {foundations}",
-    )
+    require(all(kind == "foundation" for kind in (foundations.get("kinds") or [])), f"Foundations filter leaked non-foundation cards in {browser}: {foundations}")
 
     stressed = execute(
         session_id,
@@ -287,14 +289,8 @@ def exercise_page(session_id: str, target_url: str, browser: str) -> None:
     require(int(stressed.get("cards", 0)) >= MIN_PROJECT_CARDS, f"Projects did not recover after repeated interactions in {browser}: {stressed}")
     require(float(stressed.get("elapsed", MAX_STRESS_LOOP_MS + 1)) <= MAX_STRESS_LOOP_MS, f"Projects repeated render loop was unexpectedly slow in {browser}: {stressed}")
 
-    final_ping = execute(
-        session_id,
-        "return {cards:document.querySelectorAll('#projects .card').length, title:document.title, ping:Date.now()};",
-    )
-    require(
-        isinstance(final_ping, dict) and int(final_ping.get("cards", 0)) >= MIN_PROJECT_CARDS,
-        f"Projects {browser} renderer became unhealthy after interaction exercise: {final_ping}",
-    )
+    final_ping = execute(session_id, "return {cards:document.querySelectorAll('#projects .card').length, title:document.title, ping:Date.now()};")
+    require(isinstance(final_ping, dict) and int(final_ping.get("cards", 0)) >= MIN_PROJECT_CARDS, f"Projects {browser} renderer became unhealthy after interaction exercise: {final_ping}")
 
 
 def driver_command(browser: str, port: int) -> list[str]:
@@ -316,15 +312,11 @@ def run(target: str, browser: str) -> int:
     try:
         with tempfile.NamedTemporaryFile(prefix=f"projects-{browser}-webdriver-", suffix=".log", delete=False) as log_file:
             log_path = log_file.name
-            process = subprocess.Popen(
-                driver_command(browser, port),
-                stdout=log_file,
-                stderr=subprocess.STDOUT,
-            )
+            process = subprocess.Popen(driver_command(browser, port), stdout=log_file, stderr=subprocess.STDOUT)
         wait_for_driver(browser)
         session_id = create_session(browser)
         exercise_page(session_id, target_url, browser)
-        print(f"Projects headless {browser} runtime smoke passed for {target}: {target_url}")
+        print(f"Projects headless {browser} Glaze UI 2.1 runtime smoke passed for {target}: {target_url}")
         return 0
     except (WebDriverError, OSError, ValueError, json.JSONDecodeError) as error:
         print(f"Projects headless {browser} runtime smoke failed for {target}: {target_url}")
