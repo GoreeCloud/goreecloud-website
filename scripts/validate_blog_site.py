@@ -16,7 +16,8 @@ for marker in [
     'GoreeCloud Blog',
     'Building an owned cloud, one layer at a time.',
     'GoreeCloud’s public platform map catches up with the software',
-    'current connected GoreeCloud source inventory still spans 56 repositories',
+    'current connected GoreeCloud source inventory spans 57 repositories: 40 public and 17 private',
+    'GoreeCloud Index',
     'GoreeCloud Code replaces the idea of a forge as the product boundary',
     'Forgejo is the initial replaceable infrastructure foundation',
     'Documents, Messenger, Gateway, Quill, File Manager, Maps, and App Store broaden the native portfolio',
@@ -36,12 +37,13 @@ for marker in [
     'Continuity Center',
     'Mesh Center',
     'Identity Center',
-    'August 30, 2026',
+    'August 31, 2026',
 ]:
     if marker not in index:
         raise SystemExit(f'Missing required blog marker: {marker}')
 
 for stale in [
+    'current connected GoreeCloud source inventory still spans 56 repositories',
     'Glaze UI 2.1 remains Candidate',
     'Glaze UI 2.0 is the current Stable production target',
     '53 repositories: 39 public and 14 private',
@@ -79,4 +81,4 @@ for forbidden in ['google-analytics','googletagmanager','fonts.googleapis.com','
         raise SystemExit(f'Forbidden blog runtime dependency: {forbidden}')
 if "default-src 'self'" not in headers or "connect-src 'none'" not in headers:
     raise SystemExit('Blog CSP is not fail-closed enough')
-print('GoreeCloud Blog current portfolio, six-system model, Facet identity, and Glaze UI 2.1 validation passed.')
+print('GoreeCloud Blog current 57-repository portfolio, six-system model, Facet identity, and Glaze UI 2.1 validation passed.')
