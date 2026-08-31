@@ -6,12 +6,11 @@ from glaze_ui_2 import GLAZE_PROMOTION_REVISION, GLAZE_VERSION, apply_glaze_ui_2
 
 ROOT = Path(__file__).resolve().parents[1]
 BUNDLE = ROOT / "css/glaze-ui-2.1.0.css"
-# Privacy, Security, and the error page are now source-native Glaze UI 2.1.
-# Main and Repositories still pass through the compatibility normalizer while
-# their larger canonical templates are being replaced without changing the
-# accepted generated public hierarchy.
-SOURCE_NATIVE_ROOT_PAGES = [ROOT / n for n in ("privacy.html", "security.html", "404.html")]
-COMPAT_ROOT_PAGES = [ROOT / n for n in ("index.html", "repositories.html")]
+# All smaller root surfaces are source-native Glaze UI 2.1. Only the large
+# homepage template still passes through compatibility normalization while its
+# canonical source is replaced without changing the accepted generated hierarchy.
+SOURCE_NATIVE_ROOT_PAGES = [ROOT / n for n in ("repositories.html", "privacy.html", "security.html", "404.html")]
+COMPAT_ROOT_PAGES = [ROOT / "index.html"]
 CHILD_PAGES = [
     ROOT / "sites/projects/index.html", ROOT / "sites/projects/404.html",
     ROOT / "sites/roadmap/index.html", ROOT / "sites/roadmap/404.html",
@@ -98,5 +97,5 @@ if errors:
         print(f"  - {error}")
     sys.exit(1)
 print(
-    "Glaze UI 2.1.0 Stable validation passed: Privacy, Security, 404, Projects, Roadmap, Blog, and Archive are source-native; Main and Repositories remain compatibility-normalized pending canonical-template replacement."
+    "Glaze UI 2.1.0 Stable validation passed: Repositories, Privacy, Security, 404, Projects, Roadmap, Blog, and Archive are source-native; only the Main homepage remains compatibility-normalized pending canonical-template replacement."
 )
