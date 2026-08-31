@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Validate the complete public HTML surface as one linked static site.
+"""Validate the complete deployable public HTML surface as one linked static site.
 
-This complements page-specific validators by crawling every intentional public HTML
-page, resolving local links/assets exactly as a browser would, validating cross-page
-fragments, and keeping the sitemap and crawler policy aligned with indexable pages.
+The source repository contains deterministic HTML composition anchors. This validator
+uses the same reviewed render boundary as the public build before crawling links,
+assets, fragments, metadata, sitemap entries, and crawler policy. That keeps source
+validation aligned with the bytes that can actually enter the deployment artifact.
 """
 
 from __future__ import annotations
@@ -15,6 +16,10 @@ from pathlib import Path
 from urllib.parse import unquote, urlparse
 from xml.etree import ElementTree
 import sys
+
+from glaze_ui_2 import apply_glaze_ui_2
+from normalize_homepage import normalize_homepage
+from render_repository_portfolio import load_manifest, render_public_file
 
 ROOT = Path(__file__).resolve().parents[1]
 PUBLIC_PAGES = (
@@ -84,8 +89,16 @@ def report(errors: list[str]) -> int:
         for error in errors:
             print(f"  - {error}")
         return 1
-    print("Public surface validation passed.")
+    print("Rendered public surface validation passed.")
     return 0
+
+
+def render_page(page: Path, manifest: dict) -> str:
+    relative = str(page.relative_to(ROOT))
+    rendered = render_public_file(relative, page.read_text(encoding="utf-8"), manifest)
+    if relative == "index.html":
+        rendered = normalize_homepage(rendered)
+    return apply_glaze_ui_2(rendered)
 
 
 def target_for_local_reference(source: Path, path_text: str) -> Path:
@@ -108,17 +121,29 @@ def target_for_local_reference(source: Path, path_text: str) -> Path:
 
 def parse_pages(errors: list[str]) -> dict[Path, PublicPageParser]:
     parsed_pages: dict[Path, PublicPageParser] = {}
+    try:
+        manifest = load_manifest(ROOT)
+    except (OSError, ValueError) as exc:
+        errors.append(f"Cannot load reviewed repository manifest for public-surface rendering: {exc}")
+        return parsed_pages
+
     for page in PUBLIC_PAGES:
         if not page.exists():
             errors.append(f"Required public page is missing: {page.relative_to(ROOT)}")
             continue
+        try:
+            html = render_page(page, manifest)
+        except (OSError, ValueError, KeyError) as exc:
+            errors.append(f"Could not render {page.relative_to(ROOT)} for public-surface validation: {exc}")
+            continue
+
         parser = PublicPageParser()
-        parser.feed(page.read_text(encoding="utf-8"))
+        parser.feed(html)
         parsed_pages[page.resolve()] = parser
 
         for identifier, count in sorted(parser.ids.items()):
             if count > 1:
-                errors.append(f"Duplicate id in {page.relative_to(ROOT)}: {identifier}")
+                errors.append(f"Duplicate id in rendered {page.relative_to(ROOT)}: {identifier}")
     return parsed_pages
 
 
@@ -134,7 +159,7 @@ def validate_references(errors: list[str], parsed_pages: dict[Path, PublicPagePa
                 fragment = unquote(value[1:])
                 if fragment and fragment not in parser.ids:
                     errors.append(
-                        f"{display_page} {tag}[{attr_name}] references missing fragment #{fragment}."
+                        f"Rendered {display_page} {tag}[{attr_name}] references missing fragment #{fragment}."
                     )
                 continue
 
@@ -146,13 +171,13 @@ def validate_references(errors: list[str], parsed_pages: dict[Path, PublicPagePa
                 target = target_for_local_reference(page, parsed.path)
             except ValueError:
                 errors.append(
-                    f"{display_page} {tag}[{attr_name}] escapes repository root: {value}"
+                    f"Rendered {display_page} {tag}[{attr_name}] escapes repository root: {value}"
                 )
                 continue
 
             if not target.exists():
                 errors.append(
-                    f"{display_page} {tag}[{attr_name}] references missing local resource: {value}"
+                    f"Rendered {display_page} {tag}[{attr_name}] references missing local resource: {value}"
                 )
                 continue
 
@@ -160,13 +185,13 @@ def validate_references(errors: list[str], parsed_pages: dict[Path, PublicPagePa
                 target_parser = parsed_pages.get(target.resolve())
                 if target_parser is None and target.suffix.lower() == ".html":
                     errors.append(
-                        f"{display_page} links to HTML outside the declared public surface: {value}"
+                        f"Rendered {display_page} links to HTML outside the declared public surface: {value}"
                     )
                     continue
                 fragment = unquote(parsed.fragment)
                 if target_parser is not None and fragment not in target_parser.ids:
                     errors.append(
-                        f"{display_page} links to missing fragment #{fragment} in {target.relative_to(ROOT)}."
+                        f"Rendered {display_page} links to missing fragment #{fragment} in {target.relative_to(ROOT)}."
                     )
 
 
@@ -190,7 +215,6 @@ def validate_indexing(errors: list[str], parsed_pages: dict[Path, PublicPagePars
             errors.append("404.html must not publish a canonical URL for a missing resource.")
 
 
-
 def validate_page_metadata(errors: list[str], parsed_pages: dict[Path, PublicPageParser]) -> None:
     for page in PUBLIC_PAGES:
         parser = parsed_pages.get(page.resolve())
@@ -204,9 +228,17 @@ def validate_page_metadata(errors: list[str], parsed_pages: dict[Path, PublicPag
             (frozenset(rels), href.lstrip("/"), content_type)
             for rels, href, content_type in parser.icon_links
         }
-        if not any("icon" in rels and href == "assets/goreecloud-logo.svg" and content_type == "image/svg+xml" for rels, href, content_type in normalized_icons):
+        if not any(
+            "icon" in rels
+            and href == "assets/goreecloud-logo.svg"
+            and content_type == "image/svg+xml"
+            for rels, href, content_type in normalized_icons
+        ):
             errors.append(f"{display} must publish the canonical GoreeCloud SVG favicon.")
-        if not any("apple-touch-icon" in rels and href == "assets/goreecloud-logo.svg" for rels, href, _ in normalized_icons):
+        if not any(
+            "apple-touch-icon" in rels and href == "assets/goreecloud-logo.svg"
+            for rels, href, _ in normalized_icons
+        ):
             errors.append(f"{display} must publish the canonical GoreeCloud SVG Apple-touch identity.")
 
     for page, canonical in INDEXABLE_PAGES.items():
@@ -238,6 +270,7 @@ def validate_page_metadata(errors: list[str], parsed_pages: dict[Path, PublicPag
         for key in ("twitter:title", "twitter:description", "twitter:image:alt"):
             if not parser.meta_names.get(key, "").strip():
                 errors.append(f"{display} must publish non-empty {key} metadata.")
+
 
 def validate_sitemap(errors: list[str]) -> None:
     if not SITEMAP.exists():
