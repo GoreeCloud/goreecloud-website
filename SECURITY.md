@@ -29,7 +29,7 @@ Do not access, retain, modify, or disclose information that does not belong to y
 
 Wardveil security claims must remain tied to the evidence and authority responsible for the represented state. A Policy decision, transport receipt, storage-health result, scanner brand, Security Center screen, or other presentation fact cannot by itself prove that a protection action executed. This repository policy does not use a blanket protection claim to imply that every GoreeCloud system or control has been independently verified.
 
-ClamAV is the initial replaceable signature-based malware engine beneath Wardveil Scan. The production ClamAV runtime remains unaccepted until the required deployed scanner, authenticated application-consumer, quarantine-execution, and environment-specific acceptance evidence is complete.
+ClamAV is the initial replaceable signature-based malware engine beneath Wardveil Scan. The production ClamAV scanner runtime is deployed and accepted at the scanner-evidence layer. That acceptance does not establish end-to-end Wardveil Scan application acceptance or a blanket antivirus claim. Authenticated application-consumer routing, quarantine execution, and environment-specific integration evidence remain separately gated before broader protection claims are made.
 
 ## Handling and disclosure
 
