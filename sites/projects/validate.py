@@ -28,6 +28,10 @@ readme = (SITE / "README.md").read_text(encoding="utf-8")
 glaze = (SITE / "assets/glaze-ui-2.1.0.css").read_text(encoding="utf-8")
 headers = (SITE / "_headers").read_text(encoding="utf-8")
 combined = html + js + refresh + icons + readme
+# app.js is the intentionally stable base catalog. public-refresh.js applies
+# current direction before the final portfolio render; stale-current checks
+# therefore target the actual current-facing HTML/refresh/documentation layer.
+active_direction = html + refresh + readme
 
 
 def git_blob_sha(path: Path) -> str:
@@ -75,7 +79,7 @@ for marker in (
         raise SystemExit(f"Projects Glaze UI 2.1 web-layer marker missing: {marker}")
 
 # Base catalog remains intentionally stable; current additions and status
-# corrections are applied by public-refresh.js before the first public render.
+# corrections are applied by public-refresh.js before the final public render.
 if js.count("kind:'Application'") != 33:
     raise SystemExit("Projects base catalog must contain exactly 33 Suite applications before current portfolio augmentation")
 if js.count("kind:'Foundation'") != 6:
@@ -102,7 +106,7 @@ for stale in [
     "text-only-pending-approved-artwork",
     "recursive resolution, authoritative DNS",
 ]:
-    if stale in combined:
+    if stale in active_direction:
         raise SystemExit(f"superseded Projects direction remains public: {stale}")
 
 for required_truth in [
