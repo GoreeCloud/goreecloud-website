@@ -54,16 +54,27 @@ class RemoteDeploymentIntegrityTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             verifier.remote_path_for_public_file("/absolute.txt")
 
-    def test_candidate_bytes_include_final_glaze_ui_2_transform(self) -> None:
+    def test_candidate_bytes_include_final_glaze_ui_21_transform(self) -> None:
         candidate = verifier.candidate_bytes("index.html").decode("utf-8")
-        self.assertIn('name="goreecloud-glaze-ui" content="2.0.0"', candidate)
-        self.assertIn('data-glaze-ui="2.0.0"', candidate)
+        self.assertIn('name="goreecloud-glaze-ui" content="2.1.0"', candidate)
+        self.assertIn('data-glaze-ui="2.1.0"', candidate)
+        self.assertIn(
+            "The public portfolio is migrating to Glaze UI 2.1.0 Stable as its current design target",
+            candidate,
+        )
+        self.assertIn("The GoreeCloud Design Center for Glaze UI 2.1.0 Stable", candidate)
         self.assertNotIn('data-glaze-ui="1.5.0"', candidate)
+        self.assertNotIn('data-glaze-ui="2.0.0"', candidate)
+        self.assertNotIn("Glaze UI 2.1 remains Candidate", candidate)
+        self.assertNotIn(
+            "The public portfolio uses Glaze UI 2.0.0 Stable as its production design target.",
+            candidate,
+        )
 
     def test_exact_candidate_bytes_pass_remote_integrity(self) -> None:
         relative = "privacy.html"
         # Compare against the exact reviewed build candidate, not the raw source
-        # template. Glaze UI 2.0 normalization is intentionally applied at the
+        # template. Glaze UI 2.1 normalization is intentionally applied at the
         # public render boundary before Cloudflare receives this page.
         expected = verifier.candidate_bytes(relative)
         errors: list[str] = []
