@@ -146,13 +146,12 @@
   box-shadow: 0 16px 42px color-mix(in srgb, #000 12%, transparent);
 }
 
-/* Balance all ten destinations into deliberate 3 / 4 / 3 desktop rows instead
- * of leaving Archive stranded as a single card on a fourth row. */
+/* Eleven destinations resolve into deliberate 3 / 4 / 4 desktop rows. */
 .website-card:nth-child(1) { grid-column: span 6; }
 .website-card:nth-child(2),
 .website-card:nth-child(3) { grid-column: span 3; }
 .website-card:nth-child(n+4):nth-child(-n+7) { grid-column: span 3; }
-.website-card:nth-child(n+8) { grid-column: span 4; }
+.website-card:nth-child(n+8) { grid-column: span 3; }
 
 .website-card:nth-child(1) .website-preview-browser {
   min-height: 210px;
@@ -335,6 +334,16 @@
   padding: clamp(1.4rem, 3vw, 2.2rem);
 }
 
+/* The homepage is a public reading surface. Navigation stays in normal flow so
+ * long screenshots, zoom, and small viewports never place it over content. */
+body.glaze-canvas .site-header {
+  position: relative;
+  inset-block-start: auto;
+}
+
+html { scroll-padding-top: 24px; }
+#main :where(section,[id]) { scroll-margin-top: 24px; }
+
 @media (max-width: 1100px) {
   .hero-grid {
     grid-template-columns: minmax(0, 1.08fr) minmax(330px, .92fr);
@@ -346,9 +355,12 @@
     font-size: clamp(3.05rem, 5.4vw, 4.25rem);
   }
 
-  /* Ten destinations resolve cleanly to five two-card rows at this width. */
+  /* Eleven destinations become five pairs plus one deliberate full-width card. */
   .website-card:nth-child(n) {
     grid-column: span 6;
+  }
+  .website-card:nth-child(11) {
+    grid-column: span 12;
   }
 
   .timeline {
@@ -395,6 +407,43 @@
   }
 }
 
+@media (max-width: 720px) {
+  .nav-wrap {
+    min-height: 0;
+    padding-block: .75rem;
+    flex-wrap: wrap;
+    gap: .7rem 1rem;
+  }
+
+  .site-nav {
+    position: static;
+    flex: 1 0 100%;
+    width: 100%;
+    inset: auto;
+    padding: .7rem 0 0;
+    border: 0;
+    border-top: 1px solid var(--border);
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .site-nav.open {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: .45rem;
+  }
+
+  .site-nav a,
+  .site-nav .nav-cta {
+    min-height: 48px;
+    justify-content: center;
+    padding: .55rem .65rem;
+    text-align: center;
+    white-space: normal;
+  }
+}
+
 @media (max-width: 600px) {
   .hero {
     padding-top: 3rem;
@@ -426,6 +475,11 @@
   .timeline article > div {
     min-height: 0;
   }
+}
+
+@media (max-width: 420px) {
+  .site-nav.open { grid-template-columns: 1fr; }
+  #main .container { width: min(calc(100% - 1rem), var(--homepage-container)); }
 }
 
 @media (forced-colors: active) {
