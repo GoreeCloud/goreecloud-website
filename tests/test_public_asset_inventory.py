@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Keep the publication/licensing inventory synchronized with deployable artwork."""
+"""Keep publication/licensing inventory synchronized with deployable and retained artwork."""
 
 from __future__ import annotations
 
@@ -14,15 +14,31 @@ SCRIPTS = ROOT / "scripts"
 if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
-from build_public_site import PUBLIC_ASSET_FILES, PUBLIC_FILES  # noqa: E402
+from build_public_site import (  # noqa: E402
+    PUBLIC_ASSET_FILES,
+    PUBLIC_FILES,
+    RETIRED_SOURCE_ONLY_ASSET_FILES,
+)
 
 INVENTORY = ROOT / "docs" / "public-asset-inventory.md"
-ASSET_PATH_RE = re.compile(r"`(assets/[A-Za-z0-9_./-]+\.(?:svg|png|jpg|jpeg|webp|gif|ico))`")
 BLOB_ID_RE = re.compile(r"[0-9a-f]{40,64}")
 
 
+def inventory_section(text: str, heading: str, next_heading: str | None = None) -> str:
+    start_marker = f"## {heading}"
+    if start_marker not in text:
+        raise AssertionError(f"Missing inventory section: {heading}")
+    section = text.split(start_marker, 1)[1]
+    if next_heading:
+        end_marker = f"## {next_heading}"
+        if end_marker not in section:
+            raise AssertionError(f"Missing inventory section boundary: {next_heading}")
+        section = section.split(end_marker, 1)[0]
+    return section
+
+
 def inventory_rows(text: str) -> dict[str, str]:
-    """Return deployable asset paths mapped to their reviewed Git blob IDs."""
+    """Return asset paths mapped to their reviewed Git blob IDs for one table/section."""
     rows: dict[str, str] = {}
     for raw_line in text.splitlines():
         line = raw_line.strip()
@@ -44,7 +60,7 @@ def inventory_rows(text: str) -> dict[str, str]:
         blob_id = blob_cell[1:-1]
         if BLOB_ID_RE.fullmatch(blob_id):
             if path in rows:
-                raise AssertionError(f"Duplicate deployable asset row in inventory: {path}")
+                raise AssertionError(f"Duplicate asset row in inventory section: {path}")
             rows[path] = blob_id
     return rows
 
@@ -75,45 +91,68 @@ def normalize_markdown_text(text: str) -> str:
 
 
 class PublicAssetInventoryTests(unittest.TestCase):
-    """Prevent deployable artwork from bypassing the pre-publication rights review."""
+    """Prevent current or retained artwork from bypassing publication/provenance review."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.text = INVENTORY.read_text(encoding="utf-8")
+        cls.deployable_section = inventory_section(
+            cls.text,
+            "Deployable artwork",
+            "Retained source-only historical/provenance artwork",
+        )
+        cls.retained_section = inventory_section(
+            cls.text,
+            "Retained source-only historical/provenance artwork",
+        )
 
     def test_inventory_exists_but_is_not_deployed(self) -> None:
         self.assertTrue(INVENTORY.is_file())
         self.assertNotIn("docs/public-asset-inventory.md", PUBLIC_FILES)
 
     def test_inventory_matches_exact_public_asset_allowlist(self) -> None:
-        text = INVENTORY.read_text(encoding="utf-8")
-        documented = set(ASSET_PATH_RE.findall(text))
+        documented = set(inventory_rows(self.deployable_section))
         expected = set(PUBLIC_ASSET_FILES)
 
         self.assertEqual(
             documented,
             expected,
-            "Public asset inventory must exactly match PUBLIC_ASSET_FILES; review licensing/provenance whenever deployable artwork changes.",
+            "Deployable inventory section must exactly match PUBLIC_ASSET_FILES; review licensing/provenance whenever deployment artwork changes.",
         )
 
         for path in PUBLIC_ASSET_FILES:
             self.assertEqual(
-                text.count(f"`{path}`"),
+                self.deployable_section.count(f"`{path}`"),
                 1,
-                f"Deployable asset must appear exactly once in the inventory table: {path}",
+                f"Deployable asset must appear exactly once in the deployable inventory table: {path}",
+            )
+            self.assertNotIn(
+                f"`{path}`",
+                self.retained_section,
+                f"Deployable asset must not also be classified as source-only history: {path}",
             )
 
-    def test_reviewed_blob_ids_match_current_asset_bytes(self) -> None:
-        text = INVENTORY.read_text(encoding="utf-8")
-        reviewed = inventory_rows(text)
-        expected = set(PUBLIC_ASSET_FILES)
-
+    def test_retained_inventory_matches_exact_source_only_set(self) -> None:
+        documented = set(inventory_rows(self.retained_section))
+        expected = set(RETIRED_SOURCE_ONLY_ASSET_FILES)
         self.assertEqual(
-            set(reviewed),
+            documented,
             expected,
-            "Every deployable asset must have exactly one reviewed Git blob ID in the inventory.",
+            "Source-only inventory section must exactly match RETIRED_SOURCE_ONLY_ASSET_FILES.",
         )
+        self.assertTrue(expected.isdisjoint(set(PUBLIC_ASSET_FILES)))
+        for path in RETIRED_SOURCE_ONLY_ASSET_FILES:
+            self.assertEqual(self.retained_section.count(f"`{path}`"), 1)
+            self.assertNotIn(path, PUBLIC_FILES)
+
+    def test_reviewed_blob_ids_match_current_asset_bytes(self) -> None:
+        deployable = inventory_rows(self.deployable_section)
+        retained = inventory_rows(self.retained_section)
 
         for relative_path in PUBLIC_ASSET_FILES:
             actual = git_blob_id(ROOT / relative_path)
             self.assertEqual(
-                reviewed[relative_path],
+                deployable[relative_path],
                 actual,
                 (
                     f"Deployable asset bytes changed without updating the rights/provenance inventory: {relative_path}. "
@@ -121,8 +160,19 @@ class PublicAssetInventoryTests(unittest.TestCase):
                 ),
             )
 
+        for relative_path in RETIRED_SOURCE_ONLY_ASSET_FILES:
+            actual = git_blob_id(ROOT / relative_path)
+            self.assertEqual(
+                retained[relative_path],
+                actual,
+                (
+                    f"Retained source-only asset bytes changed without updating provenance: {relative_path}. "
+                    "Historical retention does not bypass byte/provenance review."
+                ),
+            )
+
     def test_inventory_preserves_publication_boundary_language(self) -> None:
-        text = normalize_markdown_text(INVENTORY.read_text(encoding="utf-8"))
+        text = normalize_markdown_text(self.text)
         required = (
             "not a license grant",
             "official artwork is required when it exists",
@@ -130,6 +180,8 @@ class PublicAssetInventoryTests(unittest.TestCase):
             "does not automatically license goreecloud branding or third-party marks",
             "final human reachable-history/contextual-disclosure review",
             "issue #5 remains open",
+            "not part of the current public build allowlist",
+            "must not be published by the current goreecloud website artifact",
         )
         for marker in required:
             self.assertIn(marker, text)
