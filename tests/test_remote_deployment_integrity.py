@@ -59,9 +59,10 @@ class RemoteDeploymentIntegrityTests(unittest.TestCase):
         self.assertIn('name="goreecloud-glaze-ui" content="2.1.0"', candidate)
         self.assertIn('data-glaze-ui="2.1.0"', candidate)
         self.assertIn(
-            "The public portfolio is migrating to Glaze UI 2.1.0 Stable as its current design target",
+            "Ten independently deployed public destinations are production-accepted on Glaze UI 2.1.0 Stable",
             candidate,
         )
+        self.assertIn("Identity Center is the eleventh official first-party surface", candidate)
         self.assertIn("The GoreeCloud Design Center for Glaze UI 2.1.0 Stable", candidate)
         self.assertNotIn('data-glaze-ui="1.5.0"', candidate)
         self.assertNotIn('data-glaze-ui="2.0.0"', candidate)
