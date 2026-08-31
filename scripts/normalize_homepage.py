@@ -91,7 +91,7 @@ def websites_section() -> str:
             "GoreeCloud",
             "https://www.goreecloud.com/",
             "goreecloud.com",
-            "The main public hub for GoreeCloud: platform direction, project story, the current 56-repository portfolio, and links into the wider public web ecosystem.",
+            "The main public hub for GoreeCloud: platform direction, project story, the current 57-repository portfolio, and links into the wider public web ecosystem.",
             "Primary Website", "active", "website-main", "GC",
         ),
         website_card(
