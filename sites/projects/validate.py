@@ -183,7 +183,7 @@ if "MutationObserver" in refresh:
 for needle in ["entry.status=update[0]", "entry.role=update[1]", "entry.model=update[2]", "render();"]:
     if needle not in refresh:
         raise SystemExit(f"Projects data-model refresh contract missing: {needle}")
-for needle in ["min-height:44px", "overflow-x:hidden", ".card-meta{flex-wrap:wrap", "@media(max-width:380px)"]:
+for needle in ["min-height:48px", "overflow-x:hidden", ".card-meta{flex-wrap:wrap", "@media(max-width:380px)"]:
     if needle not in mobile:
         raise SystemExit(f"Projects mobile hardening marker missing: {needle}")
 
