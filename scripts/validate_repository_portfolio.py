@@ -105,6 +105,7 @@ def validate_manifest(data: dict) -> list[str]:
         "goreecloud-app-store",
         "goreecloud-file-manager",
         "goreecloud-maps",
+        "goreecloud-index",
         "goreecloud-branding-assets",
         "goreecloud-identity",
         "goreecloud-mesh",
@@ -214,7 +215,7 @@ def validate_homepage_structure(homepage: str) -> list[str]:
             "Ten independently deployed public destinations",
             "Identity Center is the eleventh official first-party surface",
             "Publication Pending",
-            "current 56-repository portfolio",
+            "current 57-repository portfolio",
         ):
             if marker not in website_section:
                 errors.append(f"Website ecosystem section is missing current-state marker: {marker}.")
@@ -241,9 +242,6 @@ def validate(root: Path = ROOT) -> list[str]:
     source_homepage = (root / "index.html").read_text(encoding="utf-8")
     try:
         directory = render_repository_directory(source_directory, data)
-        # Production composes the homepage in two stages: portfolio facts first,
-        # then the current official public-web ecosystem normalization. Validate
-        # the same final public shape rather than an unpublished intermediate representation.
         homepage = normalize_homepage(render_homepage(source_homepage, data))
     except ValueError as exc:
         return [f"Repository portfolio static rendering failed: {exc}"]
