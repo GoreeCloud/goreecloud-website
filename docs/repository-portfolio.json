@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
-  "as_of": "2026-08-29",
+  "as_of": "2026-08-31",
   "review_method": "Authenticated GitHub owner inventory reconciliation against current GoreeCloud repositories",
-  "counts": {"total": 56, "public": 40, "private": 16, "functional_groups": 13},
+  "counts": {"total": 57, "public": 40, "private": 17, "functional_groups": 13},
   "groups": [
     {
       "id": "design-system",
       "label": "Design system",
       "repositories": [
-        {"name":"goreecloud-glaze-ui","visibility":"public","description":"Canonical source for the Glaze UI design system and Design Center website.","role":"Shared design-system authority and current Glaze UI 2.0.0 Stable contract."}
+        {"name":"goreecloud-glaze-ui","visibility":"public","description":"Canonical source for the Glaze UI design system and Design Center website.","role":"Shared design-system authority and current Glaze UI 2.1.0 Stable contract."}
       ]
     },
     {
@@ -91,9 +91,10 @@
     },
     {
       "id": "search-feeds-browser",
-      "label": "Search, feeds & browser",
+      "label": "Search, indexing, feeds & browser",
       "repositories": [
-        {"name":"goreecloud-search","visibility":"public","description":"GoreeCloud private search and metasearch project.","role":"Search, discovery, and AI-research gateway source."},
+        {"name":"goreecloud-search","visibility":"public","description":"GoreeCloud private search and metasearch project.","role":"Internet/web search, discovery, and AI-research gateway source."},
+        {"name":"goreecloud-index","visibility":"private","description":"Privacy-first universal search and indexing layer coordinating authorized GoreeCloud search providers while preserving source ownership and provenance.","role":"Universal GoreeCloud search/indexing authority; current source is Development and is not Stable or production-accepted."},
         {"name":"goreecloud-rss","visibility":"public","description":"Source for GoreeCloud Feed across supported clients.","role":"RSS and feed application source."},
         {"name":"goreecloud-browser","visibility":"public","description":"GoreeCloud browser distribution and first-party browser product layers.","role":"Primary GoreeCloud web-browser source."},
         {"name":"goreecloud-redirector","visibility":"public","description":"Privacy-first browser extension for redirecting selected external-service URLs to GoreeCloud services.","role":"Browser URL-routing and service-migration utility."},
