@@ -42,8 +42,10 @@ class StabilityBaselineTests(unittest.TestCase):
         self.assertIn("`VERSION` is the canonical machine-readable version source", self.baseline)
 
     def test_readme_tracks_current_release_and_design_state(self) -> None:
-        self.assertIn(f"Current accepted website package recorded by `VERSION`: **v{self.version}**", self.readme)
+        self.assertIn(f"Current accepted website package: **v{self.version}**", self.readme)
         self.assertIn("`VERSION` is the canonical machine-readable version source", self.readme)
+        self.assertIn("Version metadata is repository-only release metadata", self.readme)
+        self.assertIn("does not establish deployment or production acceptance by itself", self.readme)
         self.assertIn("Glaze UI 2.1.0 Stable", self.readme)
         self.assertIn("57 repositories — 40 public, 17 private", self.readme)
         self.assertIn("10 destinations on Glaze UI 2.1.0 Stable", self.readme)
