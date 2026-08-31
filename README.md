@@ -4,7 +4,7 @@ Canonical source for the main GoreeCloud public website and the Projects, Roadma
 
 ## Current baseline
 
-- Current accepted website package recorded by `VERSION`: **v5.24.0**
+- Current accepted website package: **v5.24.0**
 - Current Stable design-system target: **Glaze UI 2.1.0**
 - Glaze UI 2.1 Stable promotion reference: `c49113eb8b93c267613fdf1bbca1f814495acad7`
 - Glaze UI authority: `GoreeCloud/goreecloud-glaze-ui`
@@ -53,7 +53,7 @@ Glaze UI is treated as a design contract, not merely a stylesheet or theme. The 
 
 The governing material rule is **Content is solid. Interaction is glazed.** Durable reading surfaces use Canvas or Surface material; navigation, transient controls, selected interactive emphasis, and deliberately live interaction surfaces may use the appropriate Glaze material level. Site-specific CSS may extend that layer while preserving Glaze UI hierarchy and accessibility contracts. Importing tokens alone is not considered conformance.
 
-Automated checks are regression controls, not a claim of complete accessibility conformance. Release acceptance still requires appropriate human interaction review, representative viewport review, keyboard testing, and screen-reader testing where applicable.
+Automated checks are regression controls, not a claim of complete WCAG conformance. Release acceptance still requires appropriate human interaction review, representative viewport review, keyboard testing, and screen-reader testing where applicable.
 
 ## Content and repository authority
 
@@ -71,7 +71,7 @@ The website source code, repository automation, validation scripts, and technica
 
 `NOTICE` records the separate creative-rights boundary. The source license does not grant unrestricted reuse of GoreeCloud trade names, logos, branding, editorial identity, or third-party marks. `docs/public-asset-inventory.md` is not a license grant.
 
-Issue #5 remains open as the separate human-controlled reachable-history, contextual-disclosure, creative-rights, and repository-publication decision. Passing CI does not itself authorize a repository visibility change, publication decision, trademark use, or release.
+Issue #5 remains open as the separate human-controlled reachable-history, contextual-disclosure, creative-rights, and repository-publication decision. The final human reachable-history/contextual-disclosure review is required where that gate applies. Passing CI does not itself authorize a repository visibility change, publication decision, trademark use, or release.
 
 ## Build and publication allowlist
 
@@ -83,7 +83,7 @@ python scripts/build_public_site.py
 
 Build output directory: `dist`.
 
-The publication boundary is exact and per-file allowlisted. Adding a file to `assets/`, `css/`, `js/`, the repository root, or another source directory does not automatically add it to the deployable artifact. The build renders repository facts, normalizes the homepage, applies the current Glaze UI 2.1 contract, and writes only approved paths to `dist/`.
+The publication boundary is exact, per-file allowlisted. Adding a file to `assets/`, `css/`, `js/`, the repository root, or another source directory does not automatically add it to the deployable artifact. The build renders repository facts, normalizes the homepage, applies the current Glaze UI 2.1 contract, and writes only approved paths to `dist/`.
 
 Issue #6 is closed: the isolated `dist/` Cloudflare Pages cutover is complete. This records the deployment architecture only; it does not eliminate exact candidate and post-merge deployment verification.
 
@@ -101,6 +101,8 @@ python scripts/validate_glaze_ui.py
 python scripts/validate_repository_portfolio.py
 python -m unittest discover -s tests -p "test_*.py"
 ```
+
+Repository-history preflight must use a non-shallow checkout so reachable history is actually examined. The history validator reports whether a sensitive pattern was found without exposing the matched value. A green repository-history preflight does not replace the final human reachable-history/contextual-disclosure review or the explicit publication decision.
 
 The broader CI contract also validates Suite/capability manifests, governance readiness, public runtime status, security reporting, Wardveil/observability boundaries, privacy statements, browser-origin integrity, application identity, public semantics, the full public surface, Cloudflare deployment contracts, performance budgets, isolated artifacts, remote-verifier configuration, repository guidance, release-evidence records, JavaScript syntax, branch preview, and post-merge production deployment.
 
