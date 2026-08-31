@@ -16,9 +16,9 @@ The Main deployment uses the isolated build pipeline to normalize all deployable
 
 ## Glaze UI 2.1 web contract
 
-The current production target follows the 2.1 material hierarchy: Canvas → Surface → Soft Glaze → Glaze → Deep Glaze → Live Glaze. The governing material rule is **Content is solid. Interaction is glazed.** Durable reading, repository, project, timeline, policy, and status content therefore resolves to solid Surface material, while navigation, controls, focal hero interaction, and transient/live surfaces may use appropriate glaze levels.
+The current source target follows the 2.1 material hierarchy: Canvas → Surface → Soft Glaze → Glaze → Deep Glaze → Live Glaze. The governing material rule is **Content is solid. Interaction is glazed.** Durable reading, repository, project, timeline, policy, and status content therefore resolves to solid Surface material, while navigation, controls, focal hero interaction, and transient/live surfaces may use appropriate glaze levels.
 
-The web contract supports Clear, Balanced, and Solid clarity; Comfortable, Standard, Compact, and Far View density; a 48px baseline interaction floor; a 56px effective Touch Assistance floor; large-text compact-density fallback; keyboard and pointer interaction; responsive navigation; and safe-area-aware compact layouts.
+The web contract supports Clear, Balanced, and Solid clarity; Comfortable, Standard, Compact, and Far View density; a 48px general interaction floor; a 56px Touch Assistance floor; large-text compact-density fallback; keyboard and pointer interaction; responsive navigation; and safe-area-aware compact layouts.
 
 ## Accessibility and resilience
 
@@ -34,7 +34,7 @@ Glaze UI controls presentation and interaction only. Public presentation cannot 
 
 ## Release boundary
 
-Glaze UI 2.1.0 is the current Stable production target. Glaze UI 2.0.0 and 1.x are historical baselines and must not remain active production dependencies on these public surfaces. Historical references may remain only when explicitly presented as dated history rather than current guidance.
+Glaze UI 2.1.0 is the current Stable design-system target. Glaze UI 2.0.0 and 1.x are historical baselines and must not remain active production dependencies after these public surfaces earn 2.1 deployment acceptance. Historical references may remain only when explicitly presented as dated history rather than current guidance.
 
 ## Exceptions
 
