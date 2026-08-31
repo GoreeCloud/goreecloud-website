@@ -13,7 +13,7 @@ headers = (ROOT / "_headers").read_text(encoding="utf-8")
 
 for needle in (
     "Public Development Roadmap",
-    "August 30, 2026",
+    "August 31, 2026",
     "Active development",
     "Near-term priorities",
     "Long-term direction",
@@ -37,6 +37,9 @@ for needle in (
     "56px Touch Assistance",
     "Facet is the current official Glaze UI identity",
     "Evidence over labels",
+    "Ten independently deployed public destinations",
+    "Identity Center is the eleventh official first-party surface",
+    "Identity Center publication acceptance",
 ):
     if needle not in html:
         raise SystemExit(f"required roadmap content missing: {needle}")

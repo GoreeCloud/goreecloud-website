@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import re
 
-HERO_PREFIX = re.compile(r'<div class="hero-labels[^"]*"[^>]*>.*?(?=\s*<h1>)', re.DOTALL)
+HERO_PREFIX = re.compile(r'<div class="hero-labels[^\"]*"[^>]*>.*?(?=\s*<h1>)', re.DOTALL)
 HERO_ACTIONS = re.compile(r'<div class="hero-actions">.*?</div>', re.DOTALL)
 PORTFOLIO_BLOCK = re.compile(r'\n    <section id="services" class="section suite-section">.*?(?=\n    <section id="how-it-works")', re.DOTALL)
 BAND_BLOCK = re.compile(r'\n    <section class="band" aria-label="Core principles">.*?</section>\n', re.DOTALL)
@@ -35,6 +35,7 @@ EXPECTED_WEBSITE_DOMAINS = (
     "roadmap.goreecloud.com",
     "blog.goreecloud.com",
     "archive.goreecloud.com",
+    "identity.goreecloud.com",
 )
 
 PLATFORM_SYSTEM_LABELS = (
@@ -56,7 +57,17 @@ def canonical_hero_labels() -> str:
     )
 
 
-def website_card(name: str, url: str, domain: str, description: str, status: str, status_class: str, card_class: str, mark: str) -> str:
+def website_card(
+    name: str,
+    url: str,
+    domain: str,
+    description: str,
+    status: str,
+    status_class: str,
+    card_class: str,
+    mark: str,
+    link_label: str = "Visit website",
+) -> str:
     """Render one concise website card without a simulated browser preview."""
     return (
         f'<article class="service-card website-card {card_class}">\n'
@@ -68,7 +79,7 @@ def website_card(name: str, url: str, domain: str, description: str, status: str
         f'    <p class="service-kicker">{domain}</p>\n'
         f'    <h3>{name}</h3>\n'
         f'    <p>{description}</p>\n'
-        f'    <a class="website-link" href="{url}" aria-label="Visit {name} website">Visit website →</a>\n'
+        f'    <a class="website-link" href="{url}" aria-label="{link_label} for {name}">{link_label} →</a>\n'
         '  </div>\n'
         '</article>'
     )
@@ -101,7 +112,7 @@ def websites_section() -> str:
             "Glaze UI",
             "https://design.goreecloud.com/",
             "design.goreecloud.com",
-            "The GoreeCloud Design Center for Glaze UI 2.0.0 Stable: interaction, material, adaptive form factors, accessibility, motion, visual language, and design-system governance. Glaze UI 2.1 remains Candidate.",
+            "The GoreeCloud Design Center for Glaze UI 2.1.0 Stable: interaction, material, adaptive form factors, accessibility, motion, visual language, and design-system governance.",
             "Design Center", "active", "website-design", "GU",
         ),
         website_card(
@@ -146,6 +157,13 @@ def websites_section() -> str:
             "The curated historical archive preserving selected public records, superseded decisions, identity changes, milestones, and project evolution over time.",
             "Archive", "active", "website-archive", "AR",
         ),
+        website_card(
+            "GoreeCloud Identity",
+            "https://github.com/GoreeCloud/goreecloud-identity",
+            "identity.goreecloud.com",
+            "The official Identity Center source for GoreeCloud accounts, authentication, authorization, devices, sessions, credentials, service identity, delegation, and recovery. Glaze UI 2.1 source is merged; public-domain publication and exact production acceptance remain separate gates.",
+            "Publication Pending", "growing", "website-identity", "ID", "View source",
+        ),
     ]
     rendered_cards = "\n          ".join(cards)
     return (
@@ -153,8 +171,8 @@ def websites_section() -> str:
         '      <div class="container">\n'
         '        <div class="section-heading website-heading">\n'
         '          <p class="eyebrow">GoreeCloud websites</p>\n'
-        '          <h2>Ten focused destinations. One GoreeCloud ecosystem.</h2>\n'
-        '          <p>The public portfolio uses Glaze UI 2.0.0 Stable as its production design target. Glaze UI, Privacy Shield, Wardveil Security, Everkeep, GoreeCloud Mesh, and GoreeCloud Identity remain six substantive platform systems with distinct design, privacy, security, continuity, coordination, identity, authentication, and authorization responsibilities. Public claims remain tied to actual implementation and applicable evidence.</p>\n'
+        '          <h2>Eleven official surfaces. One GoreeCloud ecosystem.</h2>\n'
+        '          <p>Ten independently deployed public destinations are production-accepted on Glaze UI 2.1.0 Stable. Identity Center is the eleventh official first-party surface: its Glaze UI 2.1 source is merged, while public-domain publication and exact production acceptance remain separately gated. Glaze UI, Privacy Shield, Wardveil Security, Everkeep, GoreeCloud Mesh, and GoreeCloud Identity remain six substantive platform systems with distinct design, privacy, security, continuity, coordination, identity, authentication, and authorization responsibilities. Public claims remain tied to actual implementation and applicable evidence.</p>\n'
         '        </div>\n'
         '        <div class="service-grid website-grid">\n'
         f'          {rendered_cards}\n'
@@ -243,8 +261,10 @@ def normalize_homepage(source: str) -> str:
     for label in PLATFORM_SYSTEM_LABELS:
         if label not in website_section:
             raise ValueError(f"homepage website ecosystem section must name current platform system: {label}")
-    if "Glaze UI 2.0.0 Stable" not in website_section or "Glaze UI 2.1" not in website_section:
-        raise ValueError("homepage website ecosystem section must preserve Stable/Candidate Glaze UI boundary")
+    if "Glaze UI 2.1.0 Stable" not in website_section:
+        raise ValueError("homepage website ecosystem section must identify the current Stable Glaze UI target")
+    if "production-accepted" not in website_section or "Publication Pending" not in website_section:
+        raise ValueError("homepage website ecosystem section must preserve production and publication acceptance boundaries")
     if "website-preview" in website_section or "website-preview-browser" in website_section:
         raise ValueError("simulated browser previews must not appear in the website directory")
     if website_section.count('class="website-mark"') != len(EXPECTED_WEBSITE_DOMAINS):

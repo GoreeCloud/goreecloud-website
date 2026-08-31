@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """Regression coverage for the current public GoreeCloud portfolio surfaces.
 
-The main homepage is a ten-site ecosystem hub. The exhaustive source portfolio lives
-in the manifest-rendered repository directory, while product-specific directory
-content belongs on Projects and Suite rather than being duplicated on the main page.
+The main homepage is an eleven-surface ecosystem hub: ten production-accepted public
+sites plus the official Identity Center surface while its publication remains separately
+gated. The exhaustive source portfolio lives in the manifest-rendered repository
+directory, while product-specific directory content belongs on Projects and Suite rather
+than being duplicated on the main page.
 """
 
 from __future__ import annotations
@@ -36,13 +38,15 @@ MAIN_JS = (ROOT / "js" / "main.js").read_text(encoding="utf-8")
 class ProjectPortfolioContractTests(unittest.TestCase):
     def test_final_homepage_is_ecosystem_hub_not_duplicate_project_directory(self) -> None:
         self.assertEqual(PUBLIC_HOME.count('id="websites"'), 1)
-        self.assertEqual(PUBLIC_HOME.count('class="service-card website-card '), 10)
+        self.assertEqual(PUBLIC_HOME.count('class="service-card website-card '), 11)
         self.assertNotIn('id="development"', PUBLIC_HOME)
         self.assertNotIn('data-project=', PUBLIC_HOME)
         self.assertNotIn('data-suite-app=', PUBLIC_HOME)
         self.assertNotIn('data-capability=', PUBLIC_HOME)
         self.assertIn('href="https://suite.goreecloud.com/"', PUBLIC_HOME)
         self.assertIn('href="https://projects.goreecloud.com/"', PUBLIC_HOME)
+        self.assertIn('<p class="service-kicker">identity.goreecloud.com</p>', PUBLIC_HOME)
+        self.assertIn('href="https://github.com/GoreeCloud/goreecloud-identity"', PUBLIC_HOME)
 
     def test_manifest_is_current_reviewed_inventory(self) -> None:
         self.assertEqual(MANIFEST["counts"], {
@@ -86,8 +90,9 @@ class ProjectPortfolioContractTests(unittest.TestCase):
     def test_current_design_and_platform_truth_is_visible_in_final_homepage(self) -> None:
         for marker in (
             "current 56-repository portfolio",
-            "Glaze UI 2.0.0 Stable",
-            "Glaze UI 2.1 remains Candidate",
+            "Glaze UI 2.1.0 Stable",
+            "Ten independently deployed public destinations",
+            "Identity Center is the eleventh official first-party surface",
             "six substantive platform systems",
             "GoreeCloud Identity",
             "GoreeCloud Mesh",
@@ -98,6 +103,8 @@ class ProjectPortfolioContractTests(unittest.TestCase):
                 self.assertIn(marker, (ROOT / "README.md").read_text(encoding="utf-8"))
             else:
                 self.assertIn(marker, PUBLIC_HOME)
+        self.assertNotIn("Glaze UI 2.1 remains Candidate", PUBLIC_HOME)
+        self.assertNotIn("Glaze UI 2.0.0 Stable", PUBLIC_HOME)
 
     def test_javascript_does_not_generate_repository_or_editorial_facts(self) -> None:
         for removed_marker in (

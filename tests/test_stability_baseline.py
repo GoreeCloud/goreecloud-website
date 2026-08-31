@@ -128,7 +128,9 @@ class StabilityBaselineTests(unittest.TestCase):
             GLAZE_PROMOTION_REVISION,
             "Content is solid. Interaction is glazed.",
             "56px Touch Assistance floor",
-            "source migration candidate; rendered preview and production acceptance remain separate gates",
+            "Accepted production web portfolio: **10 independently deployed destinations on Glaze UI 2.1.0 Stable**",
+            "Identity Center is source-merged on Glaze UI 2.1.0 Stable",
+            "Later source commits, content changes, or consumer updates must earn their own exact-revision acceptance",
             "Glaze UI 2.0.0 remains the immediately preceding historical Stable baseline",
         ):
             self.assertIn(marker, self.glaze_adoption)
