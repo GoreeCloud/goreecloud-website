@@ -74,7 +74,8 @@ for marker in [
     GLAZE_PROMOTION_REVISION,
     "same-origin",
     "Content is solid. Interaction is glazed.",
-    "56px effective Touch Assistance floor",
+    "48px general interaction floor",
+    "56px Touch Assistance floor",
     "Rendered/production acceptance",
     "No production Glaze UI exception",
 ]:
