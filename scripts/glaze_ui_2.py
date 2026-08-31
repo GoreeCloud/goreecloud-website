@@ -36,6 +36,18 @@ def apply_glaze_ui_2(html: str) -> str:
         ('Glaze UI 2.0 Stable', 'Glaze UI 2.1 Stable'),
         ('Stable 1.5', 'Stable 2.1'),
         ('Stable 2.0', 'Stable 2.1'),
+        (
+            'The public portfolio uses Glaze UI 2.0.0 Stable as its production design target.',
+            'The public portfolio is migrating to Glaze UI 2.1.0 Stable as its current design target; each independently deployed site must still earn exact 2.1 deployment acceptance.',
+        ),
+        (
+            'The GoreeCloud Design Center for Glaze UI 2.0.0 Stable: interaction, material, adaptive form factors, accessibility, motion, visual language, and design-system governance. Glaze UI 2.1 remains Candidate.',
+            'The GoreeCloud Design Center for Glaze UI 2.1.0 Stable: interaction, material, adaptive form factors, accessibility, motion, visual language, and design-system governance.',
+        ),
+        (
+            'Glaze UI 2.1 remains Candidate and is not a Stable consumer-conformance target.',
+            'Glaze UI 2.1.0 is Stable; each downstream consumer must still earn repository-local acceptance for its supported scope.',
+        ),
         ('current 53-repository portfolio', 'current 56-repository portfolio'),
         ('the five substantive platform systems', 'the six substantive platform systems'),
         (
