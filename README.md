@@ -49,7 +49,7 @@ The six substantive GoreeCloud platform systems are Glaze UI, Privacy Shield, Wa
 
 ## Design and accessibility
 
-Glaze UI is treated as a design contract, not merely a stylesheet or theme. The shared Glaze UI 2.1 web layer governs typography, spacing, materials, navigation, cards, buttons, forms, focus treatment, responsive behavior, density, minimum interaction targets, mobile safe areas, reduced motion, reduced transparency, increased contrast, forced colors, large text, deterministic reduced-material/performance fallbacks, and print resilience.
+Glaze UI is treated as a design contract, not merely a stylesheet or theme. The shared Glaze UI 2.1 web layer governs typography, spacing, materials, navigation, cards, buttons, forms, focus treatment, responsive behavior, density, minimum interaction targets, mobile safe areas, reduced motion, reduced transparency, increased contrast, forced colors, large text, deterministic reduced-material/performance fallbacks, and print resilience. Current interaction sizing preserves the **48px general interaction floor** and the **56px Touch Assistance floor** when Touch Assistance is active or required.
 
 The governing material rule is **Content is solid. Interaction is glazed.** Durable reading surfaces use Canvas or Surface material; navigation, transient controls, selected interactive emphasis, and deliberately live interaction surfaces may use the appropriate Glaze material level. Site-specific CSS may extend that layer while preserving Glaze UI hierarchy and accessibility contracts. Importing tokens alone is not considered conformance.
 
