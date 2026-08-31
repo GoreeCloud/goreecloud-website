@@ -1,28 +1,28 @@
-# GoreeCloud Website — Glaze UI 2.0.0 Conformance
+# GoreeCloud Website — Glaze UI 2.1.0 Conformance
 
 ## Conformance record
 
-- Target Glaze UI version: **2.0.0**
+- Target Glaze UI version: **2.1.0**
 - Canonical design-system repository: `GoreeCloud/goreecloud-glaze-ui`
-- Stable promotion reference used for this alignment: `ff3fff4306bd53ea9c0715a7c0d64265bb038617`
-- Conformance state: **Source-aligned — Glaze UI 2.0.0 Stable web contract prepared across all independently deployed GoreeCloud website surfaces in this repository**
+- Stable promotion reference used for this alignment: `c49113eb8b93c267613fdf1bbca1f814495acad7`
+- Conformance state: **Source-aligned — Glaze UI 2.1.0 Stable web contract prepared across all independently deployed GoreeCloud website surfaces in this repository**
 - Rendered/production acceptance: **Separate gate; preview and production evidence must pass before the deployment is used as proof of portfolio-wide rendered conformance.**
 
 ## Scope
 
-This record covers the Main, Projects, Roadmap, Blog, and Archive public surfaces. Each deployment carries a same-origin Glaze UI 2.0.0 web layer so design-system availability does not depend on another GoreeCloud domain at runtime.
+This record covers the Main, Projects, Roadmap, Blog, and Archive public surfaces. Each deployment carries a same-origin Glaze UI 2.1.0 web layer so design-system availability does not depend on another GoreeCloud domain at runtime.
 
-The Main deployment uses the isolated build pipeline to normalize all deployable HTML onto the current Stable contract. Projects, Roadmap, Blog, and Archive carry their own same-origin 2.0.0 asset because they are independently deployed Cloudflare Pages surfaces.
+The Main deployment uses the isolated build pipeline to normalize all deployable HTML onto the current Stable contract. Projects, Roadmap, Blog, and Archive carry their own same-origin 2.1.0 asset because they are independently deployed Cloudflare Pages surfaces.
 
-## Glaze UI 2.0 web contract
+## Glaze UI 2.1 web contract
 
-The current production target follows the 2.0 model: Canvas → Surface → Soft Glaze → Glaze → Deep Glaze → Live Glaze. The public sites exercise the web-relevant material and interaction subset without claiming platform features they do not implement.
+The current production target follows the 2.1 material hierarchy: Canvas → Surface → Soft Glaze → Glaze → Deep Glaze → Live Glaze. The governing material rule is **Content is solid. Interaction is glazed.** Durable reading, repository, project, timeline, policy, and status content therefore resolves to solid Surface material, while navigation, controls, focal hero interaction, and transient/live surfaces may use appropriate glaze levels.
 
-The migration adds Soft Glaze navigation/header treatment, Glaze material surfaces for cards and summaries, Navigation Capsule semantics, minimum 48px interaction targets, current focus behavior, connected press/hover transformation, adaptive appearance compatibility, and controlled material transparency.
+The web contract supports Clear, Balanced, and Solid clarity; Comfortable, Standard, Compact, and Far View density; a 48px baseline interaction floor; a 56px effective Touch Assistance floor; large-text compact-density fallback; keyboard and pointer interaction; responsive navigation; and safe-area-aware compact layouts.
 
 ## Accessibility and resilience
 
-Reduced-motion behavior removes nonessential transformation and transition. Reduced-transparency preferences receive solid material fallbacks. Focus-visible treatment remains explicit. Increased-contrast and forced-colors modes preserve borders and meaning. Browsers without backdrop-filter support receive opaque material surfaces.
+Reduced Motion removes nonessential transformation and travel. Reduced Transparency resolves optical material to solid hierarchy. Increased Contrast strengthens borders and non-color cues. Forced Colors preserves operability without authored glass effects. Large Text cannot reduce Compact controls below the normal touch floor. Browsers without backdrop-filter support receive opaque surfaces. Deterministic reduced-material/performance modes can remove blur and depth without changing task or state semantics.
 
 ## Privacy boundary
 
@@ -34,8 +34,8 @@ Glaze UI controls presentation and interaction only. Public presentation cannot 
 
 ## Release boundary
 
-Glaze UI 2.0.0 is the current Stable production target. Glaze UI 1.x is historical and must not remain an active production dependency on these public surfaces.
+Glaze UI 2.1.0 is the current Stable production target. Glaze UI 2.0.0 and 1.x are historical baselines and must not remain active production dependencies on these public surfaces. Historical references may remain only when explicitly presented as dated history rather than current guidance.
 
 ## Exceptions
 
-No production Glaze UI exception is recorded for these website surfaces.
+No production Glaze UI exception is recorded for these website surfaces. Each independently deployed surface still requires its own rendered/production acceptance for the exact deployed revision.
