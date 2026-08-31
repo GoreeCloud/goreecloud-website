@@ -209,9 +209,18 @@ def validate_homepage_structure(homepage: str) -> list[str]:
         for label in PLATFORM_SYSTEMS:
             if label not in website_section:
                 errors.append(f"Website ecosystem section must name current platform system: {label}.")
-        for marker in ("Glaze UI 2.0.0 Stable", "Glaze UI 2.1 remains Candidate", "current 56-repository portfolio"):
+        for marker in (
+            "Glaze UI 2.1.0 Stable",
+            "Ten independently deployed public destinations",
+            "Identity Center is the eleventh official first-party surface",
+            "Publication Pending",
+            "current 56-repository portfolio",
+        ):
             if marker not in website_section:
                 errors.append(f"Website ecosystem section is missing current-state marker: {marker}.")
+        for stale in ("Glaze UI 2.0.0 Stable", "Glaze UI 2.1 remains Candidate"):
+            if stale in website_section:
+                errors.append(f"Website ecosystem section still contains superseded state: {stale}.")
 
     if "current-platform-update" in homepage or "native-application-update" in homepage:
         errors.append("Rendered homepage must not contain legacy runtime editorial overlays.")
@@ -233,8 +242,8 @@ def validate(root: Path = ROOT) -> list[str]:
     try:
         directory = render_repository_directory(source_directory, data)
         # Production composes the homepage in two stages: portfolio facts first,
-        # then the ten-site ecosystem normalization. Validate the same final
-        # public shape rather than an unpublished intermediate representation.
+        # then the current official public-web ecosystem normalization. Validate
+        # the same final public shape rather than an unpublished intermediate representation.
         homepage = normalize_homepage(render_homepage(source_homepage, data))
     except ValueError as exc:
         return [f"Repository portfolio static rendering failed: {exc}"]
