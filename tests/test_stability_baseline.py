@@ -41,13 +41,13 @@ class StabilityBaselineTests(unittest.TestCase):
         self.assertIn(f"**{self.version}**", self.baseline)
         self.assertIn("`VERSION` is the canonical machine-readable version source", self.baseline)
 
-    def test_readme_tracks_current_release_and_migration_state(self) -> None:
-        self.assertIn(f"Current accepted website package: **v{self.version}**", self.readme)
+    def test_readme_tracks_current_release_and_design_state(self) -> None:
+        self.assertIn(f"Current accepted website package recorded by `VERSION`: **v{self.version}**", self.readme)
         self.assertIn("`VERSION` is the canonical machine-readable version source", self.readme)
         self.assertIn("Glaze UI 2.1.0 Stable", self.readme)
-        self.assertIn("Glaze UI 2.0.0 Stable", self.readme)
-        self.assertIn("56 repositories — 40 public, 16 private", self.readme)
-        self.assertIn("10 active destinations", self.readme)
+        self.assertIn("57 repositories — 40 public, 17 private", self.readme)
+        self.assertIn("10 destinations on Glaze UI 2.1.0 Stable", self.readme)
+        self.assertIn("Identity Center", self.readme)
         self.assertIn("GoreeCloud/goreecloud-branding-assets", self.readme)
         self.assertIn("Content is solid. Interaction is glazed.", self.readme)
         self.assertIn("56px Touch Assistance floor", self.readme)
@@ -59,21 +59,25 @@ class StabilityBaselineTests(unittest.TestCase):
 
     def test_stability_records_current_portfolio_and_platform_systems(self) -> None:
         for marker in (
-            "56 repositories: 40 public, 16 private, across 13 functional groups",
-            "10 active production destinations",
+            "57 repositories: 40 public, 17 private, across 13 functional groups",
+            "10 production-accepted destinations on Glaze UI 2.1.0 Stable",
             "GoreeCloud Identity",
             "Identity Center",
+            "publication and exact production acceptance remain pending",
             "Glaze UI 2.1.0 Stable",
             "Glaze UI 2.0.0 Stable",
             "Facet",
+            "goreecloud-index",
         ):
             self.assertIn(marker, self.baseline)
 
     def test_stability_rejects_obsolete_current_state(self) -> None:
         for stale in (
             "30 repository / 23 public / 7 private",
+            "56 repositories: 40 public, 16 private",
             "Glaze UI 1.1.0 using the exact canonical source revision",
             "Glaze UI 2.1 remains Candidate",
+            "active modernization candidate moves the official GoreeCloud public-web ecosystem",
             "goreecloud-logo` repository artwork source",
         ):
             self.assertNotIn(stale, self.baseline)
