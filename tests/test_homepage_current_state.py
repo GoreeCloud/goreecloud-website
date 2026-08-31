@@ -56,11 +56,12 @@ class HomepageCurrentStateTests(unittest.TestCase):
             "roadmap.goreecloud.com",
             "blog.goreecloud.com",
             "archive.goreecloud.com",
+            "identity.goreecloud.com",
         )
         for domain in domains:
             with self.subTest(domain=domain):
                 self.assertEqual(self.homepage.count(f'<p class="service-kicker">{domain}</p>'), 1)
-        self.assertEqual(self.homepage.count('class="service-card website-card '), 10)
+        self.assertEqual(self.homepage.count('class="service-card website-card '), 11)
         self.assertIn('<a href="#websites">Websites</a>', self.homepage)
         self.assertIn('<a href="https://suite.goreecloud.com/">Suite</a>', self.homepage)
         self.assertIn('css/websites.css', self.homepage)
@@ -70,10 +71,10 @@ class HomepageCurrentStateTests(unittest.TestCase):
         self.assertNotIn('website-preview', self.homepage)
         self.assertNotIn('website-preview-browser', self.homepage)
         self.assertNotIn('.website-preview', self.websites_css)
-        self.assertEqual(self.homepage.count('class="website-card-body"'), 10)
-        self.assertEqual(self.homepage.count('class="website-card-head"'), 10)
-        self.assertEqual(self.homepage.count('class="website-mark"'), 10)
-        self.assertEqual(self.homepage.count('class="website-link"'), 10)
+        self.assertEqual(self.homepage.count('class="website-card-body"'), 11)
+        self.assertEqual(self.homepage.count('class="website-card-head"'), 11)
+        self.assertEqual(self.homepage.count('class="website-mark"'), 11)
+        self.assertEqual(self.homepage.count('class="website-link"'), 11)
 
     def test_website_names_are_visible_once_as_card_titles(self) -> None:
         names = (
@@ -87,6 +88,7 @@ class HomepageCurrentStateTests(unittest.TestCase):
             "GoreeCloud Roadmap",
             "GoreeCloud Blog",
             "GoreeCloud Archive",
+            "GoreeCloud Identity",
         )
         for name in names:
             with self.subTest(name=name):
