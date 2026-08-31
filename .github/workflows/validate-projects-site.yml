@@ -34,7 +34,6 @@ jobs:
       - name: Check JavaScript syntax
         run: |
           node --check sites/projects/assets/app.js
-          node --check sites/projects/assets/public-refresh.js
           node --check sites/projects/assets/icon-refresh.js
       - name: Verify pull request Projects branch preview
         if: github.event_name == 'pull_request'
