@@ -21,7 +21,7 @@ Only assets in this table are current publication candidates when they also appe
 | `assets/suite/ai.svg` | GoreeCloud/goreecloud-branding-assets | dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc · products/ai/app-icon.svg | `1cbe04748f50cb843eef0cbb7233e2769efa275a` |
 | `assets/suite/backup.svg` | GoreeCloud/goreecloud-branding-assets | dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc · products/backup/app-icon.svg | `6e8f2bc02beb4679ed99f2db787e7dc6b4a0f28f` |
 | `assets/suite/bookmarks.svg` | GoreeCloud/goreecloud-branding-assets | dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc · products/bookmarks/app-icon.svg | `2e9947924708df10844a3a81f47585c4da6b931a` |
-| `assets/suite/browser.svg` | GoreeCloud/goreecloud-branding-assets | dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc · products/browser/app-icon.svg | `2a81cc68b8c1831dfd7bec6c3d0b14e2f421f1f` |
+| `assets/suite/browser.svg` | GoreeCloud/goreecloud-branding-assets | dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc · products/browser/app-icon.svg | `2a81cc68cb8c1831dfd7bec6c3d0b14e2f421f1f` |
 | `assets/suite/calendar.svg` | GoreeCloud/goreecloud-branding-assets | dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc · products/calendar/app-icon.svg | `369c42a204c6b130f49f37f91ec0569256a2c19e` |
 | `assets/suite/changelogs.svg` | GoreeCloud/goreecloud-branding-assets | dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc · products/changelogs/app-icon.svg | `958878ecde32cadd3e646c606534638e4f5e01fb` |
 | `assets/suite/code.svg` | GoreeCloud/goreecloud-branding-assets | dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc · products/code/app-icon.svg | `579f0416bd2839bf40e87de7751e319d80bd0bf9` |
