@@ -19,6 +19,7 @@ Only assets in this table are current publication candidates when they also appe
 | `assets/roadmap/frigate.svg` | blakeblackshear/frigate | 036bae4ea96f23e564622a3d19c1558254122b2b · web/images/branding/favicon.svg | `066268a212c501ae9d13a0567e44c1b20e856b78` |
 | `assets/roadmap/home-assistant.png` | home-assistant/home-assistant.io | 6947d83903e932fb3d757b439e34814af2a23b42 · source/images/favicon-192x192.png | `5f25bf70a663a9acccad6b29b988fe735ddc927a` |
 | `assets/suite/ai.svg` | GoreeCloud/goreecloud-branding-assets | dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc · products/ai/app-icon.svg | `1cbe04748f50cb843eef0cbb7233e2769efa275a` |
+| `assets/suite/app-store.svg` | GoreeCloud/goreecloud-branding-assets | 715a2d13e92474a96b107cc66b5f0c026d5911f4 · products/app-store/app-icon.svg | `05c66a2a4c8edcc194183bb8ffb10ca90d8eaeef` |
 | `assets/suite/backup.svg` | GoreeCloud/goreecloud-branding-assets | dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc · products/backup/app-icon.svg | `6e8f2bc02beb4679ed99f2db787e7dc6b4a0f28f` |
 | `assets/suite/bookmarks.svg` | GoreeCloud/goreecloud-branding-assets | dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc · products/bookmarks/app-icon.svg | `2e9947924708df10844a3a81f47585c4da6b931a` |
 | `assets/suite/browser.svg` | GoreeCloud/goreecloud-branding-assets | dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc · products/browser/app-icon.svg | `2a81cc68cb8c1831dfd7bec6c3d0b14e2f421f1f` |
@@ -30,14 +31,17 @@ Only assets in this table are current publication candidates when they also appe
 | `assets/suite/documents.svg` | GoreeCloud/goreecloud-branding-assets | dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc · products/documents/app-icon.svg | `58200e22b053fe17a2d80cc69e9908a3a2987a34` |
 | `assets/suite/drive.svg` | GoreeCloud/goreecloud-branding-assets | dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc · products/drive/app-icon.svg | `a931ebc4e657895128adb6391eb4665c99e74c4a` |
 | `assets/suite/feed.svg` | GoreeCloud/goreecloud-branding-assets | dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc · products/feed/app-icon.svg | `3464434f08f1c200621900ae86a00d04e812a5fb` |
+| `assets/suite/file-manager.svg` | GoreeCloud/goreecloud-branding-assets | 715a2d13e92474a96b107cc66b5f0c026d5911f4 · products/file-manager/app-icon.svg | `c723a84eb2ecb29ef8a0cef845eb1d2cff714cd0` |
 | `assets/suite/gallery.svg` | GoreeCloud/goreecloud-branding-assets | dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc · products/gallery/app-icon.svg | `ff3085d705b567283dd566a3c02e667866458012` |
 | `assets/suite/gateway.svg` | GoreeCloud/goreecloud-branding-assets | dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc · products/gateway/app-icon.svg | `f8a94f6a6ff5dece3f93bc15531ee5845fa3db61` |
 | `assets/suite/identity.svg` | GoreeCloud/goreecloud-branding-assets | dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc · products/identity/app-icon.svg | `dc8287e385f86767f0105c48a8f234d8440d7623` |
+| `assets/suite/index.svg` | GoreeCloud/goreecloud-branding-assets | 715a2d13e92474a96b107cc66b5f0c026d5911f4 · products/index/app-icon.svg | `797cfbd9ae490e37b5a90efe02905159158a8e88` |
 | `assets/suite/keyboard.svg` | GoreeCloud/goreecloud-branding-assets | dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc · products/keyboard/app-icon.svg | `9dea51ca5853dc0faf41d94fbc12ee810480c472` |
 | `assets/suite/launcher.svg` | GoreeCloud/goreecloud-branding-assets | dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc · products/launcher/app-icon.svg | `d6768114e689058f1c911beca4050f33c96bd7c2` |
 | `assets/suite/location.svg` | GoreeCloud/goreecloud-branding-assets | dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc · products/location/app-icon.svg | `ceb93b6d814c80ece0929022eb5edcdfbc346e2d` |
 | `assets/suite/mail.svg` | GoreeCloud/goreecloud-branding-assets | dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc · products/mail/app-icon.svg | `6fcc489ccfc6348514755a9a052dc413ee17ccde` |
 | `assets/suite/manager.svg` | GoreeCloud/goreecloud-branding-assets | dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc · products/manager/app-icon.svg | `024d82d5b5911e426216dfbd6a19d95cd6d71fc3` |
+| `assets/suite/maps.svg` | GoreeCloud/goreecloud-branding-assets | 715a2d13e92474a96b107cc66b5f0c026d5911f4 · products/maps/app-icon.svg | `07b6e52e04c95e1ec9f703a9d323cf799481351c` |
 | `assets/suite/memos.svg` | GoreeCloud/goreecloud-branding-assets | dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc · products/memos/app-icon.svg | `eb9396c3a1891f6afb96849a29110c6f35e65f19` |
 | `assets/suite/messenger.svg` | GoreeCloud/goreecloud-branding-assets | dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc · products/messenger/app-icon.svg | `01102af91a43e100c66877489b94929165ec0430` |
 | `assets/suite/monitor.svg` | GoreeCloud/goreecloud-branding-assets | dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc · products/monitor/app-icon.svg | `f31c9abab93f1e9e45e34e0eef411705228d1a66` |
