@@ -14,6 +14,8 @@ STATUS_PATH = ROOT / "docs" / "public-runtime-status.json"
 SUITE_PATH = ROOT / "docs" / "suite-portfolio.json"
 INDEX_PATH = ROOT / "index.html"
 REPOSITORIES_PATH = ROOT / "repositories.html"
+RUNTIME_AUTHORITY_DATE = "2026-08-31"
+SUITE_REGISTRY_REVIEW_DATE = "2026-09-01"
 
 
 def load_json(path: Path, errors: list[str]) -> dict:
@@ -64,10 +66,16 @@ def main() -> int:
 
     if status.get("schema_version") != 2:
         errors.append("public-runtime-status.json must use schema_version 2.")
-    if status.get("as_of") != "2026-08-31":
-        errors.append("public-runtime-status.json must retain the reviewed 2026-08-31 authority date until deliberately revalidated.")
-    if suite.get("as_of") != "2026-08-31":
-        errors.append("suite-portfolio.json runtime-facing status metadata must be reviewed as of 2026-08-31.")
+    if status.get("as_of") != RUNTIME_AUTHORITY_DATE:
+        errors.append(
+            "public-runtime-status.json must retain the reviewed "
+            f"{RUNTIME_AUTHORITY_DATE} authority date until deliberately revalidated."
+        )
+    if suite.get("as_of") != SUITE_REGISTRY_REVIEW_DATE:
+        errors.append(
+            "suite-portfolio.json must retain the reviewed "
+            f"{SUITE_REGISTRY_REVIEW_DATE} registry date until deliberately revalidated."
+        )
 
     services = status.get("services")
     if not isinstance(services, dict):
@@ -76,6 +84,10 @@ def main() -> int:
 
     apps = suite_applications(suite, errors)
 
+    # Runtime authority remains anchored to the separate 2026-08-31 status
+    # contract. The Suite registry may have a newer review date for identity or
+    # inventory synchronization only because every runtime-tracked Suite field
+    # below is still pinned independently and fails closed on drift.
     expected = {
         "goreecloud-memos": {
             "suite_id": "memos",
@@ -161,9 +173,8 @@ def main() -> int:
         if stale in index:
             errors.append(f"Main homepage must not reintroduce stale application-runtime presentation: {stale}")
 
-    # Repository cards are generated from the reviewed 57-repository manifest,
-    # so validate the rendered directory rather than the intentionally small raw
-    # source shell.
+    # Repository cards are generated from the reviewed repository manifest, so
+    # validate rendered output rather than the intentionally small raw source.
     try:
         repositories_source = REPOSITORIES_PATH.read_text(encoding="utf-8")
         rendered_repositories = render_public_file(
@@ -202,7 +213,7 @@ def main() -> int:
         return 1
 
     print(
-        "Public runtime status validation passed: product lifecycle and live production authority remain distinct across Memos, Notify, Search, and Monitor."
+        "Public runtime status validation passed: the 2026-08-31 runtime authority remains distinct from the 2026-09-01 Suite identity/inventory review, and tracked production boundaries remain pinned."
     )
     return 0
 
