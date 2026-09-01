@@ -71,10 +71,25 @@ class HomepageCurrentStateTests(unittest.TestCase):
         self.assertNotIn('website-preview', self.homepage)
         self.assertNotIn('website-preview-browser', self.homepage)
         self.assertNotIn('.website-preview', self.websites_css)
+        self.assertNotIn('website-preview', self.homepage_css)
         self.assertEqual(self.homepage.count('class="website-card-body"'), 11)
         self.assertEqual(self.homepage.count('class="website-card-head"'), 11)
         self.assertEqual(self.homepage.count('class="website-mark"'), 11)
         self.assertEqual(self.homepage.count('class="website-link"'), 11)
+
+    def test_website_grid_balances_all_eleven_destinations(self) -> None:
+        self.assertIn('.website-card:nth-child(n+8) { grid-column: span 3; }', self.homepage_css)
+        self.assertIn('.website-card:last-child {', self.homepage_css)
+        self.assertIn('grid-column: 1 / -1;', self.homepage_css)
+
+    def test_mobile_reading_rhythm_keeps_interaction_and_content_distinct(self) -> None:
+        self.assertIn('.site-nav.open {', self.homepage_css)
+        self.assertIn(
+            'background: color-mix(in srgb, var(--glaze-surface-elevated) 94%, transparent);',
+            self.homepage_css,
+        )
+        self.assertIn('row-gap: 1.35rem;', self.homepage_css)
+        self.assertIn('font-size: .96rem;', self.homepage_css)
 
     def test_website_names_are_visible_once_as_card_titles(self) -> None:
         names = (
