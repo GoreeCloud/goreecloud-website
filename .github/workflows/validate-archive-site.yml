@@ -5,12 +5,15 @@ on:
     paths:
       - 'sites/archive/**'
       - 'scripts/validate_archive_site.py'
+      - 'scripts/browser_satellite_responsive.py'
       - '.github/workflows/validate-archive-site.yml'
   push:
     branches: [main]
     paths:
       - 'sites/archive/**'
       - 'scripts/validate_archive_site.py'
+      - 'scripts/browser_satellite_responsive.py'
+      - '.github/workflows/validate-archive-site.yml'
 
 permissions:
   contents: read
@@ -27,3 +30,5 @@ jobs:
           persist-credentials: false
       - name: Validate GoreeCloud Archive
         run: python3 scripts/validate_archive_site.py
+      - name: Exercise Archive responsive layout in Chrome
+        run: python3 scripts/browser_satellite_responsive.py --site archive
