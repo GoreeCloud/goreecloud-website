@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Exercise the public GoreeCloud homepage at screenshot-relevant viewport widths."""
+"""Exercise the public GoreeCloud homepage at screenshot-relevant CSS viewports."""
 
 from __future__ import annotations
 
@@ -30,7 +30,12 @@ class BrowserError(RuntimeError):
 
 def request(method: str, path: str, payload: dict[str, Any] | None = None, timeout: int = HTTP_TIMEOUT) -> Any:
     body = None if payload is None else json.dumps(payload).encode("utf-8")
-    req = Request(f"{BASE}{path}", data=body, method=method, headers={"Content-Type": "application/json; charset=utf-8"})
+    req = Request(
+        f"{BASE}{path}",
+        data=body,
+        method=method,
+        headers={"Content-Type": "application/json; charset=utf-8"},
+    )
     try:
         with urlopen(req, timeout=timeout) as response:
             raw = response.read()
@@ -41,8 +46,7 @@ def request(method: str, path: str, payload: dict[str, Any] | None = None, timeo
         raise BrowserError(f"WebDriver request failed for {path}: {error}") from error
     if not raw:
         return None
-    decoded = json.loads(raw.decode("utf-8"))
-    value = decoded.get("value")
+    value = json.loads(raw.decode("utf-8")).get("value")
     if isinstance(value, dict) and value.get("error"):
         raise BrowserError(f"WebDriver {value.get('error')} for {path}: {value.get('message', '')}")
     return value
@@ -53,12 +57,8 @@ def require(condition: bool, message: str) -> None:
         raise BrowserError(message)
 
 
-def driver_binary() -> str:
-    candidates = [
-        shutil.which("chromedriver"),
-        "/usr/local/share/chromedriver-linux64/chromedriver",
-    ]
-    for candidate in candidates:
+def chromedriver() -> str:
+    for candidate in (shutil.which("chromedriver"), "/usr/local/share/chromedriver-linux64/chromedriver"):
         if candidate and Path(candidate).is_file():
             return str(candidate)
     raise BrowserError("chromedriver is unavailable on the runner")
@@ -72,7 +72,7 @@ def wait_for_driver() -> None:
             status = request("GET", "/status")
             if isinstance(status, dict) and status.get("ready"):
                 return
-        except Exception as error:  # bounded startup polling only
+        except Exception as error:
             last = error
         time.sleep(0.2)
     raise BrowserError(f"chromedriver did not become ready: {last}")
@@ -107,7 +107,7 @@ def create_session() -> str:
     )
     require(isinstance(value, dict), f"Unexpected Chrome session response: {value!r}")
     session_id = value.get("sessionId")
-    require(isinstance(session_id, str) and bool(session_id), f"Chrome did not return a session id: {value!r}")
+    require(isinstance(session_id, str) and bool(session_id), "Chrome did not return a session id")
     return session_id
 
 
@@ -115,13 +115,34 @@ def execute(session_id: str, script: str) -> Any:
     return request("POST", f"/session/{session_id}/execute/sync", {"script": script, "args": []})
 
 
-def set_viewport(session_id: str, width: int, height: int) -> None:
-    request("POST", f"/session/{session_id}/window/rect", {"width": width, "height": height, "x": 0, "y": 0})
+def set_css_viewport(session_id: str, width: int, height: int) -> None:
+    request(
+        "POST",
+        f"/session/{session_id}/goog/cdp/execute",
+        {
+            "cmd": "Emulation.setDeviceMetricsOverride",
+            "params": {
+                "width": width,
+                "height": height,
+                "deviceScaleFactor": 1,
+                "mobile": False,
+            },
+        },
+    )
+    # Keep each viewport independent: a navigation expansion at 390px must not
+    # affect the initial page geometry checked at 320px.
+    execute(
+        session_id,
+        """
+        const toggle=document.querySelector('.nav-toggle');
+        if(toggle?.getAttribute('aria-expanded')==='true') toggle.click();
+        window.scrollTo(0,0);
+        return {width:window.innerWidth,height:window.innerHeight};
+        """,
+    )
 
 
 def single_column(layout: Any) -> bool:
-    """Return true when visible direct children occupy one visual content column."""
-
     if not isinstance(layout, dict) or int(layout.get("count", 0)) < 1:
         return False
     content_width = float(layout.get("contentWidth", 0))
@@ -136,68 +157,119 @@ def single_column(layout: Any) -> bool:
     )
 
 
+def read_state(session_id: str) -> dict[str, Any]:
+    state = execute(
+        session_id,
+        """
+        const q=s=>document.querySelector(s);
+        const layout=s=>{
+          const el=q(s);
+          if(!el) return null;
+          const rect=el.getBoundingClientRect();
+          const style=getComputedStyle(el);
+          const paddingLeft=parseFloat(style.paddingLeft)||0;
+          const paddingRight=parseFloat(style.paddingRight)||0;
+          const children=[...el.children]
+            .filter(child=>{
+              const childStyle=getComputedStyle(child);
+              const r=child.getBoundingClientRect();
+              return childStyle.display!=='none' && childStyle.visibility!=='hidden' && r.width>0 && r.height>0;
+            })
+            .map(child=>{
+              const r=child.getBoundingClientRect();
+              return {left:r.left,right:r.right,top:r.top,width:r.width,height:r.height};
+            });
+          return {
+            left:rect.left,
+            right:rect.right,
+            width:rect.width,
+            contentLeft:rect.left+paddingLeft,
+            contentWidth:Math.max(0,rect.width-paddingLeft-paddingRight),
+            count:children.length,
+            children,
+          };
+        };
+        const header=q('.site-header');
+        const hero=q('#top');
+        const headerRect=header?.getBoundingClientRect();
+        const heroRect=hero?.getBoundingClientRect();
+        return {
+          ready:document.readyState,
+          width:window.innerWidth,
+          height:window.innerHeight,
+          scrollWidth:document.documentElement.scrollWidth,
+          headerPosition:header?getComputedStyle(header).position:'',
+          headerBottom:headerRect?.bottom||0,
+          heroTop:heroRect?.top||0,
+          heroFont:parseFloat(getComputedStyle(q('.hero h1')).fontSize),
+          websiteLayout:layout('.website-grid'),
+          howLayout:layout('.how-flow'),
+          roadmapLayout:layout('.roadmap-grid'),
+          socialLayout:layout('.social-grid'),
+          statLayout:layout('.repository-teaser-stats'),
+        };
+        """,
+    )
+    require(isinstance(state, dict), f"Could not read homepage responsive state: {state!r}")
+    return state
+
+
+def validate_navigation(session_id: str, width: int) -> None:
+    nav_state = execute(
+        session_id,
+        """
+        const toggle=document.querySelector('.nav-toggle');
+        if(toggle && toggle.getAttribute('aria-expanded')!=='true') toggle.click();
+        const nav=document.querySelector('.site-nav');
+        const style=nav?getComputedStyle(nav):null;
+        const rect=nav?.getBoundingClientRect();
+        const paddingLeft=parseFloat(style?.paddingLeft||'0')||0;
+        const paddingRight=parseFloat(style?.paddingRight||'0')||0;
+        const linkRects=[...document.querySelectorAll('.site-nav a')]
+          .map(a=>a.getBoundingClientRect()).filter(r=>r.width>0&&r.height>0);
+        return {
+          position:style?.position||'',
+          left:rect?.left||0,
+          right:rect?.right||0,
+          contentLeft:(rect?.left||0)+paddingLeft,
+          contentWidth:Math.max(0,(rect?.width||0)-paddingLeft-paddingRight),
+          links:linkRects.map(r=>({left:r.left,width:r.width,height:r.height})),
+          minLinkHeight:linkRects.length?Math.min(...linkRects.map(r=>r.height)):0,
+          expanded:toggle?.getAttribute('aria-expanded')||'',
+        };
+        """,
+    )
+    require(isinstance(nav_state, dict), f"Could not read mobile navigation at {width}px")
+    require(nav_state.get("position") == "static", f"Mobile navigation is not in flow at {width}px: {nav_state}")
+    require(nav_state.get("expanded") == "true", f"Mobile navigation did not expand at {width}px: {nav_state}")
+    require(float(nav_state.get("minLinkHeight", 0)) >= 47.5, f"Mobile navigation target below 48px at {width}px: {nav_state}")
+    require(float(nav_state.get("left", -1)) >= -1 and float(nav_state.get("right", width + 2)) <= width + 1, f"Mobile navigation overflows viewport at {width}px: {nav_state}")
+    if width <= 320:
+        nav_width = float(nav_state.get("contentWidth", 0))
+        nav_left = float(nav_state.get("contentLeft", 0))
+        links = nav_state.get("links") or []
+        require(
+            bool(links)
+            and all(
+                abs(float(link.get("left", 0)) - nav_left) <= 2
+                and float(link.get("width", 0)) >= nav_width * 0.94
+                for link in links
+            ),
+            f"320px navigation did not render as one full-width content column: {nav_state}",
+        )
+
+
 def exercise(session_id: str, url: str) -> None:
     request("POST", f"/session/{session_id}/timeouts", {"implicit": 0, "pageLoad": 15000, "script": 10000})
     request("POST", f"/session/{session_id}/url", {"url": url})
 
-    for width, height in VIEWPORTS:
-        set_viewport(session_id, width, height)
-        state = execute(
-            session_id,
-            """
-            const width=window.innerWidth;
-            const header=document.querySelector('.site-header');
-            const headerStyle=header?getComputedStyle(header):null;
-            const hero=document.querySelector('#top');
-            const heroRect=hero?.getBoundingClientRect();
-            const headerRect=header?.getBoundingClientRect();
-            const q=s=>document.querySelector(s);
-            const layout=s=>{
-              const el=q(s);
-              if(!el) return null;
-              const rect=el.getBoundingClientRect();
-              const style=getComputedStyle(el);
-              const paddingLeft=parseFloat(style.paddingLeft)||0;
-              const paddingRight=parseFloat(style.paddingRight)||0;
-              const children=[...el.children]
-                .filter(child=>{
-                  const childStyle=getComputedStyle(child);
-                  const childRect=child.getBoundingClientRect();
-                  return childStyle.display!=='none' && childStyle.visibility!=='hidden' && childRect.width>0 && childRect.height>0;
-                })
-                .map(child=>{
-                  const r=child.getBoundingClientRect();
-                  return {left:r.left,right:r.right,top:r.top,width:r.width,height:r.height};
-                });
-              return {
-                left:rect.left,
-                right:rect.right,
-                width:rect.width,
-                contentLeft:rect.left+paddingLeft,
-                contentWidth:Math.max(0,rect.width-paddingLeft-paddingRight),
-                count:children.length,
-                children,
-              };
-            };
-            return {
-              ready:document.readyState,
-              width,
-              scrollWidth:document.documentElement.scrollWidth,
-              headerPosition:headerStyle?.position||'',
-              headerBottom:headerRect?.bottom||0,
-              heroTop:heroRect?.top||0,
-              websiteLayout:layout('.website-grid'),
-              howLayout:layout('.how-flow'),
-              roadmapLayout:layout('.roadmap-grid'),
-              socialLayout:layout('.social-grid'),
-              statLayout:layout('.repository-teaser-stats'),
-              heroFont:parseFloat(getComputedStyle(q('.hero h1')).fontSize),
-            };
-            """,
-        )
-        require(isinstance(state, dict), f"Could not read responsive state at {width}px: {state!r}")
+    for requested_width, requested_height in VIEWPORTS:
+        set_css_viewport(session_id, requested_width, requested_height)
+        state = read_state(session_id)
+        width = int(state.get("width", 0))
+        require(abs(width - requested_width) <= 1, f"Chrome CSS viewport is {width}px; expected {requested_width}px: {state}")
         require(state.get("ready") == "complete", f"Homepage did not finish loading at {width}px: {state}")
-        require(int(state.get("scrollWidth", width + 10)) <= int(state.get("width", width)) + 1, f"Horizontal overflow at {width}px: {state}")
+        require(int(state.get("scrollWidth", width + 10)) <= width + 1, f"Horizontal overflow at {width}px: {state}")
         require(state.get("headerPosition") not in {"fixed", "sticky"}, f"Public header overlays content at {width}px: {state}")
         require(float(state.get("heroTop", 0)) + 1 >= float(state.get("headerBottom", 0)), f"Hero begins beneath an overlapping header at {width}px: {state}")
         require(float(state.get("heroFont", 0)) >= 40, f"Hero type became too small at {width}px: {state}")
@@ -207,62 +279,22 @@ def exercise(session_id: str, url: str) -> None:
         if width <= 600:
             for key in ("howLayout", "roadmapLayout", "socialLayout", "statLayout"):
                 require(single_column(state.get(key)), f"{key} did not render as one full-width content column at {width}px: {state}")
-
         if width <= 390:
-            nav_state = execute(
-                session_id,
-                """
-                const toggle=document.querySelector('.nav-toggle');
-                if(toggle && toggle.getAttribute('aria-expanded')!=='true') toggle.click();
-                const nav=document.querySelector('.site-nav');
-                const links=[...document.querySelectorAll('.site-nav a')];
-                const style=nav?getComputedStyle(nav):null;
-                const rect=nav?.getBoundingClientRect();
-                const paddingLeft=parseFloat(style?.paddingLeft||'0')||0;
-                const paddingRight=parseFloat(style?.paddingRight||'0')||0;
-                const linkRects=links.map(a=>a.getBoundingClientRect()).filter(r=>r.width>0&&r.height>0);
-                return {
-                  display:style?.display||'',
-                  position:style?.position||'',
-                  left:rect?.left||0,
-                  right:rect?.right||0,
-                  width:rect?.width||0,
-                  contentLeft:(rect?.left||0)+paddingLeft,
-                  contentWidth:Math.max(0,(rect?.width||0)-paddingLeft-paddingRight),
-                  linkRects:linkRects.map(r=>({left:r.left,right:r.right,width:r.width,height:r.height})),
-                  minLinkHeight:linkRects.length?Math.min(...linkRects.map(r=>r.height)):0,
-                  expanded:toggle?.getAttribute('aria-expanded')||'',
-                };
-                """,
-            )
-            require(isinstance(nav_state, dict), f"Could not read mobile navigation at {width}px")
-            require(nav_state.get("position") == "static", f"Mobile navigation is not in flow at {width}px: {nav_state}")
-            require(nav_state.get("expanded") == "true", f"Mobile navigation did not expand at {width}px: {nav_state}")
-            require(float(nav_state.get("minLinkHeight", 0)) >= 47.5, f"Mobile navigation target below 48px at {width}px: {nav_state}")
-            require(float(nav_state.get("left", -1)) >= -1 and float(nav_state.get("right", width + 2)) <= width + 1, f"Mobile navigation overflows viewport at {width}px: {nav_state}")
-            if width <= 320:
-                nav_width = float(nav_state.get("contentWidth", 0))
-                nav_left = float(nav_state.get("contentLeft", 0))
-                link_rects = nav_state.get("linkRects") or []
-                require(
-                    bool(link_rects)
-                    and all(
-                        abs(float(rect.get("left", 0)) - nav_left) <= 2
-                        and float(rect.get("width", 0)) >= nav_width * 0.94
-                        for rect in link_rects
-                    ),
-                    f"320px navigation did not render as one full-width content column: {nav_state}",
-                )
+            validate_navigation(session_id, width)
 
 
 def run(target: str) -> int:
     url = verify_remote_deployment.target_url(target)
-    log_path: str | None = None
     process: subprocess.Popen[bytes] | None = None
+    log_path: str | None = None
     try:
         with tempfile.NamedTemporaryFile(prefix="goreecloud-main-chromedriver-", suffix=".log", delete=False) as log_file:
             log_path = log_file.name
-            process = subprocess.Popen([driver_binary(), f"--port={PORT}", "--allowed-ips=127.0.0.1"], stdout=log_file, stderr=subprocess.STDOUT)
+            process = subprocess.Popen(
+                [chromedriver(), f"--port={PORT}", "--allowed-ips=127.0.0.1"],
+                stdout=log_file,
+                stderr=subprocess.STDOUT,
+            )
         wait_for_driver()
         last_error: Exception | None = None
         for attempt in range(2):
