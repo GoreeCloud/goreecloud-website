@@ -134,6 +134,11 @@
   max-width: 13.5ch;
 }
 
+.website-heading > p:last-child {
+  max-width: 66ch;
+  line-height: 1.58;
+}
+
 .website-grid {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
@@ -146,50 +151,12 @@
   box-shadow: 0 16px 42px color-mix(in srgb, #000 12%, transparent);
 }
 
-/* Balance all ten destinations into deliberate 3 / 4 / 3 desktop rows instead
- * of leaving Archive stranded as a single card on a fourth row. */
+/* Balance all eleven destinations into deliberate 3 / 4 / 4 desktop rows. */
 .website-card:nth-child(1) { grid-column: span 6; }
 .website-card:nth-child(2),
 .website-card:nth-child(3) { grid-column: span 3; }
 .website-card:nth-child(n+4):nth-child(-n+7) { grid-column: span 3; }
-.website-card:nth-child(n+8) { grid-column: span 4; }
-
-.website-card:nth-child(1) .website-preview-browser {
-  min-height: 210px;
-}
-
-.website-card:nth-child(1) .website-preview-page {
-  min-height: 174px;
-  padding: 1.5rem 1.6rem;
-}
-
-.website-card:nth-child(1) .website-preview-mark {
-  width: 42px;
-  height: 42px;
-  font-size: .82rem;
-}
-
-.website-card:nth-child(1) .website-preview-title {
-  font-size: 1.45rem;
-}
-
-.website-card:nth-child(2) .website-card-body > p:not(.service-kicker),
-.website-card:nth-child(3) .website-card-body > p:not(.service-kicker) {
-  font-size: .9rem;
-}
-
-.website-preview {
-  padding: .82rem;
-}
-
-.website-preview-browser {
-  min-height: 156px;
-  border-radius: 16px;
-}
-
-.website-preview-page {
-  min-height: 120px;
-}
+.website-card:nth-child(n+8) { grid-column: span 3; }
 
 .website-card-body {
   padding: 1.15rem 1.2rem 1.22rem;
@@ -346,9 +313,13 @@
     font-size: clamp(3.05rem, 5.4vw, 4.25rem);
   }
 
-  /* Ten destinations resolve cleanly to five two-card rows at this width. */
+  /* Eleven destinations resolve to five paired rows plus a full-width Identity card. */
   .website-card:nth-child(n) {
     grid-column: span 6;
+  }
+
+  .website-card:last-child {
+    grid-column: 1 / -1;
   }
 
   .timeline {
@@ -385,13 +356,16 @@
   .website-card:nth-child(n) {
     grid-column: 1;
   }
+}
 
-  .website-card:nth-child(1) .website-preview-browser {
-    min-height: 174px;
-  }
-
-  .website-card:nth-child(1) .website-preview-page {
-    min-height: 138px;
+@media (max-width: 720px) {
+  /* Keep the interaction layer visibly distinct from the durable page content. */
+  .site-nav.open {
+    background: color-mix(in srgb, var(--glaze-surface-elevated) 94%, transparent);
+    border-color: color-mix(in srgb, var(--glaze-accent) 24%, var(--glaze-border));
+    box-shadow: 0 18px 48px color-mix(in srgb, #0b1220 18%, transparent);
+    -webkit-backdrop-filter: blur(28px) saturate(125%);
+    backdrop-filter: blur(28px) saturate(125%);
   }
 }
 
@@ -419,8 +393,18 @@
     transform: scale(.82);
   }
 
+  .website-heading > p:last-child {
+    font-size: .96rem;
+    line-height: 1.52;
+  }
+
   .timeline {
     grid-template-columns: 1fr;
+    row-gap: 1.35rem;
+  }
+
+  .timeline article time {
+    margin-bottom: .65rem;
   }
 
   .timeline article > div {
