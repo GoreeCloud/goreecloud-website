@@ -4,11 +4,10 @@ import hashlib
 import re
 
 SITE = Path(__file__).resolve().parent
-ROOT = SITE.parents[1]
 
 required = [
     "index.html", "404.html", "README.md", "_headers",
-    "assets/app.js", "assets/public-refresh.js", "assets/icon-refresh.js",
+    "assets/app.js", "assets/icon-refresh.js",
     "assets/styles.css", "assets/mobile-refresh.css", "assets/glaze-ui-2.1.0.css",
     "assets/goreecloud-logo.svg", "assets/glaze-ui-mark.svg", "assets/everkeep.svg",
     "assets/privacy-shield-icon.svg", "assets/wardveil-security-icon.svg",
@@ -21,17 +20,13 @@ for name in required:
 html = (SITE / "index.html").read_text(encoding="utf-8")
 error_html = (SITE / "404.html").read_text(encoding="utf-8")
 js = (SITE / "assets/app.js").read_text(encoding="utf-8")
-refresh = (SITE / "assets/public-refresh.js").read_text(encoding="utf-8")
 icons = (SITE / "assets/icon-refresh.js").read_text(encoding="utf-8")
 mobile = (SITE / "assets/mobile-refresh.css").read_text(encoding="utf-8")
 readme = (SITE / "README.md").read_text(encoding="utf-8")
 glaze = (SITE / "assets/glaze-ui-2.1.0.css").read_text(encoding="utf-8")
 headers = (SITE / "_headers").read_text(encoding="utf-8")
-combined = html + js + refresh + icons + readme
-# app.js is the intentionally stable base catalog. public-refresh.js applies
-# current direction before the final portfolio render; stale-current checks
-# therefore target the actual current-facing HTML/refresh/documentation layer.
-active_direction = html + refresh + readme
+combined = html + js + icons + readme
+active_direction = html + js + readme
 
 
 def git_blob_sha(path: Path) -> str:
@@ -78,19 +73,28 @@ for marker in (
     if marker not in glaze:
         raise SystemExit(f"Projects Glaze UI 2.1 web-layer marker missing: {marker}")
 
-# Base catalog remains intentionally stable; current additions and status
-# corrections are applied by public-refresh.js before the final public render.
-if js.count("kind:'Application'") != 33:
-    raise SystemExit("Projects base catalog must contain exactly 33 Suite applications before current portfolio augmentation")
-if js.count("kind:'Foundation'") != 6:
-    raise SystemExit("Projects base catalog must contain exactly 6 shared foundations before current portfolio augmentation")
+# The primary app catalog is now the current source of truth. A secondary
+# public-refresh overlay must not be required to correct stale portfolio data.
 for current in [
     "GoreeCloud AI", "GoreeCloud Code", "GoreeCloud Documents", "GoreeCloud Messenger",
     "GoreeCloud Gateway", "GoreeCloud Quill", "GoreeCloud Mesh", "GoreeCloud File Manager",
     "GoreeCloud Maps", "GoreeCloud App Store",
 ]:
-    if f"name:'{current}'" not in refresh:
-        raise SystemExit(f"Projects current portfolio augmentation missing: {current}")
+    if f"name:'{current}'" not in js:
+        raise SystemExit(f"Projects source-native portfolio missing: {current}")
+for required_truth in [
+    "2.1.0 current Stable",
+    "Identity platform · active development",
+    "Recursive resolution remains a separate responsibility",
+    "addCurrentPortfolioEntries();",
+    "entry.status=update[0]",
+    "entry.role=update[1]",
+    "render();",
+]:
+    if required_truth not in js:
+        raise SystemExit(f"current Projects source truth boundary missing: {required_truth}")
+if "public-refresh.js" in html:
+    raise SystemExit("Projects still depends on the superseded public-refresh overlay")
 
 for stale in [
     "Gitea is the planned permanent",
@@ -108,14 +112,6 @@ for stale in [
 ]:
     if stale in active_direction:
         raise SystemExit(f"superseded Projects direction remains public: {stale}")
-
-for required_truth in [
-    "2.1.0 current Stable",
-    "Identity platform · active development",
-    "Recursive resolution remains a separate responsibility",
-]:
-    if required_truth not in refresh:
-        raise SystemExit(f"current Projects truth boundary missing: {required_truth}")
 
 branding_repo = "GoreeCloud/goreecloud-branding-assets"
 if f"brandingAuthority='{branding_repo}'" not in icons:
@@ -178,11 +174,8 @@ if "localStorage" not in js or "data-theme-choice" not in html:
 release_boundary = "Public source, a successful build, active development, a release candidate, or a platform identity does not automatically establish production acceptance or protection."
 if release_boundary not in html:
     raise SystemExit("source-versus-production boundary missing")
-if "MutationObserver" in refresh:
-    raise SystemExit("Projects refresh must update the data model without a DOM MutationObserver")
-for needle in ["entry.status=update[0]", "entry.role=update[1]", "entry.model=update[2]", "render();"]:
-    if needle not in refresh:
-        raise SystemExit(f"Projects data-model refresh contract missing: {needle}")
+if "MutationObserver" in js:
+    raise SystemExit("Projects current source must not depend on a DOM MutationObserver for portfolio truth")
 for needle in ["min-height:48px", "overflow-x:hidden", ".card-meta{flex-wrap:wrap", "@media(max-width:380px)"]:
     if needle not in mobile:
         raise SystemExit(f"Projects mobile hardening marker missing: {needle}")
@@ -191,8 +184,7 @@ for stylesheet in ["/assets/mobile-refresh.css?v=20260827-mobile2", "/assets/gla
     if stylesheet not in html:
         raise SystemExit(f"Projects stylesheet reference missing: {stylesheet}")
 for script in [
-    "/assets/app.js?v=20260827-cache2",
-    "/assets/public-refresh.js?v=20260830-glaze21",
+    "/assets/app.js?v=20260831-source-native",
     "/assets/icon-refresh.js?v=20260828-identities1",
 ]:
     if script not in html:
@@ -203,4 +195,4 @@ for stale_cache in ["max-age=86400", "stale-while-revalidate"]:
     if stale_cache in headers:
         raise SystemExit(f"Projects stale asset cache policy remains: {stale_cache}")
 
-print("GoreeCloud Projects current portfolio, Glaze UI 2.1, six-system model, responsive hardening, and unified branding validation passed")
+print("GoreeCloud Projects source-native current portfolio, Glaze UI 2.1, responsive hardening, and unified branding validation passed")

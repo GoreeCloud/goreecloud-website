@@ -1,6 +1,10 @@
 # GoreeCloud Public Asset Inventory
 
-This inventory records every deployable website artwork file. It is not a license grant. Official artwork is required when it exists, and identity artwork must be source-traceable before deployment. The source-code license does not automatically license GoreeCloud branding or third-party marks. Third-party trademarks and artwork remain the property of their respective owners; use is referential and does not imply sponsorship, endorsement, or affiliation. Final human reachable-history/contextual-disclosure review remains required for source-publication decisions, and Issue #5 remains open until that separate review is resolved. Passing validation does not replace the explicit repository visibility/publication decision.
+This inventory records every deployable website artwork file and separately records retained source-only historical/provenance artwork. It is not a license grant. Official artwork is required when it exists, and identity artwork must be source-traceable before deployment. The source-code license does not automatically license GoreeCloud branding or third-party marks. Third-party trademarks and artwork remain the property of their respective owners; use is referential and does not imply sponsorship, endorsement, or affiliation. Final human reachable-history/contextual-disclosure review remains required for source-publication decisions, and Issue #5 remains open until that separate review is resolved. Passing validation does not replace the explicit repository visibility/publication decision.
+
+## Deployable artwork
+
+Only assets in this table are current publication candidates when they also appear in the exact public build allowlist. Repository presence does not make a file deployable.
 
 | Deployable asset | Source authority | Source revision/path | Reviewed Git blob |
 | --- | --- | --- | --- |
@@ -14,18 +18,6 @@ This inventory records every deployable website artwork file. It is not a licens
 | `assets/platform/uptime-kuma.svg` | louislam/uptime-kuma | master · public/icon.svg | `c4217915d8ba3eb7bd685eb667609310494ba82b` |
 | `assets/roadmap/frigate.svg` | blakeblackshear/frigate | 036bae4ea96f23e564622a3d19c1558254122b2b · web/images/branding/favicon.svg | `066268a212c501ae9d13a0567e44c1b20e856b78` |
 | `assets/roadmap/home-assistant.png` | home-assistant/home-assistant.io | 6947d83903e932fb3d757b439e34814af2a23b42 · source/images/favicon-192x192.png | `5f25bf70a663a9acccad6b29b988fe735ddc927a` |
-| `assets/services/actual-budget.png` | actualbudget/actual | master · packages/desktop-client/public/android-chrome-192x192.png | `b9c7e77d340b5904545f90fc5985c50213048112` |
-| `assets/services/audiobookshelf.svg` | advplyr/audiobookshelf | master · client/static/icon.svg | `91b25705aae07bd5bc02a75601d28df9220bdc9a` |
-| `assets/services/element.svg` | element-hq/element-web | d8e18abdf90c917d38fc1c8021e32e5e5782ec91 · apps/web/res/themes/element/img/logos/element-logo.svg | `54a91b72f803034ee1e7c71fb68e2d2a2c84349e` |
-| `assets/services/immich.svg` | immich-app/immich | main · design/immich-logo.svg | `376fa6f3e837e907acafe8a5ae85a1beb7bcfac7` |
-| `assets/services/jellyfin.svg` | jellyfin/jellyfin-ux | master · logos/SVG/jellyfin-icon--color-on-light.svg | `c90d5e9acf2a5b27c730d1ea4a63d0184c5c766f` |
-| `assets/services/matrix.svg` | matrix-org/matrix.org | afca85178d131d3d85a33da34d64cbae88697a77 · static/images/matrix-logo-white.svg | `900a5aa0ed4c59c887e1ca79ec3864fb7d77a533` |
-| `assets/services/navidrome.png` | navidrome/navidrome | master · ui/public/android-chrome-192x192.png | `07c10ba2bdbc4ddc40008e7eeb7f347645ddc754` |
-| `assets/services/nextcloud.svg` | nextcloud/server | master · core/img/logo/logo.svg | `d68aca1fb46cd6dd6d22343ec7473b9191170c05` |
-| `assets/services/onlyoffice.ico` | ONLYOFFICE official website | 2026-08-19 · /favicon.ico | `39534c95e3660f4f3789f969488c12a581075e01` |
-| `assets/services/paperless-ngx.svg` | paperless-ngx/paperless-ngx | dev · docs/assets/logo_leaf.svg | `f1a5553729a1e2963c545265e8bf09327945f3fd` |
-| `assets/services/stirling-pdf.png` | Stirling Tools official GitHub organization | 2026-08-19 · GitHub organization avatar | `6a3badc57ce42fdbc544af253cfb6a5b75194caf` |
-| `assets/services/vaultwarden.svg` | dani-garcia/vaultwarden | 0cefa4cca7c9f2a5579dd290f78193b543818c51 · resources/vaultwarden-logo.svg | `000cf2e91eb677271dad6e540d8706b0279e0aa5` |
 | `assets/suite/ai.svg` | GoreeCloud/goreecloud-branding-assets | dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc · products/ai/app-icon.svg | `1cbe04748f50cb843eef0cbb7233e2769efa275a` |
 | `assets/suite/backup.svg` | GoreeCloud/goreecloud-branding-assets | dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc · products/backup/app-icon.svg | `6e8f2bc02beb4679ed99f2db787e7dc6b4a0f28f` |
 | `assets/suite/bookmarks.svg` | GoreeCloud/goreecloud-branding-assets | dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc · products/bookmarks/app-icon.svg | `2e9947924708df10844a3a81f47585c4da6b931a` |
@@ -70,4 +62,23 @@ This inventory records every deployable website artwork file. It is not a licens
 | `assets/social/youtube.ico` | YouTube official website | 2026-08-19 · /favicon.ico | `f4d966476fe7f5e38deea428fb54ea2bb253c99c` |
 | `assets/social-preview.png` | GoreeCloud website | Existing reviewed social preview | `64aaf437835b31a8473292487cf57366bb58c4fa` |
 
-The current deployable asset boundary is intentionally explicit and fail-closed. Historical repository presence does not authorize artwork use; current deployment requires a matching source record and reviewed bytes. Repository presence does not make a file deployable: the exact public allowlist remains the publication authority. GoreeCloud Suite icons are validated against their canonical unified branding records in `docs/suite-portfolio.json`. Consumer copies under `assets/suite/` are synchronized deployment derivatives of `GoreeCloud/goreecloud-branding-assets`. When approved official artwork does not exist, the website uses text-only presentation rather than an invented icon, initial, monogram, or generic substitute.
+## Retained source-only historical/provenance artwork
+
+The following upstream service marks are retained in source solely for historical traceability, migration context, attribution/provenance review, and repository-history continuity. They are not GoreeCloud-native product identities, are not part of the current public build allowlist, and MUST NOT be published by the current GoreeCloud website artifact. Historical repository presence does not authorize artwork use.
+
+| Source-only retained asset | Source authority | Source revision/path | Reviewed Git blob |
+| --- | --- | --- | --- |
+| `assets/services/actual-budget.png` | actualbudget/actual | master · packages/desktop-client/public/android-chrome-192x192.png | `b9c7e77d340b5904545f90fc5985c50213048112` |
+| `assets/services/audiobookshelf.svg` | advplyr/audiobookshelf | master · client/static/icon.svg | `91b25705aae07bd5bc02a75601d28df9220bdc9a` |
+| `assets/services/element.svg` | element-hq/element-web | d8e18abdf90c917d38fc1c8021e32e5e5782ec91 · apps/web/res/themes/element/img/logos/element-logo.svg | `54a91b72f803034ee1e7c71fb68e2d2a2c84349e` |
+| `assets/services/immich.svg` | immich-app/immich | main · design/immich-logo.svg | `376fa6f3e837e907acafe8a5ae85a1beb7bcfac7` |
+| `assets/services/jellyfin.svg` | jellyfin/jellyfin-ux | master · logos/SVG/jellyfin-icon--color-on-light.svg | `c90d5e9acf2a5b27c730d1ea4a63d0184c5c766f` |
+| `assets/services/matrix.svg` | matrix-org/matrix.org | afca85178d131d3d85a33da34d64cbae88697a77 · static/images/matrix-logo-white.svg | `900a5aa0ed4c59c887e1ca79ec3864fb7d77a533` |
+| `assets/services/navidrome.png` | navidrome/navidrome | master · ui/public/android-chrome-192x192.png | `07c10ba2bdbc4ddc40008e7eeb7f347645ddc754` |
+| `assets/services/nextcloud.svg` | nextcloud/server | master · core/img/logo/logo.svg | `d68aca1fb46cd6dd6d22343ec7473b9191170c05` |
+| `assets/services/onlyoffice.ico` | ONLYOFFICE official website | 2026-08-19 · /favicon.ico | `39534c95e3660f4f3789f969488c12a581075e01` |
+| `assets/services/paperless-ngx.svg` | paperless-ngx/paperless-ngx | dev · docs/assets/logo_leaf.svg | `f1a5553729a1e2963c545265e8bf09327945f3fd` |
+| `assets/services/stirling-pdf.png` | Stirling Tools official GitHub organization | 2026-08-19 · GitHub organization avatar | `6a3badc57ce42fdbc544af253cfb6a5b75194caf` |
+| `assets/services/vaultwarden.svg` | dani-garcia/vaultwarden | 0cefa4cca7c9f2a5579dd290f78193b543818c51 · resources/vaultwarden-logo.svg | `000cf2e91eb677271dad6e540d8706b0279e0aa5` |
+
+The current deployable asset boundary is intentionally explicit and fail-closed. Current deployment requires a matching source record and reviewed bytes, while retained historical/source-only records remain outside `dist/`. GoreeCloud Suite icons are validated against their canonical unified branding records in `docs/suite-portfolio.json`. Consumer copies under `assets/suite/` are synchronized deployment derivatives of `GoreeCloud/goreecloud-branding-assets`. When approved official artwork does not exist, the website uses text-only presentation rather than an invented icon, initial, monogram, or generic substitute.

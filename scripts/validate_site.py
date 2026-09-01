@@ -2,7 +2,9 @@
 """Validate the dependency-free GoreeCloud public website.
 
 The checks intentionally use only the Python standard library so GitHub Actions can
-validate the repository without downloading third-party packages.
+validate the repository without downloading third-party packages. Homepage checks
+run through the same deterministic composition path used by publication so source
+placeholders are not mistaken for the deployed public surface.
 """
 
 from __future__ import annotations
@@ -14,6 +16,10 @@ from pathlib import Path
 from urllib.parse import urlparse
 import re
 import sys
+
+from glaze_ui_2 import apply_glaze_ui_2
+from normalize_homepage import normalize_homepage
+from render_repository_portfolio import load_manifest, render_public_file
 
 ROOT = Path(__file__).resolve().parents[1]
 INDEX = ROOT / "index.html"
@@ -37,25 +43,28 @@ REQUIRED_SCRIPTS = {
     "js/main.js",
 }
 REQUIRED_PUBLIC_MARKERS = {
-    "native GoreeCloud Notes repository": "https://github.com/GoreeCloud/goreecloud-notes",
-    "GoreeCloud Memos canonical repository": "https://github.com/GoreeCloud/goreecloud-memos",
-    "GoreeCloud Memos product": "<strong>GoreeCloud Memos</strong>",
-    "GoreeCloud Memos accepted production status": '<span class="badge active">Available Now</span>',
-    "GoreeCloud Memos accepted production wording": "GoreeCloud Memos v0.1.2 is the accepted Stable production service",
-    "GoreeCloud Notify project": "<strong>GoreeCloud Notify</strong>",
-    "GoreeCloud Notify release-candidate status": "GoreeCloud Notify is a release candidate",
-    "ntfy production migration boundary": "ntfy remains the current production notification service",
+    "current repository portfolio": "current 57-repository portfolio",
+    "official website directory": '<section id="websites"',
+    "Suite public destination": "suite.goreecloud.com",
+    "Projects public destination": "projects.goreecloud.com",
+    "Design Center public destination": "design.goreecloud.com",
+    "Privacy Center public destination": "privacy.goreecloud.com",
+    "Security Center public destination": "security.goreecloud.com",
+    "Continuity Center public destination": "everkeep.goreecloud.com",
+    "Roadmap public destination": "roadmap.goreecloud.com",
+    "Blog public destination": "blog.goreecloud.com",
+    "Archive public destination": "archive.goreecloud.com",
+    "Identity publication boundary": "identity.goreecloud.com",
+    "current Glaze UI target": "Glaze UI 2.1.0 Stable",
+    "production/publication boundary": "Publication Pending",
     "public ownership purpose": "Ownership should be understandable and repeatable.",
-    "expanded ONLYOFFICE family service": 'data-service="onlyoffice"',
-    "expanded Stirling PDF family service": 'data-service="stirling-pdf"',
-    "expanded Actual Budget family service": 'data-service="actual-budget"',
-    "expanded GoreeCloud Tasks family service": 'data-service="tasks"',
-    "expanded GoreeCloud Contacts family service": 'data-service="contacts"',
     "public Follow the build section": '<section id="follow"',
     "public GoreeCloud YouTube channel": "https://www.youtube.com/@GoreeCloud",
     "public contact section": '<section id="contact"',
 }
 STALE_PUBLIC_COPY = (
+    "56-repository portfolio",
+    "56 repositories spanning",
     "A GoreeCloud-maintained Memos fork for fast private note capture",
     "Memos RC remains a protected transitional migration source",
     "transitional services remain protected until migration gates are satisfied",
@@ -221,9 +230,17 @@ def validate_security_contact(errors: list[str]) -> None:
         fail(errors, f"security.txt has expired: {expires_raw}.")
 
 
+def render_homepage() -> str:
+    manifest = load_manifest()
+    source = INDEX.read_text(encoding="utf-8")
+    rendered = render_public_file("index.html", source, manifest)
+    rendered = normalize_homepage(rendered)
+    return apply_glaze_ui_2(rendered)
+
+
 def validate() -> list[str]:
     errors: list[str] = []
-    html = INDEX.read_text(encoding="utf-8")
+    html = render_homepage()
     parser = SiteParser()
     parser.feed(html)
 
@@ -238,7 +255,7 @@ def validate() -> list[str]:
 
     duplicate_ids = sorted(identifier for identifier, count in parser.id_counts.items() if count > 1)
     for identifier in duplicate_ids:
-        fail(errors, f"Duplicate id found in index.html: {identifier}")
+        fail(errors, f"Duplicate id found in rendered index.html: {identifier}")
 
     if parser.canonical != CANONICAL:
         fail(errors, f"Canonical URL must be {CANONICAL!r}, found {parser.canonical!r}.")
@@ -258,7 +275,7 @@ def validate() -> list[str]:
             fail(errors, f"Local reference escapes repository root: {reference}")
             continue
         if not target.exists():
-            fail(errors, f"Missing local asset referenced by index.html: {reference}")
+            fail(errors, f"Missing local asset referenced by rendered index.html: {reference}")
 
     for href in parser.external_blank_errors:
         fail(errors, f'target="_blank" link must include rel="noopener noreferrer": {href}')
@@ -279,16 +296,16 @@ def validate() -> list[str]:
 
     missing_stylesheets = sorted(REQUIRED_STYLESHEETS.difference(parser.stylesheet_sources))
     for stylesheet in missing_stylesheets:
-        fail(errors, f"Required stylesheet is not linked directly from index.html: {stylesheet}")
+        fail(errors, f"Required stylesheet is not linked from the rendered index.html: {stylesheet}")
 
     missing_scripts = sorted(REQUIRED_SCRIPTS.difference(parser.script_sources))
     for script in missing_scripts:
-        fail(errors, f"Required script is not loaded from index.html: {script}")
+        fail(errors, f"Required script is not loaded from the rendered index.html: {script}")
 
     theme_init_markup = '<script src="js/theme-init.js"></script>'
     first_stylesheet_markup = '<link rel="stylesheet"'
     if theme_init_markup not in html:
-        fail(errors, "Early appearance initialization script is missing from index.html.")
+        fail(errors, "Early appearance initialization script is missing from rendered index.html.")
     elif first_stylesheet_markup in html and html.index(theme_init_markup) > html.index(first_stylesheet_markup):
         fail(errors, "js/theme-init.js must load before stylesheets so stored appearance is applied before first paint.")
 

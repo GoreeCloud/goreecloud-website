@@ -216,8 +216,8 @@ def exercise_page(session_id: str, target_url: str, browser: str) -> None:
     require(str(initial.get("cardBackdrop", "none")) in ("none", ""), f"Durable Projects content cards must remain solid under Glaze UI 2.1 in {browser}: {initial}")
 
     resources = initial.get("resources") or []
-    require(any("/assets/app.js?v=20260827-cache2" in resource for resource in resources), f"Headless {browser} did not load the versioned Projects app.js resource.")
-    require(any("/assets/public-refresh.js?v=20260830-glaze21" in resource for resource in resources), f"Headless {browser} did not load the Glaze UI 2.1 Projects public-refresh.js resource.")
+    require(any("/assets/app.js?v=20260831-source-native" in resource for resource in resources), f"Headless {browser} did not load the source-native Projects app.js resource.")
+    require(not any("/assets/public-refresh.js" in resource for resource in resources), f"Headless {browser} still loaded the superseded Projects public-refresh overlay.")
     require(any("/assets/glaze-ui-2.1.0.css" in resource for resource in resources), f"Headless {browser} did not load the Glaze UI 2.1 stylesheet.")
     require(not any("/assets/glaze-ui-2.0.0.css" in resource for resource in resources), f"Headless {browser} still loaded the superseded Glaze UI 2.0 stylesheet.")
 

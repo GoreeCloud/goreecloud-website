@@ -8,7 +8,7 @@ import re
 import sys
 from urllib.parse import urlparse
 
-from build_public_site import PUBLIC_ASSET_FILES, ROOT
+from build_public_site import PUBLIC_ASSET_FILES, RETIRED_SOURCE_ONLY_ASSET_FILES, ROOT
 from render_repository_portfolio import load_manifest, load_suite_manifest, render_public_file
 
 MANIFEST = ROOT / "docs/visual-identity-sources.json"
@@ -55,18 +55,38 @@ def main() -> int:
     for path in collisions:
         errors.append(f"Suite artwork path collides with legacy identity record: {path}")
 
-    deployed = {**legacy_records, **suite}
+    all_records = {**legacy_records, **suite}
     expected = set(PUBLIC_ASSET_FILES) - {"assets/social-preview.png"}
+    retired = set(RETIRED_SOURCE_ONLY_ASSET_FILES)
 
-    if set(deployed) != expected:
+    overlap = sorted(expected.intersection(retired))
+    for rel in overlap:
+        errors.append(f"Source-only historical asset has re-entered the deployable artwork allowlist: {rel}")
+
+    missing_provenance = sorted(expected.difference(all_records))
+    for rel in missing_provenance:
+        errors.append(f"Deployable identity asset lacks a reviewed provenance record: {rel}")
+
+    missing_retired_provenance = sorted(retired.difference(all_records))
+    for rel in missing_retired_provenance:
+        errors.append(f"Retained source-only historical asset lacks its provenance record: {rel}")
+
+    unclassified_records = sorted(set(all_records).difference(expected).difference(retired))
+    for rel in unclassified_records:
         errors.append(
-            f"Identity provenance/deployable artwork mismatch: provenance={sorted(deployed)} expected={sorted(expected)}"
+            f"Identity provenance record is neither deployable nor explicitly retained source-only history: {rel}"
         )
 
-    for rel, rec in deployed.items():
+    deployed = {rel: all_records[rel] for rel in expected if rel in all_records}
+    retained = {rel: all_records[rel] for rel in retired if rel in all_records}
+
+    # Preserve byte/provenance integrity for both current deployment derivatives and
+    # source-only historical records. Historical retention must not become a path
+    # around provenance review, even though those assets are excluded from dist/.
+    for rel, rec in {**deployed, **retained}.items():
         path = ROOT / rel
         if not path.is_file() or path.is_symlink():
-            errors.append(f"Official identity asset is not a regular file: {rel}")
+            errors.append(f"Reviewed identity asset is not a regular file: {rel}")
             continue
 
         raw = path.read_bytes()
@@ -114,6 +134,11 @@ def main() -> int:
     for rel in expected:
         if rel != "assets/goreecloud-logo.svg" and rel not in combined_index:
             errors.append(f"Deployable identity asset is not represented by the reviewed homepage source/render: {rel}")
+
+    for rel in retired:
+        if rel in combined_index:
+            errors.append(f"Source-only historical upstream asset appears in the current homepage source/render: {rel}")
+
     if rendered_index.count("assets/goreecloud-logo.svg") < 3:
         errors.append("Canonical GoreeCloud logo is not used across visible website identity surfaces.")
 
@@ -127,7 +152,10 @@ def main() -> int:
             print(f"- {error}", file=sys.stderr)
         return 1
 
-    print(f"Official visual-identity validation passed across {len(deployed)} deployable identity assets.")
+    print(
+        "Official visual-identity validation passed across "
+        f"{len(deployed)} deployable identity assets and {len(retained)} retained source-only provenance assets."
+    )
     return 0
 
 

@@ -27,7 +27,8 @@ REQUIRED_SECURITY_PAGE_COPY = (
     "Foundation 0.9",
     "Sentinel Fold",
     "current authoritative evidence",
-    "production ClamAV runtime remains unaccepted",
+    "production ClamAV scanner runtime is deployed and accepted at the scanner-evidence layer",
+    "does not establish end-to-end Wardveil Scan application acceptance",
 )
 REQUIRED_SECURITY_POLICY_COPY = (
     WARDVEIL_IDENTITY,
@@ -35,6 +36,8 @@ REQUIRED_SECURITY_POLICY_COPY = (
     "platform-wide first-party security system and shared security plane",
     "Foundation 0.9",
     "Sentinel Fold",
+    "production ClamAV scanner runtime is deployed and accepted at the scanner-evidence layer",
+    "does not establish end-to-end Wardveil Scan application acceptance",
 )
 REQUIRED_OBSERVABILITY_COPY = (
     WARDVEIL_IDENTITY,
@@ -111,7 +114,11 @@ def main() -> int:
             "security.html must not use the blanket 'Protected by Wardveil' phrase; public Wardveil presentation must remain evidence-scoped."
         )
 
-    for stale in ("security identity and presentation layer", "Foundation 0.7"):
+    for stale in (
+        "security identity and presentation layer",
+        "Foundation 0.7",
+        "production ClamAV runtime remains unaccepted",
+    ):
         if stale.casefold() in security_page.casefold() or stale.casefold() in security_md.casefold():
             errors.append(f"Superseded Wardveil public model remains published: {stale}")
 

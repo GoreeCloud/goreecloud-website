@@ -302,6 +302,27 @@
   padding: clamp(1.4rem, 3vw, 2.2rem);
 }
 
+/* The homepage is a public reading surface. Keep the header in normal flow so
+ * long screenshots, zoom, and small viewports never place persistent chrome
+ * over durable content. The phone menu itself remains a bounded Glaze popover. */
+body.glaze-canvas .site-header {
+  position: relative;
+  inset-block-start: auto;
+}
+
+html { scroll-padding-top: 24px; }
+#main :where(section,[id]) { scroll-margin-top: 24px; }
+
+/* Explicit responsive composition for every dense homepage region. */
+.how-flow,
+#platform .service-grid,
+#platform .platform-grid,
+.roadmap-grid,
+.social-grid,
+.repository-teaser-stats {
+  min-width: 0;
+}
+
 @media (max-width: 1100px) {
   .hero-grid {
     grid-template-columns: minmax(0, 1.08fr) minmax(330px, .92fr);
@@ -324,6 +345,18 @@
 
   .timeline {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .how-flow,
+  #platform .service-grid,
+  .roadmap-grid,
+  .social-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .repository-teaser-grid,
+  .about-grid {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -354,7 +387,19 @@
   }
 
   .website-card:nth-child(n) {
-    grid-column: 1;
+    grid-column: 1 / -1;
+    width: 100%;
+    max-width: none;
+    margin-inline: 0;
+    justify-self: stretch;
+  }
+
+  #platform .platform-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .repository-teaser-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -398,8 +443,19 @@
     line-height: 1.52;
   }
 
-  .timeline {
+  .timeline,
+  .how-flow,
+  #platform .service-grid,
+  .roadmap-grid,
+  .social-grid {
     grid-template-columns: 1fr;
+  }
+
+  #platform .platform-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .timeline {
     row-gap: 1.35rem;
   }
 
@@ -410,6 +466,33 @@
   .timeline article > div {
     min-height: 0;
   }
+
+  .hero-actions,
+  .repository-teaser-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: .65rem;
+  }
+
+  .hero-actions .button,
+  .repository-teaser-actions .button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .repository-teaser-stats > div,
+  .how-card,
+  .roadmap-card,
+  .social-card {
+    min-width: 0;
+  }
+}
+
+@media (max-width: 420px) {
+  #main .container { width: min(calc(100% - 1rem), var(--homepage-container)); }
+  .repository-teaser-stats { grid-template-columns: 1fr; }
+  #platform .platform-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .section-heading h2 { max-width: none; }
 }
 
 @media (forced-colors: active) {

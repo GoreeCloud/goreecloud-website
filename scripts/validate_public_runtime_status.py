@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fail closed when public runtime and migration claims drift from the website status authority."""
+"""Fail closed when current public runtime and migration claims drift across source authorities."""
 
 from __future__ import annotations
 
@@ -7,76 +7,193 @@ import json
 from pathlib import Path
 import sys
 
+from render_repository_portfolio import load_manifest, render_public_file
+
 ROOT = Path(__file__).resolve().parents[1]
 STATUS_PATH = ROOT / "docs" / "public-runtime-status.json"
+SUITE_PATH = ROOT / "docs" / "suite-portfolio.json"
 INDEX_PATH = ROOT / "index.html"
 REPOSITORIES_PATH = ROOT / "repositories.html"
 
 
-def require(errors: list[str], text: str, marker: str, message: str) -> None:
-    if marker not in text:
-        errors.append(message)
+def load_json(path: Path, errors: list[str]) -> dict:
+    try:
+        value = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        errors.append(f"cannot read {path.relative_to(ROOT)}: {exc}")
+        return {}
+    if not isinstance(value, dict):
+        errors.append(f"{path.relative_to(ROOT)} must contain a JSON object.")
+        return {}
+    return value
 
 
-def forbid(errors: list[str], text: str, marker: str, message: str) -> None:
-    if marker in text:
-        errors.append(message)
+def suite_applications(suite: dict, errors: list[str]) -> dict[str, dict]:
+    result: dict[str, dict] = {}
+    groups = suite.get("groups")
+    if not isinstance(groups, list):
+        errors.append("suite-portfolio.json must define a groups array.")
+        return result
+    for group in groups:
+        if not isinstance(group, dict):
+            errors.append("suite-portfolio.json groups must be objects.")
+            continue
+        applications = group.get("applications")
+        if not isinstance(applications, list):
+            errors.append(f"Suite group {group.get('id')!r} must define an applications array.")
+            continue
+        for application in applications:
+            if not isinstance(application, dict):
+                errors.append(f"Suite group {group.get('id')!r} contains a non-object application.")
+                continue
+            app_id = application.get("id")
+            if not isinstance(app_id, str) or not app_id:
+                errors.append(f"Suite group {group.get('id')!r} contains an application without a valid id.")
+                continue
+            if app_id in result:
+                errors.append(f"Duplicate Suite application id: {app_id}")
+                continue
+            result[app_id] = application
+    return result
 
 
 def main() -> int:
     errors: list[str] = []
+    status = load_json(STATUS_PATH, errors)
+    suite = load_json(SUITE_PATH, errors)
 
-    try:
-        status = json.loads(STATUS_PATH.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc:
-        print(f"Public runtime status validation failed: cannot read {STATUS_PATH.relative_to(ROOT)}: {exc}")
-        return 1
-
-    index = INDEX_PATH.read_text(encoding="utf-8")
-    repositories = REPOSITORIES_PATH.read_text(encoding="utf-8")
-
-    if status.get("schema_version") != 1:
-        errors.append("public-runtime-status.json must use schema_version 1.")
-    if status.get("as_of") != "2026-08-18":
-        errors.append("public-runtime-status.json must retain the reviewed 2026-08-18 authority date until deliberately revalidated.")
+    if status.get("schema_version") != 2:
+        errors.append("public-runtime-status.json must use schema_version 2.")
+    if status.get("as_of") != "2026-08-31":
+        errors.append("public-runtime-status.json must retain the reviewed 2026-08-31 authority date until deliberately revalidated.")
+    if suite.get("as_of") != "2026-08-31":
+        errors.append("suite-portfolio.json runtime-facing status metadata must be reviewed as of 2026-08-31.")
 
     services = status.get("services")
     if not isinstance(services, dict):
         errors.append("public-runtime-status.json must define a services object.")
         services = {}
 
-    expected_states = {
-        "goreecloud-memos": "stable-production",
-        "goreecloud-notify": "release-candidate",
-        "goreecloud-search": "stable-production",
-        "goreecloud-monitor": "active-development",
+    apps = suite_applications(suite, errors)
+
+    expected = {
+        "goreecloud-memos": {
+            "suite_id": "memos",
+            "product_state": "stable-production",
+            "runtime_state": "production-accepted",
+            "current_service": "GoreeCloud Memos v0.1.3",
+            "production_authority": "GoreeCloud Memos v0.1.3",
+            "suite_status": "Stable Production v0.1.3",
+            "suite_status_class": "active",
+        },
+        "goreecloud-notify": {
+            "suite_id": "notify",
+            "product_state": "release-candidate",
+            "runtime_state": "pre-cutover",
+            "current_service": "ntfy v2.26.3",
+            "production_authority": "ntfy v2.26.3",
+            "suite_status": "Release Candidate",
+            "suite_status_class": "growing",
+        },
+        "goreecloud-search": {
+            "suite_id": "search",
+            "product_state": "active-development",
+            "runtime_state": "transitional-production",
+            "current_service": "GoreeCloud Search",
+            "production_authority": "Current SearXNG-derived GoreeCloud Search runtime",
+            "suite_status": "Current Service · Native Rebuild",
+            "suite_status_class": "active",
+        },
+        "goreecloud-monitor": {
+            "suite_id": "monitor",
+            "product_state": "active-validation",
+            "runtime_state": "pre-cutover",
+            "current_service": "Uptime Kuma",
+            "production_authority": "Uptime Kuma",
+            "suite_status": "Active Validation",
+            "suite_status_class": "growing",
+        },
     }
-    for slug, state in expected_states.items():
+
+    for slug, contract in expected.items():
         record = services.get(slug)
         if not isinstance(record, dict):
             errors.append(f"Missing public runtime status record: {slug}")
             continue
-        if record.get("state") != state:
-            errors.append(f"Unexpected public runtime state for {slug}: {record.get('state')!r}")
+        for field in ("public_name", "public_label", "transition"):
+            if not isinstance(record.get(field), str) or not record[field].strip():
+                errors.append(f"Public runtime status {slug} must define non-empty {field}.")
+        for field in ("product_state", "runtime_state", "current_service", "production_authority"):
+            expected_value = contract[field]
+            if record.get(field) != expected_value:
+                errors.append(
+                    f"Unexpected {field} for {slug}: expected {expected_value!r}, found {record.get(field)!r}."
+                )
 
-    # Accepted production application.
-    require(errors, index, '<article class="service-card" data-service="memos">', "Homepage must retain the GoreeCloud Memos service card.")
-    require(errors, index, '<span class="badge active">Available Now</span>', "Accepted GoreeCloud Memos production must be presented as Available Now.")
-    require(errors, index, "GoreeCloud Memos v0.1.2 is the accepted Stable production service", "Homepage project copy must identify Memos v0.1.2 as accepted Stable production.")
-    forbid(errors, index, '<span class="badge growing">Stabilizing</span>', "Homepage must not regress accepted GoreeCloud Memos production to Stabilizing.")
+        app = apps.get(contract["suite_id"])
+        if not isinstance(app, dict):
+            errors.append(f"Suite portfolio is missing runtime-tracked application: {contract['suite_id']}")
+            continue
+        if app.get("status") != contract["suite_status"]:
+            errors.append(
+                f"Suite status for {contract['suite_id']} must be {contract['suite_status']!r}, found {app.get('status')!r}."
+            )
+        if app.get("status_class") != contract["suite_status_class"]:
+            errors.append(
+                f"Suite status class for {contract['suite_id']} must be {contract['suite_status_class']!r}, found {app.get('status_class')!r}."
+            )
 
-    # Notification migration is not complete.
-    require(errors, index, "ntfy remains the current production notification service", "Homepage must state that ntfy remains the current production notification service.")
-    require(errors, index, "GoreeCloud Notify is a release candidate", "Homepage must present GoreeCloud Notify as a release candidate.")
-    require(errors, repositories, "Release-candidate successor to ntfy; ntfy remains current production until controlled cutover.", "Repository directory must preserve the Notify migration boundary.")
-    forbid(errors, index, "has replaced ntfy", "Homepage must not claim GoreeCloud Notify has replaced ntfy before production acceptance.")
-    forbid(errors, index, "GoreeCloud Notify replaces ntfy", "Homepage timeline must not record an unaccepted Notify cutover.")
-    forbid(errors, repositories, "Current GoreeCloud notification layer.", "Repository directory must not call GoreeCloud Notify the current notification layer before cutover.")
+    # The Main site is now a website/ecosystem hub. Application lifecycle cards
+    # belong to the Suite authority rather than being duplicated as stale raw
+    # homepage service cards.
+    try:
+        index = INDEX_PATH.read_text(encoding="utf-8")
+    except OSError as exc:
+        errors.append(f"cannot read index.html: {exc}")
+        index = ""
+    for stale in (
+        'data-service="memos"',
+        'data-service="notify"',
+        'data-service="search"',
+        'data-service="monitor"',
+        "GoreeCloud Memos v0.1.2",
+    ):
+        if stale in index:
+            errors.append(f"Main homepage must not reintroduce stale application-runtime presentation: {stale}")
 
-    # Accepted Search migration and pending Monitoring migration remain independently true.
-    require(errors, index, "has replaced the direct SearXNG-facing service", "Homepage must preserve the accepted GoreeCloud Search cutover.")
-    require(errors, index, "Uptime Kuma remains in service until GoreeCloud Monitoring completes validation", "Homepage must preserve the Uptime Kuma transition boundary.")
-    require(errors, repositories, "Planned replacement for Uptime Kuma after controlled validation.", "Repository directory must preserve the Monitor transition boundary.")
+    # Repository cards are generated from the reviewed 57-repository manifest,
+    # so validate the rendered directory rather than the intentionally small raw
+    # source shell.
+    try:
+        repositories_source = REPOSITORIES_PATH.read_text(encoding="utf-8")
+        rendered_repositories = render_public_file(
+            "repositories.html", repositories_source, load_manifest(ROOT)
+        )
+    except (OSError, ValueError, KeyError, json.JSONDecodeError) as exc:
+        errors.append(f"cannot render repository directory for runtime-boundary validation: {exc}")
+        rendered_repositories = ""
+
+    repository_markers = (
+        "GoreeCloud Memos v0.1.3 is the accepted Stable production runtime.",
+        "ntfy v2.26.3 remains the active production notification service and rollback path until controlled acceptance and cutover.",
+        "Uptime Kuma remains authoritative until controlled acceptance and cutover.",
+        "current SearXNG-derived GoreeCloud Search runtime remains transitional production continuity while the mandatory native rebuild proceeds.",
+    )
+    for marker in repository_markers:
+        if marker not in rendered_repositories:
+            errors.append(f"Rendered repository directory is missing current runtime boundary: {marker}")
+
+    stale_current_markers = (
+        "GoreeCloud Memos v0.1.2",
+        "GoreeCloud Notify has replaced ntfy",
+        "GoreeCloud Notify replaces ntfy",
+        "GoreeCloud Monitor has replaced Uptime Kuma",
+        "GoreeCloud Search native implementation is Stable",
+    )
+    authority_text = STATUS_PATH.read_text(encoding="utf-8") + "\n" + SUITE_PATH.read_text(encoding="utf-8") + "\n" + rendered_repositories
+    for marker in stale_current_markers:
+        if marker in authority_text:
+            errors.append(f"Superseded or unaccepted current runtime claim remains in current-state authorities: {marker}")
 
     if errors:
         print("Public runtime status validation failed:")
@@ -84,7 +201,9 @@ def main() -> int:
             print(f"  - {error}")
         return 1
 
-    print("Public runtime status validation passed.")
+    print(
+        "Public runtime status validation passed: product lifecycle and live production authority remain distinct across Memos, Notify, Search, and Monitor."
+    )
     return 0
 
 

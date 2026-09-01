@@ -35,17 +35,11 @@ PUBLIC_ROOT_FILES = (
     ".well-known/security.txt",
 )
 
-PUBLIC_ASSET_FILES = (
-    "assets/goreecloud-logo.svg",
-    "assets/platform/adguard-home.svg",
-    "assets/platform/caddy.svg",
-    "assets/platform/debian.svg",
-    "assets/platform/docker.png",
-    "assets/platform/netbird.svg",
-    "assets/platform/proxmox.svg",
-    "assets/platform/uptime-kuma.svg",
-    "assets/roadmap/frigate.svg",
-    "assets/roadmap/home-assistant.png",
+# These upstream service marks are retained only as reviewed source/provenance
+# history. They represented earlier third-party service cards and MUST NOT enter
+# the current GoreeCloud-native public artifact unless a future, separately
+# reviewed third-party-reference surface explicitly re-authorizes them.
+RETIRED_SOURCE_ONLY_ASSET_FILES = (
     "assets/services/actual-budget.png",
     "assets/services/audiobookshelf.svg",
     "assets/services/element.svg",
@@ -58,6 +52,19 @@ PUBLIC_ASSET_FILES = (
     "assets/services/paperless-ngx.svg",
     "assets/services/stirling-pdf.png",
     "assets/services/vaultwarden.svg",
+)
+
+PUBLIC_ASSET_FILES = (
+    "assets/goreecloud-logo.svg",
+    "assets/platform/adguard-home.svg",
+    "assets/platform/caddy.svg",
+    "assets/platform/debian.svg",
+    "assets/platform/docker.png",
+    "assets/platform/netbird.svg",
+    "assets/platform/proxmox.svg",
+    "assets/platform/uptime-kuma.svg",
+    "assets/roadmap/frigate.svg",
+    "assets/roadmap/home-assistant.png",
     "assets/suite/ai.svg",
     "assets/suite/backup.svg",
     "assets/suite/bookmarks.svg",
@@ -152,6 +159,13 @@ def main() -> int:
     try:
         if len(PUBLIC_FILES) != len(set(PUBLIC_FILES)):
             return fail("public file allowlist contains a duplicate path")
+
+        retired_overlap = sorted(set(PUBLIC_ASSET_FILES).intersection(RETIRED_SOURCE_ONLY_ASSET_FILES))
+        if retired_overlap:
+            return fail(
+                "source-only historical assets must never enter the public allowlist: "
+                + ", ".join(retired_overlap)
+            )
 
         sources = [ROOT / relative for relative in PUBLIC_FILES]
         for source in sources:

@@ -26,7 +26,6 @@ REMOTE_FILES = (
     "index.html",
     "404.html",
     "assets/app.js",
-    "assets/public-refresh.js",
     "assets/icon-refresh.js",
     "assets/styles.css",
     "assets/mobile-refresh.css",
@@ -41,7 +40,6 @@ REMOTE_FILES = (
 )
 CRITICAL_ASSET_PATHS = (
     "/assets/app.js",
-    "/assets/public-refresh.js",
     "/assets/icon-refresh.js",
     "/assets/mobile-refresh.css",
     "/assets/glaze-ui-2.1.0.css",
@@ -179,8 +177,7 @@ def verify_root_contract(base_url: str, errors: list[str]) -> None:
         "<title>Projects — GoreeCloud</title>",
         'name="goreecloud-glaze-ui" content="2.1.0"',
         'data-glaze-ui="2.1.0"',
-        "/assets/app.js?v=20260827-cache2",
-        "/assets/public-refresh.js?v=20260830-glaze21",
+        "/assets/app.js?v=20260831-source-native",
         "/assets/icon-refresh.js?v=20260828-identities1",
         "/assets/mobile-refresh.css?v=20260827-mobile2",
         "/assets/glaze-ui-2.1.0.css",
@@ -199,6 +196,7 @@ def verify_root_contract(base_url: str, errors: list[str]) -> None:
         if marker not in text:
             errors.append(f"Projects root is missing production marker: {marker}")
     for forbidden in (
+        "/assets/public-refresh.js",
         "Mesh Center · artwork pending approval",
         "data:image/svg+xml",
         'data-glaze-ui="1.5.0"',

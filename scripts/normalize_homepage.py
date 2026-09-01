@@ -91,7 +91,7 @@ def websites_section() -> str:
             "GoreeCloud",
             "https://www.goreecloud.com/",
             "goreecloud.com",
-            "The main public hub for GoreeCloud: platform direction, project story, the current 56-repository portfolio, and links into the wider public web ecosystem.",
+            "The main public hub for GoreeCloud: platform direction, project story, the current 57-repository portfolio, and links into the wider public web ecosystem.",
             "Primary Website", "active", "website-main", "GC",
         ),
         website_card(
@@ -215,9 +215,15 @@ def normalize_homepage(source: str) -> str:
     if band_count != 1:
         raise ValueError("duplicated homepage principle band could not be removed")
 
+    # Canonicalize the public navigation independently rather than depending on
+    # the two legacy source anchors appearing as one whitespace-identical pair.
     normalized = normalized.replace(
-        '<a href="#services">Suite</a>\n        <a href="#capabilities">Capabilities</a>',
-        '<a href="#websites">Websites</a>\n        <a href="https://suite.goreecloud.com/">Suite</a>',
+        '<a href="#services">Suite</a>',
+        '<a href="#websites">Websites</a>',
+    )
+    normalized = normalized.replace(
+        '<a href="#capabilities">Capabilities</a>',
+        '<a href="https://suite.goreecloud.com/">Suite</a>',
     )
 
     normalized, action_count = HERO_ACTIONS.subn(
@@ -251,6 +257,9 @@ def normalize_homepage(source: str) -> str:
         raise ValueError("Suite application/capability cards must live on suite.goreecloud.com, not the main homepage")
     if normalized.count('id="websites"') != 1:
         raise ValueError("homepage must contain exactly one GoreeCloud websites section")
+    for stale_anchor in ('href="#services"', 'href="#capabilities"'):
+        if stale_anchor in normalized:
+            raise ValueError(f"homepage contains an orphaned legacy navigation target after normalization: {stale_anchor}")
     for domain in EXPECTED_WEBSITE_DOMAINS:
         if normalized.count(f'<p class="service-kicker">{domain}</p>') != 1:
             raise ValueError(f"homepage website portfolio must show destination domain exactly once: {domain}")

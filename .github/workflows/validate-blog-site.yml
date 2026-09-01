@@ -5,12 +5,15 @@ on:
     paths:
       - 'sites/blog/**'
       - 'scripts/validate_blog_site.py'
+      - 'scripts/browser_satellite_responsive.py'
       - '.github/workflows/validate-blog-site.yml'
   push:
     branches: [main]
     paths:
       - 'sites/blog/**'
       - 'scripts/validate_blog_site.py'
+      - 'scripts/browser_satellite_responsive.py'
+      - '.github/workflows/validate-blog-site.yml'
 
 permissions:
   contents: read
@@ -27,3 +30,5 @@ jobs:
           persist-credentials: false
       - name: Validate GoreeCloud Blog
         run: python3 scripts/validate_blog_site.py
+      - name: Exercise Blog responsive layout in Chrome
+        run: python3 scripts/browser_satellite_responsive.py --site blog
