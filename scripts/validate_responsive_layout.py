@@ -28,6 +28,7 @@ def validate() -> list[str]:
     for marker, label in (
         ("body.glaze-canvas .site-header", "Main header stays in document flow"),
         ("@media (max-width: 820px)", "Main tablet breakpoint exists"),
+        ("grid-column: 1 / -1;\n    width: 100%;\n    max-width: none;\n    margin-inline: 0;\n    justify-self: stretch;", "Main website cards fill the entire single-column row"),
         ("@media (max-width: 600px)", "Main phone breakpoint exists"),
         (".timeline,\n  .how-flow,\n  #platform .service-grid,\n  .roadmap-grid,\n  .social-grid {\n    grid-template-columns: 1fr;", "Main dense content grids collapse to one column on phones"),
         (".repository-teaser-stats { grid-template-columns: 1fr; }", "Main repository stats collapse at narrow phone width"),
