@@ -101,8 +101,10 @@ def set_viewport(session: str, width: int, height: int) -> None:
 def row_capacity(rects: list[dict[str, float]]) -> int:
     if not rects:
         return 0
-    first_top = float(rects[0]["top"])
-    return sum(1 for rect in rects if abs(float(rect["top"]) - first_top) <= 2)
+    return max(
+        sum(1 for candidate in rects if abs(float(candidate["top"]) - float(rect["top"])) <= 2)
+        for rect in rects
+    )
 
 
 def state_script(site: str) -> str:
