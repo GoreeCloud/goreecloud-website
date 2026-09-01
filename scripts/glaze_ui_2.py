@@ -1,10 +1,9 @@
 """Glaze UI 2.1 public-site normalization helpers.
 
 The main GoreeCloud site has several deployable HTML templates. This helper keeps
-all of them on the same Stable Glaze UI contract without requiring duplicated
-version wiring in generated and hand-authored pages. It also corrects legacy
-content that remains in source templates before the isolated public artifact is
-validated and deployed.
+all of them on the same Stable Glaze UI contract and preserves compatibility for
+older source fragments while the canonical templates are made source-native.
+Current public facts must remain authoritative in source and generated artifacts.
 """
 
 from __future__ import annotations
@@ -78,7 +77,11 @@ def apply_glaze_ui_2(html: str) -> str:
         ('Stable 2.0', 'Stable 2.1'),
         (
             'The public portfolio uses Glaze UI 2.0.0 Stable as its production design target.',
+            'The public portfolio uses Glaze UI 2.1.0 Stable as its current design target; each independently deployed site must still earn exact-revision deployment acceptance.',
+        ),
+        (
             'The public portfolio is migrating to Glaze UI 2.1.0 Stable as its current design target; each independently deployed site must still earn exact 2.1 deployment acceptance.',
+            'The public portfolio uses Glaze UI 2.1.0 Stable as its current design target; each independently deployed site must still earn exact-revision deployment acceptance.',
         ),
         (
             'The GoreeCloud Design Center for Glaze UI 2.0.0 Stable: interaction, material, adaptive form factors, accessibility, motion, visual language, and design-system governance. Glaze UI 2.1 remains Candidate.',
@@ -88,7 +91,8 @@ def apply_glaze_ui_2(html: str) -> str:
             'Glaze UI 2.1 remains Candidate and is not a Stable consumer-conformance target.',
             'Glaze UI 2.1.0 is Stable; each downstream consumer must still earn repository-local acceptance for its supported scope.',
         ),
-        ('current 53-repository portfolio', 'current 56-repository portfolio'),
+        ('current 53-repository portfolio', 'current 57-repository portfolio'),
+        ('current 56-repository portfolio', 'current 57-repository portfolio'),
         ('the five substantive platform systems', 'the six substantive platform systems'),
         (
             'Glaze UI, Privacy Shield, Wardveil Security, Everkeep, and GoreeCloud Mesh remain substantive platform systems',

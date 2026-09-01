@@ -35,7 +35,10 @@ REQUIRED_COPY = (
     "platform-wide first-party security system and shared security plane",
     "Foundation 0.9",
     "Sentinel Fold",
-    "production ClamAV runtime remains unaccepted",
+    "Six complementary platform systems",
+    "GoreeCloud Identity",
+    "production ClamAV scanner runtime is deployed and accepted at the scanner-evidence layer",
+    "does not establish end-to-end Wardveil Scan application acceptance",
     "security@goreecloud.com",
     "/.well-known/security.txt",
     "does not currently offer a bug bounty",
@@ -47,7 +50,8 @@ REQUIRED_REPOSITORY_POLICY_COPY = (
     "platform-wide first-party security system and shared security plane",
     "Foundation 0.9",
     "Sentinel Fold",
-    "production ClamAV runtime remains unaccepted",
+    "production ClamAV scanner runtime is deployed and accepted at the scanner-evidence layer",
+    "does not establish end-to-end Wardveil Scan application acceptance",
     "security@goreecloud.com",
     POLICY_URL,
     CANONICAL_SECURITY_TXT,
@@ -57,6 +61,8 @@ REQUIRED_REPOSITORY_POLICY_COPY = (
 STALE_WARDVEIL_COPY = (
     "security identity and presentation layer",
     "Three complementary GoreeCloud foundations",
+    "Five complementary platform systems",
+    "production ClamAV runtime remains unaccepted",
 )
 
 

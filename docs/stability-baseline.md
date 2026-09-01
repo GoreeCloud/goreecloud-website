@@ -8,18 +8,19 @@ The repository-defined accepted release version remains **5.24.0** until a newer
 
 Version metadata never establishes a Stable production release by itself. A revision must satisfy the source, artifact, preview, and production acceptance requirements below.
 
-## Current reviewed migration baseline
+## Current reviewed public-web baseline
 
-The active modernization candidate moves the official GoreeCloud public-web ecosystem from the previously accepted Glaze UI 2.0 production baseline to **Glaze UI 2.1.0 Stable**.
+**Glaze UI 2.1.0 Stable** is the current design-system baseline for the official GoreeCloud public-web ecosystem. The ten currently production-accepted public destinations have recorded Glaze UI 2.1 acceptance in the authoritative GoreeCloud Public Websites project record. Identity Center has Glaze UI 2.1 source merged but remains separately gated for public-domain publication and exact production acceptance.
 
-The reviewed migration baseline is:
+The reviewed current baseline is:
 
-- **Glaze UI 2.1.0 Stable** is the current source design target.
+- **Glaze UI 2.1.0 Stable** is the current source and accepted public-web design target.
 - Stable promotion reference: `c49113eb8b93c267613fdf1bbca1f814495acad7` in `GoreeCloud/goreecloud-glaze-ui`.
-- **Glaze UI 2.0.0 Stable** is the immediately preceding historical production baseline. Its accepted deployment evidence does not automatically establish 2.1 conformance.
-- 2.1 source alignment and production acceptance are separate states. Every website must earn repository-local 2.1 acceptance for its exact candidate and exact deployed revision.
-- The authenticated GoreeCloud owner inventory reviewed on **2026-08-29** contains **56 repositories: 40 public, 16 private, across 13 functional groups**.
-- The official production public-web portfolio contains **10 active production destinations**: Main, Suite, Projects, Design Center, Privacy Center, Security Center, Continuity Center, Roadmap, Blog, and Archive.
+- **Glaze UI 2.0.0 Stable** is the immediately preceding historical baseline. Its evidence remains historical/rollback context and does not satisfy current 2.1 conformance.
+- Later source commits, content changes, or consumer updates do not inherit production acceptance from an earlier 2.1 deployment. Every website revision must earn repository-local acceptance for its exact candidate and exact deployed revision.
+- The authenticated GoreeCloud owner inventory reviewed on **2026-08-31** contains **57 repositories: 40 public, 17 private, across 13 functional groups**.
+- The official production public-web portfolio contains **10 production-accepted destinations on Glaze UI 2.1.0 Stable**: Main, Suite, Projects, Design Center, Privacy Center, Security Center, Continuity Center, Roadmap, Blog, and Archive.
+- **Identity Center** is the eleventh official first-party website surface. Its Glaze UI 2.1 source is merged; public-domain publication and exact production acceptance remain pending separate evidence gates.
 - The six substantive GoreeCloud platform systems are **Glaze UI, Privacy Shield, Wardveil Security, Everkeep, GoreeCloud Mesh, and GoreeCloud Identity**.
 - GoreeCloud Identity is authoritative for identity, authentication, authorization, accounts, devices, credentials, sessions, and delegated authority.
 - GoreeCloud Mesh coordinates explicit relationships, capabilities, lifecycle context, governance, events, and evidence exchange without taking over another platform system's authority.
@@ -44,11 +45,11 @@ A GoreeCloud website revision is considered stable only when all applicable cond
 
 A passing branch preview alone is not a stable release. **A merge alone is not a stable release.** Stability requires the reviewed source, isolated artifact, and deployed production bytes to agree.
 
-## Glaze UI 2.1 migration boundary
+## Glaze UI 2.1 implementation boundary
 
 Glaze UI is the substantive GoreeCloud design-system authority, not a decorative theme.
 
-The source migration target is Glaze UI 2.1.0 Stable and retains the material hierarchy:
+The current public-web target is Glaze UI 2.1.0 Stable and retains the material hierarchy:
 
 **Canvas → Surface → Soft Glaze → Glaze → Deep Glaze → Live Glaze**
 
@@ -82,7 +83,7 @@ Glaze UI 2.0.0 is retained only as historical/rollback evidence where appropriat
 
 ## Public website portfolio boundary
 
-The ten active production destinations are maintained as focused sites rather than one monolithic page:
+The ten production-accepted public destinations are maintained as focused sites rather than one monolithic page:
 
 1. `www.goreecloud.com` — main GoreeCloud public website.
 2. `suite.goreecloud.com` — GoreeCloud Suite application and service directory.
@@ -95,7 +96,7 @@ The ten active production destinations are maintained as focused sites rather th
 9. `blog.goreecloud.com` — public technical writing and development context.
 10. `archive.goreecloud.com` — selected historical milestones and superseded directions.
 
-Mesh Center and Identity Center remain substantive platform-system concepts. This baseline does not invent additional production domains for them where the canonical public-web project specification does not list one.
+Identity Center is the eleventh official first-party surface and remains publication/production-acceptance pending. Mesh Center remains a substantive platform-system concept without an invented production domain in this baseline.
 
 ## Repository portfolio and privacy boundary
 
@@ -105,7 +106,7 @@ The manifest records repository names, visibility, functional groups, and public
 
 The browser does not fetch this manifest or query GitHub at runtime. Repository cards and counts are source-controlled release facts rendered before publication. Browser search/filter controls operate only over already-rendered public HTML and remain local, ephemeral, and network-independent.
 
-Repository visibility does not determine runtime maturity.
+Repository visibility does not determine runtime maturity. The current inventory includes `goreecloud-index` as a private Development repository; its listing does not imply Stable or production acceptance.
 
 ## Current public runtime-status boundary
 
@@ -117,6 +118,7 @@ Representative reviewed boundaries include:
 - **GoreeCloud Notify:** release-candidate work remains distinct from any still-active transitional production notification service until controlled cutover is accepted.
 - **GoreeCloud Search:** public production claims remain limited to the accepted replacement scope recorded by its project evidence.
 - **GoreeCloud Monitoring:** active-development/replacement language must not imply a cutover that has not been accepted.
+- **GoreeCloud Index:** Development-only source status must not be presented as a Stable or production-accepted universal search service.
 
 A public repository, successful build, green CI run, release candidate, platform identity, or deployable source tree does not automatically establish production acceptance, security protection, privacy compliance, recoverability, design conformance, or native-rebuild completion.
 
@@ -142,7 +144,7 @@ Future dynamic features must define their own authentication, authorization, obs
 
 ## Governance and release boundaries
 
-This website migration does not itself authorize a:
+This website modernization does not itself authorize a:
 
 - repository visibility change;
 - DNS change;

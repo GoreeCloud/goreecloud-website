@@ -49,10 +49,11 @@ class ProjectPortfolioContractTests(unittest.TestCase):
         self.assertIn('href="https://github.com/GoreeCloud/goreecloud-identity"', PUBLIC_HOME)
 
     def test_manifest_is_current_reviewed_inventory(self) -> None:
+        self.assertEqual(MANIFEST["as_of"], "2026-08-31")
         self.assertEqual(MANIFEST["counts"], {
-            "total": 56,
+            "total": 57,
             "public": 40,
-            "private": 16,
+            "private": 17,
             "functional_groups": 13,
         })
         names = {repo["name"] for repo in REPOSITORIES}
@@ -63,6 +64,7 @@ class ProjectPortfolioContractTests(unittest.TestCase):
             "goreecloud-app-store",
             "goreecloud-file-manager",
             "goreecloud-maps",
+            "goreecloud-index",
             "goreecloud-branding-assets",
             "goreecloud-vault-server",
         ):
@@ -75,9 +77,10 @@ class ProjectPortfolioContractTests(unittest.TestCase):
             name = repository["name"]
             with self.subTest(repository=name):
                 self.assertEqual(PUBLIC_DIRECTORY.count(f"<h4>{name}</h4>"), 1)
-        self.assertIn("56</strong><span>current repositories", PUBLIC_DIRECTORY)
-        self.assertIn("40</strong><span>public repositories", PUBLIC_DIRECTORY)
-        self.assertIn("16</strong><span>private repositories", PUBLIC_DIRECTORY)
+        counts = MANIFEST["counts"]
+        self.assertIn(f"{counts['total']}</strong><span>current repositories", PUBLIC_DIRECTORY)
+        self.assertIn(f"{counts['public']}</strong><span>public repositories", PUBLIC_DIRECTORY)
+        self.assertIn(f"{counts['private']}</strong><span>private repositories", PUBLIC_DIRECTORY)
 
     def test_repository_links_preserve_visibility_boundary(self) -> None:
         for name in PUBLIC_REPOSITORIES:
@@ -89,7 +92,7 @@ class ProjectPortfolioContractTests(unittest.TestCase):
 
     def test_current_design_and_platform_truth_is_visible_in_final_homepage(self) -> None:
         for marker in (
-            "current 56-repository portfolio",
+            "current 57-repository portfolio",
             "Glaze UI 2.1.0 Stable",
             "Ten independently deployed public destinations",
             "Identity Center is the eleventh official first-party surface",
