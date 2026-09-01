@@ -28,7 +28,6 @@ def validate() -> list[str]:
     for marker, label in (
         ("body.glaze-canvas .site-header", "Main header stays in document flow"),
         ("@media (max-width: 820px)", "Main tablet breakpoint exists"),
-        ("grid-column: 1 / -1;\n    width: 100%;\n    max-width: none;\n    margin-inline: 0;\n    justify-self: stretch;", "Main website cards fill the entire single-column row"),
         ("@media (max-width: 600px)", "Main phone breakpoint exists"),
         (".timeline,\n  .how-flow,\n  #platform .service-grid,\n  .roadmap-grid,\n  .social-grid {\n    grid-template-columns: 1fr;", "Main dense content grids collapse to one column on phones"),
         (".repository-teaser-stats { grid-template-columns: 1fr; }", "Main repository stats collapse at narrow phone width"),
@@ -36,6 +35,30 @@ def validate() -> list[str]:
         (".site-nav.open { grid-template-columns: 1fr; }", "Main navigation becomes one column at the narrowest width"),
     ):
         require(homepage, marker, label, errors)
+
+    websites = text("css/websites.css")
+    for marker, label in (
+        ("@media (max-width: 820px)", "Website directory single-column breakpoint exists"),
+        (".websites-section .website-grid > .website-card:nth-child(n)", "Website directory overrides high-specificity desktop spans on narrow screens"),
+        ("grid-column: 1 / -1;", "Website cards reset to the complete narrow grid row"),
+        ("inline-size: 100%;", "Website cards fill the complete narrow row"),
+        ("max-inline-size: none;", "Website cards have no narrow max-size cap"),
+    ):
+        require(websites, marker, label, errors)
+
+    repositories = text("css/repositories.css")
+    for marker, label in (
+        (".glaze-canvas .site-header { position: relative; inset-block-start: auto; }", "Repository directory header stays in document flow"),
+        ("@media (max-width: 900px)", "Repository directory collapses to one card column before phone width"),
+        (".repo-grid { grid-template-columns: 1fr; }", "Repository cards become one readable column"),
+        ("@media (max-width: 720px)", "Repository mobile navigation breakpoint exists"),
+        (".site-header .site-nav { position: static;", "Repository mobile navigation stays in document flow"),
+        ("grid-template-columns: repeat(2, minmax(0, 1fr));", "Repository phone navigation uses deliberate touch columns"),
+        (".site-header .site-nav a { min-height: 48px;", "Repository navigation preserves the 48px target floor"),
+        ("@media (max-width: 420px) { .site-header .site-nav.open { grid-template-columns: 1fr; }", "Repository navigation becomes one column at narrow width"),
+        (".repo-visibility-buttons { grid-template-columns: 1fr; }", "Repository visibility filters stack on phones"),
+    ):
+        require(repositories, marker, label, errors)
 
     projects = text("sites/projects/assets/mobile-refresh.css")
     for marker, label in (
@@ -85,7 +108,7 @@ def main() -> int:
         for error in errors:
             print(f"- {error}")
         return 1
-    print("Responsive layout source contract passed for Main, Projects, Blog, Roadmap, and Archive.")
+    print("Responsive layout source contract passed for Main, Repositories, Projects, Blog, Roadmap, and Archive.")
     return 0
 
 
