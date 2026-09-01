@@ -79,6 +79,9 @@ jobs:
       - name: Validate Glaze UI design contract
         run: python scripts/validate_glaze_ui.py
 
+      - name: Validate responsive layout contract
+        run: python scripts/validate_responsive_layout.py
+
       - name: Validate application identity
         run: python scripts/validate_app_identity.py
 
