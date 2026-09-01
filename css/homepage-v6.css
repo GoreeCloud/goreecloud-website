@@ -417,8 +417,14 @@ html { scroll-padding-top: 24px; }
     grid-template-columns: 1fr;
   }
 
+  /* Full-width means full rendered row width, not merely one logical grid start.
+   * Reset every desktop span/size constraint so all eleven cards align on phone. */
   .website-card:nth-child(n) {
-    grid-column: 1;
+    grid-column: 1 / -1;
+    width: 100%;
+    max-width: none;
+    margin-inline: 0;
+    justify-self: stretch;
   }
 
   .website-card:nth-child(1) .website-preview-browser {
