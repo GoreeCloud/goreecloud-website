@@ -4,11 +4,13 @@ on:
   pull_request:
     paths:
       - 'sites/roadmap/**'
+      - 'scripts/browser_satellite_responsive.py'
       - '.github/workflows/validate-roadmap-site.yml'
   push:
     branches: [main]
     paths:
       - 'sites/roadmap/**'
+      - 'scripts/browser_satellite_responsive.py'
       - '.github/workflows/validate-roadmap-site.yml'
 
 permissions:
@@ -23,7 +25,10 @@ jobs:
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
       - name: Compile validator
-        run: python3 -m py_compile sites/roadmap/validate.py
+        run: python3 -m py_compile sites/roadmap/validate.py scripts/browser_satellite_responsive.py
       - name: Validate roadmap website
         run: python3 sites/roadmap/validate.py
+      - name: Exercise Roadmap responsive layout in Chrome
+        run: python3 scripts/browser_satellite_responsive.py --site roadmap
