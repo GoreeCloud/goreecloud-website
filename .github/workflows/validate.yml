@@ -147,9 +147,13 @@ jobs:
           echo "Branch preview verification failed after $attempts attempts."
           exit 1
 
-      - name: Exercise pull request responsive layout in Chrome
+      - name: Exercise pull request homepage responsive layout in Chrome
         if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
         run: python scripts/browser_responsive_smoke.py --target branch-preview
+
+      - name: Exercise pull request repository directory in Chrome
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        run: python scripts/browser_repositories_smoke.py --target branch-preview
 
       - name: Verify production deployment after main update
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -167,6 +171,10 @@ jobs:
           echo "Production deployment verification failed after $attempts attempts."
           exit 1
 
-      - name: Exercise production responsive layout in Chrome
+      - name: Exercise production homepage responsive layout in Chrome
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: python scripts/browser_responsive_smoke.py --target production
+
+      - name: Exercise production repository directory in Chrome
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: python scripts/browser_repositories_smoke.py --target production
