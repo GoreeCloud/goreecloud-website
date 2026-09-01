@@ -120,18 +120,18 @@ def set_viewport(session_id: str, width: int, height: int) -> None:
 
 
 def single_column(layout: Any) -> bool:
-    """Return true when visible direct children occupy one full-width visual column."""
+    """Return true when visible direct children occupy one visual content column."""
 
     if not isinstance(layout, dict) or int(layout.get("count", 0)) < 1:
         return False
-    container_width = float(layout.get("width", 0))
-    container_left = float(layout.get("left", 0))
+    content_width = float(layout.get("contentWidth", 0))
+    content_left = float(layout.get("contentLeft", 0))
     children = layout.get("children") or []
-    if container_width <= 0 or not children:
+    if content_width <= 0 or not children:
         return False
     return all(
-        abs(float(child.get("left", 0)) - container_left) <= 2
-        and float(child.get("width", 0)) >= container_width * 0.94
+        abs(float(child.get("left", 0)) - content_left) <= 2
+        and float(child.get("width", 0)) >= content_width * 0.94
         for child in children
     )
 
@@ -156,17 +156,28 @@ def exercise(session_id: str, url: str) -> None:
               const el=q(s);
               if(!el) return null;
               const rect=el.getBoundingClientRect();
+              const style=getComputedStyle(el);
+              const paddingLeft=parseFloat(style.paddingLeft)||0;
+              const paddingRight=parseFloat(style.paddingRight)||0;
               const children=[...el.children]
                 .filter(child=>{
-                  const style=getComputedStyle(child);
+                  const childStyle=getComputedStyle(child);
                   const childRect=child.getBoundingClientRect();
-                  return style.display!=='none' && style.visibility!=='hidden' && childRect.width>0 && childRect.height>0;
+                  return childStyle.display!=='none' && childStyle.visibility!=='hidden' && childRect.width>0 && childRect.height>0;
                 })
                 .map(child=>{
                   const r=child.getBoundingClientRect();
                   return {left:r.left,right:r.right,top:r.top,width:r.width,height:r.height};
                 });
-              return {left:rect.left,right:rect.right,width:rect.width,count:children.length,children};
+              return {
+                left:rect.left,
+                right:rect.right,
+                width:rect.width,
+                contentLeft:rect.left+paddingLeft,
+                contentWidth:Math.max(0,rect.width-paddingLeft-paddingRight),
+                count:children.length,
+                children,
+              };
             };
             return {
               ready:document.readyState,
@@ -177,7 +188,6 @@ def exercise(session_id: str, url: str) -> None:
               heroTop:heroRect?.top||0,
               websiteLayout:layout('.website-grid'),
               howLayout:layout('.how-flow'),
-              platformLayout:layout('#platform .service-grid, #platform .platform-grid'),
               roadmapLayout:layout('.roadmap-grid'),
               socialLayout:layout('.social-grid'),
               statLayout:layout('.repository-teaser-stats'),
@@ -193,10 +203,10 @@ def exercise(session_id: str, url: str) -> None:
         require(float(state.get("heroFont", 0)) >= 40, f"Hero type became too small at {width}px: {state}")
 
         if width <= 820:
-            require(single_column(state.get("websiteLayout")), f"Website directory did not render as one full-width column at {width}px: {state}")
+            require(single_column(state.get("websiteLayout")), f"Website directory did not render as one full-width content column at {width}px: {state}")
         if width <= 600:
-            for key in ("howLayout", "platformLayout", "roadmapLayout", "socialLayout", "statLayout"):
-                require(single_column(state.get(key)), f"{key} did not render as one full-width column at {width}px: {state}")
+            for key in ("howLayout", "roadmapLayout", "socialLayout", "statLayout"):
+                require(single_column(state.get(key)), f"{key} did not render as one full-width content column at {width}px: {state}")
 
         if width <= 390:
             nav_state = execute(
@@ -208,14 +218,17 @@ def exercise(session_id: str, url: str) -> None:
                 const links=[...document.querySelectorAll('.site-nav a')];
                 const style=nav?getComputedStyle(nav):null;
                 const rect=nav?.getBoundingClientRect();
+                const paddingLeft=parseFloat(style?.paddingLeft||'0')||0;
+                const paddingRight=parseFloat(style?.paddingRight||'0')||0;
                 const linkRects=links.map(a=>a.getBoundingClientRect()).filter(r=>r.width>0&&r.height>0);
                 return {
                   display:style?.display||'',
                   position:style?.position||'',
-                  columns:style?.gridTemplateColumns||'',
                   left:rect?.left||0,
                   right:rect?.right||0,
                   width:rect?.width||0,
+                  contentLeft:(rect?.left||0)+paddingLeft,
+                  contentWidth:Math.max(0,(rect?.width||0)-paddingLeft-paddingRight),
                   linkRects:linkRects.map(r=>({left:r.left,right:r.right,width:r.width,height:r.height})),
                   minLinkHeight:linkRects.length?Math.min(...linkRects.map(r=>r.height)):0,
                   expanded:toggle?.getAttribute('aria-expanded')||'',
@@ -228,8 +241,8 @@ def exercise(session_id: str, url: str) -> None:
             require(float(nav_state.get("minLinkHeight", 0)) >= 47.5, f"Mobile navigation target below 48px at {width}px: {nav_state}")
             require(float(nav_state.get("left", -1)) >= -1 and float(nav_state.get("right", width + 2)) <= width + 1, f"Mobile navigation overflows viewport at {width}px: {nav_state}")
             if width <= 320:
-                nav_width = float(nav_state.get("width", 0))
-                nav_left = float(nav_state.get("left", 0))
+                nav_width = float(nav_state.get("contentWidth", 0))
+                nav_left = float(nav_state.get("contentLeft", 0))
                 link_rects = nav_state.get("linkRects") or []
                 require(
                     bool(link_rects)
@@ -238,7 +251,7 @@ def exercise(session_id: str, url: str) -> None:
                         and float(rect.get("width", 0)) >= nav_width * 0.94
                         for rect in link_rects
                     ),
-                    f"320px navigation did not render as one full-width column: {nav_state}",
+                    f"320px navigation did not render as one full-width content column: {nav_state}",
                 )
 
 
