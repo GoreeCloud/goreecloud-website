@@ -75,17 +75,23 @@ def main() -> int:
         Path("index.html"), Path("repositories.html"), Path("404.html"), Path("privacy.html"),
         Path("security.html"), Path("_headers"), Path("robots.txt"), Path("sitemap.xml"),
         Path("site.webmanifest"), Path(".well-known/security.txt"), Path("css/glaze.css"),
-        Path("css/glaze-polish.css"), Path("css/glaze-ui-2.1.0.css"), Path("js/theme-init.js"),
+        Path("css/glaze-polish.css"), Path("css/glaze-ui-2.2.0.css"), Path("js/theme-init.js"),
     }
     for path in sorted(required_runtime_files - actual):
         errors.append(f"Required runtime file is missing from dist/: {path}")
 
     for page in ("index.html","repositories.html","404.html","privacy.html","security.html"):
         text=(DIST/page).read_text(encoding="utf-8")
-        for marker in ('name="goreecloud-glaze-ui" content="2.1.0"','data-glaze-ui="2.1.0"'):
-            if marker not in text: errors.append(f"Built {page} missing Glaze UI 2.1 marker: {marker}")
-        for stale in ('data-glaze-ui="1.5.0"','data-glaze-ui="2.0.0"'):
-            if stale in text: errors.append(f"Built {page} still activates a superseded Glaze UI bundle")
+        for marker in ('name="goreecloud-glaze-ui" content="2.2.0"','data-glaze-ui="2.2.0"'):
+            if marker not in text: errors.append(f"Built {page} missing Glaze UI 2.2 marker: {marker}")
+        for stale in (
+            'data-glaze-ui="1.5.0"','data-glaze-ui="2.0.0"','data-glaze-ui="2.1.0"',
+            'glaze-ui-1.5.0.css','glaze-ui-2.0.0.css','glaze-ui-2.1.0.css',
+        ):
+            if stale in text: errors.append(f"Built {page} still activates a superseded Glaze UI bundle: {stale}")
+
+    if Path("css/glaze-ui-2.1.0.css") in actual:
+        errors.append("Superseded Glaze UI 2.1.0 must not remain in the active public artifact allowlist.")
 
     if errors:
         print("Build artifact validation failed:")
@@ -94,7 +100,7 @@ def main() -> int:
         return 1
 
     total_bytes = sum((DIST / path).stat().st_size for path in actual)
-    print(f"Build artifact validation passed: {len(actual)} explicitly allowlisted files, {total_bytes} bytes, Glaze UI 2.1 active.")
+    print(f"Build artifact validation passed: {len(actual)} explicitly allowlisted files, {total_bytes} bytes, Glaze UI 2.2 active.")
     return 0
 
 
