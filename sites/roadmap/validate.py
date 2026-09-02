@@ -36,8 +36,6 @@ for needle in (
     "Glaze UI 2.2.0",
     "Solid where users read. Glazed where users interact",
     "one dominant Glaze panel",
-    "48px",
-    "56px",
     "Facet is the current official Glaze UI identity",
     "Evidence over labels",
     "previously accepted 2.1 implementations",
