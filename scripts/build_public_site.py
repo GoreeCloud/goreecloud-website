@@ -119,7 +119,7 @@ PUBLIC_STYLE_FILES = (
     "css/error.css",
     "css/glaze-polish.css",
     "css/glaze.css",
-    "css/glaze-ui-2.1.0.css",
+    "css/glaze-ui-2.2.0.css",
     "css/homepage-v6.css",
     "css/how-it-works.css",
     "css/platform.css",
@@ -145,7 +145,7 @@ PUBLIC_FILES = (
 
 # Every public HTML file is rendered through the same normalization boundary so
 # build-time output, artifact validation, and remote byte-integrity checks share
-# the exact Glaze UI 2.1 Stable representation.
+# the exact Glaze UI 2.2.0 Stable representation.
 GENERATED_HTML = {"index.html", "repositories.html", "privacy.html", "security.html", "404.html"}
 
 
