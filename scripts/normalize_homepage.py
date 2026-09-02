@@ -39,6 +39,7 @@ EXPECTED_WEBSITE_DOMAINS = (
 )
 
 PLATFORM_SYSTEM_LABELS = (
+    "GoreeCloud Manager",
     "Glaze UI",
     "Privacy Shield",
     "Wardveil Security",
@@ -98,7 +99,7 @@ def websites_section() -> str:
             "GoreeCloud Suite",
             "https://suite.goreecloud.com/",
             "suite.goreecloud.com",
-            "The dedicated home for GoreeCloud applications and services, umbrella capabilities, lifecycle status, product identity, and relationships to the six substantive platform systems.",
+            "The dedicated home for GoreeCloud applications and services, umbrella capabilities, lifecycle status, product identity, and relationships to the seven Integral Platform Systems.",
             "Dedicated Site", "growing", "website-suite", "SU",
         ),
         website_card(
@@ -112,7 +113,7 @@ def websites_section() -> str:
             "Glaze UI",
             "https://design.goreecloud.com/",
             "design.goreecloud.com",
-            "The GoreeCloud Design Center for Glaze UI 2.1.0 Stable: interaction, material, adaptive form factors, accessibility, motion, visual language, and design-system governance.",
+            "The GoreeCloud Design Center for Glaze UI 2.2.0 Stable: interaction, material, adaptive form factors, accessibility, motion, visual language, and design-system governance.",
             "Design Center", "active", "website-design", "GU",
         ),
         website_card(
@@ -161,7 +162,7 @@ def websites_section() -> str:
             "GoreeCloud Identity",
             "https://github.com/GoreeCloud/goreecloud-identity",
             "identity.goreecloud.com",
-            "The official Identity Center source for GoreeCloud accounts, authentication, authorization, devices, sessions, credentials, service identity, delegation, and recovery. Glaze UI 2.1 source is merged; public-domain publication and exact production acceptance remain separate gates.",
+            "The official Identity Center source for GoreeCloud accounts, authentication, authorization, devices, sessions, credentials, service identity, delegation, and recovery. Its recorded Glaze UI 2.1 source remains publication-gated; current Glaze UI 2.2 migration status must be established by Identity's own repository evidence.",
             "Publication Pending", "growing", "website-identity", "ID", "View source",
         ),
     ]
@@ -172,7 +173,7 @@ def websites_section() -> str:
         '        <div class="section-heading website-heading">\n'
         '          <p class="eyebrow">GoreeCloud websites</p>\n'
         '          <h2>Eleven official surfaces. One GoreeCloud ecosystem.</h2>\n'
-        '          <p>Ten independently deployed public destinations are production-accepted on Glaze UI 2.1.0 Stable. Identity Center is the eleventh official first-party surface: its Glaze UI 2.1 source is merged, while public-domain publication and exact production acceptance remain separately gated. Glaze UI, Privacy Shield, Wardveil Security, Everkeep, GoreeCloud Mesh, and GoreeCloud Identity remain six substantive platform systems with distinct design, privacy, security, continuity, coordination, identity, authentication, and authorization responsibilities. Public claims remain tied to actual implementation and applicable evidence.</p>\n'
+        '          <p>Glaze UI 2.2.0 Stable is the current source and design target. Ten independently deployed public destinations retain their last accepted production evidence on Glaze UI 2.1.0 Stable; that earlier acceptance does not automatically establish 2.2 production conformance. Identity Center is the eleventh official first-party surface and remains separately publication-gated. The seven Integral Platform Systems are GoreeCloud Manager, Glaze UI, Privacy Shield, Wardveil Security, Everkeep, GoreeCloud Mesh, and GoreeCloud Identity, with distinct operational visibility, design, privacy, security, continuity, coordination, identity, authentication, and authorization responsibilities. Public claims remain tied to actual implementation and applicable evidence.</p>\n'
         '        </div>\n'
         '        <div class="service-grid website-grid">\n'
         f'          {rendered_cards}\n'
@@ -270,10 +271,16 @@ def normalize_homepage(source: str) -> str:
     for label in PLATFORM_SYSTEM_LABELS:
         if label not in website_section:
             raise ValueError(f"homepage website ecosystem section must name current platform system: {label}")
-    if "Glaze UI 2.1.0 Stable" not in website_section:
+    if "Glaze UI 2.2.0 Stable" not in website_section:
         raise ValueError("homepage website ecosystem section must identify the current Stable Glaze UI target")
-    if "production-accepted" not in website_section or "Publication Pending" not in website_section:
-        raise ValueError("homepage website ecosystem section must preserve production and publication acceptance boundaries")
+    if "last accepted production evidence on Glaze UI 2.1.0 Stable" not in website_section:
+        raise ValueError("homepage website ecosystem section must preserve the historical production-acceptance boundary")
+    if "does not automatically establish 2.2 production conformance" not in website_section:
+        raise ValueError("homepage website ecosystem section must not inherit 2.1 production acceptance into 2.2")
+    if "Publication Pending" not in website_section:
+        raise ValueError("homepage website ecosystem section must preserve Identity publication gating")
+    if "six substantive platform systems" in website_section:
+        raise ValueError("homepage website ecosystem section must not publish the superseded six-system model")
     if "website-preview" in website_section or "website-preview-browser" in website_section:
         raise ValueError("simulated browser previews must not appear in the website directory")
     if website_section.count('class="website-mark"') != len(EXPECTED_WEBSITE_DOMAINS):
