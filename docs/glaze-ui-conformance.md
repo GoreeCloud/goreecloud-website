@@ -6,6 +6,7 @@
 - Canonical design-system repository: `GoreeCloud/goreecloud-glaze-ui`
 - Stable release revision used for this migration: `6731098b28dd0393faa878c70d989a221d714a20`
 - Historical rollback baseline: **2.1.0** at `c49113eb8b93c267613fdf1bbca1f814495acad7`
+- Migration evidence record: `docs/glaze-ui-2.2-migration-evidence.md`
 - Migration classification: **2.1.0 → 2.2.0 additive semantic refinement with explicit consumer work**
 - Conformance state: **Migration implementation in review; production eligibility remains false until repository-local source, rendered, accessibility, and deployment evidence is complete.**
 - Rendered/production acceptance: **Separate mandatory gate. Preview and production evidence must pass on the exact migration revision before this record may be upgraded.**
