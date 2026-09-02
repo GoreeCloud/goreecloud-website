@@ -22,6 +22,7 @@ GLAZE_CONFORMANCE_PATH = ROOT / "docs" / "glaze-ui-conformance.md"
 GLAZE_ADOPTION_PATH = ROOT / "docs" / "glaze-ui-2.1-public-sites.md"
 README_PATH = ROOT / "README.md"
 SEMVER_RE = re.compile(r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$")
+GLAZE_21_PROMOTION_REVISION = "c49113eb8b93c267613fdf1bbca1f814495acad7"
 
 
 class StabilityBaselineTests(unittest.TestCase):
@@ -117,13 +118,14 @@ class StabilityBaselineTests(unittest.TestCase):
             f"Target Glaze UI version: **{GLAZE_VERSION}**",
             GLAZE_PROMOTION_REVISION,
             "GoreeCloud/goreecloud-glaze-ui",
-            "Glaze UI 2.1.0 Stable web contract prepared",
-            "same-origin Glaze UI 2.1.0 web layer",
-            "Content is solid. Interaction is glazed.",
+            "Glaze UI 2.2.0 Conformance",
+            "same-origin Glaze UI 2.2.0 consumed-subset layer",
+            "Solid where users read. Glazed where users interact.",
+            "one dominant Glaze panel",
             "48px general interaction floor",
             "56px Touch Assistance floor",
-            "Reduced Motion removes nonessential transformation and travel.",
-            "Reduced Transparency resolves optical material to solid hierarchy.",
+            "Reduced Motion behavior",
+            "Reduced Transparency with solid fallbacks",
             "No production Glaze UI exception is recorded",
         ):
             self.assertIn(marker, self.glaze_conformance)
@@ -131,7 +133,7 @@ class StabilityBaselineTests(unittest.TestCase):
     def test_21_adoption_record_preserves_acceptance_boundary(self) -> None:
         for marker in (
             "Stable source target: **2.1.0**",
-            GLAZE_PROMOTION_REVISION,
+            GLAZE_21_PROMOTION_REVISION,
             "Content is solid. Interaction is glazed.",
             "56px Touch Assistance floor",
             "Accepted production web portfolio: **10 independently deployed destinations on Glaze UI 2.1.0 Stable**",
@@ -140,6 +142,7 @@ class StabilityBaselineTests(unittest.TestCase):
             "Glaze UI 2.0.0 remains the immediately preceding historical Stable baseline",
         ):
             self.assertIn(marker, self.glaze_adoption)
+        self.assertNotIn(GLAZE_PROMOTION_REVISION, self.glaze_adoption)
 
 
 if __name__ == "__main__":
