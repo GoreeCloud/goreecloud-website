@@ -1,0 +1,139 @@
+schema_version: "1.0"
+component:
+  id: goreecloud.website
+  product_name: GoreeCloud Website
+  kind: website
+  repository: GoreeCloud/goreecloud-website
+  lifecycle: Development
+  version: "5.24.0"
+  supported_platforms:
+    - web
+    - cloudflare-pages
+  user_facing: true
+api:
+  version: null
+  endpoints: []
+glaze_ui:
+  applicable: true
+  required_version: "2.2.0"
+  implemented_version: "2.1.0"
+  migration_status: required
+  evidence:
+    - website-readme
+platform_systems:
+  manager:
+    status: "Applicable — Nonconformant"
+    justification: The website is not yet represented through the canonical Mesh platform registry for Manager operational visibility.
+    evidence:
+      - website-readme
+  identity:
+    status: "Not Applicable — Justified"
+    justification: This repository is the anonymous public website surface and does not implement an authenticated account or sign-in surface.
+    evidence:
+      - website-readme
+  wardveil_security:
+    status: "Applicable — Nonconformant"
+    justification: Repository security controls exist, but current Wardveil Security acceptance evidence is not recorded in this contract.
+    evidence:
+      - website-readme
+  privacy_shield:
+    status: "Applicable — Nonconformant"
+    justification: The site is intentionally tracking-free and privacy-preserving, but current Privacy Shield acceptance evidence is not recorded in this contract.
+    evidence:
+      - website-readme
+  everkeep:
+    status: "Applicable — Nonconformant"
+    justification: Production publication exists, but verified current recovery evidence is not recorded here and deployment success is not restore evidence.
+    evidence:
+      - website-readme
+  mesh:
+    status: "Applicable — Nonconformant"
+    justification: Canonical Mesh registration and platform evidence publication have not been established for the website.
+    evidence:
+      - website-readme
+  glaze_ui:
+    status: "Applicable — Migration Required"
+    justification: The repository currently targets Glaze UI 2.1.0 while the current Stable platform baseline is 2.2.0.
+    evidence:
+      - website-readme
+mesh:
+  registration: required
+  capabilities: []
+  dependencies: []
+  published_events: []
+  consumed_events: []
+  evidence: []
+health:
+  liveness: []
+  readiness: []
+recovery:
+  backup_required: true
+  backup_status: unknown
+  restore_required: true
+  restore_status: required_missing
+  last_verified_restore: null
+  recovery_dependencies:
+    - canonical Git repository
+    - reproducible public-site build
+    - Cloudflare Pages project configuration
+    - DNS and publication configuration
+  documentation:
+    - README.md
+  evidence:
+    - website-readme
+data_portability:
+  export_capability: not_applicable
+  export_formats: []
+  last_export_validation: null
+  portability_requirements:
+    - Static public content remains portable through canonical source and deterministic build output.
+  evidence:
+    - website-readme
+external_dependencies:
+  - id: cloudflare-pages
+    purpose: Production publication of the reviewed static website artifact.
+    required: true
+    compatibility: Exact candidate and post-merge deployment verification remain required.
+  - id: goreecloud-branding-assets
+    purpose: Approved visual asset authority.
+    required: true
+    compatibility: Website must not invent official product marks when canonical assets are absent.
+compatibility:
+  platform_releases: []
+  api_requirements: []
+  schema_requirements:
+    - goreecloud.platform/1.0
+  component_requirements:
+    - Glaze UI 2.2.0
+    - GoreeCloud Mesh platform registry v1 before Manager platform-overview acceptance
+conformance:
+  declared_state: migration_required
+  stable_eligible: false
+  checks:
+    - {id: glaze-ui, mandatory: true, status: pending, evidence: [website-readme], note: "Repository currently documents Glaze UI 2.1.0; 2.2 migration and acceptance are required."}
+    - {id: goreecloud-identity, mandatory: false, status: not_applicable, evidence: [website-readme], note: "Anonymous public surface; no sign-in or account authority in this repository."}
+    - {id: wardveil-security, mandatory: true, status: pending, evidence: [website-readme]}
+    - {id: privacy-shield, mandatory: true, status: pending, evidence: [website-readme]}
+    - {id: everkeep-recovery, mandatory: true, status: pending, evidence: [website-readme]}
+    - {id: mesh-registration, mandatory: true, status: pending, evidence: []}
+    - {id: api-compatibility, mandatory: false, status: not_applicable, evidence: [], note: "No public application API is owned by this static website repository."}
+    - {id: accessibility, mandatory: true, status: pending, evidence: [website-readme]}
+    - {id: platform-acceptance, mandatory: true, status: pending, evidence: [website-readme]}
+    - {id: backup, mandatory: true, status: pending, evidence: []}
+    - {id: restore, mandatory: true, status: pending, evidence: []}
+    - {id: export-portability, mandatory: false, status: not_applicable, evidence: [website-readme]}
+    - {id: security-validation, mandatory: true, status: pending, evidence: [website-readme]}
+    - {id: privacy-validation, mandatory: true, status: pending, evidence: [website-readme]}
+    - {id: required-documentation, mandatory: true, status: pass, evidence: [website-readme]}
+    - {id: required-tests, mandatory: true, status: pending, evidence: [website-readme]}
+    - {id: release-evidence, mandatory: true, status: pending, evidence: [website-readme]}
+evidence:
+  acceptance:
+    - id: website-readme
+      kind: documentation
+      location: README.md
+      revision: null
+      observed_at: null
+      producer: GoreeCloud/goreecloud-website
+      description: Repository-local current package, deployment, Glaze UI 2.1 baseline, privacy, accessibility, validation, and release-boundary documentation. Documentation alone does not satisfy implementation gates.
+  release: []
