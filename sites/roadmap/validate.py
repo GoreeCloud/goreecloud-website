@@ -34,7 +34,7 @@ for needle in (
     "GoreeCloud App Store",
     "Seven Integral Platform Systems",
     "Glaze UI 2.2.0",
-    "Solid where users read. Glazed where users interact.",
+    "Solid where users read. Glazed where users interact",
     "one dominant Glaze panel",
     "48px",
     "56px",
