@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "as_of": "2026-08-31",
+  "as_of": "2026-09-01",
   "section_title": "GoreeCloud Suite",
   "section_description": "The GoreeCloud Suite is the first-party application layer of GoreeCloud: user-facing software, client applications, platform services, operations tools, developer systems, and intelligence experiences that share GoreeCloud design, privacy, security, resilience, and coordination contracts.",
   "groups": [
@@ -104,6 +104,19 @@
           "source_repository": "GoreeCloud/goreecloud-branding-assets",
           "source_path": "products/drive/app-icon.svg",
           "source_ref": "dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc"
+        },
+        {
+          "id": "file-manager",
+          "name": "GoreeCloud File Manager",
+          "description": "Native GoreeCloud file-management application for browsing and controlling local, cloud, synchronized, removable, network, backup, and continuity file contexts.",
+          "role": "Unified provider-spanning file browsing and control surface; distinct from GoreeCloud Drive.",
+          "status": "Active Development",
+          "status_class": "growing",
+          "icon": "assets/suite/file-manager.svg",
+          "icon_blob": "c723a84eb2ecb29ef8a0cef845eb1d2cff714cd0",
+          "source_repository": "GoreeCloud/goreecloud-branding-assets",
+          "source_path": "products/file-manager/app-icon.svg",
+          "source_ref": "715a2d13e92474a96b107cc66b5f0c026d5911f4"
         },
         {
           "id": "sync",
@@ -266,6 +279,19 @@
           "source_repository": "GoreeCloud/goreecloud-branding-assets",
           "source_path": "products/location/app-icon.svg",
           "source_ref": "dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc"
+        },
+        {
+          "id": "maps",
+          "name": "GoreeCloud Maps",
+          "description": "GoreeCloud mapping, spatial exploration, route understanding, and navigation application under active development.",
+          "role": "Map and navigation experience; GoreeCloud Location remains the positioning/location-data authority.",
+          "status": "Active Development",
+          "status_class": "growing",
+          "icon": "assets/suite/maps.svg",
+          "icon_blob": "07b6e52e04c95e1ec9f703a9d323cf799481351c",
+          "source_repository": "GoreeCloud/goreecloud-branding-assets",
+          "source_path": "products/maps/app-icon.svg",
+          "source_ref": "715a2d13e92474a96b107cc66b5f0c026d5911f4"
         }
       ]
     },
@@ -330,6 +356,19 @@
           "source_repository": "GoreeCloud/goreecloud-branding-assets",
           "source_path": "products/manager/app-icon.svg",
           "source_ref": "dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc"
+        },
+        {
+          "id": "app-store",
+          "name": "GoreeCloud App Store",
+          "description": "Native GoreeCloud application for discovering, obtaining, updating, and opening authorized GoreeCloud applications and services.",
+          "role": "First-party software catalog, acquisition, update, and launch surface.",
+          "status": "Active Development",
+          "status_class": "growing",
+          "icon": "assets/suite/app-store.svg",
+          "icon_blob": "05c66a2a4c8edcc194183bb8ffb10ca90d8eaeef",
+          "source_repository": "GoreeCloud/goreecloud-branding-assets",
+          "source_path": "products/app-store/app-icon.svg",
+          "source_ref": "715a2d13e92474a96b107cc66b5f0c026d5911f4"
         },
         {
           "id": "identity",
@@ -466,6 +505,19 @@
           "source_repository": "GoreeCloud/goreecloud-branding-assets",
           "source_path": "products/ai/app-icon.svg",
           "source_ref": "dad7b8bbd7ea4ee692e090b1b220513a64f9ccfc"
+        },
+        {
+          "id": "index",
+          "name": "GoreeCloud Index",
+          "description": "Privacy-first universal search and indexing layer coordinating authorized providers while preserving source ownership, provenance, and platform authority boundaries.",
+          "role": "Universal indexing and authorized retrieval authority; distinct from GoreeCloud Search and Launcher.",
+          "status": "Active Development",
+          "status_class": "growing",
+          "icon": "assets/suite/index.svg",
+          "icon_blob": "797cfbd9ae490e37b5a90efe02905159158a8e88",
+          "source_repository": "GoreeCloud/goreecloud-branding-assets",
+          "source_path": "products/index/app-icon.svg",
+          "source_ref": "715a2d13e92474a96b107cc66b5f0c026d5911f4"
         },
         {
           "id": "code",
