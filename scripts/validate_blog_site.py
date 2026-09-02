@@ -23,7 +23,7 @@ for marker in [
     'Forgejo is the initial replaceable infrastructure foundation',
     'Documents, Messenger, Gateway, Quill, File Manager, Maps, and App Store broaden the native portfolio',
     'Glaze UI 2.2 is the current Stable production target',
-    'Solid where users read. Glazed where users interact.',
+    'Solid where users read. Glazed where users interact',
     'one dominant Glaze panel',
     'historical rollback baseline',
     'repository-local acceptance',
