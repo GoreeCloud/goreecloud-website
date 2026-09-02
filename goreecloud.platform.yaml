@@ -16,10 +16,11 @@ api:
 glaze_ui:
   applicable: true
   required_version: "2.2.0"
-  implemented_version: "2.1.0"
-  migration_status: required
+  implemented_version: "2.2.0"
+  migration_status: in_progress
   evidence:
-    - website-readme
+    - website-glaze-2-2-source
+    - website-glaze-2-2-migration-record
 platform_systems:
   manager:
     status: "Applicable — Nonconformant"
@@ -53,9 +54,10 @@ platform_systems:
       - website-readme
   glaze_ui:
     status: "Applicable — Migration Required"
-    justification: The repository currently targets Glaze UI 2.1.0 while the current Stable platform baseline is 2.2.0.
+    justification: Source-native Glaze UI 2.2.0 implementation is present on the migration branch, but exact-revision rendered, accessibility, branch-preview, and post-merge production acceptance are still mandatory before conformance may be claimed.
     evidence:
-      - website-readme
+      - website-glaze-2-2-source
+      - website-glaze-2-2-migration-record
 mesh:
   registration: required
   capabilities: []
@@ -110,23 +112,23 @@ conformance:
   declared_state: migration_required
   stable_eligible: false
   checks:
-    - {id: glaze-ui, mandatory: true, status: pending, evidence: [website-readme], note: "Repository currently documents Glaze UI 2.1.0; 2.2 migration and acceptance are required."}
+    - {id: glaze-ui, mandatory: true, status: pending, evidence: [website-glaze-2-2-source, website-glaze-2-2-migration-record], note: "Glaze UI 2.2.0 source migration is implemented; rendered, accessibility, preview, and production acceptance remain outstanding."}
     - {id: goreecloud-identity, mandatory: false, status: not_applicable, evidence: [website-readme], note: "Anonymous public surface; no sign-in or account authority in this repository."}
     - {id: wardveil-security, mandatory: true, status: pending, evidence: [website-readme]}
     - {id: privacy-shield, mandatory: true, status: pending, evidence: [website-readme]}
     - {id: everkeep-recovery, mandatory: true, status: pending, evidence: [website-readme]}
     - {id: mesh-registration, mandatory: true, status: pending, evidence: []}
     - {id: api-compatibility, mandatory: false, status: not_applicable, evidence: [], note: "No public application API is owned by this static website repository."}
-    - {id: accessibility, mandatory: true, status: pending, evidence: [website-readme]}
-    - {id: platform-acceptance, mandatory: true, status: pending, evidence: [website-readme]}
+    - {id: accessibility, mandatory: true, status: pending, evidence: [website-glaze-2-2-migration-record]}
+    - {id: platform-acceptance, mandatory: true, status: pending, evidence: [website-glaze-2-2-migration-record]}
     - {id: backup, mandatory: true, status: pending, evidence: []}
     - {id: restore, mandatory: true, status: pending, evidence: []}
     - {id: export-portability, mandatory: false, status: not_applicable, evidence: [website-readme]}
     - {id: security-validation, mandatory: true, status: pending, evidence: [website-readme]}
     - {id: privacy-validation, mandatory: true, status: pending, evidence: [website-readme]}
-    - {id: required-documentation, mandatory: true, status: pass, evidence: [website-readme]}
-    - {id: required-tests, mandatory: true, status: pending, evidence: [website-readme]}
-    - {id: release-evidence, mandatory: true, status: pending, evidence: [website-readme]}
+    - {id: required-documentation, mandatory: true, status: pass, evidence: [website-readme, website-glaze-2-2-migration-record]}
+    - {id: required-tests, mandatory: true, status: pending, evidence: [website-glaze-2-2-migration-record]}
+    - {id: release-evidence, mandatory: true, status: pending, evidence: [website-glaze-2-2-migration-record]}
 evidence:
   acceptance:
     - id: website-readme
@@ -135,5 +137,19 @@ evidence:
       revision: null
       observed_at: null
       producer: GoreeCloud/goreecloud-website
-      description: Repository-local current package, deployment, Glaze UI 2.1 baseline, privacy, accessibility, validation, and release-boundary documentation. Documentation alone does not satisfy implementation gates.
+      description: Repository-local package, deployment, privacy, accessibility, validation, and release-boundary documentation. Documentation alone does not satisfy implementation gates.
+    - id: website-glaze-2-2-source
+      kind: source
+      location: css/glaze-ui-2.2.0.css
+      revision: null
+      observed_at: null
+      producer: GoreeCloud/goreecloud-website
+      description: Repository-local Glaze UI 2.2.0 consumed-subset implementation pinned to canonical Stable release revision 6731098b28dd0393faa878c70d989a221d714a20. Source implementation alone does not establish rendered or production acceptance.
+    - id: website-glaze-2-2-migration-record
+      kind: documentation
+      location: docs/glaze-ui-2.2-migration-evidence.md
+      revision: null
+      observed_at: null
+      producer: GoreeCloud/goreecloud-website
+      description: Migration evidence ledger defining exact required automated, rendered, accessibility, preview, and post-merge production acceptance without claiming those gates have already passed.
   release: []
