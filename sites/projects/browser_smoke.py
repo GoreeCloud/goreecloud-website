@@ -212,14 +212,16 @@ def exercise_page(session_id: str, target_url: str, browser: str) -> None:
     require(initial.get("ready") == "complete", f"Projects document did not finish loading in {browser}: {initial}")
     require(initial.get("title") == "Projects — GoreeCloud", f"Unexpected Projects title in {browser}: {initial.get('title')!r}")
     require(int(initial.get("cards", 0)) >= MIN_PROJECT_CARDS, f"Projects rendered too few cards in {browser}: {initial}")
-    require(initial.get("glazeVersion") == "2.1.0", f"Projects did not expose the Glaze UI 2.1 document contract in {browser}: {initial}")
-    require(str(initial.get("cardBackdrop", "none")) in ("none", ""), f"Durable Projects content cards must remain solid under Glaze UI 2.1 in {browser}: {initial}")
+    require(initial.get("glazeVersion") == "2.2.0", f"Projects did not expose the Glaze UI 2.2 document contract in {browser}: {initial}")
+    require(str(initial.get("cardBackdrop", "none")) in ("none", ""), f"Durable Projects content cards must remain solid under Glaze UI 2.2 in {browser}: {initial}")
+    require(str(initial.get("headerBackdrop", "none")) not in ("none", ""), f"Projects interaction/navigation header must retain bounded Glaze under Glaze UI 2.2 in {browser}: {initial}")
 
     resources = initial.get("resources") or []
     require(any("/assets/app.js?v=20260831-source-native" in resource for resource in resources), f"Headless {browser} did not load the source-native Projects app.js resource.")
     require(not any("/assets/public-refresh.js" in resource for resource in resources), f"Headless {browser} still loaded the superseded Projects public-refresh overlay.")
-    require(any("/assets/glaze-ui-2.1.0.css" in resource for resource in resources), f"Headless {browser} did not load the Glaze UI 2.1 stylesheet.")
-    require(not any("/assets/glaze-ui-2.0.0.css" in resource for resource in resources), f"Headless {browser} still loaded the superseded Glaze UI 2.0 stylesheet.")
+    require(any("/assets/glaze-ui-2.2.0.css" in resource for resource in resources), f"Headless {browser} did not load the Glaze UI 2.2 stylesheet.")
+    for superseded in ("/assets/glaze-ui-1.5.0.css", "/assets/glaze-ui-2.0.0.css", "/assets/glaze-ui-2.1.0.css"):
+        require(not any(superseded in resource for resource in resources), f"Headless {browser} still loaded superseded Glaze UI resource {superseded}.")
 
     searched = execute(
         session_id,
@@ -316,7 +318,7 @@ def run(target: str, browser: str) -> int:
         wait_for_driver(browser)
         session_id = create_session(browser)
         exercise_page(session_id, target_url, browser)
-        print(f"Projects headless {browser} Glaze UI 2.1 runtime smoke passed for {target}: {target_url}")
+        print(f"Projects headless {browser} Glaze UI 2.2 runtime smoke passed for {target}: {target_url}")
         return 0
     except (WebDriverError, OSError, ValueError, json.JSONDecodeError) as error:
         print(f"Projects headless {browser} runtime smoke failed for {target}: {target_url}")

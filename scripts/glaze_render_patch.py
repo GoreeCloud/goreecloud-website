@@ -1,10 +1,10 @@
-"""Install the Glaze UI 2.0 normalization at the public HTML render boundary.
+"""Install the Glaze UI 2.2 normalization at the public HTML render boundary.
 
 This module is imported by the isolated site builder before any caller captures
-``render_repository_portfolio.render_public_file``. That makes the same reviewed
-render function available to the build artifact validator and the remote deployment
-verifier, so byte-for-byte checks compare Cloudflare output with the actual Glaze UI
-2.0 candidate rather than pre-normalized source templates.
+``render_repository_portfolio.render_public_file``. That keeps build artifact
+validation and remote deployment verification on the same exact 2.2.0 Stable
+representation. Source templates are validated separately and must not rely on
+this render patch as their only migration mechanism.
 """
 
 from __future__ import annotations

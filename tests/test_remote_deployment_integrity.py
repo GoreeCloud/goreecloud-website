@@ -54,19 +54,30 @@ class RemoteDeploymentIntegrityTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             verifier.remote_path_for_public_file("/absolute.txt")
 
-    def test_candidate_bytes_include_final_glaze_ui_21_transform(self) -> None:
+    def test_candidate_bytes_include_final_glaze_ui_22_transform(self) -> None:
         candidate = verifier.candidate_bytes("index.html").decode("utf-8")
-        self.assertIn('name="goreecloud-glaze-ui" content="2.1.0"', candidate)
-        self.assertIn('data-glaze-ui="2.1.0"', candidate)
+        self.assertIn('name="goreecloud-glaze-ui" content="2.2.0"', candidate)
+        self.assertIn('data-glaze-ui="2.2.0"', candidate)
         self.assertIn(
-            "Ten independently deployed public destinations are production-accepted on Glaze UI 2.1.0 Stable",
+            "Glaze UI 2.2.0 Stable is the current source and design target",
+            candidate,
+        )
+        self.assertIn(
+            "last accepted production evidence on Glaze UI 2.1.0 Stable",
+            candidate,
+        )
+        self.assertIn(
+            "does not automatically establish 2.2 production conformance",
             candidate,
         )
         self.assertIn("Identity Center is the eleventh official first-party surface", candidate)
-        self.assertIn("The GoreeCloud Design Center for Glaze UI 2.1.0 Stable", candidate)
+        self.assertIn("The GoreeCloud Design Center for Glaze UI 2.2.0 Stable", candidate)
+        self.assertIn("seven Integral Platform Systems", candidate)
         self.assertNotIn('data-glaze-ui="1.5.0"', candidate)
         self.assertNotIn('data-glaze-ui="2.0.0"', candidate)
+        self.assertNotIn('data-glaze-ui="2.1.0"', candidate)
         self.assertNotIn("Glaze UI 2.1 remains Candidate", candidate)
+        self.assertNotIn("six substantive platform systems", candidate)
         self.assertNotIn(
             "The public portfolio uses Glaze UI 2.0.0 Stable as its production design target.",
             candidate,
@@ -75,7 +86,7 @@ class RemoteDeploymentIntegrityTests(unittest.TestCase):
     def test_exact_candidate_bytes_pass_remote_integrity(self) -> None:
         relative = "privacy.html"
         # Compare against the exact reviewed build candidate, not the raw source
-        # template. Glaze UI 2.1 normalization is intentionally applied at the
+        # template. Glaze UI 2.2 normalization is intentionally applied at the
         # public render boundary before Cloudflare receives this page.
         expected = verifier.candidate_bytes(relative)
         errors: list[str] = []

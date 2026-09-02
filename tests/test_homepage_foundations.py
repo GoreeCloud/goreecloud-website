@@ -37,14 +37,16 @@ class HomepageFoundationsContractTests(unittest.TestCase):
 
     def test_homepage_keeps_scopes_separate(self) -> None:
         # The current homepage keeps the hero focused and places platform-system
-        # authority on the rendered ecosystem cards rather than duplicating it in
-        # the hero. The footer still states the three original role boundaries.
+        # authority on the rendered ecosystem section rather than duplicating it
+        # in the hero. Footer labels remain role-specific rather than implying
+        # one Platform System owns another system's authority.
         self.assertIn('aria-label="GoreeCloud platform focus"', self.index)
         self.assertIn("Private • Self-hosted • Recoverable", self.index)
-        self.assertIn('<strong>Glaze UI</strong> design', self.index)
+        self.assertIn('<strong>Glaze UI 2.2</strong> experience', self.index)
         self.assertIn('<strong>Privacy Shield</strong> privacy', self.index)
         self.assertIn('<strong>Wardveil Security</strong> security', self.index)
         for system in (
+            "GoreeCloud Manager",
             "Glaze UI",
             "Privacy Shield",
             "Wardveil Security",
@@ -53,7 +55,11 @@ class HomepageFoundationsContractTests(unittest.TestCase):
             "GoreeCloud Identity",
         ):
             self.assertIn(system, self.index)
-        self.assertIn("six substantive platform systems", self.index)
+        self.assertIn("seven Integral Platform Systems", self.index)
+        self.assertNotIn("six substantive platform systems", self.index)
+        self.assertIn("Glaze UI 2.2.0 Stable is the current source and design target", self.index)
+        self.assertIn("last accepted production evidence on Glaze UI 2.1.0 Stable", self.index)
+        self.assertIn("does not automatically establish 2.2 production conformance", self.index)
 
     def test_contract_preserves_authority_boundaries(self) -> None:
         self.assertIn("design and interaction authority", self.contract)

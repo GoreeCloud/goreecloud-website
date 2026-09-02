@@ -29,7 +29,7 @@ REMOTE_FILES = (
     "assets/icon-refresh.js",
     "assets/styles.css",
     "assets/mobile-refresh.css",
-    "assets/glaze-ui-2.1.0.css",
+    "assets/glaze-ui-2.2.0.css",
     "assets/goreecloud-logo.svg",
     "assets/glaze-ui-mark.svg",
     "assets/everkeep.svg",
@@ -42,7 +42,7 @@ CRITICAL_ASSET_PATHS = (
     "/assets/app.js",
     "/assets/icon-refresh.js",
     "/assets/mobile-refresh.css",
-    "/assets/glaze-ui-2.1.0.css",
+    "/assets/glaze-ui-2.2.0.css",
 )
 
 
@@ -175,12 +175,12 @@ def verify_root_contract(base_url: str, errors: list[str]) -> None:
     text = response.body.decode("utf-8", errors="replace")
     for marker in (
         "<title>Projects — GoreeCloud</title>",
-        'name="goreecloud-glaze-ui" content="2.1.0"',
-        'data-glaze-ui="2.1.0"',
+        'name="goreecloud-glaze-ui" content="2.2.0"',
+        'data-glaze-ui="2.2.0"',
         "/assets/app.js?v=20260831-source-native",
         "/assets/icon-refresh.js?v=20260828-identities1",
         "/assets/mobile-refresh.css?v=20260827-mobile2",
-        "/assets/glaze-ui-2.1.0.css",
+        "/assets/glaze-ui-2.2.0.css",
         "/assets/everkeep.svg",
         "/assets/privacy-shield-icon.svg",
         "/assets/wardveil-security-icon.svg",
@@ -190,8 +190,10 @@ def verify_root_contract(base_url: str, errors: list[str]) -> None:
         "Mesh Center · Weave",
         "GoreeCloud Identity",
         "Identity Center",
+        "GoreeCloud Manager",
+        "seven Integral Platform Systems",
         "GoreeCloud software portfolio",
-        "Glaze UI 2.1",
+        "Glaze UI 2.2",
     ):
         if marker not in text:
             errors.append(f"Projects root is missing production marker: {marker}")
@@ -201,7 +203,10 @@ def verify_root_contract(base_url: str, errors: list[str]) -> None:
         "data:image/svg+xml",
         'data-glaze-ui="1.5.0"',
         'data-glaze-ui="2.0.0"',
+        'data-glaze-ui="2.1.0"',
+        "/assets/glaze-ui-1.5.0.css",
         "/assets/glaze-ui-2.0.0.css",
+        "/assets/glaze-ui-2.1.0.css",
         "2.1 remains Candidate",
     ):
         if forbidden in text:

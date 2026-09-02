@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """Regression coverage for the current public GoreeCloud portfolio surfaces.
 
-The main homepage is an eleven-surface ecosystem hub: ten production-accepted public
-sites plus the official Identity Center surface while its publication remains separately
-gated. The exhaustive source portfolio lives in the manifest-rendered repository
-directory, while product-specific directory content belongs on Projects and Suite rather
-than being duplicated on the main page.
+The main homepage is an eleven-surface ecosystem hub: ten independently deployed
+public destinations retain their last accepted production evidence on Glaze UI 2.1,
+while the official Identity Center surface remains separately publication-gated. The
+current source/design target is Glaze UI 2.2 and the platform model contains seven
+Integral Platform Systems. The exhaustive source portfolio lives in the manifest-rendered
+repository directory, while product-specific directory content belongs on Projects and
+Suite rather than being duplicated on the main page.
 """
 
 from __future__ import annotations
@@ -93,10 +95,12 @@ class ProjectPortfolioContractTests(unittest.TestCase):
     def test_current_design_and_platform_truth_is_visible_in_final_homepage(self) -> None:
         for marker in (
             "current 57-repository portfolio",
-            "Glaze UI 2.1.0 Stable",
-            "Ten independently deployed public destinations",
+            "Glaze UI 2.2.0 Stable is the current source and design target",
+            "last accepted production evidence on Glaze UI 2.1.0 Stable",
+            "does not automatically establish 2.2 production conformance",
             "Identity Center is the eleventh official first-party surface",
-            "six substantive platform systems",
+            "seven Integral Platform Systems",
+            "GoreeCloud Manager",
             "GoreeCloud Identity",
             "GoreeCloud Mesh",
             "GoreeCloud/goreecloud-branding-assets",
@@ -106,6 +110,7 @@ class ProjectPortfolioContractTests(unittest.TestCase):
                 self.assertIn(marker, (ROOT / "README.md").read_text(encoding="utf-8"))
             else:
                 self.assertIn(marker, PUBLIC_HOME)
+        self.assertNotIn("six substantive platform systems", PUBLIC_HOME)
         self.assertNotIn("Glaze UI 2.1 remains Candidate", PUBLIC_HOME)
         self.assertNotIn("Glaze UI 2.0.0 Stable", PUBLIC_HOME)
 
