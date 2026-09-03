@@ -5,8 +5,9 @@ Canonical source for the main GoreeCloud public website and the Projects, Roadma
 ## Current baseline
 
 - Current accepted website package: **v5.24.0**
-- Current Stable design-system target: **Glaze UI 2.1.0**
-- Glaze UI 2.1 Stable promotion reference: `c49113eb8b93c267613fdf1bbca1f814495acad7`
+- Current accepted Website design-system implementation: **Glaze UI 2.1.0**
+- Current GoreeCloud platform design-system target: **Glaze UI 2.2.0 Stable**
+- Glaze UI 2.1 Stable promotion reference for the accepted Website implementation: `c49113eb8b93c267613fdf1bbca1f814495acad7`
 - Glaze UI authority: `GoreeCloud/goreecloud-glaze-ui`
 - Branding and approved visual-asset authority: `GoreeCloud/goreecloud-branding-assets`
 - Repository inventory reviewed on **2026-08-31**: **57 repositories — 40 public, 17 private**
@@ -15,7 +16,7 @@ Canonical source for the main GoreeCloud public website and the Projects, Roadma
 
 `VERSION` is the canonical machine-readable version source for the last accepted website package. Version metadata is repository-only release metadata and does not establish deployment or production acceptance by itself.
 
-Glaze UI 2.1.0 is the current Stable design-system contract. New source revisions do not inherit production acceptance from an earlier accepted deployment. Exact repository validation, rendered branch-preview review, authorized merge, and exact production deployment verification remain required.
+Glaze UI 2.1.0 remains the accepted design-system implementation for the current Website package. The current GoreeCloud platform baseline is Glaze UI 2.2.0 Stable, so Website migration and repository-specific acceptance against 2.2 remain required. New source revisions do not inherit production acceptance from an earlier accepted deployment. Exact repository validation, rendered branch-preview review, authorized merge, and exact production deployment verification remain required.
 
 ## Official GoreeCloud website ecosystem
 
@@ -40,16 +41,16 @@ The browser surface is intentionally static, privacy-preserving, evidence-scoped
 - no unsupported production, privacy, security, continuity, or identity claims;
 - public/private GitHub repository boundaries are preserved;
 - application and platform-system claims are tied to current source, project specifications, and accepted evidence;
-- every deployable page targets Glaze UI 2.1.0 Stable;
+- the accepted Website package currently implements Glaze UI 2.1.0; current platform conformance requires migration and acceptance against Glaze UI 2.2.0 Stable;
 - durable content surfaces remain solid while interaction uses controlled Glaze material;
 - phone, tablet, and desktop behavior are deliberate layouts rather than scaled copies of one another;
 - keyboard, pointer, touch, reduced-motion, reduced-transparency, contrast, forced-colors, zoom, and large-text states are part of release validation.
 
-The six substantive GoreeCloud platform systems are Glaze UI, Privacy Shield, Wardveil Security, Everkeep, GoreeCloud Mesh, and GoreeCloud Identity. Their names represent actual design, privacy, security, continuity, coordination, identity, authentication, and authorization responsibilities rather than decorative branding.
+The seven substantive GoreeCloud Integral Platform Systems are GoreeCloud Manager, Privacy Shield, Wardveil Security, Everkeep, Glaze UI, GoreeCloud Mesh, and GoreeCloud Identity. Their names represent actual management, privacy, security, continuity, interface, coordination, identity, authentication, and authorization responsibilities rather than decorative branding. Each system must be evaluated according to the current GoreeCloud platform contract; repository-local behavior must not be promoted into producer-system acceptance without supporting evidence.
 
 ## Design and accessibility
 
-Glaze UI is treated as a design contract, not merely a stylesheet or theme. The shared Glaze UI 2.1 web layer governs typography, spacing, materials, navigation, cards, buttons, forms, focus treatment, responsive behavior, density, minimum interaction targets, mobile safe areas, reduced motion, reduced transparency, increased contrast, forced colors, large text, deterministic reduced-material/performance fallbacks, and print resilience. Current interaction sizing preserves the **48px general interaction floor** and the **56px Touch Assistance floor** when Touch Assistance is active or required.
+Glaze UI is treated as a design contract, not merely a stylesheet or theme. The accepted Website Glaze UI 2.1 web layer currently governs typography, spacing, materials, navigation, cards, buttons, forms, focus treatment, responsive behavior, density, minimum interaction targets, mobile safe areas, reduced motion, reduced transparency, increased contrast, forced colors, large text, deterministic reduced-material/performance fallbacks, and print resilience. Current interaction sizing preserves the **48px general interaction floor** and the **56px Touch Assistance floor** when Touch Assistance is active or required. Migration to the current Glaze UI 2.2.0 Stable platform baseline remains a separate required acceptance track.
 
 The governing material rule is **Content is solid. Interaction is glazed.** Durable reading surfaces use Canvas or Surface material; navigation, transient controls, selected interactive emphasis, and deliberately live interaction surfaces may use the appropriate Glaze material level. Site-specific CSS may extend that layer while preserving Glaze UI hierarchy and accessibility contracts. Importing tokens alone is not considered conformance.
 
@@ -83,7 +84,7 @@ python scripts/build_public_site.py
 
 Build output directory: `dist`.
 
-The publication boundary is exact, per-file allowlisted. Adding a file to `assets/`, `css/`, `js/`, the repository root, or another source directory does not automatically add it to the deployable artifact. The build renders repository facts, normalizes the homepage, applies the current Glaze UI 2.1 contract, and writes only approved paths to `dist/`.
+The publication boundary is exact, per-file allowlisted. Adding a file to `assets/`, `css/`, `js/`, the repository root, or another source directory does not automatically add it to the deployable artifact. The build renders repository facts, normalizes the homepage, applies the accepted Glaze UI 2.1 implementation, and writes only approved paths to `dist/`.
 
 Issue #6 is closed: the isolated `dist/` Cloudflare Pages cutover is complete. This records the deployment architecture only; it does not eliminate exact candidate and post-merge deployment verification.
 
@@ -138,7 +139,7 @@ Cloudflare Pages deploys reviewed static artifacts. Exact accepted production re
 
 A branch preview is evidence, not a release. Passing CI does not itself authorize merge, production deployment, a public claim upgrade, or broader product acceptance. The exact pull-request candidate must pass branch-preview verification; after merge, the exact resulting `main` revision must pass production verification. Source, isolated artifact, and deployed bytes must agree.
 
-An earlier Glaze UI 2.1 production acceptance does not automatically transfer to a newer source revision. Each website revision must earn repository-local acceptance for the exact deployed commit.
+An earlier Glaze UI 2.1 production acceptance does not automatically transfer to a newer source revision. Each website revision must earn repository-local acceptance for the exact deployed commit. Platform Contract adoption also does not convert that prior 2.1 acceptance into current Glaze UI 2.2 conformance.
 
 Deployment success does not by itself authorize broader product, privacy, security, continuity, identity, or production-readiness claims.
 
