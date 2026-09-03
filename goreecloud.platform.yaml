@@ -1,4 +1,4 @@
-schema_version: "0.1"
+schema_version: "0.2"
 
 component:
   type: application
@@ -19,46 +19,46 @@ api:
 
 platform_systems:
   manager:
-    status: planned
+    result: applicable-blocked
     version: null
     evidence: []
-    notes: Manager platform visibility is not established for this repository; a current Mesh platform-registry representation is still required before Manager can present authoritative Website platform state.
+    notes: Manager platform visibility is not established for this repository; a current Mesh-backed platform-registry representation is still required before Manager can present authoritative Website platform state.
   privacy_shield:
-    status: planned
+    result: applicable-blocked
     version: null
     evidence:
       - README.md
-    notes: The public site has repository-local privacy-preserving behavior, but that behavior is not promoted into accepted Privacy Shield integration or runtime privacy authority.
+    notes: The public site has repository-local privacy-preserving behavior, but that behavior is not accepted Privacy Shield integration or runtime privacy authority.
   wardveil_security:
-    status: planned
+    result: applicable-blocked
     version: null
     evidence:
       - SECURITY.md
     notes: Repository security controls and validation exist, but current Wardveil Security integration and acceptance evidence are not established by this declaration.
   everkeep:
-    status: planned
+    result: applicable-blocked
     version: null
     evidence:
       - docs/release-readiness-checklist.md
     notes: Source and publication recovery requirements exist, but accepted Everkeep integration and verified restore evidence remain missing.
   glaze_ui:
-    status: partial
+    result: applicable-migration-required
     version: "2.1.0"
     evidence:
       - docs/glaze-ui-conformance.md
       - README.md
-    notes: The accepted Website implementation remains on Glaze UI 2.1.0; migration and repository-specific acceptance against the current Glaze UI 2.2.0 Stable platform baseline are required.
+    notes: The accepted Website implementation remains on a superseded Glaze UI line; migration and repository-specific acceptance against current Stable GLAZE UI V1.1 / 1.1.0 are required.
   mesh:
-    status: planned
+    result: applicable-blocked
     version: null
     evidence: []
-    notes: Canonical Mesh registration and platform-evidence publication have not been established for the Website.
+    notes: Canonical Mesh registration and platform-evidence publication have not been accepted for the Website.
     capabilities: []
     dependencies: []
     published_events: []
     consumed_events: []
   identity:
-    status: not-applicable
+    result: not-applicable-justified
     version: null
     evidence:
       - README.md
@@ -96,12 +96,19 @@ external_dependencies:
   - name: Glaze UI
     purpose: Supplies the current GoreeCloud design-language and accessibility baseline for Website presentation.
     required: true
+    version_constraint: "1.1.0"
 
 compatibility:
+  platform_contract: "0.2"
+  glaze_ui_required: "1.1.0"
   requires:
-    - goreecloud-platform-contract>=0.1
-    - glaze-ui>=2.2
+    - goreecloud-platform-contract==0.2
+    - glaze-ui==1.1.0
   provides: []
+
+evidence:
+  acceptance_tests: []
+  release: []
 
 conformance:
   status: nonconformant
@@ -112,10 +119,11 @@ conformance:
     - docs/glaze-ui-conformance.md
     - docs/release-readiness-checklist.md
   blockers:
-    - Repository-specific Glaze UI 2.2.0 migration and acceptance are incomplete; the accepted Website implementation remains on 2.1.0.
+    - Repository-specific migration and acceptance against current Stable GLAZE UI V1.1 / 1.1.0 are incomplete.
     - GoreeCloud Manager platform visibility is not established.
     - Privacy Shield integration and acceptance are not established.
     - Wardveil Security integration and acceptance are not established.
     - Everkeep integration plus verified restore evidence are not established.
     - GoreeCloud Mesh registration and platform-evidence publication are not established.
-    - Current Platform Contract adoption does not replace exact candidate, deployment, accessibility, security, privacy, continuity, or release acceptance.
+    - Required Stable acceptance-test and published release evidence has not been produced.
+    - Platform Contract adoption does not replace exact candidate, deployment, accessibility, security, privacy, continuity, or release acceptance.
