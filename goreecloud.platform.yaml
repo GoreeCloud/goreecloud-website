@@ -1,55 +1,50 @@
-schema_version: "0.1"
-
+schema_version: '0.2'
 component:
   type: application
   id: goreecloud-website
   product_name: GoreeCloud Website
   repository: GoreeCloud/goreecloud-website
-
 lifecycle: development
-version: "5.24.0"
-
+version: 5.24.0
 supported_platforms:
-  - web
-  - cloudflare-pages
-
+- web
+- cloudflare-pages
 api:
   versions: []
   endpoints: []
-
 platform_systems:
   manager:
-    status: planned
+    result: applicable-blocked
     version: null
     evidence: []
     notes: Manager platform visibility is not established for this repository; a current Mesh platform-registry representation is still required before Manager can present authoritative Website platform state.
   privacy_shield:
-    status: planned
+    result: applicable-blocked
     version: null
     evidence:
-      - README.md
+    - README.md
     notes: The public site has repository-local privacy-preserving behavior, but that behavior is not promoted into accepted Privacy Shield integration or runtime privacy authority.
   wardveil_security:
-    status: planned
+    result: applicable-blocked
     version: null
     evidence:
-      - SECURITY.md
+    - SECURITY.md
     notes: Repository security controls and validation exist, but current Wardveil Security integration and acceptance evidence are not established by this declaration.
   everkeep:
-    status: planned
+    result: applicable-blocked
     version: null
     evidence:
-      - docs/release-readiness-checklist.md
+    - docs/release-readiness-checklist.md
     notes: Source and publication recovery requirements exist, but accepted Everkeep integration and verified restore evidence remain missing.
   glaze_ui:
-    status: partial
-    version: "2.1.0"
+    result: applicable-migration-required
+    version: 2.1.0
     evidence:
-      - docs/glaze-ui-conformance.md
-      - README.md
-    notes: The accepted Website implementation remains on Glaze UI 2.1.0; migration and repository-specific acceptance against the current Glaze UI 2.2.0 Stable platform baseline are required.
+    - docs/glaze-ui-conformance.md
+    - README.md
+    notes: The accepted Website implementation declares Glaze UI 2.1.0, while the current Platform Contract requires baseline 1.1.0; repository-specific reconciliation and exact-revision acceptance are required before current Glaze UI conformance may be claimed.
   mesh:
-    status: planned
+    result: applicable-blocked
     version: null
     evidence: []
     notes: Canonical Mesh registration and platform-evidence publication have not been established for the Website.
@@ -58,64 +53,64 @@ platform_systems:
     published_events: []
     consumed_events: []
   identity:
-    status: not-applicable
+    result: not-applicable-justified
     version: null
     evidence:
-      - README.md
+    - README.md
     notes: This repository owns anonymous public static website surfaces and does not implement account, sign-in, session, or authenticated application authority. If authenticated Website functionality is added, Identity must be reevaluated.
-
 health:
   health_endpoint: null
   readiness_endpoint: null
-
 continuity:
   backup:
     required: true
     requirements:
-      - Establish accepted Everkeep-compatible preservation of canonical website source and required publication configuration before current Stable qualification.
+    - Establish accepted Everkeep-compatible preservation of canonical website source and required publication configuration before current Stable qualification.
   restore:
     required: true
     requirements:
-      - Verify restoration and republication from preserved source and configuration into a clean environment before current Stable qualification.
+    - Verify restoration and republication from preserved source and configuration into a clean environment before current Stable qualification.
   export:
     required: false
     requirements:
-      - No user-owned application data export is required for the anonymous static public website surface.
+    - No user-owned application data export is required for the anonymous static public website surface.
   portability:
     required: true
     requirements:
-      - Preserve deterministic static source and build output so the public website can be rebuilt and moved between supported static publication environments.
-
+    - Preserve deterministic static source and build output so the public website can be rebuilt and moved between supported static publication environments.
 external_dependencies:
-  - name: Cloudflare Pages
-    purpose: Publishes reviewed static website artifacts to the production public domains.
-    required: true
-  - name: GoreeCloud Branding Assets
-    purpose: Supplies approved GoreeCloud logos, product icons, system marks, and other canonical visual assets.
-    required: true
-  - name: Glaze UI
-    purpose: Supplies the current GoreeCloud design-language and accessibility baseline for Website presentation.
-    required: true
-
+- name: Cloudflare Pages
+  purpose: Publishes reviewed static website artifacts to the production public domains.
+  required: true
+- name: GoreeCloud Branding Assets
+  purpose: Supplies approved GoreeCloud logos, product icons, system marks, and other canonical visual assets.
+  required: true
+- name: Glaze UI
+  purpose: Supplies the GoreeCloud design-language and accessibility baseline for Website presentation.
+  required: true
 compatibility:
+  platform_contract: '0.2'
+  glaze_ui_required: 1.1.0
   requires:
-    - goreecloud-platform-contract>=0.1
-    - glaze-ui>=2.2
+  - goreecloud-platform-contract==0.2
+  - glaze-ui==1.1.0
   provides: []
-
+evidence:
+  acceptance_tests: []
+  release: []
 conformance:
   status: nonconformant
   validated_at: null
   evidence:
-    - README.md
-    - SECURITY.md
-    - docs/glaze-ui-conformance.md
-    - docs/release-readiness-checklist.md
+  - README.md
+  - SECURITY.md
+  - docs/glaze-ui-conformance.md
+  - docs/release-readiness-checklist.md
   blockers:
-    - Repository-specific Glaze UI 2.2.0 migration and acceptance are incomplete; the accepted Website implementation remains on 2.1.0.
-    - GoreeCloud Manager platform visibility is not established.
-    - Privacy Shield integration and acceptance are not established.
-    - Wardveil Security integration and acceptance are not established.
-    - Everkeep integration plus verified restore evidence are not established.
-    - GoreeCloud Mesh registration and platform-evidence publication are not established.
-    - Current Platform Contract adoption does not replace exact candidate, deployment, accessibility, security, privacy, continuity, or release acceptance.
+  - Repository-specific reconciliation and acceptance against the current Platform Contract Glaze UI baseline are incomplete.
+  - GoreeCloud Manager platform visibility is not established.
+  - Privacy Shield integration and acceptance are not established.
+  - Wardveil Security integration and acceptance are not established.
+  - Everkeep integration plus verified restore evidence are not established.
+  - GoreeCloud Mesh registration and platform-evidence publication are not established.
+  - Current Platform Contract adoption does not replace exact candidate, deployment, accessibility, security, privacy, continuity, or release acceptance.
