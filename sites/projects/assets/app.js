@@ -1,10 +1,10 @@
 const entries=[
 {name:'GoreeCloud Suite',repo:'goreecloud-suite',category:'Platform & Administration',model:'Ecosystem authority',kind:'Foundation',status:'Active',role:'Portfolio-level authority for the integrated GoreeCloud application ecosystem, shared boundaries, interoperability, and Suite-wide conventions.',visibility:'Private'},
-{name:'GoreeCloud Manager',repo:'goreecloud-manager',category:'Platform & Administration',model:'Native',kind:'Application',status:'Active development',role:'Central administration, operations, service health, protection status, and management console.',visibility:'Public'},
+{name:'GoreeCloud Manager',repo:'goreecloud-manager',category:'Platform & Administration',model:'Native',kind:'Application',status:'Active development',role:'Central administration, operations, service health, protection status, and management console.',visibility:'Public',url:'https://manage.goreecloud.com/'},
 {name:'GoreeCloud Monitor',repo:'goreecloud-monitor',category:'Platform & Administration',model:'Native',kind:'Application',status:'Active development',role:'Infrastructure and service monitoring, observability, health visibility, and operational monitoring.',visibility:'Public'},
 {name:'GoreeCloud Notify',repo:'goreecloud-notify',category:'Platform & Administration',model:'Native',kind:'Application',status:'Release candidate · native client foundation merged',role:'Notifications, system alerts, operational messages, and application delivery. The first-party Linux/Debian and Android client source foundation is merged; persistent Android delivery, production cutover, and ntfy retirement remain separate acceptance gates.',visibility:'Private'},
 {name:'GoreeCloud Backup',repo:'goreecloud-backup',category:'Platform & Administration',model:'Maintained fork',kind:'Application',status:'Active development',role:'Backup repositories, snapshots, restoration, recovery, and protected-data workflows beneath the Everkeep resilience model.',visibility:'Public'},
-{name:'GoreeCloud Identity',repo:'goreecloud-identity',category:'Platform & Administration',model:'Identity platform system',kind:'Application',status:'Active development',role:'First-party GoreeCloud platform system responsible for identity, authentication, authorization, accounts, devices, credentials, sessions, delegated authority, and user-facing identity services. Public readiness claims remain evidence-scoped.',visibility:'Public'},
+{name:'GoreeCloud Identity',repo:'goreecloud-identity',category:'Platform & Administration',model:'Identity platform system',kind:'Application',status:'Active development',role:'First-party GoreeCloud platform system responsible for identity, authentication, authorization, accounts, devices, credentials, sessions, delegated authority, and user-facing identity services. Public readiness claims remain evidence-scoped.',visibility:'Public',url:'https://id.goreecloud.com/'},
 {name:'GoreeCloud GitHub Dashboard',repo:'goreecloud-github-dashboard',category:'Platform & Administration',model:'Native',kind:'Application',status:'Active development',role:'Private dashboard for repository activity, changelogs, pull requests, issues, releases, and project health.',visibility:'Private'},
 {name:'GoreeCloud Network',repo:'goreecloud-network',category:'Internet & Networking',model:'Maintained fork to native',kind:'Application',status:'Active development',role:'Private networking, device enrollment, access policies, secure remote connectivity, and first-party Conduit capabilities.',visibility:'Public'},
 {name:'GoreeCloud DNS',repo:'goreecloud-dns',category:'Internet & Networking',model:'Maintained fork to native',kind:'Application',status:'Active development',role:'DNS filtering, encrypted DNS, caching, policy management, and Beacon capabilities. Recursive resolution remains a separate responsibility and is not claimed by this product surface.',visibility:'Public'},
@@ -33,10 +33,10 @@ const entries=[
 {name:'GoreeCloud Firefox Extensions',repo:'goreecloud-firefox-extensions',category:'Device Software',model:'First-party extension collection',kind:'Application',status:'Active development',role:'Canonical home for GoreeCloud-maintained Firefox extensions and browser integration components.',visibility:'Private'},
 {name:'GoreeCloud Website',repo:'goreecloud-website',category:'Public Experience',model:'Native',kind:'Application',status:'Production',role:'Main public GoreeCloud identity plus Projects, Roadmap, Blog, and Archive public websites.',visibility:'Private'},
 {name:'GoreeCloud Autobiography',repo:'goreecloud-autobiography',category:'Public Experience',model:'Native',kind:'Application',status:'Early development',role:'Public long-form project for preserving and presenting the story, history, lessons, and evolution behind GoreeCloud.',visibility:'Public'},
-{name:'Glaze UI',repo:'goreecloud-glaze-ui',category:'Shared Foundations',model:'Design system · Stable 2.1.0',kind:'Foundation',status:'2.1.0 current Stable · Facet identity approved',role:'GoreeCloud Design Center and shared design-system authority for Glaze UI 2.1.0 Stable across supported GoreeCloud surfaces. The current contract keeps content solid, interaction deliberately glazed, and downstream conformance repository-local and evidence-backed.',visibility:'Public',icon:'/assets/glaze-ui-mark.svg',url:'https://design.goreecloud.com/'},
+{name:'Glaze UI',repo:'goreecloud-glaze-ui',category:'Shared Foundations',model:'Design system · Stable V1.1 / 1.1.0',kind:'Foundation',status:'1.1.0 current Stable · Facet identity approved',role:'GoreeCloud Design Center and shared design-system authority for GLAZE UI V1.1 / 1.1.0 Stable across supported GoreeCloud surfaces. Consumer conformance remains repository-local, exact-revision, rendered, and evidence-backed.',visibility:'Public',icon:'/assets/glaze-ui-mark.svg',url:'https://design.goreecloud.com/'},
 {name:'GoreeCloud Privacy Shield',repo:'goreecloud-privacy-shield',category:'Shared Foundations',model:'Privacy identity',kind:'Foundation',status:'Platform policy established · adoption active',role:'Platform-wide privacy identity, privacy-control contract, data-minimization expectations, evidence semantics, and application adapters. Public privacy claims are limited to current implementation and evidence.',visibility:'Private',icon:'/assets/privacy-shield-icon.svg',url:'https://privacy.goreecloud.com/'},
 {name:'Wardveil Security',repo:'goreecloud-wardveil-security',category:'Shared Foundations',model:'Security identity',kind:'Foundation',status:'0.7 foundation · policy established',role:'Platform-wide security and protection identity, shared evidence contract, and fail-closed protection-state model for security states, warnings, posture, and protection experiences.',visibility:'Private',icon:'/assets/wardveil-security-icon.svg',url:'https://security.goreecloud.com/'},
-{name:'Everkeep',repo:'goreecloud-everkeep',category:'Shared Foundations',model:'Resilience identity',kind:'Foundation',status:'Platform policy established · adoption active',role:'Platform-wide resilience, recovery, preservation, portability, continuity, succession, and digital-legacy system. Backup is one operational layer beneath the broader Everkeep continuity model.',visibility:'Private'},
+{name:'Everkeep',repo:'goreecloud-everkeep',category:'Shared Foundations',model:'Resilience identity',kind:'Foundation',status:'Platform policy established · adoption active',role:'Platform-wide resilience, recovery, preservation, portability, continuity, succession, and digital-legacy system. Backup is one operational layer beneath the broader Everkeep continuity model.',visibility:'Private',url:'https://everkeep.goreecloud.com/'},
 {name:'GoreeCloud Waypoint',repo:'goreecloud-waypoint',category:'Shared Foundations',model:'Capability identity',kind:'Foundation',status:'Active identity',role:'First-party task and work-management capability family used by GoreeCloud Tasks and related Suite integrations.',visibility:'Public'}
 ];
 
@@ -66,7 +66,7 @@ function addCurrentPortfolioEntries(){
   add({name:'GoreeCloud Messenger',repo:'goreecloud-messenger',category:'Communication',model:'Native',kind:'Application',status:'Active development',role:'First-party private messaging and calling application with explicit transport, identity, group, calling, and GoreeCloud integration boundaries.',visibility:'Private'});
   add({name:'GoreeCloud Gateway',repo:'goreecloud-gateway',category:'Platform & Administration',model:'Native',kind:'Application',status:'Active development',role:'Native reverse proxy, HTTPS ingress, routing, certificate-management, and controlled service-publication platform.',visibility:'Public'});
   add({name:'GoreeCloud Quill',repo:'goreecloud-quill',category:'Shared Foundations',model:'First-party capability system',kind:'Capability',status:'Active development',role:'Typing, writing assistance, editing, privacy, personalization, dictionaries, clipboard, and intelligent-input capability family used by GoreeCloud Keyboard and related input experiences.',visibility:'Public'});
-  add({name:'GoreeCloud Mesh',repo:'goreecloud-mesh',category:'Shared Foundations',model:'Coordination and governance plane',kind:'Foundation',status:'Active development',role:'Substantive platform coordination and governance plane for explicit service relationships, dependencies, capability exchange, events, and evidence. Mesh preserves the authority boundaries of Identity, Wardveil Security, Privacy Shield, Everkeep, Glaze UI, and specialized applications.',visibility:'Public'});
+  add({name:'GoreeCloud Mesh',repo:'goreecloud-mesh',category:'Shared Foundations',model:'Coordination and governance plane',kind:'Foundation',status:'Active development',role:'Substantive platform coordination and governance plane for explicit service relationships, dependencies, capability exchange, events, and evidence. Mesh preserves the authority boundaries of Identity, Wardveil Security, Privacy Shield, Everkeep, Glaze UI, and specialized applications.',visibility:'Public',url:'https://mesh.goreecloud.com/'});
   add({name:'GoreeCloud File Manager',repo:'goreecloud-file-manager',category:'Productivity & Knowledge',model:'Native',kind:'Application',status:'Active development',role:'First-party GoreeCloud file-management application for local and connected storage surfaces.',visibility:'Public'});
   add({name:'GoreeCloud Maps',repo:'goreecloud-maps',category:'Personal Data & Security',model:'Native',kind:'Application',status:'Active development',role:'GoreeCloud mapping experience with privacy, navigation, GoreeCloud Location, and identity boundaries kept explicit.',visibility:'Private'});
   add({name:'GoreeCloud App Store',repo:'goreecloud-app-store',category:'Platform & Administration',model:'Native',kind:'Application',status:'Active development',role:'Official multi-user catalog and distribution experience for GoreeCloud applications and services, with access determined by account identity and entitlement.',visibility:'Public'});
@@ -99,7 +99,7 @@ foundationCount.textContent=entries.filter(entry=>entry.kind==='Foundation').len
 const filtersList=['All','Applications','Foundations','Platform & Administration','Internet & Networking','Productivity & Knowledge','Communication & Media','Personal Data & Security','Device Software','Public Experience','Developer & Intelligence'];
 for(const name of filtersList){
   const button=document.createElement('button');
-  button.className='filter';
+  button.className='filter glz11-button';
   button.type='button';
   button.textContent=name;
   button.dataset.filter=name;
@@ -128,7 +128,7 @@ function render(){
 
 function card(entry){
   const article=document.createElement('article');
-  article.className='card';
+  article.className='card glz11-card';
   article.dataset.kind=entry.kind.toLowerCase();
 
   const head=document.createElement('div');head.className='card-head';
@@ -138,8 +138,8 @@ function card(entry){
   head.append(iconWrap,kind);
 
   const meta=document.createElement('div');meta.className='card-meta';
-  const category=document.createElement('span');category.className='badge';category.textContent=entry.category;
-  const status=document.createElement('span');status.className='status';status.textContent=entry.status;
+  const category=document.createElement('span');category.className='badge glz11-chip';category.textContent=entry.category;
+  const status=document.createElement('span');status.className='status glz11-chip';status.textContent=entry.status;
   meta.append(category,status);
 
   const title=document.createElement('h3');title.textContent=entry.name;
