@@ -20,7 +20,7 @@ The site is static, dependency-free, tracking-free, and uses only local browser 
 - Website `assets/suite/*.svg` files are synchronized publication derivatives of approved `products/*/app-icon.svg` sources; they are not independent branding authorities.
 - Projects-local Glaze UI, Privacy Shield, Wardveil Security, Everkeep, GoreeCloud Mesh, and GoreeCloud platform artwork are synchronized publication derivatives of approved branding-repository sources.
 - Wardveil Security uses the approved standalone **Sentinel Fold** emblem from `systems/wardveil-security/wardveil-security-icon.svg` as its primary visual mark. Wardveil wordmark and Security Center text are supporting identity, not part of the emblem.
-- GoreeCloud Mesh uses the approved **Weave** mark from `systems/goreecloud-mesh/goreecloud-mesh-mark.svg`; Projects must not revert Mesh to the former text-only pending-artwork state while that canonical approval remains current.
+- GoreeCloud Mesh uses the approved **Interlace** mark from `systems/goreecloud-mesh/goreecloud-mesh-mark.svg`; Projects must not revert Mesh to a superseded identity or former text-only pending-artwork state while that canonical approval remains current.
 - A project without approved catalog artwork remains text-only rather than inheriting the GoreeCloud platform logo or receiving a fabricated placeholder mark.
 - Synchronized publication derivatives must remain byte-identical to their pinned canonical Git blobs.
 
