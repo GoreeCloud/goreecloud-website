@@ -1,18 +1,20 @@
-"""Glaze UI 2.1 public-site normalization helpers.
+"""GLAZE UI V1.1 public-site normalization helpers.
 
-The main GoreeCloud site has several deployable HTML templates. This helper keeps
-all of them on the same Stable Glaze UI contract and preserves compatibility for
-older source fragments while the canonical templates are made source-native.
-Current public facts must remain authoritative in source and generated artifacts.
+The public Website family has multiple independently deployable HTML templates.
+This helper keeps generated Main artifacts on the current Stable GLAZE UI V1.1
+contract while preserving current product facts and repository-local build rules.
 """
 
 from __future__ import annotations
 
-GLAZE_VERSION = "2.1.0"
-GLAZE_PROMOTION_REVISION = "c49113eb8b93c267613fdf1bbca1f814495acad7"
-GLAZE_BUNDLE = "css/glaze-ui-2.1.0.css"
+import re
 
-FILE_MANAGER_CARD = '''<article class="service-card suite-card" data-suite-app="file-manager">
+GLAZE_VERSION = "1.1.0"
+GLAZE_ACTIVATION_VERSION = "1.1"
+GLAZE_PROMOTION_REVISION = "15cc76d2bcd4065552dc31c77145b63f34d9e7b2"
+GLAZE_BUNDLE = "css/glaze-v1.1.0.css"
+
+FILE_MANAGER_CARD = '''<article class="service-card suite-card glz11-card" data-suite-app="file-manager">
   <div class="service-art suite-art" aria-hidden="true"><span class="repo-mark">FM</span></div>
   <h3>GoreeCloud File Manager</h3>
   <p class="suite-description"><strong>Description:</strong> First-party file-management experience for local and connected GoreeCloud storage surfaces.</p>
@@ -20,7 +22,7 @@ FILE_MANAGER_CARD = '''<article class="service-card suite-card" data-suite-app="
   <span class="badge growing">Active Development</span>
 </article>'''
 
-MAPS_CARD = '''<article class="service-card suite-card" data-suite-app="maps">
+MAPS_CARD = '''<article class="service-card suite-card glz11-card" data-suite-app="maps">
   <div class="service-art suite-art" aria-hidden="true"><span class="repo-mark">MP</span></div>
   <h3>GoreeCloud Maps</h3>
   <p class="suite-description"><strong>Description:</strong> GoreeCloud mapping experience with privacy, location, navigation, and identity boundaries kept explicit.</p>
@@ -28,7 +30,7 @@ MAPS_CARD = '''<article class="service-card suite-card" data-suite-app="maps">
   <span class="badge growing">Active Development</span>
 </article>'''
 
-APP_STORE_CARD = '''<article class="service-card suite-card" data-suite-app="app-store">
+APP_STORE_CARD = '''<article class="service-card suite-card glz11-card" data-suite-app="app-store">
   <div class="service-art suite-art" aria-hidden="true"><span class="repo-mark">AS</span></div>
   <h3>GoreeCloud App Store</h3>
   <p class="suite-description"><strong>Description:</strong> Official multi-user catalog for discovering GoreeCloud applications and services according to account access and entitlement.</p>
@@ -53,43 +55,75 @@ def _insert_suite_card_after(html: str, anchor_id: str, card: str) -> str:
     return html[:end] + "\n            " + card + html[end:]
 
 
-def apply_glaze_ui_2(html: str) -> str:
+def _activate_glaze_v11(html: str) -> str:
+    """Make one HTML document source-native to the current Stable web contract."""
+    html = re.sub(
+        r'(<html\b)(?![^>]*\bdata-glaze-version=)([^>]*)>',
+        rf'\1 data-glaze-version="{GLAZE_ACTIVATION_VERSION}"\2>',
+        html,
+        count=1,
+        flags=re.IGNORECASE,
+    )
+    html = re.sub(
+        r'data-glaze-version="[^"]+"',
+        f'data-glaze-version="{GLAZE_ACTIVATION_VERSION}"',
+        html,
+        count=1,
+    )
+    html = re.sub(
+        r'name="goreecloud-glaze-ui" content="[^"]+"',
+        f'name="goreecloud-glaze-ui" content="{GLAZE_VERSION}"',
+        html,
+    )
+    html = re.sub(
+        r'href="(?:/)?css/glaze(?:-ui)?-[^"/]+\.css" data-glaze-ui="[^"]+"',
+        f'href="{GLAZE_BUNDLE}" data-glaze-ui="{GLAZE_VERSION}"',
+        html,
+    )
+    return html
+
+
+def apply_glaze_ui(html: str) -> str:
+    html = _activate_glaze_v11(html)
+
     replacements = (
-        ('name="goreecloud-glaze-ui" content="1.5.0"', 'name="goreecloud-glaze-ui" content="2.1.0"'),
-        ('name="goreecloud-glaze-ui" content="2.0.0"', 'name="goreecloud-glaze-ui" content="2.1.0"'),
-        ('href="/css/glaze-ui-1.5.0.css" data-glaze-ui="1.5.0"', 'href="/css/glaze-ui-2.1.0.css" data-glaze-ui="2.1.0"'),
-        ('href="/css/glaze-ui-2.0.0.css" data-glaze-ui="2.0.0"', 'href="/css/glaze-ui-2.1.0.css" data-glaze-ui="2.1.0"'),
-        ('href="css/glaze-ui-1.5.0.css" data-glaze-ui="1.5.0"', 'href="css/glaze-ui-2.1.0.css" data-glaze-ui="2.1.0"'),
-        ('href="css/glaze-ui-2.0.0.css" data-glaze-ui="2.0.0"', 'href="css/glaze-ui-2.1.0.css" data-glaze-ui="2.1.0"'),
-        ('class="site-header"', 'class="site-header glaze-material-soft"'),
-        ('class="site-nav"', 'class="site-nav glaze-navigation-capsule"'),
-        ('class="button primary"', 'class="button primary glaze-button"'),
-        ('class="button secondary"', 'class="button secondary glaze-button"'),
-        ('class="hero-card"', 'class="hero-card glaze-material"'),
-        ('class="repo-summary"', 'class="repo-summary"'),
-        ('Glaze UI 1.5.0 is the current Stable', 'Glaze UI 2.1.0 is the current Stable'),
-        ('Glaze UI 2.0.0 is the current Stable', 'Glaze UI 2.1.0 is the current Stable'),
-        ('Glaze UI 1.5 is the current Stable', 'Glaze UI 2.1 is the current Stable'),
-        ('Glaze UI 2.0 is the current Stable', 'Glaze UI 2.1 is the current Stable'),
-        ('Glaze UI 1.5 Stable', 'Glaze UI 2.1 Stable'),
-        ('Glaze UI 2.0 Stable', 'Glaze UI 2.1 Stable'),
-        ('Stable 1.5', 'Stable 2.1'),
-        ('Stable 2.0', 'Stable 2.1'),
+        ('class="site-header"', 'class="site-header glaze-material-soft glz11-glaze"'),
+        ('class="site-header glaze-material-soft"', 'class="site-header glaze-material-soft glz11-glaze"'),
+        ('class="site-nav"', 'class="site-nav glaze-navigation-capsule glz11-nav"'),
+        ('class="site-nav glaze-navigation-capsule"', 'class="site-nav glaze-navigation-capsule glz11-nav"'),
+        ('class="button primary"', 'class="button primary glaze-button glz11-button glz11-button-primary"'),
+        ('class="button primary glaze-button"', 'class="button primary glaze-button glz11-button glz11-button-primary"'),
+        ('class="button secondary"', 'class="button secondary glaze-button glz11-button glz11-button-secondary"'),
+        ('class="button secondary glaze-button"', 'class="button secondary glaze-button glz11-button glz11-button-secondary"'),
+        ('class="hero-card"', 'class="hero-card glaze-material glz11-radius-hero"'),
+        ('class="hero-card glaze-material"', 'class="hero-card glaze-material glz11-radius-hero"'),
+        ('Glaze UI 1.5.0 is the current Stable', 'GLAZE UI V1.1 / 1.1.0 is the current Stable'),
+        ('Glaze UI 2.0.0 is the current Stable', 'GLAZE UI V1.1 / 1.1.0 is the current Stable'),
+        ('Glaze UI 2.1.0 is the current Stable', 'GLAZE UI V1.1 / 1.1.0 is the current Stable'),
+        ('Glaze UI 2.2.0 is the current Stable', 'GLAZE UI V1.1 / 1.1.0 is the current Stable'),
+        ('Glaze UI 1.5 is the current Stable', 'GLAZE UI V1.1 is the current Stable'),
+        ('Glaze UI 2.0 is the current Stable', 'GLAZE UI V1.1 is the current Stable'),
+        ('Glaze UI 2.1 is the current Stable', 'GLAZE UI V1.1 is the current Stable'),
+        ('Glaze UI 2.2 is the current Stable', 'GLAZE UI V1.1 is the current Stable'),
+        ('Glaze UI 1.5 Stable', 'GLAZE UI V1.1 Stable'),
+        ('Glaze UI 2.0 Stable', 'GLAZE UI V1.1 Stable'),
+        ('Glaze UI 2.1 Stable', 'GLAZE UI V1.1 Stable'),
+        ('Glaze UI 2.2 Stable', 'GLAZE UI V1.1 Stable'),
+        ('Stable 1.5', 'Stable V1.1'),
+        ('Stable 2.0', 'Stable V1.1'),
+        ('Stable 2.1', 'Stable V1.1'),
+        ('Stable 2.2', 'Stable V1.1'),
         (
-            'The public portfolio uses Glaze UI 2.0.0 Stable as its production design target.',
             'The public portfolio uses Glaze UI 2.1.0 Stable as its current design target; each independently deployed site must still earn exact-revision deployment acceptance.',
+            'The public portfolio uses GLAZE UI V1.1 / 1.1.0 Stable as its current design target; each independently deployed site must still earn exact-revision rendered and deployment acceptance.',
         ),
         (
-            'The public portfolio is migrating to Glaze UI 2.1.0 Stable as its current design target; each independently deployed site must still earn exact 2.1 deployment acceptance.',
-            'The public portfolio uses Glaze UI 2.1.0 Stable as its current design target; each independently deployed site must still earn exact-revision deployment acceptance.',
+            'The public portfolio uses Glaze UI 2.2.0 Stable as its current design target; each independently deployed site must still earn exact-revision deployment acceptance.',
+            'The public portfolio uses GLAZE UI V1.1 / 1.1.0 Stable as its current design target; each independently deployed site must still earn exact-revision rendered and deployment acceptance.',
         ),
         (
-            'The GoreeCloud Design Center for Glaze UI 2.0.0 Stable: interaction, material, adaptive form factors, accessibility, motion, visual language, and design-system governance. Glaze UI 2.1 remains Candidate.',
             'The GoreeCloud Design Center for Glaze UI 2.1.0 Stable: interaction, material, adaptive form factors, accessibility, motion, visual language, and design-system governance.',
-        ),
-        (
-            'Glaze UI 2.1 remains Candidate and is not a Stable consumer-conformance target.',
-            'Glaze UI 2.1.0 is Stable; each downstream consumer must still earn repository-local acceptance for its supported scope.',
+            'The GoreeCloud Design Center for GLAZE UI V1.1 / 1.1.0 Stable: interaction, material, adaptive form factors, accessibility, motion, visual language, and design-system governance.',
         ),
         ('current 53-repository portfolio', 'current 57-repository portfolio'),
         ('current 56-repository portfolio', 'current 57-repository portfolio'),
@@ -102,9 +136,7 @@ def apply_glaze_ui_2(html: str) -> str:
     for old, new in replacements:
         html = html.replace(old, new)
 
-    # Keep Main's public Suite directory synchronized with the dedicated Suite
-    # website for newly current products whose canonical artwork is still
-    # pending. Neutral text marks are presentation placeholders, not logos.
+    # Keep current Suite directory additions synchronized with dedicated Suite.
     if 'data-suite-app="drive"' in html:
         html = _insert_suite_card_after(html, "drive", FILE_MANAGER_CARD)
         html = _insert_suite_card_after(html, "location", MAPS_CARD)
@@ -114,3 +146,8 @@ def apply_glaze_ui_2(html: str) -> str:
             'Status labels describe GoreeCloud lifecycle and acceptance state, not upstream project maturity. A source repository, milestone, beta, or release-candidate label does not imply production approval unless the card explicitly states a Stable or current-service status. Products without approved canonical artwork use a neutral text mark until the branding authority publishes an approved asset.',
         )
     return html
+
+
+# Compatibility name retained while downstream build/test imports migrate.
+def apply_glaze_ui_2(html: str) -> str:
+    return apply_glaze_ui(html)
