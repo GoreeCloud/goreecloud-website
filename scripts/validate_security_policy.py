@@ -35,7 +35,7 @@ REQUIRED_COPY = (
     "platform-wide first-party security system and shared security plane",
     "Foundation 0.9",
     "Sentinel Fold",
-    "Six complementary platform systems",
+    "seven Integral Platform Systems",
     "GoreeCloud Identity",
     "production ClamAV scanner runtime is deployed and accepted at the scanner-evidence layer",
     "does not establish end-to-end Wardveil Scan application acceptance",
@@ -62,6 +62,7 @@ STALE_WARDVEIL_COPY = (
     "security identity and presentation layer",
     "Three complementary GoreeCloud foundations",
     "Five complementary platform systems",
+    "Six complementary platform systems",
     "production ClamAV runtime remains unaccepted",
 )
 
