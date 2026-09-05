@@ -47,7 +47,9 @@ def listed_asset_paths(text: str) -> set[str]:
 
 
 def normalize_markdown_text(text: str) -> str:
-    return re.sub(r"[*_]", "", text).lower()
+    # Strip Markdown asterisk emphasis without corrupting underscores in canonical
+    # file paths such as scripts/validate_public_assets.py.
+    return text.replace("*", "").lower()
 
 
 class PublicAssetInventoryTests(unittest.TestCase):
