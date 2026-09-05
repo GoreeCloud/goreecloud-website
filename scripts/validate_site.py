@@ -26,7 +26,7 @@ class Parser(HTMLParser):
         if tag=="title": self.title_depth+=1
         if attrs.get("id"): self.ids[attrs["id"]]+=1
         if tag=="meta" and attrs.get("name")=="description": self.description=attrs.get("content")
-        if tag=="link" and attrs.get("rel")=="canonical": self.canonical=attrs.get("href")
+        if tag=="link" and "canonical" in attrs.get("rel","").split(): self.canonical=attrs.get("href")
         if tag=="script" and not attrs.get("src"): self.inline_scripts+=1
         if tag=="style": self.inline_styles+=1
         if tag=="img" and "alt" not in attrs: self.images_without_alt.append(attrs.get("src","(missing)"))
@@ -57,7 +57,11 @@ def main():
         if parser.h1!=1: errors.append(f"{page_name}: expected one h1, found {parser.h1}")
         if not parser.title: errors.append(f"{page_name}: title is empty")
         if not parser.description: errors.append(f"{page_name}: description is empty")
-        if not parser.canonical or not parser.canonical.startswith("https://www.goreecloud.com/"): errors.append(f"{page_name}: canonical must use www.goreecloud.com")
+        if page_name=="404.html":
+            if parser.canonical: errors.append("404.html: missing-resource page must not publish a canonical URL")
+            if 'name="robots" content="noindex,follow"' not in text: errors.append("404.html: missing-resource page must remain noindex,follow")
+        elif not parser.canonical or not parser.canonical.startswith("https://www.goreecloud.com/"):
+            errors.append(f"{page_name}: canonical must use www.goreecloud.com")
         duplicates=[n for n,c in parser.ids.items() if c>1]
         if duplicates: errors.append(f"{page_name}: duplicate ids: {duplicates}")
         if parser.inline_scripts or parser.inline_styles or parser.inline_handlers: errors.append(f"{page_name}: inline executable/style content violates self-only CSP")
