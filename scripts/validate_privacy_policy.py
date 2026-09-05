@@ -10,6 +10,8 @@ from urllib.parse import urlparse
 import re
 import sys
 
+from build_public_site import GENERATED_GLAZE_FILES, PUBLIC_FILES
+
 ROOT = Path(__file__).resolve().parents[1]
 PRIVACY_PAGE = ROOT / "privacy.html"
 SITEMAP = ROOT / "sitemap.xml"
@@ -17,6 +19,7 @@ HEADERS = ROOT / "_headers"
 MAIN_JS = ROOT / "js" / "main.js"
 THEME_INIT_JS = ROOT / "js" / "theme-init.js"
 PRIVACY_URL = "https://www.goreecloud.com/privacy.html"
+DEPLOYABLE_PATHS = set(PUBLIC_FILES) | set(GENERATED_GLAZE_FILES)
 PRIVATE_PATTERNS = (
     re.compile(r"\b10(?:\.\d{1,3}){3}\b"),
     re.compile(r"\b192\.168(?:\.\d{1,3}){2}\b"),
@@ -109,6 +112,11 @@ class PrivacyParser(HTMLParser):
             self.local_refs.add(parsed.path)
 
 
+def deployable_path(reference: str) -> str:
+    relative = reference.lstrip("/")
+    return "index.html" if not relative else relative
+
+
 def report(errors: list[str]) -> int:
     if errors:
         print("Privacy statement validation failed:")
@@ -158,14 +166,9 @@ def main() -> int:
         errors.append(f"privacy.html uses an unsupported external scheme: {reference}")
 
     for reference in sorted(parser.local_refs):
-        target = (ROOT / reference).resolve()
-        try:
-            target.relative_to(ROOT.resolve())
-        except ValueError:
-            errors.append(f"privacy.html local reference escapes repository root: {reference}")
-            continue
-        if not target.exists():
-            errors.append(f"privacy.html references missing local resource: {reference}")
+        relative = deployable_path(reference)
+        if relative not in DEPLOYABLE_PATHS:
+            errors.append(f"privacy.html references resource outside the reviewed public artifact: {reference}")
 
     normalized_html = re.sub(r"\s+", " ", html).lower()
     for marker in REQUIRED_COPY:
