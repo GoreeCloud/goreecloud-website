@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Offline regression tests for the fixed-target GoreeCloud deployment verifier.
+"""Offline regression tests for the fixed-target rebuilt Main deployment verifier.
 
-These tests deliberately replace network access with synthetic responses. They protect the
-security, indexing, candidate-integrity, error-page, repository-isolation, and RFC 9116 decisions
-that the live verifier enforces after a Cloudflare Pages deployment without making CI depend on
-the network.
+Network access is replaced with synthetic responses. These tests protect the
+host allowlist, security/indexing policy, complete rebuilt artifact identity,
+404 behavior, repository isolation, and RFC 9116 checks used after Cloudflare
+Pages deployment.
 """
 
 from __future__ import annotations
@@ -24,8 +24,6 @@ import verify_remote_deployment as verifier  # noqa: E402
 
 
 class RemoteVerifierTests(unittest.TestCase):
-    """Exercise verifier behavior without performing external requests."""
-
     @staticmethod
     def response(
         *,
@@ -55,7 +53,6 @@ class RemoteVerifierTests(unittest.TestCase):
     def test_fixed_url_accepts_only_reviewed_https_hosts(self) -> None:
         for url in verifier.TARGETS.values():
             verifier.validate_fixed_url(url)
-
         invalid = (
             "http://www.goreecloud.com/",
             "https://example.com/",
@@ -93,10 +90,7 @@ class RemoteVerifierTests(unittest.TestCase):
         fields = verifier.parse_security_txt(
             "# comment\nContact: mailto:first@example.com\nCONTACT: mailto:second@example.com\nPolicy: https://example.com/policy\n"
         )
-        self.assertEqual(
-            fields["contact"],
-            ["mailto:first@example.com", "mailto:second@example.com"],
-        )
+        self.assertEqual(fields["contact"], ["mailto:first@example.com", "mailto:second@example.com"])
         self.assertEqual(fields["policy"], ["https://example.com/policy"])
 
     def test_rfc3339_parser_requires_timezone_and_normalizes_utc(self) -> None:
@@ -129,11 +123,10 @@ class RemoteVerifierTests(unittest.TestCase):
         self.assertTrue(any("expires within 30 days" in error for error in errors))
 
     def test_security_txt_rejects_missing_contract_fields_and_cache_policy(self) -> None:
-        body = b"Expires: 2027-01-02T03:04:05Z\n"
         response = self.response(
             final_url="https://www.goreecloud.com/.well-known/security.txt",
             headers={},
-            body=body,
+            body=b"Expires: 2027-01-02T03:04:05Z\n",
         )
         errors: list[str] = []
         with patch.object(verifier, "fetch", return_value=response):
@@ -146,24 +139,22 @@ class RemoteVerifierTests(unittest.TestCase):
 
     def test_branch_preview_requires_noindex_header(self) -> None:
         errors: list[str] = []
-        response = self.response(headers={"x-robots-tag": "noindex, nofollow"})
-        with patch.object(verifier, "fetch", return_value=response):
-            verifier.verify_indexing_header(
-                "branch-preview", verifier.TARGETS["branch-preview"], errors
-            )
+        with patch.object(
+            verifier,
+            "fetch",
+            return_value=self.response(headers={"x-robots-tag": "noindex, nofollow"}),
+        ):
+            verifier.verify_indexing_header("branch-preview", verifier.TARGETS["branch-preview"], errors)
         self.assertEqual(errors, [])
 
         errors = []
         with patch.object(verifier, "fetch", return_value=self.response(headers={})):
-            verifier.verify_indexing_header(
-                "branch-preview", verifier.TARGETS["branch-preview"], errors
-            )
+            verifier.verify_indexing_header("branch-preview", verifier.TARGETS["branch-preview"], errors)
         self.assertTrue(any("missing the expected X-Robots-Tag" in error for error in errors))
 
     def test_production_rejects_noindex_header(self) -> None:
         errors: list[str] = []
-        response = self.response(headers={"x-robots-tag": "noindex"})
-        with patch.object(verifier, "fetch", return_value=response):
+        with patch.object(verifier, "fetch", return_value=self.response(headers={"x-robots-tag": "noindex"})):
             verifier.verify_indexing_header("production", verifier.TARGETS["production"], errors)
         self.assertTrue(any("unexpectedly publishes X-Robots-Tag" in error for error in errors))
 
@@ -182,7 +173,7 @@ class RemoteVerifierTests(unittest.TestCase):
             verifier.verify_public_surface(verifier.TARGETS["production"], errors)
         self.assertTrue(any("redirected outside" in error for error in errors))
 
-    def test_nested_404_requires_goreecloud_error_markers(self) -> None:
+    def test_nested_404_requires_rebuilt_error_markers(self) -> None:
         valid = self.response(
             status=404,
             body="Page Not Found — GoreeCloud\nThis page isn’t here.\nnoindex,follow".encode("utf-8"),
@@ -225,30 +216,30 @@ class RemoteVerifierTests(unittest.TestCase):
             verifier.verify_production_redirect(errors)
         self.assertTrue(any("did not resolve to the canonical www host" in error for error in errors))
 
-    def test_integrity_set_matches_public_allowlist_except_cloudflare_headers(self) -> None:
-        expected = tuple(
-            relative
-            for relative in verifier.PUBLIC_FILES
-            if relative not in verifier.NON_FETCHABLE_PUBLIC_FILES
-        )
+    def test_integrity_set_matches_complete_rebuilt_artifact_except_headers(self) -> None:
+        expected = (
+            set(verifier.PUBLIC_FILES)
+            | set(verifier.GENERATED_GLAZE_FILES)
+        ) - set(verifier.NON_FETCHABLE_PUBLIC_FILES)
         self.assertEqual(verifier.NON_FETCHABLE_PUBLIC_FILES, frozenset({"_headers"}))
-        self.assertEqual(verifier.REMOTE_INTEGRITY_FILES, expected)
+        self.assertEqual(set(verifier.REMOTE_INTEGRITY_FILES), expected)
+        self.assertTrue(set(verifier.GENERATED_GLAZE_FILES).issubset(verifier.REMOTE_INTEGRITY_FILES))
         self.assertNotIn("_headers", verifier.REMOTE_INTEGRITY_FILES)
 
     def test_remote_integrity_path_mapping_is_origin_rooted_and_safe(self) -> None:
         self.assertEqual(verifier.remote_path_for_public_file("index.html"), "/")
         self.assertEqual(verifier.remote_path_for_public_file("robots.txt"), "/robots.txt")
         self.assertEqual(
-            verifier.remote_path_for_public_file("assets/goreecloud-icon.png"),
-            "/assets/goreecloud-icon.png",
+            verifier.remote_path_for_public_file("css/glaze-v1/glaze-v1.1.0.css"),
+            "/css/glaze-v1/glaze-v1.1.0.css",
         )
         for invalid in ("/absolute.html", "../escape.txt", "assets/../escape.txt", ""):
             with self.subTest(invalid=invalid), self.assertRaises(ValueError):
                 verifier.remote_path_for_public_file(invalid)
 
-    def test_candidate_content_integrity_accepts_exact_bytes(self) -> None:
+    def test_candidate_content_integrity_accepts_exact_copied_bytes(self) -> None:
         relative = "robots.txt"
-        expected = (verifier.ROOT / relative).read_bytes()
+        expected = verifier.candidate_bytes(relative)
         response = self.response(
             final_url="https://www.goreecloud.com/robots.txt",
             body=expected,
