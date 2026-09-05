@@ -64,7 +64,7 @@ class ProjectPortfolioContractTests(unittest.TestCase):
             self.assertNotIn(retired_or_wrong, names)
 
     def test_public_repository_page_is_exact_five_product_focus_not_full_inventory(self) -> None:
-        self.assertEqual(PUBLIC_DIRECTORY.count('class="repo-card glz1-raised glz1-state-layer"'), 5)
+        self.assertEqual(PUBLIC_DIRECTORY.count('class="repo-card glz1-system-overlay glz1-state-layer"'), 5)
         for name in FOCUS:
             self.assertIn(f"https://github.com/GoreeCloud/{name}", PUBLIC_DIRECTORY)
         self.assertNotRegex(PUBLIC_DIRECTORY, r"\b68\b[^<]{0,24}repositories")
