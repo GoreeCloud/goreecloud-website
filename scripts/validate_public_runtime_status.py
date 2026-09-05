@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
-"""Fail closed when current public runtime and migration claims drift across source authorities."""
+"""Fail closed when current public runtime claims drift across source authorities."""
 
 from __future__ import annotations
 
 import json
 from pathlib import Path
 import sys
-
-from render_repository_portfolio import load_manifest, render_public_file
 
 ROOT = Path(__file__).resolve().parents[1]
 STATUS_PATH = ROOT / "docs" / "public-runtime-status.json"
@@ -83,11 +81,6 @@ def main() -> int:
         services = {}
 
     apps = suite_applications(suite, errors)
-
-    # Runtime authority remains anchored to the separate 2026-08-31 status
-    # contract. The Suite registry may have a newer review date for identity or
-    # inventory synchronization only because every runtime-tracked Suite field
-    # below is still pinned independently and fails closed on drift.
     expected = {
         "goreecloud-memos": {
             "suite_id": "memos",
@@ -155,54 +148,38 @@ def main() -> int:
                 f"Suite status class for {contract['suite_id']} must be {contract['suite_status_class']!r}, found {app.get('status_class')!r}."
             )
 
-    # The Main site is now a website/ecosystem hub. Application lifecycle cards
-    # belong to the Suite authority rather than being duplicated as stale raw
-    # homepage service cards.
+    # The rebuilt Main and focused repository page no longer duplicate the full
+    # Suite/runtime directory. They must remain free of stale or over-promoted
+    # runtime claims while the reviewed JSON authorities continue to be validated.
     try:
-        index = INDEX_PATH.read_text(encoding="utf-8")
+        public_text = INDEX_PATH.read_text(encoding="utf-8") + "\n" + REPOSITORIES_PATH.read_text(encoding="utf-8")
     except OSError as exc:
-        errors.append(f"cannot read index.html: {exc}")
-        index = ""
-    for stale in (
+        errors.append(f"cannot read rebuilt public source: {exc}")
+        public_text = ""
+
+    stale_current_markers = (
         'data-service="memos"',
         'data-service="notify"',
         'data-service="search"',
         'data-service="monitor"',
-        "GoreeCloud Memos v0.1.2",
-    ):
-        if stale in index:
-            errors.append(f"Main homepage must not reintroduce stale application-runtime presentation: {stale}")
-
-    # Repository cards are generated from the reviewed repository manifest, so
-    # validate rendered output rather than the intentionally small raw source.
-    try:
-        repositories_source = REPOSITORIES_PATH.read_text(encoding="utf-8")
-        rendered_repositories = render_public_file(
-            "repositories.html", repositories_source, load_manifest(ROOT)
-        )
-    except (OSError, ValueError, KeyError, json.JSONDecodeError) as exc:
-        errors.append(f"cannot render repository directory for runtime-boundary validation: {exc}")
-        rendered_repositories = ""
-
-    repository_markers = (
-        "GoreeCloud Memos v0.1.3 is the accepted Stable production runtime.",
-        "ntfy v2.26.3 remains the active production notification service and rollback path until controlled acceptance and cutover.",
-        "Uptime Kuma remains authoritative until controlled acceptance and cutover.",
-        "current SearXNG-derived GoreeCloud Search runtime remains transitional production continuity while the mandatory native rebuild proceeds.",
-    )
-    for marker in repository_markers:
-        if marker not in rendered_repositories:
-            errors.append(f"Rendered repository directory is missing current runtime boundary: {marker}")
-
-    stale_current_markers = (
         "GoreeCloud Memos v0.1.2",
         "GoreeCloud Notify has replaced ntfy",
         "GoreeCloud Notify replaces ntfy",
         "GoreeCloud Monitor has replaced Uptime Kuma",
         "GoreeCloud Search native implementation is Stable",
     )
-    authority_text = STATUS_PATH.read_text(encoding="utf-8") + "\n" + SUITE_PATH.read_text(encoding="utf-8") + "\n" + rendered_repositories
     for marker in stale_current_markers:
+        if marker in public_text:
+            errors.append(f"Rebuilt public source contains stale or unaccepted runtime claim: {marker}")
+
+    authority_text = STATUS_PATH.read_text(encoding="utf-8") + "\n" + SUITE_PATH.read_text(encoding="utf-8")
+    for marker in (
+        "GoreeCloud Memos v0.1.2",
+        "GoreeCloud Notify has replaced ntfy",
+        "GoreeCloud Notify replaces ntfy",
+        "GoreeCloud Monitor has replaced Uptime Kuma",
+        "GoreeCloud Search native implementation is Stable",
+    ):
         if marker in authority_text:
             errors.append(f"Superseded or unaccepted current runtime claim remains in current-state authorities: {marker}")
 
@@ -213,7 +190,7 @@ def main() -> int:
         return 1
 
     print(
-        "Public runtime status validation passed: the 2026-08-31 runtime authority remains distinct from the 2026-09-01 Suite identity/inventory review, and tracked production boundaries remain pinned."
+        "Public runtime status validation passed: reviewed runtime and Suite authorities remain pinned, and the rebuilt public front door does not duplicate or over-promote runtime state."
     )
     return 0
 
