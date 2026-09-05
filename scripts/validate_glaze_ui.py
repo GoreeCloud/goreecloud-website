@@ -3,12 +3,13 @@
 from pathlib import Path
 import sys
 
-from glaze_v1 import GLAZE_SOURCE_REVISION, GLAZE_VERSION, KNOWN_STABLE_WORKAROUND_MARKER
+from glaze_v1 import GLAZE_SOURCE_REVISION, GLAZE_VERSION
 
 ROOT = Path(__file__).resolve().parents[1]
 ROOT_PAGES = [ROOT / n for n in ("index.html", "repositories.html", "privacy.html", "security.html", "404.html")]
 LABS_PAGES = [ROOT / "sites/labs/index.html", ROOT / "sites/labs/404.html"]
 CONFORMANCE = ROOT / "docs/glaze-ui-conformance.md"
+HELPER = ROOT / "scripts/glaze_v1.py"
 errors: list[str] = []
 
 for page in [*ROOT_PAGES, *LABS_PAGES]:
@@ -46,8 +47,27 @@ for marker in (
     if marker not in conformance:
         errors.append(f"conformance record missing: {marker}")
 
-if KNOWN_STABLE_WORKAROUND_MARKER not in (ROOT / "scripts/glaze_v1.py").read_text(encoding="utf-8"):
-    errors.append("GLAZE build helper is missing the explicit known-defect workaround marker")
+helper = HELPER.read_text(encoding="utf-8") if HELPER.is_file() else ""
+# Validate the exception by named mechanics rather than by one prose literal.
+# This deliberately fails if the pinned defect identity, 404 proof, exact-once
+# guard, single replacement, artifact marker, or post-workaround validation is
+# removed or renamed without updating this acceptance contract.
+for marker in (
+    'KNOWN_STABLE_DEFECT_OWNER = "glaze-v1.components.css"',
+    'KNOWN_STABLE_DEFECT_IMPORT = "glaze-v1.candidate.css"',
+    'KNOWN_STABLE_DEFECT_DIRECTIVE = \'@import url("./glaze-v1.candidate.css");\'',
+    "def confirm_known_stable_defect_missing",
+    "if exc.code != 404:",
+    "text.count(KNOWN_STABLE_DEFECT_DIRECTIVE) != 1",
+    "def apply_known_stable_workaround",
+    "source.replace(",
+    "KNOWN_STABLE_WORKAROUND_MARKER",
+    "confirm_known_stable_defect_missing(timeout=timeout)",
+    "validate_upstream_bundle(raw_bundle)",
+    "validate_bundle(bundle)",
+):
+    if marker not in helper:
+        errors.append(f"GLAZE build helper is missing fail-closed defect control: {marker}")
 
 if errors:
     print("GLAZE UI V1.1 source validation failed:")
