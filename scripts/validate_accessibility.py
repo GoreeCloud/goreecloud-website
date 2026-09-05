@@ -24,8 +24,7 @@ PUBLIC_HTML = (
     ROOT / "404.html",
 )
 FOCUS_STYLES = (
-    ROOT / "css" / "style.css",
-    ROOT / "css" / "glaze-polish.css",
+    ROOT / "css" / "site-v1.1.css",
 )
 HEADING_RE = re.compile(r"h([1-6])")
 
