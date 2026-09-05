@@ -8,8 +8,13 @@ import re
 import sys
 from urllib.parse import urlparse
 
-from build_public_site import PUBLIC_ASSET_FILES, RETIRED_SOURCE_ONLY_ASSET_FILES, ROOT
-from render_repository_portfolio import load_manifest, load_suite_manifest, render_public_file
+from build_public_site import (
+    PUBLIC_ASSET_FILES,
+    RETIRED_SOURCE_ONLY_ASSET_FILES,
+    ROOT,
+    SOURCE_ONLY_ASSET_FILES,
+)
+from render_repository_portfolio import load_suite_manifest
 
 MANIFEST = ROOT / "docs/visual-identity-sources.json"
 INDEX = ROOT / "index.html"
@@ -56,34 +61,41 @@ def main() -> int:
         errors.append(f"Suite artwork path collides with legacy identity record: {path}")
 
     all_records = {**legacy_records, **suite}
-    expected = set(PUBLIC_ASSET_FILES) - {"assets/social-preview.png"}
+    deployed = set(PUBLIC_ASSET_FILES)
+    source_only = set(SOURCE_ONLY_ASSET_FILES)
     retired = set(RETIRED_SOURCE_ONLY_ASSET_FILES)
 
-    overlap = sorted(expected.intersection(retired))
-    for rel in overlap:
-        errors.append(f"Source-only historical asset has re-entered the deployable artwork allowlist: {rel}")
+    classifications = {
+        "deployable": deployed,
+        "source-only": source_only,
+        "retired": retired,
+    }
+    names = tuple(classifications)
+    for index, left_name in enumerate(names):
+        for right_name in names[index + 1:]:
+            overlap = sorted(classifications[left_name] & classifications[right_name])
+            for rel in overlap:
+                errors.append(
+                    f"Identity asset is classified as both {left_name} and {right_name}: {rel}"
+                )
 
-    missing_provenance = sorted(expected.difference(all_records))
-    for rel in missing_provenance:
-        errors.append(f"Deployable identity asset lacks a reviewed provenance record: {rel}")
+    for label, paths in classifications.items():
+        missing = sorted(paths.difference(all_records))
+        for rel in missing:
+            errors.append(f"{label} identity asset lacks a reviewed provenance record: {rel}")
 
-    missing_retired_provenance = sorted(retired.difference(all_records))
-    for rel in missing_retired_provenance:
-        errors.append(f"Retained source-only historical asset lacks its provenance record: {rel}")
-
-    unclassified_records = sorted(set(all_records).difference(expected).difference(retired))
-    for rel in unclassified_records:
+    classified = deployed | source_only | retired
+    for rel in sorted(set(all_records).difference(classified)):
         errors.append(
-            f"Identity provenance record is neither deployable nor explicitly retained source-only history: {rel}"
+            f"Identity provenance record is not classified as deployable, source-only, or retired history: {rel}"
         )
 
-    deployed = {rel: all_records[rel] for rel in expected if rel in all_records}
-    retained = {rel: all_records[rel] for rel in retired if rel in all_records}
-
-    # Preserve byte/provenance integrity for both current deployment derivatives and
-    # source-only historical records. Historical retention must not become a path
-    # around provenance review, even though those assets are excluded from dist/.
-    for rel, rec in {**deployed, **retained}.items():
+    # Preserve byte/provenance integrity for every retained identity file, whether
+    # it is currently deployed by Main or kept only as source/history.
+    for rel in sorted(classified):
+        rec = all_records.get(rel)
+        if rec is None:
+            continue
         path = ROOT / rel
         if not path.is_file() or path.is_symlink():
             errors.append(f"Reviewed identity asset is not a regular file: {rel}")
@@ -117,8 +129,6 @@ def main() -> int:
             errors.append(f"Identity asset must record a commit, named branch, or dated review ref: {rel}")
 
     source_index = INDEX.read_text(encoding="utf-8")
-    rendered_index = render_public_file("index.html", source_index, load_manifest(ROOT))
-    combined_index = source_index + "\n" + rendered_index
 
     for stale in (
         'class="service-icon"',
@@ -128,18 +138,19 @@ def main() -> int:
         "assets/goreecloud-icon.png",
         "assets/favicon.svg",
     ):
-        if stale in rendered_index:
-            errors.append(f"Obsolete placeholder/identity marker remains in deployable homepage: {stale}")
+        if stale in source_index:
+            errors.append(f"Obsolete placeholder/identity marker remains in rebuilt homepage: {stale}")
 
-    for rel in expected:
-        if rel != "assets/goreecloud-logo.svg" and rel not in combined_index:
-            errors.append(f"Deployable identity asset is not represented by the reviewed homepage source/render: {rel}")
+    # The rebuilt Main website intentionally deploys only the master mark. Every
+    # other reviewed identity asset must stay out of the current homepage source.
+    for rel in deployed:
+        if rel not in source_index:
+            errors.append(f"Deployable identity asset is not represented by rebuilt homepage source: {rel}")
+    for rel in source_only | retired:
+        if rel in source_index:
+            errors.append(f"Non-deployable identity asset appears in rebuilt homepage source: {rel}")
 
-    for rel in retired:
-        if rel in combined_index:
-            errors.append(f"Source-only historical upstream asset appears in the current homepage source/render: {rel}")
-
-    if rendered_index.count("assets/goreecloud-logo.svg") < 3:
+    if source_index.count("assets/goreecloud-logo.svg") < 3:
         errors.append("Canonical GoreeCloud logo is not used across visible website identity surfaces.")
 
     for rec in data.get("assets", []):
@@ -154,7 +165,8 @@ def main() -> int:
 
     print(
         "Official visual-identity validation passed across "
-        f"{len(deployed)} deployable identity assets and {len(retained)} retained source-only provenance assets."
+        f"{len(deployed)} deployable, {len(source_only)} source-only, and "
+        f"{len(retired)} retired provenance assets."
     )
     return 0
 
