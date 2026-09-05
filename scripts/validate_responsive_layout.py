@@ -3,8 +3,8 @@
 
 This is intentionally a source contract, not a claim of rendered visual acceptance.
 Real-browser preview checks remain separate where configured. The purpose of this
-gate is to prevent the exact desktop-density and content-obscuring patterns found
-during full-page review from silently returning.
+gate is to preserve explicit mobile/tablet composition and interaction floors while
+allowing the rebuilt Main and Repository pages to share one V1.1 consumer layer.
 """
 
 from pathlib import Path
@@ -24,52 +24,28 @@ def require(source: str, marker: str, label: str, errors: list[str]) -> None:
 def validate() -> list[str]:
     errors: list[str] = []
 
-    homepage = text("css/homepage-v6.css")
-    main_styles = text("css/style.css")
+    # Rebuilt Main, Repositories, Privacy, Security, and 404 share one responsive
+    # source contract rather than the retired homepage-v6/websites/repositories CSS.
+    site = text("css/site-v1.1.css")
     for marker, label in (
-        ("body.glaze-canvas .site-header", "Main header stays in document flow"),
-        ("@media (max-width: 820px)", "Main tablet breakpoint exists"),
-        ("@media (max-width: 600px)", "Main phone breakpoint exists"),
-        (".timeline,\n  .how-flow,\n  #platform .service-grid,\n  .roadmap-grid,\n  .social-grid {\n    grid-template-columns: 1fr;", "Main dense content grids collapse to one column on phones"),
-        (".repository-teaser-stats { grid-template-columns: 1fr; }", "Main repository stats collapse at narrow phone width"),
-        (".hero-actions .button,\n  .repository-teaser-actions .button {\n    width: 100%;", "Main phone actions become full-width"),
-        ("background: color-mix(in srgb, var(--glaze-surface-elevated) 94%, transparent);", "Main open mobile navigation has an explicit Glaze interaction surface"),
+        ("body { margin: 0; min-width: 320px;", "Rebuilt root pages retain a defined narrow layout floor"),
+        ("min-width: 48px; min-height: 48px;", "Header controls preserve the 48px interaction floor"),
+        ("@media (max-width: 980px)", "Shared tablet breakpoint exists"),
+        ("@media (max-width: 700px)", "Shared phone breakpoint exists"),
+        ("@media (max-width: 440px)", "Shared narrow-phone breakpoint exists"),
+        (".primary-nav.is-open { display: flex; }", "Mobile navigation is explicit open-state interaction"),
+        (".nav-toggle { display: inline-flex;", "Navigation control appears at compact widths"),
+        (".hero-grid, .split-section, .architecture-grid { grid-template-columns: 1fr; }", "Complex root layouts collapse to one column on tablets"),
+        (".principle-grid, .destination-grid, .repo-grid { grid-template-columns: 1fr; }", "Dense cards collapse to one column on phones"),
+        (".system-list > div { flex-direction: column;", "Platform-system rows recompose for phone width"),
+        (".footer-grid { grid-template-columns: 1fr; }", "Footer becomes one column on phones"),
+        (".actions { flex-direction: column; }", "Narrow-phone action groups stack"),
+        (".button { width: 100%; }", "Narrow-phone actions use the available width"),
+        ("@media (prefers-reduced-motion: reduce)", "Reduced-motion source fallback exists"),
+        ("@media (prefers-reduced-transparency: reduce)", "Reduced-transparency source fallback exists"),
+        ("@media (forced-colors: active)", "Forced-colors source fallback exists"),
     ):
-        require(homepage, marker, label, errors)
-
-    for marker, label in (
-        ("width: min(20rem, calc(100vw - 1.4rem));", "Main mobile navigation is width-bounded"),
-        ("max-height: calc(100dvh - 96px - env(safe-area-inset-bottom));", "Main mobile navigation is viewport-height bounded"),
-        (".site-nav:not(.open) { display: none; }", "Main closed mobile navigation cannot cover content"),
-        ("grid-template-columns: repeat(2, minmax(0, 1fr));", "Main open mobile navigation uses compact touch columns"),
-        ("overscroll-behavior: contain;", "Main mobile navigation contains local scrolling"),
-        (".site-nav.open .nav-cta { grid-column: 1 / -1; }", "Main mobile call-to-action spans the popover"),
-    ):
-        require(main_styles, marker, label, errors)
-
-    websites = text("css/websites.css")
-    for marker, label in (
-        ("@media (max-width: 820px)", "Website directory single-column breakpoint exists"),
-        (".websites-section .website-grid > .website-card:nth-child(n)", "Website directory overrides high-specificity desktop spans on narrow screens"),
-        ("grid-column: 1 / -1;", "Website cards reset to the complete narrow grid row"),
-        ("inline-size: 100%;", "Website cards fill the complete narrow row"),
-        ("max-inline-size: none;", "Website cards have no narrow max-size cap"),
-    ):
-        require(websites, marker, label, errors)
-
-    repositories = text("css/repositories.css")
-    for marker, label in (
-        (".glaze-canvas .site-header { position: relative; inset-block-start: auto; }", "Repository directory header stays in document flow"),
-        ("@media (max-width: 900px)", "Repository directory collapses to one card column before phone width"),
-        (".repo-grid { grid-template-columns: 1fr; }", "Repository cards become one readable column"),
-        ("@media (max-width: 720px)", "Repository mobile navigation breakpoint exists"),
-        (".site-header .site-nav { position: static;", "Repository mobile navigation stays in document flow"),
-        ("grid-template-columns: repeat(2, minmax(0, 1fr));", "Repository phone navigation uses deliberate touch columns"),
-        (".site-header .site-nav a { min-height: 48px;", "Repository navigation preserves the 48px target floor"),
-        ("@media (max-width: 420px) { .site-header .site-nav.open { grid-template-columns: 1fr; }", "Repository navigation becomes one column at narrow width"),
-        (".repo-visibility-buttons { grid-template-columns: 1fr; }", "Repository visibility filters stack on phones"),
-    ):
-        require(repositories, marker, label, errors)
+        require(site, marker, label, errors)
 
     projects = text("sites/projects/assets/mobile-refresh.css")
     for marker, label in (
@@ -119,7 +95,7 @@ def main() -> int:
         for error in errors:
             print(f"- {error}")
         return 1
-    print("Responsive layout source contract passed for Main, Repositories, Projects, Blog, Roadmap, and Archive.")
+    print("Responsive layout source contract passed for rebuilt root pages plus Projects, Blog, Roadmap, and Archive.")
     return 0
 
 
