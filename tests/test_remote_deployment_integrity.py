@@ -20,7 +20,7 @@ import verify_remote_deployment as verifier  # noqa: E402
 
 
 class RemoteDeploymentIntegrityTests(unittest.TestCase):
-    """Keep remote verification bound to the reviewed public artifact and host allowlist."""
+    """Keep remote verification bound to the rebuilt artifact and host allowlist."""
 
     @staticmethod
     def response(*, body: bytes, path: str = "/privacy.html", status: int = 200):
@@ -31,88 +31,73 @@ class RemoteDeploymentIntegrityTests(unittest.TestCase):
             body=body,
         )
 
-    def test_remote_integrity_set_tracks_public_allowlist_except_headers_control(self) -> None:
+    def test_remote_integrity_set_tracks_complete_artifact_except_headers_control(self) -> None:
+        expected = set(public_build.PUBLIC_FILES) | set(public_build.GENERATED_GLAZE_FILES)
+        expected.remove("_headers")
         self.assertEqual(verifier.NON_FETCHABLE_PUBLIC_FILES, frozenset({"_headers"}))
-        self.assertEqual(
-            set(verifier.REMOTE_INTEGRITY_FILES),
-            set(public_build.PUBLIC_FILES) - {"_headers"},
-        )
+        self.assertEqual(set(verifier.REMOTE_INTEGRITY_FILES), expected)
+        self.assertTrue(set(public_build.GENERATED_GLAZE_FILES).issubset(verifier.REMOTE_INTEGRITY_FILES))
         self.assertNotIn("_headers", verifier.REMOTE_INTEGRITY_FILES)
 
-    def test_public_source_path_maps_to_expected_remote_path(self) -> None:
+    def test_public_artifact_path_maps_to_expected_remote_path(self) -> None:
         self.assertEqual(verifier.remote_path_for_public_file("index.html"), "/")
         self.assertEqual(
             verifier.remote_path_for_public_file(".well-known/security.txt"),
             "/.well-known/security.txt",
         )
         self.assertEqual(
-            verifier.remote_path_for_public_file("css/glaze.css"),
-            "/css/glaze.css",
+            verifier.remote_path_for_public_file("css/glaze-v1/glaze-v1.1.0.css"),
+            "/css/glaze-v1/glaze-v1.1.0.css",
         )
         with self.assertRaises(ValueError):
             verifier.remote_path_for_public_file("../private.txt")
         with self.assertRaises(ValueError):
             verifier.remote_path_for_public_file("/absolute.txt")
 
-    def test_candidate_bytes_include_final_glaze_ui_21_transform(self) -> None:
+    def test_candidate_bytes_are_rebuilt_v11_source_without_retired_transform(self) -> None:
         candidate = verifier.candidate_bytes("index.html").decode("utf-8")
-        self.assertIn('name="goreecloud-glaze-ui" content="2.1.0"', candidate)
-        self.assertIn('data-glaze-ui="2.1.0"', candidate)
-        self.assertIn(
-            "Ten independently deployed public destinations are production-accepted on Glaze UI 2.1.0 Stable",
-            candidate,
-        )
-        self.assertIn("Identity Center is the eleventh official first-party surface", candidate)
-        self.assertIn("The GoreeCloud Design Center for Glaze UI 2.1.0 Stable", candidate)
-        self.assertNotIn('data-glaze-ui="1.5.0"', candidate)
-        self.assertNotIn('data-glaze-ui="2.0.0"', candidate)
-        self.assertNotIn("Glaze UI 2.1 remains Candidate", candidate)
-        self.assertNotIn(
-            "The public portfolio uses Glaze UI 2.0.0 Stable as its production design target.",
-            candidate,
-        )
+        self.assertIn('name="goreecloud-glaze-ui" content="1.1.0"', candidate)
+        self.assertIn('data-glaze-ui="1.1.0"', candidate)
+        self.assertIn("Your cloud should belong to you.", candidate)
+        self.assertIn("GoreeCloud Manager", candidate)
+        self.assertNotIn('data-glaze-ui="2.1.0"', candidate)
+        self.assertNotIn('data-glaze-ui="2.2.0"', candidate)
+        self.assertNotIn("Expanding the platform", candidate)
+
+    def test_generated_glaze_candidate_uses_bounded_workaround_bytes(self) -> None:
+        relative = "css/glaze-v1/glaze-v1.components.css"
+        expected = b"/* generated GLAZE artifact */"
+        with patch.object(
+            verifier,
+            "generated_glaze_candidate",
+            return_value={"glaze-v1.components.css": expected.decode("utf-8")},
+        ):
+            self.assertEqual(verifier.candidate_bytes(relative), expected)
+
+    def test_candidate_path_outside_artifact_is_rejected(self) -> None:
+        with self.assertRaises(ValueError):
+            verifier.candidate_bytes("README.md")
 
     def test_exact_candidate_bytes_pass_remote_integrity(self) -> None:
         relative = "privacy.html"
-        # Compare against the exact reviewed build candidate, not the raw source
-        # template. Glaze UI 2.1 normalization is intentionally applied at the
-        # public render boundary before Cloudflare receives this page.
         expected = verifier.candidate_bytes(relative)
         errors: list[str] = []
-
         with (
             patch.object(verifier, "REMOTE_INTEGRITY_FILES", (relative,)),
-            patch.object(
-                verifier,
-                "fetch",
-                return_value=self.response(body=expected),
-            ),
+            patch.object(verifier, "fetch", return_value=self.response(body=expected)),
         ):
-            verifier.verify_candidate_content_integrity(
-                verifier.TARGETS["production"],
-                errors,
-            )
-
+            verifier.verify_candidate_content_integrity(verifier.TARGETS["production"], errors)
         self.assertEqual(errors, [])
 
     def test_candidate_byte_mismatch_fails_without_echoing_content(self) -> None:
         relative = "privacy.html"
         errors: list[str] = []
         deployed_body = b"unexpected deployed content"
-
         with (
             patch.object(verifier, "REMOTE_INTEGRITY_FILES", (relative,)),
-            patch.object(
-                verifier,
-                "fetch",
-                return_value=self.response(body=deployed_body),
-            ),
+            patch.object(verifier, "fetch", return_value=self.response(body=deployed_body)),
         ):
-            verifier.verify_candidate_content_integrity(
-                verifier.TARGETS["production"],
-                errors,
-            )
-
+            verifier.verify_candidate_content_integrity(verifier.TARGETS["production"], errors)
         self.assertEqual(len(errors), 1)
         self.assertIn("Candidate content mismatch for /privacy.html", errors[0])
         self.assertIn("SHA-256", errors[0])
@@ -121,7 +106,6 @@ class RemoteDeploymentIntegrityTests(unittest.TestCase):
     def test_redirect_handler_rejects_unreviewed_host_before_following(self) -> None:
         request = Request("https://www.goreecloud.com/")
         handler = verifier.AllowlistedRedirectHandler()
-
         with self.assertRaises(URLError) as context:
             handler.redirect_request(
                 request,
@@ -131,14 +115,12 @@ class RemoteDeploymentIntegrityTests(unittest.TestCase):
                 {},
                 "https://example.com/untrusted",
             )
-
         self.assertIn("Redirect target rejected", str(context.exception.reason))
         self.assertIn("outside the GoreeCloud verifier allowlist", str(context.exception.reason))
 
     def test_redirect_handler_allows_reviewed_goreecloud_destination(self) -> None:
         request = Request("https://goreecloud.com/")
         handler = verifier.AllowlistedRedirectHandler()
-
         redirected = handler.redirect_request(
             request,
             None,
@@ -147,7 +129,6 @@ class RemoteDeploymentIntegrityTests(unittest.TestCase):
             {},
             "https://www.goreecloud.com/",
         )
-
         self.assertIsNotNone(redirected)
         self.assertEqual(redirected.full_url, "https://www.goreecloud.com/")
 

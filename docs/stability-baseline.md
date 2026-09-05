@@ -1,160 +1,130 @@
 # GoreeCloud Website Stability Baseline
 
-## Current accepted release version
+## Accepted production package versus current rebuild candidate
 
-The repository-defined accepted release version remains **5.24.0** until a newer exact revision completes preview, merge, and production acceptance.
+The repository-defined accepted website package remains **5.24.0** until a newer exact revision completes all applicable preview, human-review, merge, deployment, and production-verification gates.
 
-`VERSION` is the canonical machine-readable version source for the accepted website package. The version file and this stability record are repository metadata only and are not part of the isolated Cloudflare Pages publication artifact.
+`VERSION` remains the canonical machine-readable package-version source. It is repository-only metadata and is not copied into the isolated Cloudflare Pages artifact. A version value, branch, pull request, green workflow, or merge does not independently establish production acceptance.
 
-Version metadata never establishes a Stable production release by itself. A revision must satisfy the source, artifact, preview, and production acceptance requirements below.
+The rebuild in the current development branch is **not an accepted replacement for 5.24.0**. It is a Development candidate and must remain distinguishable from the accepted production package until the required gates are complete.
 
-## Current reviewed public-web baseline
+## Current candidate design-system target
 
-**Glaze UI 2.1.0 Stable** is the current design-system baseline for the official GoreeCloud public-web ecosystem. The ten currently production-accepted public destinations have recorded Glaze UI 2.1 acceptance in the authoritative GoreeCloud Public Websites project record. Identity Center has Glaze UI 2.1 source merged but remains separately gated for public-domain publication and exact production acceptance.
+The current applicable GoreeCloud Stable consumer target for this Website candidate is **GLAZE UI V1.1 / 1.1.0**.
 
-The reviewed current baseline is:
+- Canonical design-system repository: `GoreeCloud/goreecloud-glaze-ui`.
+- Exact Stable promotion revision: `15cc76d2bcd4065552dc31c77145b63f34d9e7b2`.
+- Official Stable web entrypoint: `css/glaze-v1.1.0.css`.
+- The immutable `1.1.0` source has one known import-closure defect: `glaze-v1.components.css` imports nonexistent `glaze-v1.candidate.css`.
+- The Website build uses only the documented fail-closed workaround recorded in `docs/glaze-ui-conformance.md`: prove that exact pinned dependency is HTTP 404, require the dangling directive exactly once, remove only that directive from the generated artifact copy, mark the generated file, and validate the post-workaround import closure.
+- The workaround is **not GLAZE consumer-conformance evidence**. Website GLAZE acceptance remains pending until a corrected immutable Stable patch is published, independently re-pinned, and accepted for the exact Website revision.
 
-- **Glaze UI 2.1.0 Stable** is the current source and accepted public-web design target.
-- Stable promotion reference: `c49113eb8b93c267613fdf1bbca1f814495acad7` in `GoreeCloud/goreecloud-glaze-ui`.
-- **Glaze UI 2.0.0 Stable** is the immediately preceding historical baseline. Its evidence remains historical/rollback context and does not satisfy current 2.1 conformance.
-- Later source commits, content changes, or consumer updates do not inherit production acceptance from an earlier 2.1 deployment. Every website revision must earn repository-local acceptance for its exact candidate and exact deployed revision.
-- The authenticated GoreeCloud owner inventory reviewed on **2026-08-31** contains **57 repositories: 40 public, 17 private, across 13 functional groups**.
-- The official production public-web portfolio contains **10 production-accepted destinations on Glaze UI 2.1.0 Stable**: Main, Suite, Projects, Design Center, Privacy Center, Security Center, Continuity Center, Roadmap, Blog, and Archive.
-- **Identity Center** is the eleventh official first-party website surface. Its Glaze UI 2.1 source is merged; public-domain publication and exact production acceptance remain pending separate evidence gates.
-- The six substantive GoreeCloud platform systems are **Glaze UI, Privacy Shield, Wardveil Security, Everkeep, GoreeCloud Mesh, and GoreeCloud Identity**.
-- GoreeCloud Identity is authoritative for identity, authentication, authorization, accounts, devices, credentials, sessions, and delegated authority.
-- GoreeCloud Mesh coordinates explicit relationships, capabilities, lifecycle context, governance, events, and evidence exchange without taking over another platform system's authority.
-- The current approved Glaze UI visual identity is **Facet**. Historical Fold references remain valid only when clearly presented as history.
-- `GoreeCloud/goreecloud-branding-assets` is the current shared branding and approved visual-asset authority. The retired `goreecloud-logo` repository must not be restored as an authority.
-- Products without approved canonical artwork remain text-only or use explicitly neutral non-official presentation rather than fabricated official icons or logos.
+Earlier Glaze UI 2.x website-adoption records remain historical evidence only. They do not override the current applicable V1.1 target and must not be used to make the current rebuild appear conformant or accepted.
+
+## Current reviewed repository inventory
+
+`docs/repository-portfolio.json` is the repository-only machine-readable inventory authority for this Website candidate.
+
+The authenticated GoreeCloud inventory reconciled on **2026-09-05** contains:
+
+- **68 repositories total**;
+- **65 public**;
+- **3 private**;
+- **15 functional groups**.
+
+This inventory is source/discovery evidence, not runtime-readiness evidence. Repository visibility does not determine application maturity, deployment state, production acceptance, security protection, or platform conformance.
+
+The rebuilt public `repositories.html` intentionally does **not** reproduce the full organization inventory or publish a numeric repository count. It is a focused Development source page for GoreeCloud Home Security, GoreeCloud Home, GoreeCloud AI, GoreeCloud Containers, and GoreeCloud Code. The full inventory remains repository-only authority.
+
+## Integral Platform Systems
+
+Current GoreeCloud governance requires evaluation of all seven Integral Platform Systems where applicable:
+
+1. **GoreeCloud Manager** — management and operational visibility.
+2. **Glaze UI** — design and interaction.
+3. **Privacy Shield** — privacy and data use.
+4. **Wardveil Security** — security and trust.
+5. **Everkeep** — continuity and recovery.
+6. **GoreeCloud Mesh** — coordination and capability exchange.
+7. **GoreeCloud Identity** — identity and authentication.
+
+Naming or displaying one of these systems does not manufacture its implementation or acceptance state. Each system remains authoritative only for the state it actually controls and evidences.
+
+## Rebuilt Main public-surface boundary
+
+The current candidate rebuilds the root GoreeCloud public site around owner-controlled computing, privacy, portability, recoverability, specialized official destinations, evidence-scoped platform relationships, and current Development truth.
+
+The former **“Expanding the platform”** composition and Home Assistant/Frigate-centered roadmap framing are intentionally removed from Main.
+
+The root public artifact is an explicit static allowlist containing the reviewed HTML, headers/crawler files, manifest, master GoreeCloud logo, local composition CSS/JavaScript, and the generated same-origin pinned GLAZE V1.1 CSS set. Repository-only records, scripts, tasks, release evidence, source-only artwork, and `sites/labs` source are not copied into Main's `dist/` artifact.
+
+The browser boundary remains intentionally minimal: no advertising, behavioral analytics, third-party runtime JavaScript, remote fonts, browser API client, service worker, or application authentication is introduced by this rebuild.
+
+## Five-product public-center boundary
+
+`sites/labs/` is the combined public-information source for GoreeCloud Home Security, GoreeCloud Home, GoreeCloud AI, GoreeCloud Containers, and GoreeCloud Code. It does not create a new umbrella product identity.
+
+`labs.goreecloud.com` is a **proposed technical website namespace**, not a verified active destination. The site remains `noindex,nofollow` with crawler blocking until its dedicated Cloudflare Pages project, custom-domain binding, DNS/TLS, representative-mobile human review, and exact production deployment are verified.
+
+Source preparation is not Cloudflare project creation, DNS activation, production publication, or product-runtime acceptance.
+
+## Specialized public-site boundary
+
+Suite, Projects, Design, Privacy, Security, Continuity, Roadmap, Blog, Archive, Identity, and other separately deployed public surfaces retain their own revision, migration, and production-acceptance evidence.
+
+This Main rebuild must not be used to inherit V1.1 acceptance for a separately deployed satellite site. Legacy satellite-site Glaze versions remain historical/current-to-that-site evidence until each consumer is explicitly migrated and accepted under its own applicable gates.
 
 ## Stability definition
 
-A GoreeCloud website revision is considered stable only when all applicable conditions are satisfied:
+A GoreeCloud Website revision is considered accepted/stable only when all applicable conditions are satisfied for the exact candidate and resulting production revision:
 
 1. The exact source revision passes the complete repository validation workflow.
-2. Repository hygiene, history, license, governance, privacy, security-reporting, Wardveil Security, observability, and browser-origin checks pass.
-3. Structural accessibility and the current Glaze UI design-contract checks pass.
-4. Repository-portfolio validation confirms the reviewed total/public/private/group counts, directory completeness, public/private link boundaries, and local-only browser filtering behavior.
-5. Current public-runtime-status validation confirms that accepted production services, release candidates, active development projects, migration states, and replacement boundaries are not reversed or overstated.
-6. The explicit allowlisted `dist/` artifact builds and validates successfully.
-7. Cloudflare deployment-contract and performance-budget checks pass.
-8. JavaScript syntax, static fallback, reduced-effect, high-contrast, and failure-resilience checks pass where applicable.
-9. Pull-request candidates pass **exact branch-preview deployment verification** before merge.
-10. The resulting `main` revision passes **exact production deployment verification** after merge.
+2. Repository hygiene, reachable-history, license, creative-asset, governance, privacy, security-reporting, Wardveil, observability, and browser-origin checks pass.
+3. Structural accessibility and the applicable GLAZE source/design checks pass without converting a source target into a conformance claim.
+4. Repository-portfolio and public-runtime-status checks preserve current source/status truth.
+5. The explicit allowlisted `dist/` artifact builds and validates successfully, including the exact generated same-origin GLAZE file set.
+6. Cloudflare deployment-contract, request-count/payload, resilience, JavaScript syntax, and remote-verifier tests pass.
+7. The exact pull-request candidate passes branch-preview deployment verification.
+8. Automated browser checks pass for representative desktop, tablet, and phone viewports without horizontal overflow, obscured content, or target-size regressions.
+9. Required **representative human mobile visual/interaction review** is completed for the exact material redesign. Automated Chrome evidence does not replace this gate.
+10. Required source-publication, creative-rights, and authorization decisions are resolved separately where applicable.
+11. After merge, the exact resulting `main` revision passes production deployment verification and required production browser checks.
 
-A passing branch preview alone is not a stable release. **A merge alone is not a stable release.** Stability requires the reviewed source, isolated artifact, and deployed production bytes to agree.
+A passing branch preview alone is not a stable release. **A merge alone is not a stable release.** Stability requires reviewed source, artifact, human acceptance where required, authorization, and deployed production evidence to agree.
 
-## Glaze UI 2.1 implementation boundary
+## Interaction and accessibility baseline
 
-Glaze UI is the substantive GoreeCloud design-system authority, not a decorative theme.
+The candidate preserves, at minimum:
 
-The current public-web target is Glaze UI 2.1.0 Stable and retains the material hierarchy:
-
-**Canvas → Surface → Soft Glaze → Glaze → Deep Glaze → Live Glaze**
-
-The 2.1 public-web rule is:
-
-**Content is solid. Interaction is glazed.**
-
-Durable reading surfaces such as cards, repository summaries, timelines, policies, status content, project entries, and articles use solid Surface material. Controlled glaze is reserved for navigation, transient controls, selected interactive emphasis, and deliberately live interaction surfaces.
-
-The public-web mapping includes, where applicable:
-
-- current semantic typography, spacing, shape, surface, state, and focus behavior;
-- 48px minimum general interaction targets;
-- a 56px Touch Assistance floor when touch assistance is enabled;
-- Comfortable, Standard, Compact, and Far View density behavior;
-- Clear, Balanced, and Solid clarity behavior;
-- large-text fallback behavior that prevents compact density from shrinking interaction targets below the safe floor;
-- deterministic reduced-material/performance behavior;
-- responsive mobile, tablet, and desktop layouts;
-- mobile safe-area handling;
-- Navigation Capsule behavior or an equivalent approved Glaze navigation mapping;
-- reduced-motion and reduced-transparency behavior;
-- increased-contrast and forced-colors fallbacks;
+- 48px minimum shared navigation and shell-control targets;
+- responsive mobile/tablet/desktop reflow;
+- no horizontal page overflow at representative narrow widths;
+- a skip link and programmatically focusable `main` target;
 - keyboard-visible focus treatment;
-- no-backdrop and print fallbacks;
-- locally hosted production assets and explicit browser-origin boundaries.
+- System, Light, and Dark appearance behavior;
+- reduced-motion behavior;
+- reduced-transparency fallbacks;
+- forced-colors support;
+- safe text/reflow behavior and required human review at representative mobile sizes.
 
-Importing tokens or a stylesheet alone does not establish application conformance. Application-specific behavior, accessibility, representative viewport/device behavior, and deployment acceptance remain separate requirements.
+These checks are regression evidence, not a formal WCAG conformance claim.
 
-Glaze UI 2.0.0 is retained only as historical/rollback evidence where appropriate. Active public pages and built artifacts must not depend on 1.x or 2.0 after 2.1 acceptance.
+## Branding and creative-rights boundary
 
-## Public website portfolio boundary
+`GoreeCloud/goreecloud-branding-assets` remains the canonical shared visual-asset authority. Approved artwork is used when it exists. Products without approved canonical artwork remain text-led rather than receiving invented, emoji, generic, or upstream substitute marks.
 
-The ten production-accepted public destinations are maintained as focused sites rather than one monolithic page:
-
-1. `www.goreecloud.com` — main GoreeCloud public website.
-2. `suite.goreecloud.com` — GoreeCloud Suite application and service directory.
-3. `projects.goreecloud.com` — current project portfolio.
-4. `design.goreecloud.com` — Design Center / Glaze UI.
-5. `privacy.goreecloud.com` — Privacy Center / Privacy Shield.
-6. `security.goreecloud.com` — Security Center / Wardveil Security.
-7. `everkeep.goreecloud.com` — Continuity Center / Everkeep.
-8. `roadmap.goreecloud.com` — public development roadmap.
-9. `blog.goreecloud.com` — public technical writing and development context.
-10. `archive.goreecloud.com` — selected historical milestones and superseded directions.
-
-Identity Center is the eleventh official first-party surface and remains publication/production-acceptance pending. Mesh Center remains a substantive platform-system concept without an invented production domain in this baseline.
-
-## Repository portfolio and privacy boundary
-
-`docs/repository-portfolio.json` is the repository-only machine-readable authority for the reviewed source inventory. It is separate from runtime-readiness evidence.
-
-The manifest records repository names, visibility, functional groups, and public-safe roles. Private repositories may be named where their product role is intentionally public, but the public website must not publish direct private-repository URLs or private contents.
-
-The browser does not fetch this manifest or query GitHub at runtime. Repository cards and counts are source-controlled release facts rendered before publication. Browser search/filter controls operate only over already-rendered public HTML and remain local, ephemeral, and network-independent.
-
-Repository visibility does not determine runtime maturity. The current inventory includes `goreecloud-index` as a private Development repository; its listing does not imply Stable or production acceptance.
-
-## Current public runtime-status boundary
-
-The website continues to distinguish source development, release candidates, migration paths, accepted production services, and Stable application releases.
-
-Representative reviewed boundaries include:
-
-- **GoreeCloud Memos:** accepted Stable production at its recorded accepted version.
-- **GoreeCloud Notify:** release-candidate work remains distinct from any still-active transitional production notification service until controlled cutover is accepted.
-- **GoreeCloud Search:** public production claims remain limited to the accepted replacement scope recorded by its project evidence.
-- **GoreeCloud Monitoring:** active-development/replacement language must not imply a cutover that has not been accepted.
-- **GoreeCloud Index:** Development-only source status must not be presented as a Stable or production-accepted universal search service.
-
-A public repository, successful build, green CI run, release candidate, platform identity, or deployable source tree does not automatically establish production acceptance, security protection, privacy compliance, recoverability, design conformance, or native-rebuild completion.
-
-## Branding and visual-asset boundary
-
-Official GoreeCloud logos, product icons, system marks, illustrations, artwork, and other visual identities must trace to an approved first-party source.
-
-The shared branding authority is `GoreeCloud/goreecloud-branding-assets`. Deployed sites may keep origin-local byte-identical or otherwise approved publication derivatives so browser delivery does not depend on a private repository at runtime.
-
-The website must not create initials, generic graphics, or improvised artwork and then describe those as official. Neutral text presentation is acceptable when canonical artwork has not yet been approved.
-
-Historical visual identities may remain in the Archive or other clearly historical context when needed to preserve the project's development record.
-
-## Privacy, security, and observability boundary
-
-The current public websites remain privacy-preserving static browser surfaces unless a specific site explicitly documents otherwise.
-
-The main static-publication model does not add visitor analytics, advertising, behavioral tracking, fingerprinting, session replay, remote fonts, application-owned authentication, application storage, or a public application API merely as a consequence of this design refresh.
-
-Wardveil Security, Privacy Shield, Everkeep, GoreeCloud Identity, and GoreeCloud Mesh names do not manufacture underlying security, privacy, continuity, identity, authorization, or coordination state. Public claims require the appropriate implemented behavior and authoritative evidence.
-
-Future dynamic features must define their own authentication, authorization, observability, audit, sensitive-data handling, retention, recovery, monitoring, and security requirements before production acceptance.
+Repository presence is not a license grant. Third-party marks and historical artwork remain subject to their own rights and publication context. The final human reachable-history/contextual-disclosure review remains separate where required.
 
 ## Governance and release boundaries
 
-This website modernization does not itself authorize a:
+This Website candidate does not itself authorize a:
 
 - repository visibility change;
 - DNS change;
-- Cloudflare project-setting change outside the reviewed deployment contract;
+- Cloudflare project or custom-domain activation outside the reviewed deployment contract;
 - application production cutover;
-- network migration;
-- backup or recovery-platform cutover;
-- security or privacy state upgrade;
-- creative-rights/publication decision.
+- security, privacy, identity, continuity, or platform-conformance upgrade;
+- creative-rights/publication decision;
+- merge or production release.
 
-The **final human reachable-history/contextual-disclosure review** remains separate where publication or creative-rights review is required.
-
-Current public claims must continue to match implementation, source authority, and accepted evidence. A design modernization must not be used to make unsupported application, platform, security, privacy, continuity, identity, deployment, or production-readiness claims appear authoritative.
+Current public claims must continue to match implementation, source authority, and accepted evidence. Unknown, pending, candidate, proposed, Development, and historical states must remain distinguishable from implemented and production-accepted state.

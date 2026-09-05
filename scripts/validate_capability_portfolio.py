@@ -6,13 +6,7 @@ from __future__ import annotations
 from pathlib import Path
 import sys
 
-from normalize_homepage import normalize_homepage
-from render_repository_portfolio import (
-    load_capability_manifest,
-    load_manifest,
-    load_suite_manifest,
-    render_public_file,
-)
+from render_repository_portfolio import load_capability_manifest, load_suite_manifest
 
 ROOT = Path(__file__).resolve().parents[1]
 INDEX = ROOT / "index.html"
@@ -99,11 +93,12 @@ def main() -> int:
         if extra:
             errors.append("Capability portfolio contains unreviewed identities: " + ", ".join(extra))
 
+    # Main is a front door, not a duplicate capability directory. Validate the
+    # reviewed source directly and keep detailed capability presentation on Suite.
     source = INDEX.read_text(encoding="utf-8")
-    rendered = normalize_homepage(render_public_file("index.html", source, load_manifest(ROOT)))
-    if 'data-capability=' in rendered or 'id="capabilities"' in rendered:
+    if 'data-capability=' in source or 'id="capabilities"' in source:
         errors.append("Main homepage must not render umbrella capability cards; they belong on suite.goreecloud.com.")
-    if "suite.goreecloud.com" not in rendered:
+    if 'href="https://suite.goreecloud.com/"' not in source:
         errors.append("Main homepage must link users to the dedicated Suite website for application capability detail.")
 
     if errors:
@@ -112,7 +107,7 @@ def main() -> int:
             print(f"  - {error}")
         return 1
 
-    print(f"GoreeCloud capability portfolio validation passed: {len(capabilities)} umbrella identities; main-site separation preserved.")
+    print(f"GoreeCloud capability portfolio validation passed: {len(capabilities)} umbrella identities; rebuilt Main separation preserved.")
     return 0
 
 

@@ -20,8 +20,10 @@ PUBLIC_PAGES = (
     ROOT / "security.html",
     ROOT / "404.html",
 )
-EXPECTED_THEME = "#07111f"
+EXPECTED_THEME = "#0b0d11"
 CANONICAL_LOGO = "/assets/goreecloud-logo.svg"
+MANIFEST_HREF = "/site.webmanifest"
+THEME_INIT_SRC = "/js/theme-init.js"
 
 
 class IdentityParser(HTMLParser):
@@ -116,19 +118,13 @@ def main() -> int:
             errors.append(f"Manifest icon resource is missing: {src}")
 
     theme_init = THEME_INIT.read_text(encoding="utf-8")
-    required_manifest_markers = (
-        "const MANIFEST_HREF = '/site.webmanifest';",
-        "document.querySelector('link[rel~=\"manifest\"]')",
-        "document.createElement('link')",
-        "manifest.rel = 'manifest';",
-        "manifest.href = MANIFEST_HREF;",
-        "document.head.append(manifest);",
-        "ensureManifestLink();",
-    )
-    for marker in required_manifest_markers:
+    for marker in (
+        "const key = 'goreecloud-appearance';",
+        "localStorage.getItem(key)",
+        "root.dataset.glzAppearance",
+    ):
         if marker not in theme_init:
-            errors.append(f"theme-init.js is missing manifest discovery behavior: {marker}")
-
+            errors.append(f"theme-init.js is missing expected appearance initialization behavior: {marker}")
     if "serviceWorker" in theme_init or "navigator.serviceWorker" in theme_init:
         errors.append("Application identity initialization must not introduce a service worker implicitly.")
 
@@ -140,25 +136,30 @@ def main() -> int:
         parser = IdentityParser()
         parser.feed(page.read_text(encoding="utf-8"))
         relative = page.relative_to(ROOT)
-        is_error_page = page.name == "404.html"
-        theme_init_src = "/js/theme-init.js" if is_error_page else "js/theme-init.js"
-        apple_icon_href = CANONICAL_LOGO if is_error_page else CANONICAL_LOGO.lstrip("/")
 
         if parser.meta_names.get("application-name") != "GoreeCloud":
             errors.append(f"{relative} must publish application-name=GoreeCloud.")
         if parser.meta_names.get("author") != "GoreeCloud":
             errors.append(f"{relative} must publish author=GoreeCloud.")
-        if theme_init_src not in parser.scripts:
-            errors.append(f"{relative} must load {theme_init_src} for early theme and manifest discovery.")
+        if THEME_INIT_SRC not in parser.scripts:
+            errors.append(f"{relative} must load {THEME_INIT_SRC} for early appearance initialization.")
 
-        apple_icons = [
+        manifest_links = [
             link for link in parser.links
-            if "apple-touch-icon" in link.get("rel", "").split()
+            if "manifest" in link.get("rel", "").split()
         ]
-        if not apple_icons or apple_icons[0].get("href") != apple_icon_href:
-            errors.append(f"{relative} must publish the canonical GoreeCloud apple-touch-icon at {apple_icon_href}.")
-        elif apple_icons[0].get("type") != "image/svg+xml":
-            errors.append(f"{relative} canonical GoreeCloud apple-touch-icon must declare image/svg+xml.")
+        if len(manifest_links) != 1 or manifest_links[0].get("href") != MANIFEST_HREF:
+            errors.append(f"{relative} must explicitly publish exactly one manifest link at {MANIFEST_HREF}.")
+
+        icon_links = [
+            link for link in parser.links
+            if "icon" in link.get("rel", "").split() and "apple-touch-icon" not in link.get("rel", "").split()
+        ]
+        canonical_icons = [link for link in icon_links if link.get("href") == CANONICAL_LOGO]
+        if len(canonical_icons) != 1:
+            errors.append(f"{relative} must explicitly publish one canonical GoreeCloud icon at {CANONICAL_LOGO}.")
+        elif canonical_icons[0].get("type") != "image/svg+xml":
+            errors.append(f"{relative} canonical GoreeCloud icon must declare image/svg+xml.")
 
         if parser.main_attrs is None:
             errors.append(f"{relative} must contain <main id='main'>.")
@@ -174,7 +175,7 @@ def report(errors: list[str]) -> int:
         for error in errors:
             print(f"  - {error}")
         return 1
-    print("Application identity validation passed.")
+    print("Application identity validation passed: explicit manifest/icon identity and early appearance initialization are consistent.")
     return 0
 
 

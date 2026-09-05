@@ -11,6 +11,8 @@ from urllib.parse import urlparse
 import re
 import sys
 
+from build_public_site import GENERATED_GLAZE_FILES, PUBLIC_FILES
+
 ROOT = Path(__file__).resolve().parents[1]
 SECURITY_TXT = ROOT / ".well-known" / "security.txt"
 SECURITY_PAGE = ROOT / "security.html"
@@ -22,6 +24,7 @@ PRIMARY_CONTACT = "mailto:security@goreecloud.com"
 WARDVEIL_IDENTITY = "Wardveil Security by GoreeCloud"
 EXPIRY_RENEWAL_BUFFER = timedelta(days=30)
 MAX_EXPIRY_HORIZON = timedelta(days=365)
+DEPLOYABLE_PATHS = set(PUBLIC_FILES) | set(GENERATED_GLAZE_FILES)
 PRIVATE_PATTERNS = (
     re.compile(r"\b10(?:\.\d{1,3}){3}\b"),
     re.compile(r"\b192\.168(?:\.\d{1,3}){2}\b"),
@@ -35,7 +38,7 @@ REQUIRED_COPY = (
     "platform-wide first-party security system and shared security plane",
     "Foundation 0.9",
     "Sentinel Fold",
-    "Six complementary platform systems",
+    "seven Integral Platform Systems",
     "GoreeCloud Identity",
     "production ClamAV scanner runtime is deployed and accepted at the scanner-evidence layer",
     "does not establish end-to-end Wardveil Scan application acceptance",
@@ -62,6 +65,7 @@ STALE_WARDVEIL_COPY = (
     "security identity and presentation layer",
     "Three complementary GoreeCloud foundations",
     "Five complementary platform systems",
+    "Six complementary platform systems",
     "production ClamAV runtime remains unaccepted",
 )
 
@@ -122,6 +126,11 @@ class PolicyParser(HTMLParser):
                 self.insecure_refs.append(value)
                 continue
             self.local_refs.add(parsed.path)
+
+
+def deployable_path(reference: str) -> str:
+    relative = reference.lstrip("/")
+    return "index.html" if not relative else relative
 
 
 def parse_security_txt(errors: list[str]) -> dict[str, list[str]]:
@@ -263,14 +272,9 @@ def main() -> int:
         errors.append(f"security.html uses an unsupported external scheme: {reference}")
 
     for reference in sorted(parser.local_refs):
-        target = (ROOT / reference).resolve()
-        try:
-            target.relative_to(ROOT.resolve())
-        except ValueError:
-            errors.append(f"security.html local reference escapes repository root: {reference}")
-            continue
-        if not target.exists():
-            errors.append(f"security.html references missing local resource: {reference}")
+        relative = deployable_path(reference)
+        if relative not in DEPLOYABLE_PATHS:
+            errors.append(f"security.html references resource outside the reviewed public artifact: {reference}")
 
     for marker in REQUIRED_COPY:
         if marker.casefold() not in html.casefold():

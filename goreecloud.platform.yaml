@@ -38,11 +38,11 @@ platform_systems:
     notes: Source and publication recovery requirements exist, but accepted Everkeep integration and verified restore evidence remain missing.
   glaze_ui:
     result: applicable-migration-required
-    version: 2.1.0
+    version: 1.1.0
     evidence:
     - docs/glaze-ui-conformance.md
     - README.md
-    notes: The accepted Website implementation declares Glaze UI 2.1.0, while the current Platform Contract requires baseline 1.1.0; repository-specific reconciliation and exact-revision acceptance are required before current Glaze UI conformance may be claimed.
+    notes: Rebuilt main-site and five-product website source target GLAZE UI V1.1 / 1.1.0 from the exact Stable promotion revision. Exact repository-specific rendered consumer acceptance and production acceptance remain required; legacy satellite sites remain separate migration scope.
   mesh:
     result: applicable-blocked
     version: null
@@ -107,7 +107,7 @@ conformance:
   - docs/glaze-ui-conformance.md
   - docs/release-readiness-checklist.md
   blockers:
-  - Repository-specific reconciliation and acceptance against the current Platform Contract Glaze UI baseline are incomplete.
+  - Exact GLAZE UI V1.1 / 1.1.0 consumer acceptance and deployment evidence are incomplete for the rebuilt source revision; legacy satellite sites remain separate migration scope.
   - GoreeCloud Manager platform visibility is not established.
   - Privacy Shield integration and acceptance are not established.
   - Wardveil Security integration and acceptance are not established.

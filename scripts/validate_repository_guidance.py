@@ -40,7 +40,6 @@ def require_markers(path: Path, markers: tuple[str, ...], errors: list[str]) -> 
     if not path.exists():
         errors.append(f"Required repository guidance file is missing: {path.relative_to(ROOT)}")
         return ""
-
     text = path.read_text(encoding="utf-8")
     normalized = normalize_guidance_text(text)
     for marker in markers:
@@ -53,7 +52,6 @@ def current_version(errors: list[str]) -> str:
     if not VERSION.exists():
         errors.append("Canonical VERSION file is missing.")
         return ""
-
     version = VERSION.read_text(encoding="utf-8").strip()
     if not re.fullmatch(r"(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)", version):
         errors.append("VERSION must contain one strict SemVer value.")
@@ -63,7 +61,7 @@ def current_version(errors: list[str]) -> str:
 
 def main() -> int:
     errors: list[str] = []
-    version = current_version(errors)
+    current_version(errors)
 
     config = require_markers(
         ISSUE_CONFIG,
@@ -130,38 +128,36 @@ def main() -> int:
         errors,
     )
 
+    # README is a Development-state operator guide on this branch. Do not force
+    # an accepted-production claim into the candidate merely because VERSION
+    # retains the repository's machine-readable package version.
     readme_markers = (
-        f"Current accepted website package: **v{version}" if version else "Current accepted website package:",
-        "`VERSION` is the canonical machine-readable version source",
-        "## Source license and creative-rights boundary",
+        "## Current development state",
+        "This repository is in **Development**",
+        "GoreeCloud Home Security",
+        "GoreeCloud Home",
+        "GoreeCloud AI",
+        "GoreeCloud Containers",
+        "GoreeCloud Code",
+        "GLAZE UI V1.1 / 1.1.0",
+        "15cc76d2bcd4065552dc31c77145b63f34d9e7b2",
+        "known import-closure defect",
+        "temporary, bounded consumer-build workaround",
+        "does **not** make the Website GLAZE-conformant",
+        "python scripts/build_public_site.py",
+        "python scripts/validate_build_artifact.py",
+        "Source root: `sites/labs/`",
+        "labs.goreecloud.com",
+        "noindex,nofollow",
+        "representative-mobile human review",
+        "exact post-merge production deployment verification",
+        "Canonical visual-asset authority is `GoreeCloud/goreecloud-branding-assets`",
+        "GoreeCloud Manager, Privacy Shield, Wardveil Security, Everkeep, GLAZE UI, GoreeCloud Mesh, and GoreeCloud Identity",
         "Apache License 2.0",
         "Apache-2.0",
-        "python scripts/build_public_site.py",
-        "python scripts/validate_repository_hygiene.py",
-        "python scripts/validate_repository_history.py",
-        "python scripts/validate_license.py",
-        "python scripts/validate_public_assets.py",
-        "python scripts/validate_accessibility.py",
-        "python scripts/validate_glaze_ui.py",
-        'python -m unittest discover -s tests -p "test_*.py"',
-        "Build output directory: `dist`",
-        "exact, per-file allowlisted",
-        "Adding a file to `assets/`, `css/`, `js/`",
-        "Glaze UI is treated as a design contract",
-        "automated checks are regression controls, not a claim of complete WCAG conformance",
-        "screen-reader testing",
-        "repository-history preflight",
-        "non-shallow checkout",
-        "matched value",
-        "docs/public-asset-inventory.md",
-        "not a license grant",
-        "final human reachable-history/contextual-disclosure review",
-        "issue #5",
-        "Issue #6 is closed",
-        "isolated `dist/` Cloudflare Pages cutover is complete",
+        "`NOTICE` records the separate creative-rights boundary",
+        "Issue #5 remains open",
         "Passing CI does not itself authorize",
-        "GoreeCloud Monitor",
-        "Uptime Kuma remains the current production availability monitor",
     )
     readme = require_markers(README, readme_markers, errors)
 
@@ -280,7 +276,6 @@ def main() -> int:
         errors.append("Issue-template config must expose exactly one HTTPS contact link: the security-reporting policy.")
     if "blank_issues_enabled: true" in config:
         errors.append("Blank issues must remain disabled so reporters receive the public/private safety guidance.")
-
     if bug.count("required: true") < 6:
         errors.append("Bug report form must keep its required reproduction and safety confirmations.")
     if feature.count("required: true") < 4:
@@ -295,7 +290,7 @@ def report(errors: list[str]) -> int:
         for error in errors:
             print(f"  - {error}")
         return 1
-    print("Repository guidance validation passed: official-artwork provenance, publication boundaries, and public/private contribution guidance are synchronized.")
+    print("Repository guidance validation passed: Development status, GLAZE defect boundary, artifact/publication gates, and contribution safety guidance are synchronized.")
     return 0
 
 

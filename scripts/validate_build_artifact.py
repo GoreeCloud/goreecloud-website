@@ -1,91 +1,69 @@
 #!/usr/bin/env python3
-"""Validate that dist/ contains exactly the intentional public website surface."""
-
+"""Validate the exact www.goreecloud.com deployment artifact."""
 from __future__ import annotations
 
 from pathlib import Path
 import sys
 
-from build_public_site import DIST, GENERATED_HTML, PUBLIC_FILES, ROOT
-from glaze_ui_2 import apply_glaze_ui_2
-from normalize_homepage import normalize_homepage
-from render_repository_portfolio import load_manifest, render_public_file
+from build_public_site import DIST, GENERATED_GLAZE_FILES, PUBLIC_FILES, ROOT
+from glaze_v1 import (
+    FILES as GLAZE_FILES,
+    KNOWN_STABLE_WORKAROUND_MARKER,
+    validate_bundle,
+)
 
-FORBIDDEN_NAMES = {".git", ".github", ".gitignore", "README.md", "SECURITY.md", "scripts"}
-
-
-def source_file_set() -> set[Path]:
-    return {Path(relative) for relative in PUBLIC_FILES}
-
-
-def artifact_file_set() -> set[Path]:
-    return {path.relative_to(DIST) for path in DIST.rglob("*") if path.is_file()}
-
-
-def expected_bytes(path: Path, manifest: dict) -> bytes:
-    source = ROOT / path
-    if path.suffix == ".html":
-        rendered = source.read_text(encoding="utf-8")
-        if str(path) in GENERATED_HTML:
-            rendered = render_public_file(str(path), rendered, manifest)
-            if str(path) == "index.html":
-                rendered = normalize_homepage(rendered)
-        return apply_glaze_ui_2(rendered).encode("utf-8")
-    return source.read_bytes()
+FORBIDDEN_TOP_LEVEL = {".git", ".github", "README.md", "SECURITY.md", "docs", "scripts", "sites"}
 
 
 def main() -> int:
     errors: list[str] = []
-    if not DIST.exists() or not DIST.is_dir():
-        errors.append("dist/ is missing; run scripts/build_public_site.py first.")
-    elif DIST.is_symlink():
-        errors.append("dist/ must not be a symlink.")
+    if not DIST.is_dir() or DIST.is_symlink():
+        errors.append("dist/ is missing or invalid")
     if errors:
-        for error in errors:
-            print(f"Build artifact validation failed: {error}")
+        print("Build artifact validation failed:\n  - " + "\n  - ".join(errors))
         return 1
 
-    for path in DIST.rglob("*"):
-        if path.is_symlink():
-            errors.append(f"Build artifact must not contain symlinks: {path.relative_to(DIST)}")
-
-    expected = source_file_set()
-    actual = artifact_file_set()
-    manifest = load_manifest(ROOT)
-
+    actual = {str(path.relative_to(DIST)) for path in DIST.rglob("*") if path.is_file()}
+    expected = set(PUBLIC_FILES) | set(GENERATED_GLAZE_FILES)
     for path in sorted(expected - actual):
-        errors.append(f"Expected public file is missing from dist/: {path}")
+        errors.append(f"missing artifact file: {path}")
     for path in sorted(actual - expected):
-        errors.append(f"Unexpected file is present in dist/: {path}")
+        errors.append(f"unexpected artifact file: {path}")
 
-    for path in sorted(expected & actual):
-        source = ROOT / path
-        built = DIST / path
-        if not source.is_file() or source.is_symlink():
-            errors.append(f"Allowlisted source is invalid: {path}")
-            continue
-        if expected_bytes(path, manifest) != built.read_bytes():
-            errors.append(f"Built file differs from its reviewed/generated source contract: {path}")
+    for relative in PUBLIC_FILES:
+        source, built = ROOT / relative, DIST / relative
+        if built.is_file() and source.read_bytes() != built.read_bytes():
+            errors.append(f"copied artifact differs from reviewed source: {relative}")
 
-    top_level_names = {path.parts[0] for path in actual if path.parts}
-    for forbidden in sorted(FORBIDDEN_NAMES & top_level_names):
-        errors.append(f"Repository-only content leaked into the deploy artifact: {forbidden}")
+    bundle: dict[str, str] = {}
+    for name in GLAZE_FILES:
+        path = DIST / "css" / "glaze-v1" / name
+        if path.is_file():
+            bundle[name] = path.read_text(encoding="utf-8")
+    try:
+        validate_bundle(bundle)
+    except ValueError as exc:
+        errors.append(str(exc))
 
-    required_runtime_files = {
-        Path("index.html"), Path("repositories.html"), Path("404.html"), Path("privacy.html"),
-        Path("security.html"), Path("_headers"), Path("robots.txt"), Path("sitemap.xml"),
-        Path("site.webmanifest"), Path(".well-known/security.txt"), Path("css/glaze.css"),
-        Path("css/glaze-polish.css"), Path("css/glaze-ui-2.1.0.css"), Path("js/theme-init.js"),
-    }
-    for path in sorted(required_runtime_files - actual):
-        errors.append(f"Required runtime file is missing from dist/: {path}")
+    component_css = bundle.get("glaze-v1.components.css", "")
+    if KNOWN_STABLE_WORKAROUND_MARKER not in component_css:
+        errors.append("generated GLAZE bundle is missing the documented Stable import-closure workaround marker")
 
-    for page in ("index.html","repositories.html","404.html","privacy.html","security.html"):
-        text=(DIST/page).read_text(encoding="utf-8")
-        for marker in ('name="goreecloud-glaze-ui" content="2.1.0"','data-glaze-ui="2.1.0"'):
-            if marker not in text: errors.append(f"Built {page} missing Glaze UI 2.1 marker: {marker}")
-        for stale in ('data-glaze-ui="1.5.0"','data-glaze-ui="2.0.0"'):
-            if stale in text: errors.append(f"Built {page} still activates a superseded Glaze UI bundle")
+    top = {Path(path).parts[0] for path in actual if Path(path).parts}
+    for forbidden in sorted(top & FORBIDDEN_TOP_LEVEL):
+        errors.append(f"repository-only content leaked into artifact: {forbidden}")
+
+    for page in ("index.html", "repositories.html", "privacy.html", "security.html", "404.html"):
+        text = (DIST / page).read_text(encoding="utf-8")
+        for marker in (
+            'data-glaze-version="1.1"',
+            'name="goreecloud-glaze-ui" content="1.1.0"',
+            'data-glaze-ui="1.1.0"',
+        ):
+            if marker not in text:
+                errors.append(f"{page} missing GLAZE V1.1 marker: {marker}")
+        if "glaze-ui-2.1.0.css" in text or "Expanding the platform" in text:
+            errors.append(f"{page} contains retired website content")
 
     if errors:
         print("Build artifact validation failed:")
@@ -93,8 +71,10 @@ def main() -> int:
             print(f"  - {error}")
         return 1
 
-    total_bytes = sum((DIST / path).stat().st_size for path in actual)
-    print(f"Build artifact validation passed: {len(actual)} explicitly allowlisted files, {total_bytes} bytes, Glaze UI 2.1 active.")
+    print(
+        f"Build artifact validation passed: {len(actual)} files; pinned GLAZE V1.1 source "
+        "uses the bounded known-defect workaround and consumer conformance remains pending."
+    )
     return 0
 
 

@@ -10,6 +10,8 @@ from urllib.parse import urlparse
 import re
 import sys
 
+from build_public_site import GENERATED_GLAZE_FILES, PUBLIC_FILES
+
 ROOT = Path(__file__).resolve().parents[1]
 PRIVACY_PAGE = ROOT / "privacy.html"
 SITEMAP = ROOT / "sitemap.xml"
@@ -17,6 +19,7 @@ HEADERS = ROOT / "_headers"
 MAIN_JS = ROOT / "js" / "main.js"
 THEME_INIT_JS = ROOT / "js" / "theme-init.js"
 PRIVACY_URL = "https://www.goreecloud.com/privacy.html"
+DEPLOYABLE_PATHS = set(PUBLIC_FILES) | set(GENERATED_GLAZE_FILES)
 PRIVATE_PATTERNS = (
     re.compile(r"\b10(?:\.\d{1,3}){3}\b"),
     re.compile(r"\b192\.168(?:\.\d{1,3}){2}\b"),
@@ -29,7 +32,7 @@ REQUIRED_COPY = (
     "No behavioral tracking.",
     "third-party browser resources",
     "Browser-loaded site resources are kept on the GoreeCloud origin",
-    "goreecloud-theme",
+    "goreecloud-appearance",
     "localStorage",
     "System mode requires no stored preference",
     "Cloudflare Pages",
@@ -109,6 +112,11 @@ class PrivacyParser(HTMLParser):
             self.local_refs.add(parsed.path)
 
 
+def deployable_path(reference: str) -> str:
+    relative = reference.lstrip("/")
+    return "index.html" if not relative else relative
+
+
 def report(errors: list[str]) -> int:
     if errors:
         print("Privacy statement validation failed:")
@@ -158,14 +166,9 @@ def main() -> int:
         errors.append(f"privacy.html uses an unsupported external scheme: {reference}")
 
     for reference in sorted(parser.local_refs):
-        target = (ROOT / reference).resolve()
-        try:
-            target.relative_to(ROOT.resolve())
-        except ValueError:
-            errors.append(f"privacy.html local reference escapes repository root: {reference}")
-            continue
-        if not target.exists():
-            errors.append(f"privacy.html references missing local resource: {reference}")
+        relative = deployable_path(reference)
+        if relative not in DEPLOYABLE_PATHS:
+            errors.append(f"privacy.html references resource outside the reviewed public artifact: {reference}")
 
     normalized_html = re.sub(r"\s+", " ", html).lower()
     for marker in REQUIRED_COPY:
@@ -198,10 +201,11 @@ def main() -> int:
     main_js = MAIN_JS.read_text(encoding="utf-8")
     theme_init = THEME_INIT_JS.read_text(encoding="utf-8")
     storage_requirements = (
-        (main_js, "localStorage.setItem(THEME_STORAGE_KEY, mode)", "explicit theme persistence"),
-        (main_js, "localStorage.removeItem(THEME_STORAGE_KEY)", "System-mode storage removal"),
-        (theme_init, "localStorage.getItem(THEME_STORAGE_KEY)", "early stored-theme restoration"),
-        (main_js, "const THEME_STORAGE_KEY = 'goreecloud-theme'", "theme storage key"),
+        (main_js, "const key = 'goreecloud-appearance';", "appearance storage key"),
+        (main_js, "localStorage.setItem(key, mode)", "explicit appearance persistence"),
+        (main_js, "localStorage.removeItem(key)", "System-mode storage removal"),
+        (theme_init, "const key = 'goreecloud-appearance';", "early appearance storage key"),
+        (theme_init, "localStorage.getItem(key)", "early stored-appearance restoration"),
     )
     for source, marker, label in storage_requirements:
         if marker not in source:
@@ -215,16 +219,15 @@ def main() -> int:
         if marker.lower() in browser_code:
             errors.append(f"Tracking-related browser-code marker conflicts with privacy statement: {marker}")
 
-    for path in (PRIVACY_PAGE,):
-        text = path.read_text(encoding="utf-8", errors="replace")
-        for pattern in PRIVATE_PATTERNS:
-            match = pattern.search(text)
-            if match:
-                errors.append(f"Private-range IP address found in {path.relative_to(ROOT)}: {match.group(0)}")
-        lower = text.lower()
-        for term in SENSITIVE_TERMS:
-            if term.lower() in lower:
-                errors.append(f"Private infrastructure identifier found in {path.relative_to(ROOT)}: {term}")
+    text = PRIVACY_PAGE.read_text(encoding="utf-8", errors="replace")
+    for pattern in PRIVATE_PATTERNS:
+        match = pattern.search(text)
+        if match:
+            errors.append(f"Private-range IP address found in {PRIVACY_PAGE.relative_to(ROOT)}: {match.group(0)}")
+    lower = text.lower()
+    for term in SENSITIVE_TERMS:
+        if term.lower() in lower:
+            errors.append(f"Private infrastructure identifier found in {PRIVACY_PAGE.relative_to(ROOT)}: {term}")
 
     return report(errors)
 

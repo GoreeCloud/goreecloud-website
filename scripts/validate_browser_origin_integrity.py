@@ -16,7 +16,7 @@ import json
 import re
 import sys
 
-from build_public_site import PUBLIC_FILES, ROOT
+from build_public_site import PUBLIC_FILES, GENERATED_GLAZE_FILES, ROOT
 
 HTML_FILES = tuple(ROOT / name for name in PUBLIC_FILES if name.endswith(".html"))
 CSS_FILES = tuple(ROOT / name for name in PUBLIC_FILES if name.startswith("css/") and name.endswith(".css"))
@@ -169,8 +169,7 @@ def main() -> int:
 
     required_allowlisted_runtime = {
         "assets/goreecloud-logo.svg",
-        "css/glaze.css",
-        "css/glaze-polish.css",
+        "css/site-v1.1.css",
         "js/theme-init.js",
         "js/main.js",
         "site.webmanifest",
@@ -178,6 +177,9 @@ def main() -> int:
     missing = sorted(required_allowlisted_runtime.difference(PUBLIC_FILES))
     for path in missing:
         errors.append(f"Browser-origin validator requires public runtime file to remain explicitly allowlisted: {path}")
+
+    if "css/glaze-v1/glaze-v1.1.0.css" not in GENERATED_GLAZE_FILES:
+        errors.append("Browser-origin validator requires the generated same-origin GLAZE V1.1 Stable entrypoint in the deployment contract.")
 
     validate_html(errors)
     validate_css(errors)

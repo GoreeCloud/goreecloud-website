@@ -26,7 +26,7 @@ REQUIRED_SECURITY_PAGE_COPY = (
     "platform-wide first-party security system and shared security plane",
     "Foundation 0.9",
     "Sentinel Fold",
-    "current authoritative evidence",
+    "Current evidence boundary",
     "production ClamAV scanner runtime is deployed and accepted at the scanner-evidence layer",
     "does not establish end-to-end Wardveil Scan application acceptance",
 )

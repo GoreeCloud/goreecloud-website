@@ -1,134 +1,82 @@
 from pathlib import Path
-import sys
 import unittest
 
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "scripts"))
-
-from normalize_homepage import normalize_homepage  # noqa: E402
-from render_repository_portfolio import load_manifest, render_public_file  # noqa: E402
 
 
 class HomepageCurrentStateTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        source = (ROOT / "index.html").read_text(encoding="utf-8")
-        rendered = render_public_file("index.html", source, load_manifest(ROOT))
-        cls.homepage = normalize_homepage(rendered)
-        cls.homepage_css = (ROOT / "css" / "homepage-v6.css").read_text(encoding="utf-8")
-        cls.websites_css = (ROOT / "css" / "websites.css").read_text(encoding="utf-8")
+        cls.homepage = (ROOT / "index.html").read_text(encoding="utf-8")
+        cls.styles = (ROOT / "css" / "site-v1.1.css").read_text(encoding="utf-8")
 
-    def test_hero_is_focused_without_platform_system_duplication(self) -> None:
-        hero = self.homepage.split("<h1>", 1)[0]
-        self.assertIn("Private • Self-hosted • Recoverable", hero)
-        for label in (
+    def test_rebuilt_owner_controlled_hero_is_current(self) -> None:
+        self.assertIn("Your cloud should belong to you.", self.homepage)
+        self.assertIn("Owner-controlled • Private by design • Built to endure", self.homepage)
+        self.assertIn("Development reality:", self.homepage)
+        self.assertNotIn("Expanding the platform", self.homepage)
+        self.assertNotIn("Private • Self-hosted • Recoverable", self.homepage)
+
+    def test_homepage_has_four_durable_principles(self) -> None:
+        for label in ("Ownership", "Privacy", "Portability", "Recoverability"):
+            with self.subTest(label=label):
+                self.assertIn(f"<h3>{label}</h3>", self.homepage)
+        self.assertEqual(self.homepage.count('class="card glz1-raised"'), 4)
+
+    def test_main_homepage_is_a_clear_six_destination_front_door(self) -> None:
+        self.assertEqual(self.homepage.count("destination-card"), 6)
+        for destination in (
+            "GoreeCloud Suite",
+            "GoreeCloud Projects",
+            "Home, AI &amp; Developer Systems",
+            "Glaze UI",
+            "Privacy Shield",
+            "Wardveil Security",
+        ):
+            with self.subTest(destination=destination):
+                self.assertIn(destination, self.homepage)
+        self.assertIn("Publication pending", self.homepage)
+        self.assertIn("Source: sites/labs", self.homepage)
+        self.assertNotIn("https://labs.goreecloud.com/", self.homepage)
+
+    def test_homepage_exposes_all_seven_integral_platform_systems(self) -> None:
+        systems = (
+            "GoreeCloud Manager",
             "Glaze UI",
             "Privacy Shield",
             "Wardveil Security",
             "Everkeep",
             "GoreeCloud Mesh",
             "GoreeCloud Identity",
-        ):
-            with self.subTest(label=label):
-                self.assertNotIn(label, hero)
-        self.assertNotIn('<section class="band" aria-label="Core principles">', self.homepage)
-
-    def test_hero_visual_contract_rejects_chip_stack_and_narrow_title(self) -> None:
-        hero = self.homepage.split("<h1>", 1)[0]
-        self.assertNotIn('class="glaze-chip"', hero)
-        self.assertIn('.hero .hero-labels .glaze-chip', self.homepage_css)
-        self.assertIn('display: none !important;', self.homepage_css)
-        self.assertIn('max-width: 13.7ch;', self.homepage_css)
-        self.assertIn('grid-template-columns: minmax(0, 1.16fr) minmax(360px, .84fr);', self.homepage_css)
-        self.assertIn('background: transparent;', self.homepage_css)
-
-    def test_main_homepage_is_a_website_hub(self) -> None:
-        self.assertEqual(self.homepage.count('id="websites"'), 1)
-        domains = (
-            "goreecloud.com",
-            "suite.goreecloud.com",
-            "projects.goreecloud.com",
-            "design.goreecloud.com",
-            "privacy.goreecloud.com",
-            "security.goreecloud.com",
-            "everkeep.goreecloud.com",
-            "roadmap.goreecloud.com",
-            "blog.goreecloud.com",
-            "archive.goreecloud.com",
-            "identity.goreecloud.com",
         )
-        for domain in domains:
-            with self.subTest(domain=domain):
-                self.assertEqual(self.homepage.count(f'<p class="service-kicker">{domain}</p>'), 1)
-        self.assertEqual(self.homepage.count('class="service-card website-card '), 11)
-        self.assertIn('<a href="#websites">Websites</a>', self.homepage)
-        self.assertIn('<a href="https://suite.goreecloud.com/">Suite</a>', self.homepage)
-        self.assertIn('css/websites.css', self.homepage)
-        self.assertIn('css/homepage-v6.css', self.homepage)
+        for system in systems:
+            with self.subTest(system=system):
+                self.assertIn(f"<strong>{system}</strong>", self.homepage)
+        self.assertIn("seven Integral Platform Systems", self.homepage)
+        self.assertNotIn("six substantive platform systems", self.homepage)
 
-    def test_website_cards_are_concise_without_browser_mockups(self) -> None:
-        self.assertNotIn('website-preview', self.homepage)
-        self.assertNotIn('website-preview-browser', self.homepage)
-        self.assertNotIn('.website-preview', self.websites_css)
-        self.assertNotIn('website-preview', self.homepage_css)
-        self.assertEqual(self.homepage.count('class="website-card-body"'), 11)
-        self.assertEqual(self.homepage.count('class="website-card-head"'), 11)
-        self.assertEqual(self.homepage.count('class="website-mark"'), 11)
-        self.assertEqual(self.homepage.count('class="website-link"'), 11)
+    def test_homepage_keeps_full_portfolios_out_of_main_composition(self) -> None:
+        self.assertNotIn("data-suite-app=", self.homepage)
+        self.assertNotIn("data-capability=", self.homepage)
+        self.assertNotIn("data-roadmap=", self.homepage)
+        self.assertNotIn("website-preview-browser", self.homepage)
 
-    def test_website_grid_balances_all_eleven_destinations(self) -> None:
-        self.assertIn('.website-card:nth-child(n+8) { grid-column: span 3; }', self.homepage_css)
-        self.assertIn('.website-card:last-child {', self.homepage_css)
-        self.assertIn('grid-column: 1 / -1;', self.homepage_css)
+    def test_rebuilt_shell_uses_only_current_v11_site_layers(self) -> None:
+        self.assertIn('/css/glaze-v1/glaze-v1.1.0.css', self.homepage)
+        self.assertIn('/css/site-v1.1.css', self.homepage)
+        self.assertIn('name="goreecloud-glaze-ui" content="1.1.0"', self.homepage)
+        self.assertNotIn("homepage-v6.css", self.homepage)
+        self.assertNotIn("websites.css", self.homepage)
+        self.assertNotIn("glaze-ui-2.1.0", self.homepage)
 
-    def test_mobile_reading_rhythm_keeps_interaction_and_content_distinct(self) -> None:
-        self.assertIn('.site-nav.open {', self.homepage_css)
-        self.assertIn(
-            'background: color-mix(in srgb, var(--glaze-surface-elevated) 94%, transparent);',
-            self.homepage_css,
-        )
-        self.assertIn('row-gap: 1.35rem;', self.homepage_css)
-        self.assertIn('font-size: .96rem;', self.homepage_css)
-
-    def test_website_names_are_visible_once_as_card_titles(self) -> None:
-        names = (
-            "GoreeCloud",
-            "GoreeCloud Suite",
-            "GoreeCloud Projects",
-            "Glaze UI",
-            "Privacy Shield",
-            "Wardveil Security",
-            "Everkeep",
-            "GoreeCloud Roadmap",
-            "GoreeCloud Blog",
-            "GoreeCloud Archive",
-            "GoreeCloud Identity",
-        )
-        for name in names:
-            with self.subTest(name=name):
-                self.assertEqual(self.homepage.count(f'<h3>{name}</h3>'), 1)
-
-    def test_everkeep_has_a_dedicated_public_destination(self) -> None:
-        self.assertIn('https://everkeep.goreecloud.com/', self.homepage)
-        self.assertIn('<h3>Everkeep</h3>', self.homepage)
-        self.assertIn('resilience, backup, recovery, preservation, portability, succession, legacy, and evidence-backed continuity', self.homepage)
-
-    def test_suite_and_capability_cards_moved_off_main_homepage(self) -> None:
-        self.assertNotIn('data-suite-app=', self.homepage)
-        self.assertNotIn('data-capability=', self.homepage)
-        self.assertNotIn('<p class="eyebrow">GoreeCloud Suite</p>', self.homepage)
-        self.assertNotIn('<p class="eyebrow">Umbrella Capabilities</p>', self.homepage)
-
-    def test_goreecloud_ai_replaces_retired_front_ends_in_roadmap(self) -> None:
-        self.assertIn('data-roadmap="goreecloud-ai"', self.homepage)
-        self.assertIn('<h3>GoreeCloud AI</h3>', self.homepage)
-        self.assertIn('src="assets/suite/ai.svg"', self.homepage)
-        self.assertNotIn("Open WebUI", self.homepage)
-        self.assertNotIn("AnythingLLM", self.homepage)
-        self.assertIn("Local model runtime support", self.homepage)
-        self.assertIn("Keep model runtimes replaceable", self.homepage)
-        self.assertIn("Controlled web research through GoreeCloud Search", self.homepage)
+    def test_responsive_source_contract_matches_rebuilt_grids(self) -> None:
+        self.assertIn(".principle-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));", self.styles)
+        self.assertIn(".destination-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr));", self.styles)
+        self.assertIn("@media (max-width: 980px)", self.styles)
+        self.assertIn(".principle-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }", self.styles)
+        self.assertIn(".destination-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }", self.styles)
+        self.assertIn(".principle-grid, .destination-grid, .repo-grid { grid-template-columns: 1fr; }", self.styles)
 
 
 if __name__ == "__main__":

@@ -1,41 +1,69 @@
-# GoreeCloud Website — Glaze UI 2.1.0 Conformance
+# GoreeCloud Website — GLAZE UI V1.1 Source Alignment
 
-## Conformance record
+## Current target
 
-- Target Glaze UI version: **2.1.0**
+- Current applicable GoreeCloud Stable consumer target: **GLAZE UI V1.1 / 1.1.0**
 - Canonical design-system repository: `GoreeCloud/goreecloud-glaze-ui`
-- Stable promotion reference used for this alignment: `c49113eb8b93c267613fdf1bbca1f814495acad7`
-- Conformance state: **Source-aligned — Glaze UI 2.1.0 Stable web contract prepared across all independently deployed GoreeCloud website surfaces in this repository**
-- Rendered/production acceptance: **Separate gate; preview and production evidence must pass before the deployment is used as proof of portfolio-wide rendered conformance.**
+- Exact Stable promotion revision used by the build: `15cc76d2bcd4065552dc31c77145b63f34d9e7b2`
+- Main website source state in this branch: **targets the V1.1 consumer contract**
+- New five-product website source state in this branch: **targets the V1.1 consumer contract**
+- Exact rendered consumer acceptance remains pending.
+- Production acceptance remains pending for this source revision.
+- Website Platform Contract status remains nonconformant.
 
-## Scope
+## Known immutable Stable-source defect
 
-This record covers the Main, Projects, Roadmap, Blog, and Archive public surfaces. Each deployment carries a same-origin Glaze UI 2.1.0 web layer so design-system availability does not depend on another GoreeCloud domain at runtime.
+The immutable GLAZE UI `1.1.0` Stable source graph contains one verified import-closure defect: `css/glaze-v1.components.css` imports nonexistent `./glaze-v1.candidate.css`.
 
-The Main deployment uses the isolated build pipeline to normalize all deployable HTML onto the current Stable contract. Projects, Roadmap, Blog, and Archive carry their own same-origin 2.1.0 asset because they are independently deployed Cloudflare Pages surfaces.
+The canonical upstream remediation is being developed as a separate GLAZE V1.1 patch Release Candidate. That Release Candidate is not Stable and is not consumer-eligible, so this Website branch does not import, copy, or claim authority from the candidate.
 
-## Glaze UI 2.1 web contract
+Until a corrected immutable Stable patch release is published, `scripts/glaze_v1.py` uses a fail-closed consumer-build workaround:
 
-The current source target follows the 2.1 material hierarchy: Canvas → Surface → Soft Glaze → Glaze → Deep Glaze → Live Glaze. The governing material rule is **Content is solid. Interaction is glazed.** Durable reading, repository, project, timeline, policy, and status content therefore resolves to solid Surface material, while navigation, controls, focal hero interaction, and transient/live surfaces may use appropriate glaze levels.
+1. fetch the exact immutable `1.1.0` Stable promotion revision;
+2. validate the expected Stable entrypoint and inherited V1.0 import graph;
+3. require the known dangling import to occur exactly once in `glaze-v1.components.css`;
+4. reject any other unpinned or changed import;
+5. remove only that single verified dangling directive from the generated artifact copy;
+6. insert an explicit workaround marker into that generated file;
+7. validate the resulting import closure before the artifact can pass.
 
-The web contract supports Clear, Balanced, and Solid clarity; Comfortable, Standard, Compact, and Far View density; a 48px general interaction floor; a 56px Touch Assistance floor; large-text compact-density fallback; keyboard and pointer interaction; responsive navigation; and safe-area-aware compact layouts.
+The generated bundle is therefore not asserted to be byte-identical to the immutable Stable source. This bounded workaround is **not GLAZE consumer-conformance evidence** and does not change upstream Stable authority.
 
-## Accessibility and resilience
+## Publication model
 
-Reduced Motion removes nonessential transformation and travel. Reduced Transparency resolves optical material to solid hierarchy. Increased Contrast strengthens borders and non-color cues. Forced Colors preserves operability without authored glass effects. Large Text cannot reduce Compact controls below the normal touch floor. Browsers without backdrop-filter support receive opaque surfaces. Deterministic reduced-material/performance modes can remove blur and depth without changing task or state semantics.
+Browsers load GLAZE UI only from the same origin as the website. Cloudflare Pages builds do not load a floating branch, tag, or remote stylesheet in the browser.
 
-## Privacy boundary
+The current candidate artifact is derived from the exact pinned Stable revision with the single documented import-closure workaround above. A corrected immutable Stable patch release must be independently re-pinned and the Website must be revalidated before this workaround can be removed or current GLAZE conformance can be claimed.
 
-The design-system layer is served same-origin. It adds no analytics, advertising, trackers, remote fonts, runtime UI framework, or cross-domain stylesheet dependency.
+## Website scope
+
+This branch covers the rebuilt root GoreeCloud public website surfaces and the new `sites/labs` five-product public-center source.
+
+The legacy satellite sites in `sites/projects`, `sites/roadmap`, `sites/blog`, and `sites/archive` remain separate migration and exact-revision acceptance scope. This record must not be used to claim those independently deployed sites have earned V1.1 consumer or production acceptance from this branch.
+
+## Consumer use
+
+The rebuilt source uses the V1.1 structural and appearance contract:
+
+- `html[data-glaze-version="1.1"]`
+- same-origin `glaze-v1.1.0.css`
+- V1.1 workspace, system overlay, system panel, capsule, shell-control, focus, and state-layer roles
+- Light, Dark, and System appearance behavior through the V1.1 appearance contract
+- a 48-pixel minimum shell-control target
+- responsive reflow, keyboard focus, reduced-motion behavior, reduced-transparency fallbacks, and forced-colors support
+
+Site-specific CSS is limited to public-website composition and consumes GLAZE roles and tokens rather than defining an independent GoreeCloud design system.
 
 ## Authority boundary
 
-Glaze UI controls presentation and interaction only. Public presentation cannot upgrade application, Privacy Shield, Wardveil Security, Everkeep, Mesh, or GoreeCloud Identity implementation/evidence state.
+GLAZE UI governs design and interaction only. A V1.1 source target or generated workaround does not grant Privacy Shield, Wardveil Security, Everkeep, GoreeCloud Mesh, GoreeCloud Identity, or GoreeCloud Manager acceptance. It also does not prove deployment, recovery, production readiness, product maturity, or Website Platform Contract conformance.
 
-## Release boundary
+## Acceptance boundary
 
-Glaze UI 2.1.0 is the current Stable design-system target. Glaze UI 2.0.0 and 1.x are historical baselines and must not remain active production dependencies after these public surfaces earn 2.1 deployment acceptance. Historical references may remain only when explicitly presented as dated history rather than current guidance.
+Automated source and artifact checks are necessary regression evidence but are not the final production gate.
 
-## Exceptions
+The exact Website candidate still requires applicable branch-preview verification and representative human visual/interaction review, including touch targets, safe areas, appearance modes, 200% text/reflow, keyboard behavior, reduced-motion/transparency behavior, and horizontal-overflow checks.
 
-No production Glaze UI exception is recorded for these website surfaces. Each independently deployed surface still requires its own rendered/production acceptance for the exact deployed revision.
+For the new five-product destination, Cloudflare Pages project creation, custom-domain binding, DNS/TLS, indexing enablement, and exact production verification remain separate gates.
+
+After a corrected immutable Stable GLAZE patch is published, the Website must replace this workaround with an exact re-pin and new repository-specific evidence before GLAZE migration can be considered complete.

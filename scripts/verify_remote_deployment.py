@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Verify GoreeCloud public deployments against the reviewed repository candidate.
+"""Verify GoreeCloud public deployments against the reviewed rebuilt artifact.
 
 The verifier supports only GoreeCloud-controlled production and Cloudflare Pages
-preview hosts. It validates redirects before following them, compares every
-fetchable allowlisted public file byte-for-byte with the reviewed build output,
-checks security headers and indexing behavior, verifies repository isolation, and
-validates the published RFC 9116 security.txt contract.
+preview hosts. It compares every fetchable file in the explicit Main artifact,
+including the generated same-origin GLAZE V1.1 bundle, against the exact reviewed
+candidate bytes. It also checks security headers, preview indexing protection,
+404 behavior, repository isolation, and the RFC 9116 security.txt contract.
 """
 
 from __future__ import annotations
@@ -13,6 +13,7 @@ from __future__ import annotations
 import argparse
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
+from functools import lru_cache
 from hashlib import sha256
 import os
 import re
@@ -23,15 +24,13 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import urljoin, urlparse
 from urllib.request import HTTPRedirectHandler, HTTPSHandler, Request, build_opener
 
-from build_public_site import GENERATED_HTML, PUBLIC_FILES, ROOT
-from glaze_ui_2 import apply_glaze_ui_2
-from normalize_homepage import normalize_homepage
-from render_repository_portfolio import load_manifest, render_public_file
+from build_public_site import GENERATED_GLAZE_FILES, PUBLIC_FILES, ROOT
+from glaze_v1 import fetch_bundle
 
 PRODUCTION_URL = "https://www.goreecloud.com"
 PAGES_DOMAIN = "goreecloud-website.pages.dev"
 DEFAULT_BRANCH_PREVIEW_URL = (
-    "https://agent-glaze-ui-interaction-p.goreecloud-website.pages.dev"
+    "https://agent-rebuild-public-site-v1.goreecloud-website.pages.dev"
 )
 TARGETS = {
     "branch-preview": DEFAULT_BRANCH_PREVIEW_URL,
@@ -44,13 +43,10 @@ ALLOWED_HOSTS = {
 BRANCH_NAME_RE = re.compile(r"[^a-z0-9-]+")
 
 PUBLIC_CHECKS = {
-    "/": (200, "<title>GoreeCloud", "text/html"),
-    "/privacy.html": (200, "<h1>Privacy at GoreeCloud</h1>", "text/html"),
-    "/security.html": (
-        200,
-        "<h1>Responsible security reporting</h1>",
-        "text/html",
-    ),
+    "/": (200, "Your cloud should belong to you.", "text/html"),
+    "/repositories.html": (200, "Repositories", "text/html"),
+    "/privacy.html": (200, "Privacy starts with collecting less.", "text/html"),
+    "/security.html": (200, "Report security issues responsibly.", "text/html"),
     "/robots.txt": (
         200,
         "Sitemap: https://www.goreecloud.com/sitemap.xml",
@@ -63,8 +59,9 @@ PUBLIC_CHECKS = {
         "Canonical: https://www.goreecloud.com/.well-known/security.txt",
         "text/plain",
     ),
-    "/css/style.css": (200, ":root", "text/css"),
-    "/js/main.js": (200, "document", "javascript"),
+    "/css/site-v1.1.css": (200, "GLAZE UI V1.1 / 1.1.0", "text/css"),
+    "/css/glaze-v1/glaze-v1.1.0.css": (200, "official Stable web entrypoint", "text/css"),
+    "/js/main.js": (200, "goreecloud-appearance", "javascript"),
     "/assets/goreecloud-logo.svg": (200, None, "image/svg+xml"),
 }
 
@@ -73,6 +70,7 @@ REPOSITORY_ONLY_PATHS = (
     "/SECURITY.md",
     "/scripts/validate_site.py",
     "/.github/workflows/validate.yml",
+    "/sites/labs/README.md",
 )
 MISSING_PATH = "/__goreecloud-deployment-smoke__/missing/nested/path"
 MAX_BODY_BYTES = 1_048_576
@@ -82,15 +80,12 @@ EXPECTED_SECURITY_CONTACT = "mailto:security@goreecloud.com"
 EXPECTED_SECURITY_CANONICAL = "https://www.goreecloud.com/.well-known/security.txt"
 EXPECTED_SECURITY_POLICY = "https://www.goreecloud.com/security.html"
 
-# Cloudflare consumes _headers as deployment configuration instead of serving it
-# as a public resource. Every other public allowlist entry must be byte-identical
-# to the reviewed build output. Generated HTML is rendered from the manifest before
-# comparison so deployment verification measures the actual dist contract.
+# Cloudflare consumes _headers as deployment configuration instead of serving it.
+# Every other static allowlist entry plus every generated GLAZE file is verified.
 NON_FETCHABLE_PUBLIC_FILES = frozenset({"_headers"})
+ARTIFACT_FILES = tuple((*PUBLIC_FILES, *GENERATED_GLAZE_FILES))
 REMOTE_INTEGRITY_FILES = tuple(
-    relative
-    for relative in PUBLIC_FILES
-    if relative not in NON_FETCHABLE_PUBLIC_FILES
+    relative for relative in ARTIFACT_FILES if relative not in NON_FETCHABLE_PUBLIC_FILES
 )
 
 REQUIRED_HEADERS = {
@@ -140,7 +135,6 @@ class Response:
 
 def normalize_branch_preview_label(branch: str) -> str:
     """Convert a Git branch name into Cloudflare Pages' bounded preview label."""
-
     label = BRANCH_NAME_RE.sub(
         "-",
         branch.strip().lower().replace("/", "-"),
@@ -153,7 +147,6 @@ def normalize_branch_preview_label(branch: str) -> str:
 
 def branch_preview_url(branch: str | None = None) -> str:
     """Resolve the current PR preview, with a reviewed non-CI fallback."""
-
     branch_name = branch or os.environ.get("GITHUB_HEAD_REF")
     if not branch_name:
         return DEFAULT_BRANCH_PREVIEW_URL
@@ -162,16 +155,12 @@ def branch_preview_url(branch: str | None = None) -> str:
 
 
 def target_url(target: str) -> str:
-    """Resolve one named deployment target without accepting arbitrary URLs."""
-
     if target == "branch-preview":
         return branch_preview_url()
     return TARGETS[target]
 
 
 def host_is_allowed(hostname: str | None) -> bool:
-    """Allow canonical GoreeCloud hosts and only the GoreeCloud Pages subdomain."""
-
     if not hostname:
         return False
     return hostname in ALLOWED_HOSTS or hostname.endswith(f".{PAGES_DOMAIN}")
@@ -214,7 +203,7 @@ def fetch(url: str) -> Response:
     request = Request(
         url,
         headers={
-            "User-Agent": "GoreeCloud-Deployment-Verifier/1.0",
+            "User-Agent": "GoreeCloud-Deployment-Verifier/1.1",
             "Accept": "*/*",
             "Accept-Encoding": "identity",
         },
@@ -224,14 +213,11 @@ def fetch(url: str) -> Response:
         AllowlistedRedirectHandler(),
         HTTPSHandler(context=ssl.create_default_context()),
     )
-
     try:
         with opener.open(request, timeout=TIMEOUT_SECONDS) as response:
             body = response.read(MAX_BODY_BYTES + 1)
             if len(body) > MAX_BODY_BYTES:
-                raise RuntimeError(
-                    f"Response exceeded {MAX_BODY_BYTES} bytes: {url}"
-                )
+                raise RuntimeError(f"Response exceeded {MAX_BODY_BYTES} bytes: {url}")
             return Response(
                 status=response.status,
                 final_url=response.geturl(),
@@ -241,9 +227,7 @@ def fetch(url: str) -> Response:
     except HTTPError as error:
         body = error.read(MAX_BODY_BYTES + 1)
         if len(body) > MAX_BODY_BYTES:
-            raise RuntimeError(
-                f"Error response exceeded {MAX_BODY_BYTES} bytes: {url}"
-            ) from error
+            raise RuntimeError(f"Error response exceeded {MAX_BODY_BYTES} bytes: {url}") from error
         return Response(
             status=error.code,
             final_url=error.geturl(),
@@ -289,28 +273,32 @@ def parse_rfc3339(value: str) -> datetime | None:
 
 def remote_path_for_public_file(relative: str) -> str:
     if not relative or relative.startswith("/") or ".." in relative.split("/"):
-        raise ValueError(
-            f"Public integrity path must be repository-relative: {relative!r}"
-        )
+        raise ValueError(f"Public integrity path must be repository-relative: {relative!r}")
     return "/" if relative == "index.html" else f"/{relative}"
 
 
-def candidate_bytes(relative: str) -> bytes:
-    """Return the exact reviewed bytes that the public build publishes for one file."""
+@lru_cache(maxsize=1)
+def generated_glaze_candidate() -> dict[str, str]:
+    """Fetch and validate the exact generated GLAZE bytes once per verifier run."""
+    return fetch_bundle()
 
-    source = ROOT / relative
-    if source.is_symlink() or not source.is_file():
-        raise ValueError(f"Candidate integrity source is unavailable or unsafe: {relative}")
-    if relative.endswith(".html"):
-        rendered = source.read_text(encoding="utf-8")
-        if relative in GENERATED_HTML:
-            manifest = load_manifest(ROOT)
-            rendered = render_public_file(relative, rendered, manifest)
-            if relative == "index.html":
-                rendered = normalize_homepage(rendered)
-        rendered = apply_glaze_ui_2(rendered)
-        return rendered.encode("utf-8")
-    return source.read_bytes()
+
+def candidate_bytes(relative: str) -> bytes:
+    """Return the exact bytes the rebuilt Main artifact publishes for one file."""
+    if relative in PUBLIC_FILES:
+        source = ROOT / relative
+        if source.is_symlink() or not source.is_file():
+            raise ValueError(f"Candidate integrity source is unavailable or unsafe: {relative}")
+        return source.read_bytes()
+
+    if relative in GENERATED_GLAZE_FILES:
+        name = relative.removeprefix("css/glaze-v1/")
+        try:
+            return generated_glaze_candidate()[name].encode("utf-8")
+        except KeyError as error:
+            raise ValueError(f"Generated GLAZE candidate is missing: {name}") from error
+
+    raise ValueError(f"Candidate integrity path is outside the reviewed artifact: {relative}")
 
 
 def verify_candidate_content_integrity(base_url: str, errors: list[str]) -> None:
@@ -320,21 +308,17 @@ def verify_candidate_content_integrity(base_url: str, errors: list[str]) -> None
         except (OSError, ValueError) as error:
             errors.append(str(error))
             continue
-
         path = remote_path_for_public_file(relative)
         try:
             response = fetch(build_url(base_url, path))
         except RuntimeError as error:
             errors.append(str(error))
             continue
-
         if response.status != 200:
             errors.append(
-                f"Candidate integrity resource {path} returned HTTP "
-                f"{response.status}; expected 200."
+                f"Candidate integrity resource {path} returned HTTP {response.status}; expected 200."
             )
             continue
-
         if response.body != expected:
             errors.append(
                 f"Candidate content mismatch for {path}: expected SHA-256 "
@@ -350,26 +334,16 @@ def verify_public_surface(base_url: str, errors: list[str]) -> None:
         except RuntimeError as error:
             errors.append(str(error))
             continue
-
         if response.status != expected_status:
-            errors.append(
-                f"{path} returned HTTP {response.status}; expected {expected_status}."
-            )
+            errors.append(f"{path} returned HTTP {response.status}; expected {expected_status}.")
             continue
-
         if not host_is_allowed(urlparse(response.final_url).hostname):
-            errors.append(
-                f"{path} redirected outside the GoreeCloud host allowlist: "
-                f"{response.final_url}"
-            )
-
+            errors.append(f"{path} redirected outside the GoreeCloud host allowlist: {response.final_url}")
         actual_type = response.headers.get("content-type", "")
         if not content_type_matches(actual_type, expected_type):
             errors.append(
-                f"{path} returned Content-Type {actual_type!r}; "
-                f"expected {expected_type!r}."
+                f"{path} returned Content-Type {actual_type!r}; expected {expected_type!r}."
             )
-
         if marker:
             text = response.body.decode("utf-8", errors="replace")
             if marker not in text:
@@ -382,14 +356,9 @@ def verify_headers(base_url: str, errors: list[str]) -> None:
     except RuntimeError as error:
         errors.append(str(error))
         return
-
     if response.status != 200:
-        errors.append(
-            f"Cannot validate root response headers because / returned HTTP "
-            f"{response.status}."
-        )
+        errors.append(f"Cannot validate root response headers because / returned HTTP {response.status}.")
         return
-
     for header, markers in REQUIRED_HEADERS.items():
         value = response.headers.get(header)
         if value is None:
@@ -398,9 +367,7 @@ def verify_headers(base_url: str, errors: list[str]) -> None:
         lower_value = value.lower()
         for marker in markers:
             if marker.lower() not in lower_value:
-                errors.append(
-                    f"Root response header {header} is missing required value: {marker}"
-                )
+                errors.append(f"Root response header {header} is missing required value: {marker}")
 
 
 def verify_indexing_header(target: str, base_url: str, errors: list[str]) -> None:
@@ -409,21 +376,16 @@ def verify_indexing_header(target: str, base_url: str, errors: list[str]) -> Non
     except RuntimeError as error:
         errors.append(str(error))
         return
-
     tokens = {
         token.strip()
         for token in response.headers.get("x-robots-tag", "").lower().replace(";", ",").split(",")
         if token.strip()
     }
-
     if target == "branch-preview" and "noindex" not in tokens:
-        errors.append(
-            "Branch preview is missing the expected X-Robots-Tag: noindex protection."
-        )
+        errors.append("Branch preview is missing the expected X-Robots-Tag: noindex protection.")
     if target == "production" and "noindex" in tokens:
         errors.append(
-            "Production root unexpectedly publishes X-Robots-Tag: noindex and would "
-            "be excluded from search indexing."
+            "Production root unexpectedly publishes X-Robots-Tag: noindex and would be excluded from search indexing."
         )
 
 
@@ -433,17 +395,11 @@ def verify_not_found_behavior(base_url: str, errors: list[str]) -> None:
     except RuntimeError as error:
         errors.append(str(error))
         return
-
     if response.status != 404:
         errors.append(f"Nested missing path returned HTTP {response.status}; expected 404.")
         return
-
     text = response.body.decode("utf-8", errors="replace")
-    for marker in (
-        "Page Not Found — GoreeCloud",
-        "This page isn’t here.",
-        "noindex,follow",
-    ):
+    for marker in ("Page Not Found — GoreeCloud", "This page isn’t here.", "noindex,follow"):
         if marker not in text:
             errors.append(f"Nested 404 response is missing expected marker: {marker}")
 
@@ -457,8 +413,7 @@ def verify_repository_isolation(base_url: str, errors: list[str]) -> None:
             continue
         if response.status != 404:
             errors.append(
-                f"Repository-only path {path} returned HTTP {response.status}; "
-                "expected 404 from the isolated dist artifact."
+                f"Repository-only path {path} returned HTTP {response.status}; expected 404 from the isolated dist artifact."
             )
 
 
@@ -468,49 +423,30 @@ def verify_security_txt(base_url: str, errors: list[str]) -> None:
     except RuntimeError as error:
         errors.append(str(error))
         return
-
     if response.status != 200:
-        errors.append(
-            f"/.well-known/security.txt returned HTTP {response.status}; expected 200."
-        )
+        errors.append(f"/.well-known/security.txt returned HTTP {response.status}; expected 200.")
         return
-
     if "max-age=3600" not in response.headers.get("cache-control", "").lower():
-        errors.append(
-            "/.well-known/security.txt is missing the intended one-hour Cache-Control policy."
-        )
-
+        errors.append("/.well-known/security.txt is missing the intended one-hour Cache-Control policy.")
     fields = parse_security_txt(response.body.decode("utf-8", errors="replace"))
     contacts = fields.get("contact", [])
     if not contacts or contacts[0] != EXPECTED_SECURITY_CONTACT:
-        errors.append(
-            "Deployed security.txt does not publish the expected primary security contact."
-        )
+        errors.append("Deployed security.txt does not publish the expected primary security contact.")
     if EXPECTED_SECURITY_CANONICAL not in fields.get("canonical", []):
         errors.append("Deployed security.txt does not publish the expected canonical URL.")
     if EXPECTED_SECURITY_POLICY not in fields.get("policy", []):
-        errors.append(
-            "Deployed security.txt does not publish the expected security policy URL."
-        )
-
+        errors.append("Deployed security.txt does not publish the expected security policy URL.")
     expires_values = fields.get("expires", [])
     if len(expires_values) != 1:
         errors.append(
-            f"Deployed security.txt must contain exactly one Expires field, "
-            f"found {len(expires_values)}."
+            f"Deployed security.txt must contain exactly one Expires field, found {len(expires_values)}."
         )
         return
-
     expires = parse_rfc3339(expires_values[0])
     if expires is None:
-        errors.append(
-            "Deployed security.txt Expires is not a valid timezone-aware RFC3339 timestamp."
-        )
+        errors.append("Deployed security.txt Expires is not a valid timezone-aware RFC3339 timestamp.")
     elif expires - datetime.now(timezone.utc) <= SECURITY_TXT_RENEWAL_BUFFER:
-        errors.append(
-            "Deployed security.txt expires within 30 days and must be renewed before "
-            "it becomes stale."
-        )
+        errors.append("Deployed security.txt expires within 30 days and must be renewed before it becomes stale.")
 
 
 def verify_production_redirect(errors: list[str]) -> None:
@@ -519,60 +455,43 @@ def verify_production_redirect(errors: list[str]) -> None:
     except RuntimeError as error:
         errors.append(str(error))
         return
-
     if response.status != 200:
-        errors.append(
-            f"Apex production URL resolved to HTTP {response.status}; expected final HTTP 200."
-        )
+        errors.append(f"Apex production URL resolved to HTTP {response.status}; expected final HTTP 200.")
     if urlparse(response.final_url).hostname != "www.goreecloud.com":
-        errors.append(
-            f"Apex production URL did not resolve to the canonical www host: "
-            f"{response.final_url}"
-        )
+        errors.append(f"Apex production URL did not resolve to the canonical www host: {response.final_url}")
 
 
 def check_configuration() -> int:
     errors: list[str] = []
-
     if set(TARGETS) != {"branch-preview", "production"}:
         errors.append("Verifier target set must remain exactly branch-preview and production.")
-
     for name in TARGETS:
         try:
             validate_fixed_url(target_url(name))
         except ValueError as error:
             errors.append(f"Invalid fixed target {name}: {error}")
-
     if not host_is_allowed(f"preview.{PAGES_DOMAIN}"):
-        errors.append(
-            "Cloudflare Pages preview host pattern is missing from the verifier allowlist."
-        )
+        errors.append("Cloudflare Pages preview host pattern is missing from the verifier allowlist.")
     if NON_FETCHABLE_PUBLIC_FILES != frozenset({"_headers"}):
-        errors.append(
-            "Remote integrity exclusion set must remain exactly the Cloudflare _headers "
-            "control file."
-        )
-    if set(REMOTE_INTEGRITY_FILES) != set(PUBLIC_FILES) - NON_FETCHABLE_PUBLIC_FILES:
-        errors.append(
-            "Remote integrity file set has drifted from the reviewed public artifact allowlist."
-        )
-    if not GENERATED_HTML.issubset(set(REMOTE_INTEGRITY_FILES)):
-        errors.append("Generated HTML must remain within the remotely verified public file set.")
-
+        errors.append("Remote integrity exclusion set must remain exactly the Cloudflare _headers control file.")
+    if set(PUBLIC_FILES) & set(GENERATED_GLAZE_FILES):
+        errors.append("Generated GLAZE files must remain disjoint from copied source allowlist entries.")
+    if set(REMOTE_INTEGRITY_FILES) != set(ARTIFACT_FILES) - NON_FETCHABLE_PUBLIC_FILES:
+        errors.append("Remote integrity file set has drifted from the rebuilt public artifact contract.")
+    if not set(GENERATED_GLAZE_FILES).issubset(REMOTE_INTEGRITY_FILES):
+        errors.append("Generated GLAZE files must remain within the remotely verified artifact set.")
     if errors:
         print("Remote deployment verifier configuration failed:")
         for error in errors:
             print(f"  - {error}")
         return 1
-
-    print("Remote deployment verifier configuration passed.")
+    print("Remote deployment verifier configuration passed for the rebuilt Main artifact.")
     return 0
 
 
 def verify(target: str) -> int:
     base_url = target_url(target)
     errors: list[str] = []
-
     verify_candidate_content_integrity(base_url, errors)
     verify_public_surface(base_url, errors)
     verify_headers(base_url, errors)
@@ -582,13 +501,11 @@ def verify(target: str) -> int:
     verify_security_txt(base_url, errors)
     if target == "production":
         verify_production_redirect(errors)
-
     if errors:
         print(f"Remote deployment verification failed for {target} ({base_url}):")
         for error in errors:
             print(f"  - {error}")
         return 1
-
     print(f"Remote deployment verification passed for {target}: {base_url}")
     return 0
 

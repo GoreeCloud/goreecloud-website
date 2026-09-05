@@ -1,22 +1,18 @@
 #!/usr/bin/env python3
-"""Build the exact allowlisted static artifact for GoreeCloud's public website.
+"""Build the exact allowlisted Cloudflare Pages artifact for www.goreecloud.com.
 
-The source repository intentionally contains CI validators, GitHub metadata, and
-repository documentation that are not part of the public website. Every deployable
-file is named explicitly below so adding a file anywhere in the repository cannot
-silently make that file public on the next Cloudflare Pages build.
+The rebuilt Main website publishes only reviewed files named by PUBLIC_FILES.
+Legacy/current identity assets that remain in source for provenance, historical,
+or independently deployed surfaces are classified explicitly and cannot enter the
+Main artifact merely because they remain in the repository.
 """
-
 from __future__ import annotations
 
 from pathlib import Path
 import shutil
 import sys
 
-import glaze_render_patch  # installs the reviewed Glaze UI render boundary
-from glaze_ui_2 import apply_glaze_ui_2
-from normalize_homepage import normalize_homepage
-from render_repository_portfolio import load_manifest, render_public_file
+from glaze_v1 import FILES as GLAZE_FILES, install_glaze
 
 ROOT = Path(__file__).resolve().parents[1]
 DIST = ROOT / "dist"
@@ -35,27 +31,16 @@ PUBLIC_ROOT_FILES = (
     ".well-known/security.txt",
 )
 
-# These upstream service marks are retained only as reviewed source/provenance
-# history. They represented earlier third-party service cards and MUST NOT enter
-# the current GoreeCloud-native public artifact unless a future, separately
-# reviewed third-party-reference surface explicitly re-authorizes them.
-RETIRED_SOURCE_ONLY_ASSET_FILES = (
-    "assets/services/actual-budget.png",
-    "assets/services/audiobookshelf.svg",
-    "assets/services/element.svg",
-    "assets/services/immich.svg",
-    "assets/services/jellyfin.svg",
-    "assets/services/matrix.svg",
-    "assets/services/navidrome.png",
-    "assets/services/nextcloud.svg",
-    "assets/services/onlyoffice.ico",
-    "assets/services/paperless-ngx.svg",
-    "assets/services/stirling-pdf.png",
-    "assets/services/vaultwarden.svg",
-)
-
+# The rebuilt Main surface uses the approved GoreeCloud master mark as its only
+# deployable identity artwork. Product-specific artwork is not fabricated.
 PUBLIC_ASSET_FILES = (
     "assets/goreecloud-logo.svg",
+)
+
+# These reviewed identity assets remain in repository source for provenance,
+# historical records, or other independently governed website/source surfaces.
+# They are deliberately excluded from the rebuilt Main Cloudflare artifact.
+SOURCE_ONLY_ASSET_FILES = (
     "assets/platform/adguard-home.svg",
     "assets/platform/caddy.svg",
     "assets/platform/debian.svg",
@@ -111,30 +96,27 @@ PUBLIC_ASSET_FILES = (
     "assets/social/tiktok.ico",
     "assets/social/x.ico",
     "assets/social/youtube.ico",
-    "assets/social-preview.png",
 )
 
-PUBLIC_STYLE_FILES = (
-    "css/development.css",
-    "css/error.css",
-    "css/glaze-polish.css",
-    "css/glaze.css",
-    "css/glaze-ui-2.1.0.css",
-    "css/homepage-v6.css",
-    "css/how-it-works.css",
-    "css/platform.css",
-    "css/repositories.css",
-    "css/roadmap.css",
-    "css/social.css",
-    "css/status.css",
-    "css/style.css",
-    "css/websites.css",
+# Older upstream-service marks are retained only as reviewed historical source.
+# They must not be reintroduced into current GoreeCloud-native public identity.
+RETIRED_SOURCE_ONLY_ASSET_FILES = (
+    "assets/services/actual-budget.png",
+    "assets/services/audiobookshelf.svg",
+    "assets/services/element.svg",
+    "assets/services/immich.svg",
+    "assets/services/jellyfin.svg",
+    "assets/services/matrix.svg",
+    "assets/services/navidrome.png",
+    "assets/services/nextcloud.svg",
+    "assets/services/onlyoffice.ico",
+    "assets/services/paperless-ngx.svg",
+    "assets/services/stirling-pdf.png",
+    "assets/services/vaultwarden.svg",
 )
 
-PUBLIC_SCRIPT_FILES = (
-    "js/main.js",
-    "js/theme-init.js",
-)
+PUBLIC_STYLE_FILES = ("css/site-v1.1.css",)
+PUBLIC_SCRIPT_FILES = ("js/main.js", "js/theme-init.js")
 
 PUBLIC_FILES = (
     *PUBLIC_ROOT_FILES,
@@ -142,11 +124,7 @@ PUBLIC_FILES = (
     *PUBLIC_STYLE_FILES,
     *PUBLIC_SCRIPT_FILES,
 )
-
-# Every public HTML file is rendered through the same normalization boundary so
-# build-time output, artifact validation, and remote byte-integrity checks share
-# the exact Glaze UI 2.1 Stable representation.
-GENERATED_HTML = {"index.html", "repositories.html", "privacy.html", "security.html", "404.html"}
+GENERATED_GLAZE_FILES = tuple(f"css/glaze-v1/{name}" for name in GLAZE_FILES)
 
 
 def fail(message: str) -> int:
@@ -154,32 +132,35 @@ def fail(message: str) -> int:
     return 1
 
 
-def reject_symlink(path: Path) -> None:
-    if path.is_symlink():
-        raise ValueError(f"Deployable source must not be a symlink: {path.relative_to(ROOT)}")
-
-
 def main() -> int:
     try:
         if len(PUBLIC_FILES) != len(set(PUBLIC_FILES)):
-            return fail("public file allowlist contains a duplicate path")
+            return fail("public file allowlist contains duplicates")
 
-        retired_overlap = sorted(set(PUBLIC_ASSET_FILES).intersection(RETIRED_SOURCE_ONLY_ASSET_FILES))
-        if retired_overlap:
-            return fail(
-                "source-only historical assets must never enter the public allowlist: "
-                + ", ".join(retired_overlap)
-            )
+        categories = {
+            "deployable": set(PUBLIC_ASSET_FILES),
+            "source-only": set(SOURCE_ONLY_ASSET_FILES),
+            "retired": set(RETIRED_SOURCE_ONLY_ASSET_FILES),
+        }
+        names = tuple(categories)
+        for index, left_name in enumerate(names):
+            for right_name in names[index + 1:]:
+                overlap = sorted(categories[left_name] & categories[right_name])
+                if overlap:
+                    return fail(
+                        f"asset classification overlap between {left_name} and {right_name}: "
+                        + ", ".join(overlap)
+                    )
 
-        sources = [ROOT / relative for relative in PUBLIC_FILES]
-        for source in sources:
-            if not source.exists():
-                return fail(f"required public source is missing: {source.relative_to(ROOT)}")
-            if not source.is_file():
-                return fail(f"allowlisted public source is not a regular file: {source.relative_to(ROOT)}")
-            reject_symlink(source)
+        for relative in (*SOURCE_ONLY_ASSET_FILES, *RETIRED_SOURCE_ONLY_ASSET_FILES):
+            path = ROOT / relative
+            if not path.is_file() or path.is_symlink():
+                return fail(f"classified source-only identity asset is invalid: {relative}")
 
-        manifest = load_manifest(ROOT)
+        for relative in PUBLIC_FILES:
+            source = ROOT / relative
+            if not source.is_file() or source.is_symlink():
+                return fail(f"invalid allowlisted public source: {relative}")
 
         if DIST.exists():
             if DIST.is_symlink():
@@ -191,23 +172,14 @@ def main() -> int:
             source = ROOT / relative
             destination = DIST / relative
             destination.parent.mkdir(parents=True, exist_ok=True)
-            if relative.endswith(".html"):
-                rendered = source.read_text(encoding="utf-8")
-                if relative in GENERATED_HTML:
-                    rendered = render_public_file(relative, rendered, manifest)
-                    if relative == "index.html":
-                        rendered = normalize_homepage(rendered)
-                rendered = apply_glaze_ui_2(rendered)
-                destination.write_text(rendered, encoding="utf-8")
-            else:
-                shutil.copy2(source, destination)
+            shutil.copy2(source, destination)
 
+        install_glaze(DIST / "css" / "glaze-v1")
     except (OSError, ValueError) as exc:
         return fail(str(exc))
 
-    file_count = sum(1 for path in DIST.rglob("*") if path.is_file())
-    total_bytes = sum(path.stat().st_size for path in DIST.rglob("*") if path.is_file())
-    print(f"Built isolated public artifact: {file_count} files, {total_bytes} bytes -> dist/")
+    files = [path for path in DIST.rglob("*") if path.is_file()]
+    print(f"Built isolated public artifact: {len(files)} files -> dist/")
     return 0
 
 
