@@ -2,9 +2,9 @@
 
 Canonical source for the GoreeCloud public website surfaces maintained in `GoreeCloud/goreecloud-website` and published through Cloudflare Pages.
 
-## Current development direction
+## Current development state
 
-This branch rebuilds the main website from the ground up and adds a new combined public product-center source for:
+This repository is in **Development**. The current rebuild branch replaces the main public website composition and adds a combined public product-center source for:
 
 - GoreeCloud Home Security
 - GoreeCloud Home
@@ -12,21 +12,31 @@ This branch rebuilds the main website from the ground up and adds a new combined
 - GoreeCloud Containers
 - GoreeCloud Code
 
-The five-product website does **not** create a new umbrella product. It uses the GoreeCloud master brand, preserves each product's canonical name, and keeps implementation, Development, planned, and production states distinct.
+The five-product site does **not** create a new umbrella product. It uses the GoreeCloud master brand, preserves each product's canonical identity, and keeps implemented, Development, planned, and production states distinct.
 
-The source target is **GLAZE UI V1.1 / 1.1.0**, the current Stable GoreeCloud consumer baseline. The exact Stable promotion revision consumed by builds is `15cc76d2bcd4065552dc31c77145b63f34d9e7b2` from `GoreeCloud/goreecloud-glaze-ui`. Exact Website consumer acceptance and production acceptance remain separate gates.
+The current applicable Stable design-system target is **GLAZE UI V1.1 / 1.1.0**. Website builds remain pinned to exact Stable promotion revision `15cc76d2bcd4065552dc31c77145b63f34d9e7b2` in `GoreeCloud/goreecloud-glaze-ui`.
+
+That immutable `1.1.0` source has one known import-closure defect: `css/glaze-v1.components.css` imports nonexistent `./glaze-v1.candidate.css`. The Website build detects that exact defect and removes only that single dangling import from the generated same-origin artifact. Any other import-graph drift fails the build. This is a temporary, bounded consumer-build workaround; it does **not** make the Website GLAZE-conformant or change the upstream Stable release. A corrected GLAZE V1.1 patch is still a Release Candidate and is not consumed until a corrected immutable Stable release is published and independently re-pinned and validated.
 
 ## Main website
 
-The main `www.goreecloud.com` source is the repository root. The rebuild intentionally removes the former **“Expanding the platform”** roadmap composition and the associated Home Assistant/Frigate-centered public framing.
+The main `www.goreecloud.com` source is the repository root. The rebuild removes the former **“Expanding the platform”** composition and the associated Home Assistant/Frigate-centered roadmap framing.
 
 The new information architecture centers on:
 
-- GoreeCloud ownership, privacy, portability, and recoverability principles;
-- clear links into specialized official public sites;
-- the six substantive platform systems relevant to product integration;
-- source and evidence boundaries instead of hard-coded GitHub inventory counts;
-- a publication-pending entry for the new five-product public center until its domain is actually active and verified.
+- GoreeCloud ownership, privacy, portability, and recoverability;
+- clear navigation to specialized official public destinations;
+- evidence-scoped platform-system relationships;
+- source and deployment truth instead of hard-coded repository-count snapshots;
+- a publication-pending entry for the new five-product center until its Cloudflare Pages and domain state are actually verified.
+
+The rebuilt root public surfaces are:
+
+- `index.html`
+- `repositories.html`
+- `privacy.html`
+- `security.html`
+- `404.html`
 
 ## Five-product public center
 
@@ -34,7 +44,7 @@ Source root: `sites/labs/`
 
 Proposed technical website namespace: `labs.goreecloud.com`.
 
-That hostname is a proposed website namespace only. It is not represented as active DNS, an active Cloudflare Pages custom domain, or a new product identity until those states are verified.
+That hostname is a proposed website namespace only. It is not represented as active DNS, an active Cloudflare Pages custom domain, or a production-accepted public destination until those states are verified.
 
 Cloudflare Pages contract:
 
@@ -47,7 +57,7 @@ Production branch: main after review and merge
 Proposed custom domain: labs.goreecloud.com
 ```
 
-The site remains `noindex,nofollow` and its `robots.txt` disallows indexing until Pages activation, DNS/TLS verification, human mobile review, and production acceptance are complete.
+The site remains `noindex,nofollow` and its `robots.txt` disallows indexing until the Pages project, custom-domain binding, DNS/TLS, representative-mobile human review, and exact production acceptance are complete.
 
 ## Public runtime boundary
 
@@ -65,16 +75,27 @@ The browser runtime is intentionally minimal:
 
 ## GLAZE UI build boundary
 
-The repository does not silently rewrite reviewed HTML into a different public composition. Instead, `scripts/build_public_site.py` copies an explicit allowlist of reviewed source files into `dist/`.
+`scripts/build_public_site.py` copies an explicit allowlist of reviewed source files into `dist/`. It does not silently rewrite the reviewed page composition.
 
-At build time, `scripts/glaze_v1.py` fetches the exact immutable GLAZE UI Stable promotion revision, validates its expected Stable markers and import closure, and writes those files to `dist/css/glaze-v1/` for same-origin publication.
+`scripts/glaze_v1.py` fetches only the immutable GLAZE UI V1.1 Stable promotion revision. Before generating the public artifact it:
+
+1. validates the Stable entrypoint and inherited import structure;
+2. requires the known `glaze-v1.candidate.css` dangling import to occur exactly once in `glaze-v1.components.css`;
+3. rejects any additional or changed unpinned import;
+4. removes only that verified dangling directive from the generated copy;
+5. marks the generated CSS with an explicit workaround comment;
+6. validates the resulting same-origin import closure before publication.
+
+This workaround is a candidate-build compatibility measure only. Exact Website consumer acceptance remains pending, and a corrected immutable Stable GLAZE release must replace the workaround before GLAZE conformance or production completion can be claimed.
+
+Main-site build and artifact validation:
 
 ```bash
 python scripts/build_public_site.py
 python scripts/validate_build_artifact.py
 ```
 
-The new five-product website follows the same model:
+Five-product site build and validation:
 
 ```bash
 python sites/labs/build.py
@@ -85,26 +106,41 @@ python sites/labs/validate.py
 
 Canonical visual-asset authority is `GoreeCloud/goreecloud-branding-assets`.
 
-The branding catalog currently has approved product artwork for some, but not all, of the five products in the new center. The center therefore uses text-led product identity instead of fabricating icons for products whose canonical artwork is not approved. The GoreeCloud master mark remains the site-level identity.
+Approved canonical artwork is used when it exists. Products without an approved canonical product asset use text-led identity during Development rather than fabricated, emoji, generic, or upstream substitute marks. Missing required canonical artwork remains a production visual-acceptance blocker.
 
-## Status and evidence
+## Platform-system boundary
 
-Public copy must remain tied to authoritative project specifications, current source, tests, and deployment evidence. A draft pull request, green CI run, successful build, brand treatment, or public page does not manufacture Stable or production-ready state.
+The repository evaluates GoreeCloud Manager, Privacy Shield, Wardveil Security, Everkeep, GLAZE UI, GoreeCloud Mesh, and GoreeCloud Identity according to `goreecloud.platform.yaml`.
 
-The rebuilt product center follows this rule explicitly by separating **Implemented foundation** from **Still gated** for every product.
+A public presentation, version marker, security header, privacy-minded static implementation, or successful build does not independently establish producer-system acceptance. The Platform Contract remains intentionally nonconformant while required integrations and evidence are incomplete.
 
 ## Security and privacy
 
 The public artifact is explicit and allowlisted. Repository-only files do not become deployable merely because they exist in the repository.
 
-The site uses restrictive Cloudflare Pages headers for CSP, browser permissions, referrer handling, framing, cross-origin behavior, HSTS, and content-type handling. Privacy-minded source design does not itself establish Privacy Shield acceptance, and repository/browser security controls do not themselves establish Wardveil Security acceptance.
+The website uses restrictive Cloudflare Pages headers for content security policy, browser permissions, framing, referrer handling, cross-origin behavior, HSTS, and content-type handling. Repository-local privacy and browser-security controls do not independently establish Privacy Shield or Wardveil Security acceptance.
 
 ## Validation and acceptance
 
-CI remains a regression and evidence mechanism, not automatic production authorization. A material website redesign still requires applicable exact-revision preview verification and human representative-mobile review before production completion can be claimed. After merge, production deployment must be independently verified against the accepted revision.
+CI is an evidence and regression mechanism, not automatic production authorization.
 
-The new `sites/labs` source intentionally does not add a remote-production verifier before a Cloudflare Pages project and custom domain actually exist. Adding such a verifier before the service exists would create a false deployment assumption rather than useful evidence.
+A material website redesign still requires, as applicable:
+
+- exact-head repository validation;
+- exact branch-preview deployment verification;
+- representative mobile, tablet, and desktop visual/interaction review;
+- keyboard and accessibility review;
+- light/dark/system and accessibility fallback checks;
+- Cloudflare Pages project and custom-domain verification for new destinations;
+- DNS and TLS verification;
+- exact post-merge production deployment verification.
+
+The `sites/labs` source intentionally does not claim a remote production verifier before its Cloudflare Pages project and custom domain actually exist.
 
 ## Source license and creative-rights boundary
 
-Repository source code and automation remain governed by the repository's Apache-2.0 source license and existing `NOTICE` boundary. GoreeCloud branding and third-party marks remain subject to their separate rights and authority records.
+The website source code, repository automation, validation scripts, and technical repository documentation are licensed under the **Apache License 2.0**. The authoritative source-license identifier is **Apache-2.0**, and the top-level `LICENSE` contains the reviewed license text.
+
+`NOTICE` records the separate creative-rights boundary. The source license does not grant unrestricted reuse of GoreeCloud trade names, logos, branding, editorial identity, or third-party marks.
+
+Issue #5 remains open as the separate human-controlled reachable-history, contextual-disclosure, creative-rights, and repository-publication decision. Passing CI does not itself authorize a repository visibility change, publication decision, trademark use, or release.

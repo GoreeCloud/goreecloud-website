@@ -1,5 +1,12 @@
 #!/usr/bin/env python3
-"""Fetch the exact current Stable GLAZE UI V1.1 web bundle for same-origin publication."""
+"""Fetch the exact current Stable GLAZE UI V1.1 web bundle for same-origin publication.
+
+The immutable 1.1.0 Stable source has one known CSS import-closure defect:
+glaze-v1.components.css imports a nonexistent glaze-v1.candidate.css. Until a
+corrected immutable Stable release is published, Website builds fail closed on
+that exact defect and remove only that single dangling import from the generated
+artifact. Any other upstream drift remains a hard failure.
+"""
 from __future__ import annotations
 
 from pathlib import Path
@@ -26,12 +33,20 @@ FILES = (
     "glaze-v1.1-appearance.css",
 )
 
+KNOWN_STABLE_DEFECT_OWNER = "glaze-v1.components.css"
+KNOWN_STABLE_DEFECT_IMPORT = "glaze-v1.candidate.css"
+KNOWN_STABLE_DEFECT_DIRECTIVE = '@import url("./glaze-v1.candidate.css");'
+KNOWN_STABLE_WORKAROUND_MARKER = (
+    "GoreeCloud Website build workaround: removed the single known dangling "
+    "GLAZE UI 1.1.0 Stable import; consumer conformance remains pending."
+)
+
 
 def _imports(text: str) -> set[str]:
     return set(re.findall(r'@import\s+url\(["\']\./([^"\']+)["\']\)', text))
 
 
-def validate_bundle(bundle: dict[str, str]) -> None:
+def _validate_common(bundle: dict[str, str]) -> None:
     missing = sorted(set(FILES) - set(bundle))
     if missing:
         raise ValueError("GLAZE V1.1 bundle is incomplete: " + ", ".join(missing))
@@ -66,13 +81,59 @@ def validate_bundle(bundle: dict[str, str]) -> None:
             raise ValueError(f"Downloaded GLAZE source is empty: {name}")
         if "raw.githubusercontent.com" in text or "https://" in text or "http://" in text:
             raise ValueError(f"GLAZE runtime CSS must not introduce remote resources: {name}")
+
+
+def validate_upstream_bundle(bundle: dict[str, str]) -> None:
+    """Validate the exact immutable upstream source, including its one known defect."""
+    _validate_common(bundle)
+    for name, text in bundle.items():
+        unexpected = _imports(text) - set(FILES)
+        if name == KNOWN_STABLE_DEFECT_OWNER:
+            if unexpected != {KNOWN_STABLE_DEFECT_IMPORT}:
+                raise ValueError(
+                    "Known GLAZE V1.1 Stable import defect changed unexpectedly in "
+                    f"{name}: {sorted(unexpected)}"
+                )
+            if text.count(KNOWN_STABLE_DEFECT_DIRECTIVE) != 1:
+                raise ValueError(
+                    "Known GLAZE V1.1 Stable dangling import must occur exactly once"
+                )
+        elif unexpected:
+            raise ValueError(
+                f"GLAZE CSS imports an unpinned file from {name}: {sorted(unexpected)}"
+            )
+
+
+def apply_known_stable_workaround(bundle: dict[str, str]) -> dict[str, str]:
+    """Return an artifact bundle with only the verified dangling import removed."""
+    normalized = dict(bundle)
+    source = normalized[KNOWN_STABLE_DEFECT_OWNER]
+    if source.count(KNOWN_STABLE_DEFECT_DIRECTIVE) != 1:
+        raise ValueError("Refusing GLAZE workaround because the known defect no longer matches")
+    normalized[KNOWN_STABLE_DEFECT_OWNER] = source.replace(
+        KNOWN_STABLE_DEFECT_DIRECTIVE,
+        f"/* {KNOWN_STABLE_WORKAROUND_MARKER} */",
+        1,
+    )
+    return normalized
+
+
+def validate_bundle(bundle: dict[str, str]) -> None:
+    """Validate the generated same-origin artifact after the bounded workaround."""
+    _validate_common(bundle)
+    owner = bundle[KNOWN_STABLE_DEFECT_OWNER]
+    if KNOWN_STABLE_DEFECT_DIRECTIVE in owner:
+        raise ValueError("Generated GLAZE artifact still contains the known dangling Stable import")
+    if KNOWN_STABLE_WORKAROUND_MARKER not in owner:
+        raise ValueError("Generated GLAZE artifact is missing the bounded workaround marker")
+    for name, text in bundle.items():
         unexpected = _imports(text) - set(FILES)
         if unexpected:
-            raise ValueError(f"GLAZE CSS imports an unpinned file from {name}: {sorted(unexpected)}")
+            raise ValueError(f"Generated GLAZE CSS imports an unpinned file from {name}: {sorted(unexpected)}")
 
 
 def fetch_bundle(timeout: float = 20.0) -> dict[str, str]:
-    bundle: dict[str, str] = {}
+    raw_bundle: dict[str, str] = {}
     for name in FILES:
         request = Request(f"{BASE_URL}/{name}", headers={"User-Agent": "GoreeCloud-Website-Build/1.1"})
         try:
@@ -83,9 +144,12 @@ def fetch_bundle(timeout: float = 20.0) -> dict[str, str]:
         except (HTTPError, URLError, TimeoutError) as exc:
             raise ValueError(f"Unable to fetch pinned GLAZE source {name}: {exc}") from exc
         try:
-            bundle[name] = raw.decode("utf-8")
+            raw_bundle[name] = raw.decode("utf-8")
         except UnicodeDecodeError as exc:
             raise ValueError(f"Pinned GLAZE source is not UTF-8: {name}") from exc
+
+    validate_upstream_bundle(raw_bundle)
+    bundle = apply_known_stable_workaround(raw_bundle)
     validate_bundle(bundle)
     return bundle
 
