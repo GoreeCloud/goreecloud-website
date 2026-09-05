@@ -1,5 +1,12 @@
 #!/usr/bin/env python3
-"""Enforce conservative performance budgets for the exact public website artifact."""
+"""Enforce conservative source-payload and request-count budgets for rebuilt Main.
+
+This pre-build gate measures every copied file in the explicit Main allowlist and
+keeps page request counts bounded. The generated GLAZE V1.1 files are not counted
+here because they do not exist until the build step; their exact immutable file
+set, pinned revision, bounded Stable-defect workaround, import closure, and final
+artifact membership are enforced separately by the GLAZE/build-artifact gates.
+"""
 
 from __future__ import annotations
 
@@ -12,14 +19,9 @@ from build_public_site import PUBLIC_FILES, ROOT
 KIB = 1024
 HTML_FILE_BUDGET = 64 * KIB
 HTML_TOTAL_BUDGET = 96 * KIB
-# Glaze UI 1.5 Stable is intentionally vendored as one same-origin bundle so
-# public pages do not depend on a cross-origin design-system runtime. The
-# reviewed bundle is ~49 KiB; keep a narrow ceiling above it rather than
-# weakening the per-file check entirely.
+# The rebuilt site has one local composition stylesheet. GLAZE V1.1 is generated
+# later from its exact pinned Stable revision and validated separately.
 CSS_FILE_BUDGET = 56 * KIB
-# The homepage retains its existing local presentation layers alongside the
-# vendored Stable bundle. 128 KiB keeps the aggregate CSS budget explicit while
-# accommodating the reviewed 1.5 adoption without removing those local layers.
 CSS_TOTAL_BUDGET = 128 * KIB
 JS_FILE_BUDGET = 16 * KIB
 JS_TOTAL_BUDGET = 24 * KIB
@@ -27,20 +29,23 @@ SVG_FILE_BUDGET = 24 * KIB
 SVG_TOTAL_BUDGET = 128 * KIB
 RASTER_FILE_BUDGET = 256 * KIB
 RASTER_TOTAL_BUDGET = 256 * KIB
-PUBLIC_ARTIFACT_BUDGET = 512 * KIB
+COPIED_SOURCE_BUDGET = 512 * KIB
 MAX_STYLESHEETS_BY_PAGE = {
-    "index.html": 12,
-    "repositories.html": 5,
-    "privacy.html": 4,
-    "security.html": 4,
-    "404.html": 5,
+    "index.html": 2,
+    "repositories.html": 2,
+    "privacy.html": 2,
+    "security.html": 2,
+    "404.html": 2,
 }
+# Every rebuilt page intentionally loads the same two tiny same-origin scripts:
+# theme-init.js for pre-paint appearance restoration and main.js for the shared
+# appearance/nav/year interaction layer.
 MAX_SCRIPTS_BY_PAGE = {
     "index.html": 2,
     "repositories.html": 2,
-    "privacy.html": 1,
-    "security.html": 1,
-    "404.html": 1,
+    "privacy.html": 2,
+    "security.html": 2,
+    "404.html": 2,
 }
 
 PUBLIC_HTML = tuple(
@@ -99,7 +104,7 @@ def main() -> int:
     deployable = public_files(errors)
 
     if len(deployable) != len(PUBLIC_FILES):
-        errors.append("Performance measurement must cover every explicitly allowlisted public file.")
+        errors.append("Performance measurement must cover every explicitly copied public source file.")
 
     html_files = [path for path in deployable if path.suffix.lower() == ".html"]
     css_files = [path for path in deployable if path.suffix.lower() == ".css"]
@@ -119,9 +124,9 @@ def main() -> int:
     enforce_total(errors, raster_files, RASTER_TOTAL_BUDGET, "Raster images")
 
     total_size = sum(path.stat().st_size for path in deployable)
-    if total_size > PUBLIC_ARTIFACT_BUDGET:
+    if total_size > COPIED_SOURCE_BUDGET:
         errors.append(
-            f"Public static artifact exceeds {PUBLIC_ARTIFACT_BUDGET // KIB} KiB source budget: "
+            f"Copied public source exceeds {COPIED_SOURCE_BUDGET // KIB} KiB budget: "
             f"{total_size / KIB:.1f} KiB."
         )
 
@@ -155,8 +160,8 @@ def main() -> int:
         return 1
 
     print(
-        f"Performance budget validation passed: {len(deployable)} explicitly allowlisted public files, "
-        f"{total_size / KIB:.1f} KiB."
+        f"Performance budget validation passed: {len(deployable)} explicitly copied public files, "
+        f"{total_size / KIB:.1f} KiB before the separately validated generated GLAZE bundle."
     )
     return 0
 
