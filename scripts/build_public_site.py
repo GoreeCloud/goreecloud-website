@@ -96,7 +96,6 @@ SOURCE_ONLY_ASSET_FILES = (
     "assets/social/tiktok.ico",
     "assets/social/x.ico",
     "assets/social/youtube.ico",
-    "assets/social-preview.png",
 )
 
 # Older upstream-service marks are retained only as reviewed historical source.
