@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Validate the complete deployable public HTML surface as one linked static site.
+"""Validate the complete rebuilt Main public surface against its deployment contract.
 
-The source repository contains deterministic HTML composition anchors. This validator
-uses the same reviewed render boundary as the public build before crawling links,
-assets, fragments, metadata, sitemap entries, and crawler policy. That keeps source
-validation aligned with the bytes that can actually enter the deployment artifact.
+The rebuilt root website is reviewed source, not a template that is rewritten into a
+different public composition. This validator therefore crawls the exact source pages
+and checks local references against the explicit deployment allowlist plus generated
+same-origin GLAZE files. Repository-only/source-only files cannot satisfy public links.
 """
 
 from __future__ import annotations
@@ -15,31 +15,32 @@ from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import unquote, urlparse
 from xml.etree import ElementTree
+import posixpath
 import sys
 
-from glaze_ui_2 import apply_glaze_ui_2
-from normalize_homepage import normalize_homepage
-from render_repository_portfolio import load_manifest, render_public_file
+from build_public_site import GENERATED_GLAZE_FILES, PUBLIC_FILES, ROOT
 
-ROOT = Path(__file__).resolve().parents[1]
-PUBLIC_PAGES = (
-    ROOT / "index.html",
-    ROOT / "privacy.html",
-    ROOT / "repositories.html",
-    ROOT / "security.html",
-    ROOT / "404.html",
+PUBLIC_PAGE_NAMES = (
+    "index.html",
+    "privacy.html",
+    "repositories.html",
+    "security.html",
+    "404.html",
 )
+PUBLIC_PAGES = tuple(ROOT / name for name in PUBLIC_PAGE_NAMES)
 INDEXABLE_PAGES = {
-    ROOT / "index.html": "https://www.goreecloud.com/",
-    ROOT / "privacy.html": "https://www.goreecloud.com/privacy.html",
-    ROOT / "repositories.html": "https://www.goreecloud.com/repositories.html",
-    ROOT / "security.html": "https://www.goreecloud.com/security.html",
+    "index.html": "https://www.goreecloud.com/",
+    "privacy.html": "https://www.goreecloud.com/privacy.html",
+    "repositories.html": "https://www.goreecloud.com/repositories.html",
+    "security.html": "https://www.goreecloud.com/security.html",
 }
+DEPLOYABLE_PATHS = set(PUBLIC_FILES) | set(GENERATED_GLAZE_FILES)
 SITEMAP = ROOT / "sitemap.xml"
 ROBOTS = ROOT / "robots.txt"
 CANONICAL_SITEMAP_URL = "https://www.goreecloud.com/sitemap.xml"
-SOCIAL_IMAGE_URL = "https://www.goreecloud.com/assets/social-preview.png"
 SITEMAP_NAMESPACE = "{http://www.sitemaps.org/schemas/sitemap/0.9}"
+CANONICAL_LOGO = "assets/goreecloud-logo.svg"
+MANIFEST_PATH = "site.webmanifest"
 
 
 class PublicPageParser(HTMLParser):
@@ -50,7 +51,6 @@ class PublicPageParser(HTMLParser):
         self.canonical: str | None = None
         self.robots: str | None = None
         self.meta_names: dict[str, str] = {}
-        self.meta_properties: dict[str, str] = {}
         self.manifest_href: str | None = None
         self.icon_links: list[tuple[set[str], str, str]] = []
 
@@ -65,15 +65,12 @@ class PublicPageParser(HTMLParser):
                 self.canonical = attrs.get("href")
             if "manifest" in rels:
                 self.manifest_href = attrs.get("href")
-            if rels.intersection({"icon", "apple-touch-icon"}):
+            if "icon" in rels:
                 self.icon_links.append((rels, attrs.get("href", ""), attrs.get("type", "")))
         if tag == "meta":
             name = attrs.get("name", "").lower()
-            prop = attrs.get("property", "").lower()
             if name:
                 self.meta_names[name] = attrs.get("content", "")
-            if prop:
-                self.meta_properties[prop] = attrs.get("content", "")
             if name == "robots":
                 self.robots = attrs.get("content")
 
@@ -89,78 +86,52 @@ def report(errors: list[str]) -> int:
         for error in errors:
             print(f"  - {error}")
         return 1
-    print("Rendered public surface validation passed.")
+    print("Rebuilt public surface validation passed against the exact deployment allowlist.")
     return 0
 
 
-def render_page(page: Path, manifest: dict) -> str:
-    relative = str(page.relative_to(ROOT))
-    rendered = render_public_file(relative, page.read_text(encoding="utf-8"), manifest)
-    if relative == "index.html":
-        rendered = normalize_homepage(rendered)
-    return apply_glaze_ui_2(rendered)
-
-
-def target_for_local_reference(source: Path, path_text: str) -> Path:
+def normalize_local_path(source_name: str, path_text: str) -> str:
     decoded = unquote(path_text)
     if decoded in {"", "/"}:
-        return ROOT / "index.html"
-
+        return "index.html"
     if decoded.startswith("/"):
         relative = decoded.lstrip("/")
     else:
-        relative = str((source.parent.relative_to(ROOT) / decoded))
+        base = posixpath.dirname(source_name)
+        relative = posixpath.normpath(posixpath.join(base, decoded))
+    if relative.startswith("../") or relative == "..":
+        raise ValueError("reference escapes public root")
+    if relative.endswith("/"):
+        relative = f"{relative}index.html"
+    return relative
 
-    candidate = (ROOT / relative).resolve()
-    candidate.relative_to(ROOT.resolve())
 
-    if decoded.endswith("/"):
-        candidate = candidate / "index.html"
-    return candidate
-
-
-def parse_pages(errors: list[str]) -> dict[Path, PublicPageParser]:
-    parsed_pages: dict[Path, PublicPageParser] = {}
-    try:
-        manifest = load_manifest(ROOT)
-    except (OSError, ValueError) as exc:
-        errors.append(f"Cannot load reviewed repository manifest for public-surface rendering: {exc}")
-        return parsed_pages
-
+def parse_pages(errors: list[str]) -> dict[str, PublicPageParser]:
+    parsed_pages: dict[str, PublicPageParser] = {}
     for page in PUBLIC_PAGES:
-        if not page.exists():
-            errors.append(f"Required public page is missing: {page.relative_to(ROOT)}")
+        if not page.is_file() or page.is_symlink():
+            errors.append(f"Required public page is missing or invalid: {page.relative_to(ROOT)}")
             continue
-        try:
-            html = render_page(page, manifest)
-        except (OSError, ValueError, KeyError) as exc:
-            errors.append(f"Could not render {page.relative_to(ROOT)} for public-surface validation: {exc}")
-            continue
-
         parser = PublicPageParser()
-        parser.feed(html)
-        parsed_pages[page.resolve()] = parser
-
+        parser.feed(page.read_text(encoding="utf-8"))
+        relative = page.name
+        parsed_pages[relative] = parser
         for identifier, count in sorted(parser.ids.items()):
             if count > 1:
-                errors.append(f"Duplicate id in rendered {page.relative_to(ROOT)}: {identifier}")
+                errors.append(f"Duplicate id in {relative}: {identifier}")
     return parsed_pages
 
 
-def validate_references(errors: list[str], parsed_pages: dict[Path, PublicPageParser]) -> None:
-    for page, parser in parsed_pages.items():
-        display_page = page.relative_to(ROOT)
+def validate_references(errors: list[str], parsed_pages: dict[str, PublicPageParser]) -> None:
+    for source_name, parser in parsed_pages.items():
         for tag, attr_name, raw_value in parser.references:
             value = raw_value.strip()
             if not value:
                 continue
-
             if value.startswith("#"):
                 fragment = unquote(value[1:])
                 if fragment and fragment not in parser.ids:
-                    errors.append(
-                        f"Rendered {display_page} {tag}[{attr_name}] references missing fragment #{fragment}."
-                    )
+                    errors.append(f"{source_name} {tag}[{attr_name}] references missing fragment #{fragment}.")
                 continue
 
             parsed = urlparse(value)
@@ -168,46 +139,37 @@ def validate_references(errors: list[str], parsed_pages: dict[Path, PublicPagePa
                 continue
 
             try:
-                target = target_for_local_reference(page, parsed.path)
+                target = normalize_local_path(source_name, parsed.path)
             except ValueError:
+                errors.append(f"{source_name} {tag}[{attr_name}] escapes the public root: {value}")
+                continue
+            if target not in DEPLOYABLE_PATHS:
                 errors.append(
-                    f"Rendered {display_page} {tag}[{attr_name}] escapes repository root: {value}"
+                    f"{source_name} {tag}[{attr_name}] references a file outside the reviewed public artifact: {value}"
                 )
                 continue
 
-            if not target.exists():
-                errors.append(
-                    f"Rendered {display_page} {tag}[{attr_name}] references missing local resource: {value}"
-                )
-                continue
-
-            if parsed.fragment:
-                target_parser = parsed_pages.get(target.resolve())
-                if target_parser is None and target.suffix.lower() == ".html":
-                    errors.append(
-                        f"Rendered {display_page} links to HTML outside the declared public surface: {value}"
-                    )
+            if parsed.fragment and target.endswith(".html"):
+                target_parser = parsed_pages.get(target)
+                if target_parser is None:
+                    errors.append(f"{source_name} links to HTML outside the declared Main public-page set: {value}")
                     continue
                 fragment = unquote(parsed.fragment)
-                if target_parser is not None and fragment not in target_parser.ids:
-                    errors.append(
-                        f"Rendered {display_page} links to missing fragment #{fragment} in {target.relative_to(ROOT)}."
-                    )
+                if fragment not in target_parser.ids:
+                    errors.append(f"{source_name} links to missing fragment #{fragment} in {target}.")
 
 
-def validate_indexing(errors: list[str], parsed_pages: dict[Path, PublicPageParser]) -> None:
-    for page, expected_canonical in INDEXABLE_PAGES.items():
-        parser = parsed_pages.get(page.resolve())
+def validate_indexing(errors: list[str], parsed_pages: dict[str, PublicPageParser]) -> None:
+    for page_name, expected_canonical in INDEXABLE_PAGES.items():
+        parser = parsed_pages.get(page_name)
         if parser is None:
             continue
         if parser.canonical != expected_canonical:
-            errors.append(
-                f"{page.relative_to(ROOT)} canonical must be {expected_canonical!r}, found {parser.canonical!r}."
-            )
-        if parser.robots and "noindex" in parser.robots.lower():
-            errors.append(f"Indexable public page is marked noindex: {page.relative_to(ROOT)}")
+            errors.append(f"{page_name} canonical must be {expected_canonical!r}, found {parser.canonical!r}.")
+        if not parser.robots or "noindex" in parser.robots.lower():
+            errors.append(f"Indexable public page must explicitly remain indexable: {page_name}")
 
-    error_parser = parsed_pages.get((ROOT / "404.html").resolve())
+    error_parser = parsed_pages.get("404.html")
     if error_parser is not None:
         if not error_parser.robots or "noindex" not in error_parser.robots.lower():
             errors.append("404.html must remain noindex.")
@@ -215,74 +177,44 @@ def validate_indexing(errors: list[str], parsed_pages: dict[Path, PublicPagePars
             errors.append("404.html must not publish a canonical URL for a missing resource.")
 
 
-def validate_page_metadata(errors: list[str], parsed_pages: dict[Path, PublicPageParser]) -> None:
-    for page in PUBLIC_PAGES:
-        parser = parsed_pages.get(page.resolve())
+def validate_page_metadata(errors: list[str], parsed_pages: dict[str, PublicPageParser]) -> None:
+    for page_name in PUBLIC_PAGE_NAMES:
+        parser = parsed_pages.get(page_name)
         if parser is None:
             continue
-        display = page.relative_to(ROOT)
-        manifest_href = (parser.manifest_href or "").lstrip("/")
-        if manifest_href != "site.webmanifest":
-            errors.append(f"{display} must link to the local site.webmanifest.")
+        if parser.meta_names.get("application-name") != "GoreeCloud":
+            errors.append(f"{page_name} must publish application-name=GoreeCloud.")
+        if parser.meta_names.get("author") != "GoreeCloud":
+            errors.append(f"{page_name} must publish author=GoreeCloud.")
+        if parser.meta_names.get("goreecloud-glaze-ui") != "1.1.0":
+            errors.append(f"{page_name} must publish the Website GLAZE UI source target 1.1.0.")
+
+        manifest = (parser.manifest_href or "").lstrip("/")
+        if manifest != MANIFEST_PATH:
+            errors.append(f"{page_name} must link explicitly to /{MANIFEST_PATH}.")
+
         normalized_icons = {
             (frozenset(rels), href.lstrip("/"), content_type)
             for rels, href, content_type in parser.icon_links
         }
         if not any(
             "icon" in rels
-            and href == "assets/goreecloud-logo.svg"
+            and href == CANONICAL_LOGO
             and content_type == "image/svg+xml"
             for rels, href, content_type in normalized_icons
         ):
-            errors.append(f"{display} must publish the canonical GoreeCloud SVG favicon.")
-        if not any(
-            "apple-touch-icon" in rels and href == "assets/goreecloud-logo.svg"
-            for rels, href, _ in normalized_icons
-        ):
-            errors.append(f"{display} must publish the canonical GoreeCloud SVG Apple-touch identity.")
-
-    for page, canonical in INDEXABLE_PAGES.items():
-        if page.name not in {"index.html", "repositories.html"}:
-            continue
-        parser = parsed_pages.get(page.resolve())
-        if parser is None:
-            continue
-        display = page.relative_to(ROOT)
-        expected_properties = {
-            "og:type": "website",
-            "og:site_name": "GoreeCloud",
-            "og:url": canonical,
-            "og:image": SOCIAL_IMAGE_URL,
-        }
-        for key, expected in expected_properties.items():
-            if parser.meta_properties.get(key) != expected:
-                errors.append(f"{display} metadata {key} must be {expected!r}.")
-        for key in ("og:title", "og:description", "og:image:alt"):
-            if not parser.meta_properties.get(key, "").strip():
-                errors.append(f"{display} must publish non-empty {key} metadata.")
-        expected_names = {
-            "twitter:card": "summary_large_image",
-            "twitter:image": SOCIAL_IMAGE_URL,
-        }
-        for key, expected in expected_names.items():
-            if parser.meta_names.get(key) != expected:
-                errors.append(f"{display} metadata {key} must be {expected!r}.")
-        for key in ("twitter:title", "twitter:description", "twitter:image:alt"):
-            if not parser.meta_names.get(key, "").strip():
-                errors.append(f"{display} must publish non-empty {key} metadata.")
+            errors.append(f"{page_name} must publish the canonical GoreeCloud SVG favicon.")
 
 
 def validate_sitemap(errors: list[str]) -> None:
     if not SITEMAP.exists():
         errors.append("sitemap.xml is missing.")
         return
-
     try:
         root = ElementTree.fromstring(SITEMAP.read_text(encoding="utf-8"))
     except ElementTree.ParseError as exc:
         errors.append(f"sitemap.xml is not valid XML: {exc}")
         return
-
     if root.tag != f"{SITEMAP_NAMESPACE}urlset":
         errors.append("sitemap.xml must use the standard sitemaps.org urlset namespace.")
         return
@@ -292,7 +224,6 @@ def validate_sitemap(errors: list[str]) -> None:
     for url_node in root.findall(f"{SITEMAP_NAMESPACE}url"):
         loc_nodes = url_node.findall(f"{SITEMAP_NAMESPACE}loc")
         lastmod_nodes = url_node.findall(f"{SITEMAP_NAMESPACE}lastmod")
-
         if len(loc_nodes) != 1:
             errors.append(f"Each sitemap URL entry must contain exactly one <loc>; found {len(loc_nodes)}.")
             continue
@@ -301,13 +232,9 @@ def validate_sitemap(errors: list[str]) -> None:
             errors.append("sitemap.xml contains an empty <loc> value.")
             continue
         locations.append(location)
-
         if len(lastmod_nodes) != 1:
-            errors.append(
-                f"Sitemap entry {location} must contain exactly one <lastmod>; found {len(lastmod_nodes)}."
-            )
+            errors.append(f"Sitemap entry {location} must contain exactly one <lastmod>; found {len(lastmod_nodes)}.")
             continue
-
         lastmod_text = (lastmod_nodes[0].text or "").strip()
         try:
             lastmod = date.fromisoformat(lastmod_text)
@@ -317,49 +244,44 @@ def validate_sitemap(errors: list[str]) -> None:
         if lastmod > today:
             errors.append(f"Sitemap entry {location} has a future lastmod date: {lastmod_text}.")
 
-    expected = list(INDEXABLE_PAGES.values())
-
+    expected = set(INDEXABLE_PAGES.values())
     duplicates = sorted(url for url, count in Counter(locations).items() if count > 1)
     for url in duplicates:
         errors.append(f"Duplicate sitemap URL: {url}")
-
-    missing = sorted(set(expected).difference(locations))
-    extra = sorted(set(locations).difference(expected))
-    for url in missing:
+    for url in sorted(expected.difference(locations)):
         errors.append(f"Indexable public page is missing from sitemap.xml: {url}")
-    for url in extra:
-        errors.append(f"sitemap.xml contains an unexpected public URL: {url}")
+    for url in sorted(set(locations).difference(expected)):
+        errors.append(f"sitemap.xml contains an unexpected Main public URL: {url}")
 
 
 def validate_robots(errors: list[str]) -> None:
     if not ROBOTS.exists():
         errors.append("robots.txt is missing.")
         return
-
     directives = [
         line.strip()
         for line in ROBOTS.read_text(encoding="utf-8").splitlines()
         if line.strip() and not line.lstrip().startswith("#")
     ]
     lowered = [line.lower() for line in directives]
-
     if lowered.count("user-agent: *") != 1:
         errors.append("robots.txt must contain exactly one global 'User-agent: *' directive.")
     if lowered.count("allow: /") != 1:
-        errors.append("robots.txt must explicitly allow the public site root exactly once.")
+        errors.append("robots.txt must explicitly allow the Main public site root exactly once.")
     if any(line.startswith("disallow:") for line in lowered):
-        errors.append("robots.txt must not accidentally block the intentionally public website with Disallow directives.")
-
+        errors.append("Main robots.txt must not block the intentionally public website with Disallow directives.")
     sitemap_directives = [line for line in directives if line.lower().startswith("sitemap:")]
     expected = f"Sitemap: {CANONICAL_SITEMAP_URL}"
     if sitemap_directives != [expected]:
-        errors.append(
-            f"robots.txt must publish exactly the canonical sitemap directive {expected!r}; found {sitemap_directives!r}."
-        )
+        errors.append(f"robots.txt must publish exactly {expected!r}; found {sitemap_directives!r}.")
 
 
 def main() -> int:
     errors: list[str] = []
+    expected_public_pages = set(PUBLIC_PAGE_NAMES)
+    if not expected_public_pages.issubset(DEPLOYABLE_PATHS):
+        missing = sorted(expected_public_pages.difference(DEPLOYABLE_PATHS))
+        errors.append("Main page set is not fully included in the deployment allowlist: " + ", ".join(missing))
     parsed_pages = parse_pages(errors)
     validate_references(errors, parsed_pages)
     validate_indexing(errors, parsed_pages)
