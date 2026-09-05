@@ -29,7 +29,7 @@ REQUIRED_COPY = (
     "No behavioral tracking.",
     "third-party browser resources",
     "Browser-loaded site resources are kept on the GoreeCloud origin",
-    "goreecloud-theme",
+    "goreecloud-appearance",
     "localStorage",
     "System mode requires no stored preference",
     "Cloudflare Pages",
@@ -198,10 +198,11 @@ def main() -> int:
     main_js = MAIN_JS.read_text(encoding="utf-8")
     theme_init = THEME_INIT_JS.read_text(encoding="utf-8")
     storage_requirements = (
-        (main_js, "localStorage.setItem(THEME_STORAGE_KEY, mode)", "explicit theme persistence"),
-        (main_js, "localStorage.removeItem(THEME_STORAGE_KEY)", "System-mode storage removal"),
-        (theme_init, "localStorage.getItem(THEME_STORAGE_KEY)", "early stored-theme restoration"),
-        (main_js, "const THEME_STORAGE_KEY = 'goreecloud-theme'", "theme storage key"),
+        (main_js, "const key = 'goreecloud-appearance';", "appearance storage key"),
+        (main_js, "localStorage.setItem(key, mode)", "explicit appearance persistence"),
+        (main_js, "localStorage.removeItem(key)", "System-mode storage removal"),
+        (theme_init, "const key = 'goreecloud-appearance';", "early appearance storage key"),
+        (theme_init, "localStorage.getItem(key)", "early stored-appearance restoration"),
     )
     for source, marker, label in storage_requirements:
         if marker not in source:
@@ -215,16 +216,15 @@ def main() -> int:
         if marker.lower() in browser_code:
             errors.append(f"Tracking-related browser-code marker conflicts with privacy statement: {marker}")
 
-    for path in (PRIVACY_PAGE,):
-        text = path.read_text(encoding="utf-8", errors="replace")
-        for pattern in PRIVATE_PATTERNS:
-            match = pattern.search(text)
-            if match:
-                errors.append(f"Private-range IP address found in {path.relative_to(ROOT)}: {match.group(0)}")
-        lower = text.lower()
-        for term in SENSITIVE_TERMS:
-            if term.lower() in lower:
-                errors.append(f"Private infrastructure identifier found in {path.relative_to(ROOT)}: {term}")
+    text = PRIVACY_PAGE.read_text(encoding="utf-8", errors="replace")
+    for pattern in PRIVATE_PATTERNS:
+        match = pattern.search(text)
+        if match:
+            errors.append(f"Private-range IP address found in {PRIVACY_PAGE.relative_to(ROOT)}: {match.group(0)}")
+    lower = text.lower()
+    for term in SENSITIVE_TERMS:
+        if term.lower() in lower:
+            errors.append(f"Private infrastructure identifier found in {PRIVACY_PAGE.relative_to(ROOT)}: {term}")
 
     return report(errors)
 
