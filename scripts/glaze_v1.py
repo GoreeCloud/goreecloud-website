@@ -46,6 +46,39 @@ def _imports(text: str) -> set[str]:
     return set(re.findall(r'@import\s+url\(["\']\./([^"\']+)["\']\)', text))
 
 
+def _request(name: str) -> Request:
+    return Request(
+        f"{BASE_URL}/{name}",
+        headers={"User-Agent": "GoreeCloud-Website-Build/1.1"},
+    )
+
+
+def confirm_known_stable_defect_missing(timeout: float = 20.0) -> None:
+    """Require the pinned defect dependency to remain genuinely absent.
+
+    The source revision is immutable, but the explicit 404 check prevents the
+    consumer workaround from silently becoming normal package behavior if this
+    helper is ever repinned without its acceptance contract being updated.
+    """
+    try:
+        with urlopen(_request(KNOWN_STABLE_DEFECT_IMPORT), timeout=timeout) as response:
+            raise ValueError(
+                "Refusing GLAZE workaround because the known Stable dependency now exists "
+                f"(HTTP {response.status}): {KNOWN_STABLE_DEFECT_IMPORT}"
+            )
+    except HTTPError as exc:
+        if exc.code != 404:
+            raise ValueError(
+                "Unable to prove the known GLAZE Stable dependency is absent: "
+                f"HTTP {exc.code} for {KNOWN_STABLE_DEFECT_IMPORT}"
+            ) from exc
+    except (URLError, TimeoutError) as exc:
+        raise ValueError(
+            "Unable to prove the known GLAZE Stable dependency is absent: "
+            f"{KNOWN_STABLE_DEFECT_IMPORT}: {exc}"
+        ) from exc
+
+
 def _validate_common(bundle: dict[str, str]) -> None:
     missing = sorted(set(FILES) - set(bundle))
     if missing:
@@ -133,11 +166,13 @@ def validate_bundle(bundle: dict[str, str]) -> None:
 
 
 def fetch_bundle(timeout: float = 20.0) -> dict[str, str]:
+    # The known dependency must remain absent before the exception is allowed.
+    confirm_known_stable_defect_missing(timeout=timeout)
+
     raw_bundle: dict[str, str] = {}
     for name in FILES:
-        request = Request(f"{BASE_URL}/{name}", headers={"User-Agent": "GoreeCloud-Website-Build/1.1"})
         try:
-            with urlopen(request, timeout=timeout) as response:
+            with urlopen(_request(name), timeout=timeout) as response:
                 if response.status != 200:
                     raise ValueError(f"Unexpected HTTP status for {name}: {response.status}")
                 raw = response.read()
