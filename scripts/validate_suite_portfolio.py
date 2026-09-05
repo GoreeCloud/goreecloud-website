@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the reviewed GoreeCloud Suite manifest and main-site separation."""
+"""Validate the reviewed GoreeCloud Suite manifest and rebuilt Main-site separation."""
 
 from __future__ import annotations
 
@@ -8,8 +8,7 @@ from pathlib import Path
 import re
 import sys
 
-from normalize_homepage import normalize_homepage
-from render_repository_portfolio import load_manifest, load_suite_manifest, render_public_file
+from render_repository_portfolio import load_suite_manifest
 
 ROOT = Path(__file__).resolve().parents[1]
 INDEX = ROOT / "index.html"
@@ -102,13 +101,17 @@ def main() -> int:
     if "quill" in ids or "GoreeCloud Quill" in names:
         errors.append("Quill is a GoreeCloud Keyboard capability family and must not be listed as a standalone Suite application.")
 
+    # Main is now a public front door, not a duplicate Suite directory. Validate
+    # the reviewed source directly rather than requiring the retired Suite-card
+    # render template that was intentionally removed by the ground-up rebuild.
     source = INDEX.read_text(encoding="utf-8")
-    rendered = normalize_homepage(render_public_file("index.html", source, load_manifest(ROOT)))
-    if 'data-suite-app=' in rendered:
+    if 'data-suite-app=' in source:
         errors.append("Main homepage must not render GoreeCloud Suite application cards.")
-    if '<a href="https://suite.goreecloud.com/">Suite</a>' not in rendered:
+    if 'href="https://suite.goreecloud.com/"' not in source:
         errors.append("Main homepage must link to the dedicated GoreeCloud Suite website.")
-    if "suite.goreecloud.com" not in rendered:
+    if "GoreeCloud Suite" not in source:
+        errors.append("Main homepage must identify GoreeCloud Suite as the dedicated application destination.")
+    if "suite.goreecloud.com" not in source:
         errors.append("Main homepage must identify suite.goreecloud.com as the Suite destination.")
 
     if errors:
@@ -119,8 +122,7 @@ def main() -> int:
 
     print(
         f"GoreeCloud Suite manifest validation passed: {len(applications)} applications "
-        f"across {len(groups)} groups; newly approved canonical identities present; "
-        "main-site separation preserved."
+        f"across {len(groups)} groups; canonical identities present; rebuilt Main separation preserved."
     )
     return 0
 
