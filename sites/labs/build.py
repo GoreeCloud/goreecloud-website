@@ -11,21 +11,31 @@ DIST = SITE / "dist"
 sys.path.insert(0, str(ROOT / "scripts"))
 from glaze_v1 import FILES as GLAZE_FILES, install_glaze  # noqa: E402
 
-SITE_FILES = ("index.html", "404.html", "labs.css", "_headers", "robots.txt")
+SITE_FILES = (
+    "index.html",
+    "404.html",
+    "labs.css",
+    "_headers",
+    "robots.txt",
+    "assets/products/ai.svg",
+    "assets/products/code.svg",
+)
 SHARED_FILES = ("css/site-v1.1.css", "js/main.js", "js/theme-init.js", "assets/goreecloud-logo.svg")
-GENERATED = tuple(f"css/glaze-v1/{name}" for name in GLAZE_FILES)
 
 
 def main() -> int:
     try:
         for name in SITE_FILES:
             path = SITE / name
-            if not path.is_file() or path.is_symlink(): raise ValueError(f"invalid site source: {name}")
+            if not path.is_file() or path.is_symlink():
+                raise ValueError(f"invalid site source: {name}")
         for name in SHARED_FILES:
             path = ROOT / name
-            if not path.is_file() or path.is_symlink(): raise ValueError(f"invalid shared source: {name}")
+            if not path.is_file() or path.is_symlink():
+                raise ValueError(f"invalid shared source: {name}")
         if DIST.exists():
-            if DIST.is_symlink(): raise ValueError("dist must not be a symlink")
+            if DIST.is_symlink():
+                raise ValueError("dist must not be a symlink")
             shutil.rmtree(DIST)
         DIST.mkdir()
         for name in SITE_FILES:
@@ -43,4 +53,5 @@ def main() -> int:
     print(f"Built Labs product-center artifact: {sum(1 for p in DIST.rglob('*') if p.is_file())} files -> {DIST}")
     return 0
 
-if __name__ == "__main__": sys.exit(main())
+if __name__ == "__main__":
+    sys.exit(main())
