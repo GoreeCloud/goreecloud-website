@@ -1,6 +1,12 @@
 # GoreeCloud Website
 
-Canonical source for the main GoreeCloud public website and the Projects, Roadmap, Blog, and Archive destinations deployed through Cloudflare Pages.
+> **Repository migration notice:** `GoreeCloud/goreecloud-website` is a transitional legacy source. The canonical repository for all GoreeCloud static websites is `GoreeCloud/goreecloud-static-websites`.
+
+The main GoreeCloud public website and the Projects, Roadmap, Blog, and Archive destinations currently remain here only while their source, build/deployment configuration, documentation, automation, and references are migrated and validated in `goreecloud-static-websites`.
+
+All GoreeCloud static websites — including the main website, Wardveil Security website, Identity website, Privacy website, Roadmap website, Archive website, and static websites embedded in other GoreeCloud applications or services — MUST ultimately be stored, maintained, and referenced from `GoreeCloud/goreecloud-static-websites`.
+
+This repository MUST be deleted after every GoreeCloud static website has completed migration to the centralized repository, all required deployment and repository references have been cut over, production has been verified where applicable, legacy website copies have been retired, and no required dependency remains on `goreecloud-website`. It must not be deleted before those gates are complete, and it must not remain as a competing website authority afterward.
 
 ## Current baseline
 
@@ -20,9 +26,9 @@ Glaze UI 2.1.0 remains the accepted design-system implementation for the current
 
 ## Official GoreeCloud website ecosystem
 
-This repository is responsible for five production website destinations:
+During migration, this repository still contains five production website destinations:
 
-| Destination | Domain | Source |
+| Destination | Domain | Current legacy source |
 | --- | --- | --- |
 | GoreeCloud | `www.goreecloud.com` | repository root |
 | Projects | `projects.goreecloud.com` | `sites/projects/` |
@@ -30,7 +36,9 @@ This repository is responsible for five production website destinations:
 | Blog | `blog.goreecloud.com` | `sites/blog/` |
 | Archive | `archive.goreecloud.com` | `sites/archive/` |
 
-The wider production ecosystem also includes GoreeCloud Suite, Design Center, Privacy Center, Security Center, and Continuity Center in their respective canonical repositories. Identity Center is an official first-party website surface whose source exists in `GoreeCloud/goreecloud-identity`; publication and production acceptance remain pending until their separate gates are satisfied.
+Their canonical target paths are maintained by `GoreeCloud/goreecloud-static-websites`. These entries describe the current migration source only and do not establish this repository as the long-term authority.
+
+The wider production ecosystem also includes GoreeCloud Suite, Design Center, Privacy Center, Security Center, and Continuity Center in their current legacy repositories. Identity Center is an official first-party website surface whose current source exists in `GoreeCloud/goreecloud-identity`; publication and production acceptance remain pending until their separate gates are satisfied. Every static website source package in those repositories is also in scope for consolidation into `goreecloud-static-websites`.
 
 ## Public-web principles
 
@@ -76,7 +84,7 @@ Issue #5 remains open as the separate human-controlled reachable-history, contex
 
 ## Build and publication allowlist
 
-The main public site is built as an explicit allowlisted artifact:
+The current legacy main public site is built as an explicit allowlisted artifact:
 
 ```bash
 python scripts/build_public_site.py
@@ -135,7 +143,7 @@ The same principle applies to every application and platform system. Source avai
 
 ## Deployment and release acceptance
 
-Cloudflare Pages deploys reviewed static artifacts. Exact accepted production revisions are recorded in the GoreeCloud Public Websites and Cloudflare Pages project specification in Google Drive.
+Cloudflare Pages currently deploys reviewed static artifacts from this legacy repository until each site is cut over to `GoreeCloud/goreecloud-static-websites`. Exact accepted production revisions are recorded in the GoreeCloud Public Websites and Cloudflare Pages project specification in Google Drive.
 
 A branch preview is evidence, not a release. Passing CI does not itself authorize merge, production deployment, a public claim upgrade, or broader product acceptance. The exact pull-request candidate must pass branch-preview verification; after merge, the exact resulting `main` revision must pass production verification. Source, isolated artifact, and deployed bytes must agree.
 
@@ -145,12 +153,13 @@ Deployment success does not by itself authorize broader product, privacy, securi
 
 ## Maintenance rules
 
-When public behavior, architecture, project state, design-system conformance, branding authority, repository inventory, or deployment scope changes:
+When public behavior, architecture, project state, design-system conformance, branding authority, repository inventory, deployment scope, or static-site migration state changes:
 
-1. update the canonical source rather than adding a competing source of truth;
+1. update the canonical static website source and migration records in `GoreeCloud/goreecloud-static-websites` rather than adding a competing source of truth;
 2. keep public claims evidence-scoped;
 3. update the GoreeCloud project specification in `GoreeCloud/Projects` after the applicable source/release/deployment state changes;
 4. append the canonical website changelog in `GoreeCloud/Changelogs` for substantive completed changes;
-5. verify Cloudflare Pages and GitHub status before treating the revision as accepted.
+5. verify Cloudflare Pages and GitHub status before treating the revision as accepted;
+6. remove obsolete static source and references from this repository only after the corresponding centralized site has passed its required cutover and verification gates.
 
 Do not restore references to the retired `goreecloud-logo` repository. The unified authority is `GoreeCloud/goreecloud-branding-assets`.
