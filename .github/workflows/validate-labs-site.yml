@@ -1,4 +1,4 @@
-name: Validate five-product website source
+name: Validate six-product website source
 
 on:
   pull_request:
