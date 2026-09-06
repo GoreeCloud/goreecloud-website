@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the isolated Cloudflare Pages artifact for the GoreeCloud five-product center."""
+"""Build the isolated Cloudflare Pages artifact for the GoreeCloud six-product center."""
 from __future__ import annotations
 from pathlib import Path
 import shutil
