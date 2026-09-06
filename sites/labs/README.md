@@ -1,8 +1,8 @@
-# GoreeCloud five-product public center
+# GoreeCloud six-product public center
 
-Source foundation for a combined public website covering **GoreeCloud Home Security**, **GoreeCloud Home**, **GoreeCloud AI**, **GoreeCloud Containers**, and **GoreeCloud Code**.
+Source foundation for a combined public website covering **GoreeCloud Home Security**, **GoreeCloud Home**, **GoreeCloud AI**, **GoreeCloud Containers**, **GoreeCloud Code**, and **GoreeCloud Boot**.
 
-`labs.goreecloud.com` is a **Proposed technical website namespace**, not a new GoreeCloud product or umbrella brand. The public page uses the GoreeCloud master brand and preserves the five canonical product names.
+`labs.goreecloud.com` is a **Proposed technical website namespace**, not a new GoreeCloud product or umbrella brand. The public page uses the GoreeCloud master brand and preserves the six canonical product names.
 
 ## Cloudflare Pages contract
 
@@ -14,7 +14,7 @@ Source foundation for a combined public website covering **GoreeCloud Home Secur
 - Proposed custom domain: `labs.goreecloud.com`
 - Current publication state: **source prepared; production activation pending**
 
-The site is static at browser runtime. It does not host GoreeCloud Home device control, Home Security camera processing, AI inference/runtime APIs, Containers workload execution, Code forge/provider operations, or private GoreeCloud application services.
+The site is static at browser runtime. It does not host GoreeCloud Home device control, Home Security camera processing, AI inference/runtime APIs, Containers workload execution, Code forge/provider operations, GoreeCloud Boot provisioning/boot runtime, or private GoreeCloud application services.
 
 ## Production gates still required
 
